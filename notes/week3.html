@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3 – Quick Sort and Select | FIT2004</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+  --text: #c9d1d9; --text-muted: #8b949e;
+  --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+  --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+}
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+nav ul { list-style: none; }
+nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+nav ul li a:hover { color: var(--text); background: var(--bg3); }
+nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+main { flex: 1; max-width: 860px; padding: 48px 56px; }
+.week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+.week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+.week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+.topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+section.content-section { margin-bottom: 56px; }
+h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+p { margin-bottom: 14px; }
+.callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+.callout.def { background: #1f6feb0d; border-color: var(--blue); }
+.callout.thm { background: #3fb9500d; border-color: var(--green); }
+.callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+.callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+.callout.warn { background: #f851490d; border-color: var(--red); }
+.callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.callout.def .callout-title { color: var(--blue); }
+.callout.thm .callout-title { color: var(--green); }
+.callout.cplx .callout-title { color: var(--orange); }
+.callout.insight .callout-title { color: var(--purple); }
+.callout.warn .callout-title { color: var(--red); }
+pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+.algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+.algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+td { padding: 10px 16px; border: 1px solid var(--border); }
+tr:nth-child(even) td { background: var(--bg2); }
+code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+ul, ol { padding-left: 24px; margin-bottom: 14px; }
+li { margin-bottom: 7px; }
+.complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+@media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html" class="current"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#quicksort" class="sub">§3.2 Quicksort</a></li>
+    <li><a href="#order-stats" class="sub">Ch.4 Order Statistics</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ─── HEADER ─────────────────────────────────────────────── -->
+  <div class="week-header">
+    <div class="week-badge">Week 3</div>
+    <h1>Divide and Conquer: Quicksort, Quickselect &amp; Median of Medians</h1>
+    <div class="subtitle">Course Notes §3.2 + Chapter 4 · Lecture 3</div>
+    <div class="topics">
+      <span>Quicksort</span>
+      <span>Partitioning</span>
+      <span>Hoare Scheme</span>
+      <span>Dutch National Flag</span>
+      <span>Average-case O(n log n)</span>
+      <span>Order Statistics</span>
+      <span>Quickselect</span>
+      <span>Median of Medians</span>
+      <span>Deterministic O(n) Selection</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 1 – QUICKSORT
+  ════════════════════════════════════════════════════════════════ -->
+  <section class="content-section" id="quicksort">
+    <h2 class="sec-title"><span class="sec-num">§3.2</span> Quicksort</h2>
+  <button class="review-btn" data-week="3" data-sec="quicksort"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Quicksort is a classic Divide-and-Conquer sorting algorithm invented by C.A.R. Hoare.
+      Its key appeal is that it is <strong>in-place</strong> (with the right partition scheme), extremely
+      cache-friendly in practice, and achieves <strong>average-case O(n log n)</strong> time — making it
+      one of the fastest general-purpose sorting algorithms in real workloads.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Key Ideas – Quicksort</div>
+      <ol>
+        <li>Select some element of the array, called the <strong>pivot</strong>.</li>
+        <li>Partition the array so that all items <em>less than</em> the pivot are to its left, all elements <em>equal</em> to the pivot are in the middle, and all elements <em>greater than</em> the pivot are to its right.</li>
+        <li>Recursively Quicksort the left sub-array (elements less than pivot).</li>
+        <li>Recursively Quicksort the right sub-array (elements greater than pivot).</li>
+      </ol>
+    </div>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity Summary</div>
+      <table>
+        <thead><tr><th>Case</th><th>Time</th><th>Auxiliary Space</th></tr></thead>
+        <tbody>
+          <tr><td>Best</td><td><span class="complexity-tag">O(n log n)</span></td><td><span class="complexity-tag">O(log n)</span></td></tr>
+          <tr><td>Average</td><td><span class="complexity-tag">O(n log n)</span></td><td><span class="complexity-tag">O(log n)</span></td></tr>
+          <tr><td>Worst</td><td><span class="complexity-tag">O(n²)</span></td><td><span class="complexity-tag">O(log n)</span></td></tr>
+        </tbody>
+      </table>
+      <p style="margin-bottom:0; margin-top:8px; font-size:0.88em; color: var(--text-muted);">
+        Space assumes the tail-call optimisation (always recurse on the smaller half first). Without it, worst-case space is O(n).
+        Quicksort is <strong>not stable</strong> when using in-place partition schemes.
+      </p>
+    </div>
+
+    <!-- ── PARTITIONING ── -->
+    <h3 class="subsec" id="partitioning">The Partitioning Problem</h3>
+
+    <p>
+      The partitioning algorithm is the heart of Quicksort. Its choice determines whether
+      Quicksort is in-place, stable, and how it handles duplicate elements.
+      There are three main approaches covered in FIT2004:
+    </p>
+
+    <ul>
+      <li><strong>Naive 3-way partition</strong> — simple, stable, but <em>not in-place</em> (uses O(n) extra space).</li>
+      <li><strong>Hoare partition</strong> — in-place, efficient, but <em>not stable</em> and struggles with many duplicates.</li>
+      <li><strong>Dutch National Flag (DNF)</strong> — in-place, handles duplicates optimally, <em>not stable</em>.</li>
+    </ul>
+
+    <!-- NAIVE PARTITION -->
+    <h4 class="subsubsec">Naive 3-Way Partitioning (Out-of-place)</h4>
+
+    <p>
+      The simplest approach: scan the array and distribute each element into one of three
+      temporary arrays — <code>left</code> (elements &lt; pivot), <code>pivots</code> (elements = pivot),
+      and <code>right</code> (elements &gt; pivot). Then copy them back.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Stability Note</div>
+      Elements that are equal to the pivot always end up in the <code>pivots</code> bucket in their
+      original relative order, so naive 3-way partitioning is <strong>stable</strong>. However, it requires
+      O(n) extra space, making the overall Quicksort non-in-place.
+    </div>
+
+    <div class="algo-header">
+      Algorithm 15 — Naive 3-Way Partition
+      <span class="algo-complexity">O(n) time · O(n) space</span>
+    </div>
+<pre class="code-block has-header">function PARTITION(array[lo..hi], pivot):
+    left   = empty array     // elements &lt; pivot
+    pivots = empty array     // elements = pivot
+    right  = empty array     // elements &gt; pivot
+
+    for i = lo to hi do:
+        if   array[i] &lt; pivot  then  left.append(array[i])
+        elif array[i] = pivot  then  pivots.append(array[i])
+        else                         right.append(array[i])
+
+    array[lo..hi] = left + pivots + right   // copy back (concatenation)
+    return lo + length(left) + floor(length(pivots)/2)
+                                            // return middle pivot position</pre>
+
+<div id="vz15-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:13px;font-weight:700;color:#f0883e;">Algorithm 15 — Naive 3-way Partition</span>
+    <span style="font-size:11px;color:#8b949e;font-family:monospace;">O(n) time · O(n) space</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:14px 16px;border-right:1px solid #30363d;">
+      <svg id="vz15svg" viewBox="0 0 560 220" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+      <div id="vz15lbl" style="font-size:11px;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;font-family:monospace;">READY</div>
+      <div id="vz15txt" style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;">Input [3,1,4,1,5,9,2,6,5], pivot=4. Press Next to begin.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">&#60; pivot</div>
+          <div id="vz15lt" style="font-size:1.2em;font-weight:700;color:#58a6ff;">0</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">= pivot</div>
+          <div id="vz15eq" style="font-size:1.2em;font-weight:700;color:#f0883e;">0</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">&#62; pivot</div>
+          <div id="vz15gt" style="font-size:1.2em;font-weight:700;color:#f85149;">0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <button onclick="vz15step(-1)" id="vz15prev" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;" disabled>&#9664; Prev</button>
+        <button onclick="vz15step(1)" id="vz15next" style="background:#1f6feb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Next &#9654;</button>
+        <button onclick="vz15reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var ARR=[3,1,4,1,5,9,2,6,5], PIVOT=4;
+  var steps=[
+    {label:'INITIAL',text:'Input array [3,1,4,1,5,9,2,6,5] with pivot=4 highlighted. Three empty buckets: L (< pivot), E (= pivot), G (> pivot).',L:[],E:[],G:[],cur:-1},
+    {label:'i=0',text:'arr[0]=3 < pivot(4) → goes to L bucket.',L:[3],E:[],G:[],cur:0},
+    {label:'i=1',text:'arr[1]=1 < pivot(4) → goes to L bucket.',L:[3,1],E:[],G:[],cur:1},
+    {label:'i=2',text:'arr[2]=4 = pivot(4) → goes to E bucket.',L:[3,1],E:[4],G:[],cur:2},
+    {label:'i=3',text:'arr[3]=1 < pivot(4) → goes to L bucket.',L:[3,1,1],E:[4],G:[],cur:3},
+    {label:'i=4',text:'arr[4]=5 > pivot(4) → goes to G bucket.',L:[3,1,1],E:[4],G:[5],cur:4},
+    {label:'i=5',text:'arr[5]=9 > pivot(4) → goes to G bucket.',L:[3,1,1],E:[4],G:[5,9],cur:5},
+    {label:'i=6',text:'arr[6]=2 < pivot(4) → goes to L bucket.',L:[3,1,1,2],E:[4],G:[5,9],cur:6},
+    {label:'i=7',text:'arr[7]=6 > pivot(4) → goes to G bucket.',L:[3,1,1,2],E:[4],G:[5,9,6],cur:7},
+    {label:'i=8',text:'arr[8]=5 > pivot(4) → goes to G bucket.',L:[3,1,1,2],E:[4],G:[5,9,6,5],cur:8},
+    {label:'CONCAT',text:'Concatenate L+E+G → [3,1,1,2, 4, 5,9,6,5]. Pivot at index 4. Partition complete!',L:[3,1,1,2],E:[4],G:[5,9,6,5],cur:-2}
+  ];
+  var cur=-1;
+  var svg=document.getElementById('vz15svg');
+  var NS='http://www.w3.org/2000/svg';
+  function mk(tag,a){var e=document.createElementNS(NS,tag);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(s){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    // Background
+    var bk=mk('rect',{x:0,y:0,width:560,height:220,fill:'#0d1117'});svg.appendChild(bk);
+    var n=ARR.length, bw=40, bh=36, by=30, bx0=8;
+    // Section labels
+    var lt=mk('text',{x:bx0+2,y:24,'text-anchor':'start',fill:'#58a6ff','font-size':'11','font-family':'monospace'});lt.textContent='Input';svg.appendChild(lt);
+    // Draw input array
+    for(var i=0;i<n;i++){
+      var x=bx0+i*bw, isActive=(s.cur===i), isDone=(s.cur===-2);
+      var col=isDone?'#21262d':isActive?'#f0883e33':'#21262d';
+      var sc=isDone?'#8b949e':isActive?'#f0883e':'#8b949e';
+      if(isDone){
+        // color by bucket membership
+        var v=ARR[i];
+        if(v<PIVOT){col='#58a6ff33';sc='#58a6ff';}
+        else if(v===PIVOT){col='#f0883e33';sc='#f0883e';}
+        else{col='#f8514933';sc='#f85149';}
+      }
+      svg.appendChild(mk('rect',{x:x+2,y:by,width:bw-4,height:bh,fill:col,stroke:sc,'stroke-width':'1.5',rx:'4'}));
+      var tv=mk('text',{x:x+bw/2,y:by+bh/2+6,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'monospace','font-weight':'700'});
+      tv.textContent=ARR[i];svg.appendChild(tv);
+    }
+    // Bucket rows
+    var buckets=[{arr:s.L,col:'#58a6ff',label:'L (<)',y:95},{arr:s.E,col:'#f0883e',label:'E (=)',y:140},{arr:s.G,col:'#f85149',label:'G (>)',y:185}];
+    buckets.forEach(function(b){
+      var lbl=mk('text',{x:4,y:b.y+20,'font-size':'10','font-family':'monospace',fill:b.col,'font-weight':'700'});lbl.textContent=b.label;svg.appendChild(lbl);
+      for(var j=0;j<b.arr.length;j++){
+        var bx=50+j*36;
+        svg.appendChild(mk('rect',{x:bx,y:b.y+2,width:32,height:26,fill:b.col+'33',stroke:b.col,'stroke-width':'1.2',rx:'3'}));
+        var bv=mk('text',{x:bx+16,y:b.y+19,'text-anchor':'middle',fill:b.col,'font-size':'13','font-family':'monospace','font-weight':'700'});
+        bv.textContent=b.arr[j];svg.appendChild(bv);
+      }
+    });
+    // pivot marker
+    var px=mk('text',{x:560-4,y:by+bh/2+6,'text-anchor':'end',fill:'#3fb950','font-size':'11','font-family':'monospace'});
+    px.textContent='pivot='+PIVOT;svg.appendChild(px);
+    // Update stats
+    document.getElementById('vz15lt').textContent=s.L.length;
+    document.getElementById('vz15eq').textContent=s.E.length;
+    document.getElementById('vz15gt').textContent=s.G.length;
+    document.getElementById('vz15lbl').textContent=s.label;
+    document.getElementById('vz15txt').textContent=s.text;
+    document.getElementById('vz15prev').disabled=(cur<=0);
+    document.getElementById('vz15next').disabled=(cur>=steps.length-1);
+  }
+  window.vz15step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    draw(steps[cur]);
+  };
+  window.vz15reset=function(){
+    cur=-1;
+    draw({label:'READY',text:'Input [3,1,4,1,5,9,2,6,5], pivot=4. Press Next to begin.',L:[],E:[],G:[],cur:-1});
+    document.getElementById('vz15prev').disabled=true;
+    document.getElementById('vz15next').disabled=false;
+  };
+  vz15reset();
+})();
+</script>
+
+    <!-- HOARE PARTITION -->
+    <h3 class="subsec" id="hoare">Hoare Partition Algorithm (In-place)</h3>
+
+    <p>
+      Hoare's original scheme uses two pointers — one starting just after the pivot (at <code>lo+1</code>)
+      and one at the far end (<code>hi</code>) — that march towards each other. The left pointer
+      scans right looking for an element that is <em>too large</em> (i.e. &gt; pivot), and the right
+      pointer scans left looking for an element that is <em>too small</em> (i.e. &le; pivot).
+      When both bad elements are found, they are swapped. When the pointers cross, the
+      pivot is swapped into its final sorted position at the right pointer.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Loop Invariant — Hoare Partition</div>
+      At the start of each iteration:
+      <ul>
+        <li><code>array[lo]</code> holds the pivot.</li>
+        <li><code>array[lo+1 .. i-1]</code> &le; pivot (left side — correctly placed).</li>
+        <li><code>array[j+1 .. hi]</code> &gt; pivot (right side — correctly placed).</li>
+        <li><code>array[i .. j]</code> — unknown (not yet classified).</li>
+      </ul>
+      The invariant ensures that when <code>i</code> and <code>j</code> cross, the partition is complete.
+    </div>
+
+    <div class="algo-header">
+      Algorithm 16 — Hoare Partitioning
+      <span class="algo-complexity">O(n) time · O(1) space</span>
+    </div>
+<pre class="code-block has-header">function PARTITION(array[lo..hi], array[p]):
+    // array[p] is a reference to the pivot element
+    swap(array[lo], array[p])      // move pivot to front
+
+    i = lo + 1
+    j = hi
+
+    while i &lt;= j do:
+        while i &lt;= j and array[i] &lt;= array[lo] do:
+            i = i + 1              // advance left ptr past "good" elements
+        while i &lt;= j and array[j] &gt; array[lo] do:
+            j = j - 1              // advance right ptr past "good" elements
+        if i &lt; j then:
+            swap(array[i], array[j])
+            i = i + 1
+            j = j - 1
+
+    swap(array[lo], array[j])      // pivot into final sorted position
+    return j                       // pivot is now at index j</pre>
+
+<div id="vz16-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:13px;font-weight:700;color:#f0883e;">Algorithm 16 — Hoare's Partition</span>
+    <span style="font-size:11px;color:#8b949e;font-family:monospace;">O(n) time · O(1) space</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:14px 16px;border-right:1px solid #30363d;">
+      <svg id="vz16svg" viewBox="0 0 560 220" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+      <div id="vz16lbl" style="font-size:11px;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;font-family:monospace;">READY</div>
+      <div id="vz16txt" style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;">Input [3,1,4,1,5,9,2,6,5], pivot=3 (first element). Press Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Swaps</div>
+          <div id="vz16swaps" style="font-size:1.2em;font-weight:700;color:#c9d1d9;">0</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Cmps</div>
+          <div id="vz16cmps" style="font-size:1.2em;font-weight:700;color:#c9d1d9;">0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <button onclick="vz16step(-1)" id="vz16prev" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;" disabled>&#9664; Prev</button>
+        <button onclick="vz16step(1)" id="vz16next" style="background:#1f6feb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Next &#9654;</button>
+        <button onclick="vz16reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var ORIG=[3,1,4,1,5,9,2,6,5];
+  // Pre-compute steps
+  var steps=[];
+  (function(){
+    var a=ORIG.slice(), n=a.length, swaps=0, cmps=0;
+    steps.push({arr:a.slice(),i:1,j:n-1,pivot:a[0],phase:'init',swaps:0,cmps:0,label:'SETUP',text:'Array ready. pivot=arr[0]=3. Move pivot to front (already there). i=1 (lo+1), j=8 (hi).'});
+    var i=1,j=n-1;
+    var iter=0;
+    while(i<=j && iter<60){
+      iter++;
+      // advance i
+      while(i<=j && a[i]<=a[0]){
+        cmps++;
+        steps.push({arr:a.slice(),i:i,j:j,pivot:a[0],phase:'advance_i',swaps:swaps,cmps:cmps,label:'ADVANCE i',text:'arr[i='+i+']='+a[i]+' ≤ pivot('+a[0]+') → advance i → i='+(i+1)+'.'});
+        i++;
+      }
+      // advance j
+      while(i<=j && a[j]>a[0]){
+        cmps++;
+        steps.push({arr:a.slice(),i:i,j:j,pivot:a[0],phase:'advance_j',swaps:swaps,cmps:cmps,label:'ADVANCE j',text:'arr[j='+j+']='+a[j]+' > pivot('+a[0]+') → advance j → j='+(j-1)+'.'});
+        j--;
+      }
+      if(i<j){
+        steps.push({arr:a.slice(),i:i,j:j,pivot:a[0],phase:'pre_swap',swaps:swaps,cmps:cmps,label:'SWAP',text:'arr[i='+i+']='+a[i]+' and arr[j='+j+']='+a[j]+' are on wrong sides. Swapping.'});
+        var tmp=a[i];a[i]=a[j];a[j]=tmp; swaps++;
+        steps.push({arr:a.slice(),i:i,j:j,pivot:a[0],phase:'after_swap',swaps:swaps,cmps:cmps,label:'AFTER SWAP',text:'Swapped. arr['+i+']='+a[i]+', arr['+j+']='+a[j]+'. i++, j--.'});
+        i++;j--;
+      } else {
+        steps.push({arr:a.slice(),i:i,j:j,pivot:a[0],phase:'cross',swaps:swaps,cmps:cmps,label:'POINTERS CROSSED',text:'i='+i+' ≥ j='+j+'. Loop exits. No swap needed.'});
+        break;
+      }
+    }
+    // Final swap pivot into place
+    steps.push({arr:a.slice(),i:i,j:j,pivot:a[0],phase:'final_swap',swaps:swaps,cmps:cmps,label:'PLACE PIVOT',text:'Swap pivot arr[0]='+a[0]+' with arr[j='+j+']='+a[j]+'. Pivot goes to index '+j+'.'});
+    var pv=a[0];a[0]=a[j];a[j]=pv; swaps++;
+    steps.push({arr:a.slice(),i:i,j:j,pivot:a[j],phase:'done',swaps:swaps,cmps:cmps,label:'DONE',text:'Pivot '+a[j]+' at index '+j+'. Left [0..'+(j-1)+'] ≤ pivot, right ['+(j+1)+'..'+(n-1)+'] > pivot.'});
+  })();
+  var cur=-1;
+  var svg=document.getElementById('vz16svg');
+  var NS='http://www.w3.org/2000/svg';
+  function mk(tag,at){var e=document.createElementNS(NS,tag);for(var k in at)e.setAttribute(k,at[k]);return e;}
+  function draw(s){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    svg.appendChild(mk('rect',{x:0,y:0,width:560,height:220,fill:'#0d1117'}));
+    var n=s.arr.length, bw=46, bh=40, by=60, bx0=30;
+    for(var idx=0;idx<n;idx++){
+      var x=bx0+idx*bw;
+      var fc='#21262d', sc='#8b949e', sw='1.5';
+      if(s.phase==='done'){
+        if(idx===s.j){fc='#f0883e33';sc='#f0883e';sw='2.5';}
+        else if(idx<s.j){fc='#58a6ff22';sc='#58a6ff';}
+        else{fc='#f8514922';sc='#f85149';}
+      } else {
+        if(idx===0 && s.phase!=='done'){fc='#f0883e22';sc='#f0883e';sw='2';}
+        if(idx===s.i){fc='#58a6ff33';sc='#58a6ff';sw='2.5';}
+        if(idx===s.j && s.j!==s.i){fc='#f8514933';sc='#f85149';sw='2.5';}
+      }
+      svg.appendChild(mk('rect',{x:x+2,y:by,width:bw-4,height:bh,fill:fc,stroke:sc,'stroke-width':sw,rx:'4'}));
+      var tv=mk('text',{x:x+bw/2,y:by+bh/2+6,'text-anchor':'middle',fill:'#c9d1d9','font-size':'15','font-family':'monospace','font-weight':'700'});
+      tv.textContent=s.arr[idx];svg.appendChild(tv);
+      var ix=mk('text',{x:x+bw/2,y:by-6,'text-anchor':'middle',fill:'#8b949e','font-size':'10','font-family':'monospace'});
+      ix.textContent=idx;svg.appendChild(ix);
+    }
+    // Pointer arrows
+    function ptr(pos,col,lbl,yoff){
+      var cx=bx0+pos*bw+bw/2, cy=by+bh+8+yoff;
+      svg.appendChild(mk('polygon',{points:(cx)+','+(cy)+' '+(cx-7)+','+(cy+16)+' '+(cx+7)+','+(cy+16),fill:col}));
+      var t=mk('text',{x:cx,y:cy+28,'text-anchor':'middle',fill:col,'font-size':'11','font-family':'monospace','font-weight':'700'});
+      t.textContent=lbl;svg.appendChild(t);
+    }
+    if(s.phase!=='done'){
+      if(s.i<n) ptr(s.i,'#58a6ff','i',0);
+      if(s.j>=0) ptr(s.j,'#f85149','j',s.i===s.j?18:0);
+    } else {
+      ptr(s.j,'#f0883e','pivot',0);
+    }
+    // Legend
+    var leg=[['#58a6ff','≤ pivot'],['#f0883e','pivot'],['#f85149','> pivot']];
+    leg.forEach(function(l,li){
+      svg.appendChild(mk('rect',{x:10+li*110,y:195,width:12,height:12,fill:l[0]+'44',stroke:l[0],'stroke-width':'1',rx:'2'}));
+      var lt=mk('text',{x:26+li*110,y:205,fill:'#8b949e','font-size':'10','font-family':'monospace'});lt.textContent=l[1];svg.appendChild(lt);
+    });
+    document.getElementById('vz16swaps').textContent=s.swaps;
+    document.getElementById('vz16cmps').textContent=s.cmps;
+    document.getElementById('vz16lbl').textContent=s.label;
+    document.getElementById('vz16txt').textContent=s.text;
+    document.getElementById('vz16prev').disabled=(cur<=0);
+    document.getElementById('vz16next').disabled=(cur>=steps.length-1);
+  }
+  window.vz16step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    draw(steps[cur]);
+  };
+  window.vz16reset=function(){
+    cur=-1;
+    var s={arr:ORIG.slice(),i:1,j:8,pivot:3,phase:'init',swaps:0,cmps:0,label:'READY',text:'Input [3,1,4,1,5,9,2,6,5], pivot=3 (first element). Press Next.'};
+    draw(s);
+    document.getElementById('vz16prev').disabled=true;
+    document.getElementById('vz16next').disabled=false;
+  };
+  vz16reset();
+})();
+</script>
+
+    <div class="callout insight">
+      <div class="callout-title">Properties of Hoare Partition</div>
+      <ul>
+        <li><strong>Pro:</strong> Each element is swapped at most once (pivot aside), very efficient in practice.</li>
+        <li><strong>Pro:</strong> In-place — O(1) extra space.</li>
+        <li><strong>Con:</strong> <em>Not stable</em> — elements equal to the pivot may be reordered.</li>
+        <li><strong>Con:</strong> Tricky to implement correctly (off-by-one errors, termination conditions, edge cases).</li>
+        <li><strong>Critical weakness:</strong> When many elements are equal to the pivot, all equal elements end up on the left side, leading to <em>severely imbalanced</em> partitions and O(n²) behaviour on arrays with many duplicates.</li>
+      </ul>
+    </div>
+
+    <!-- DNF PARTITION -->
+    <h3 class="subsec" id="dnf">Dutch National Flag (DNF) Partition</h3>
+
+    <p>
+      Proposed by Edsger Dijkstra, the Dutch National Flag scheme partitions the array
+      into three sections — <em>&lt; pivot</em>, <em>= pivot</em>, <em>&gt; pivot</em> — <strong>in-place</strong> in a single pass.
+      After partitioning, only the two outer sections (&lt; and &gt;) need to be recursed on;
+      the entire middle section (all elements equal to the pivot) is already in its final position.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">DNF Problem Statement</div>
+      Given an array of objects coloured <strong>red</strong>, <strong>white</strong>, or <strong>blue</strong>,
+      arrange them so that all objects of the same colour are adjacent, in the order
+      red → white → blue.
+      <br><br>
+      Mapping to Quicksort: red = elements &lt; pivot, white = elements = pivot, blue = elements &gt; pivot.
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Loop Invariant — DNF Partition</div>
+      Three pointers <code>lo</code>, <code>mid</code>, <code>hi</code> divide the array into four regions:
+      <ul>
+        <li><code>array[1 .. lo-1]</code> — Red (elements &lt; pivot)</li>
+        <li><code>array[lo .. mid-1]</code> — White (elements = pivot)</li>
+        <li><code>array[mid .. hi]</code> — Unknown (not yet classified)</li>
+        <li><code>array[hi+1 .. n]</code> — Blue (elements &gt; pivot)</li>
+      </ul>
+      Each iteration inspects <code>array[mid]</code> and shrinks the unknown region by one.
+    </div>
+
+    <p>
+      At each step we look at <code>array[mid]</code> and handle three cases:
+    </p>
+    <ul>
+      <li><strong>Red (array[mid] &lt; pivot):</strong> Swap with <code>array[lo]</code>, increment both <code>lo</code> and <code>mid</code>. Red region grows, white region stays the same size (its left boundary shifts right).</li>
+      <li><strong>White (array[mid] = pivot):</strong> Already in place. Just increment <code>mid</code>. White region grows.</li>
+      <li><strong>Blue (array[mid] &gt; pivot):</strong> Swap with <code>array[hi]</code>, decrement <code>hi</code>. Blue region grows. <em>Do not</em> increment <code>mid</code> — the newly swapped element is still unknown.</li>
+    </ul>
+
+    <div class="algo-header">
+      Algorithm 17 — Dutch National Flag Partition
+      <span class="algo-complexity">O(n) time · O(1) space</span>
+    </div>
+<pre class="code-block has-header">function PARTITION(array[1..n], pivot):
+    lo  = 1
+    mid = 1
+    hi  = n
+
+    while mid &lt;= hi do:
+        if array[mid] &lt; pivot then:      // Red case
+            swap(array[mid], array[lo])
+            lo  += 1
+            mid += 1
+        elif array[mid] = pivot then:    // White case (already in place)
+            mid += 1
+        else:                            // Blue case (array[mid] &gt; pivot)
+            swap(array[mid], array[hi])
+            hi -= 1
+            // do NOT advance mid: re-examine the newly swapped element
+
+    return lo, mid    // lo = start of white region, mid = start of blue region</pre>
+
+<div id="vz17-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:13px;font-weight:700;color:#f0883e;">Algorithm 17 — Dutch National Flag</span>
+    <span style="font-size:11px;color:#8b949e;font-family:monospace;">O(n) time · O(1) space</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:14px 16px;border-right:1px solid #30363d;">
+      <svg id="vz17svg" viewBox="0 0 560 220" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+      <div id="vz17lbl" style="font-size:11px;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;font-family:monospace;">READY</div>
+      <div id="vz17txt" style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;">Input [2,0,1,2,1,0,2,0,1], pivot=1. Blue=&lt;1, Grey==1, Red=&gt;1. Press Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:48px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">lo</div>
+          <div id="vz17lo" style="font-size:1.2em;font-weight:700;color:#58a6ff;">0</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:48px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">mid</div>
+          <div id="vz17mid" style="font-size:1.2em;font-weight:700;color:#c9d1d9;">0</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:48px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">hi</div>
+          <div id="vz17hi" style="font-size:1.2em;font-weight:700;color:#f85149;">8</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <button onclick="vz17step(-1)" id="vz17prev" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;" disabled>&#9664; Prev</button>
+        <button onclick="vz17step(1)" id="vz17next" style="background:#1f6feb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Next &#9654;</button>
+        <button onclick="vz17reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var ORIG=[2,0,1,2,1,0,2,0,1], PIVOT=1;
+  var steps=[];
+  (function(){
+    var a=ORIG.slice(), n=a.length;
+    var lo=0,mid=0,hi=n-1;
+    steps.push({arr:a.slice(),lo:lo,mid:mid,hi:hi,phase:'init',label:'SETUP',text:'Array [2,0,1,2,1,0,2,0,1], pivot=1. lo=0, mid=0, hi=8. Full array is unknown (grey).'});
+    var iter=0;
+    while(mid<=hi && iter<80){
+      iter++;
+      var v=a[mid];
+      if(v<PIVOT){
+        steps.push({arr:a.slice(),lo:lo,mid:mid,hi:hi,phase:'red',label:'RED CASE',text:'arr[mid='+mid+']='+v+' < pivot('+PIVOT+'). Swap arr['+mid+'] ↔ arr['+lo+'], lo++, mid++.'});
+        var tmp=a[lo];a[lo]=a[mid];a[mid]=tmp;
+        lo++;mid++;
+        steps.push({arr:a.slice(),lo:lo,mid:mid,hi:hi,phase:'after',label:'AFTER',text:'Swapped. lo='+lo+', mid='+mid+', hi='+hi+'.'});
+      } else if(v===PIVOT){
+        steps.push({arr:a.slice(),lo:lo,mid:mid,hi:hi,phase:'white',label:'WHITE CASE',text:'arr[mid='+mid+']='+v+' = pivot. Already in place. mid++.'});
+        mid++;
+        steps.push({arr:a.slice(),lo:lo,mid:mid,hi:hi,phase:'after',label:'AFTER',text:'mid='+mid+', lo='+lo+', hi='+hi+'.'});
+      } else {
+        steps.push({arr:a.slice(),lo:lo,mid:mid,hi:hi,phase:'blue',label:'BLUE CASE',text:'arr[mid='+mid+']='+v+' > pivot('+PIVOT+'). Swap arr['+mid+'] ↔ arr['+hi+'], hi--. Do NOT advance mid.'});
+        var tmp2=a[mid];a[mid]=a[hi];a[hi]=tmp2;
+        hi--;
+        steps.push({arr:a.slice(),lo:lo,mid:mid,hi:hi,phase:'after',label:'AFTER',text:'Swapped. lo='+lo+', mid='+mid+', hi='+hi+'.'});
+      }
+    }
+    steps.push({arr:a.slice(),lo:lo,mid:mid,hi:hi,phase:'done',label:'DONE',text:'mid('+mid+') > hi('+hi+'). Partition complete! [0..'+(lo-1)+']<1, ['+lo+'..'+(mid-1)+']=1, ['+mid+'..'+(n-1)+']>1.'});
+  })();
+  var cur=-1;
+  var svg=document.getElementById('vz17svg');
+  var NS='http://www.w3.org/2000/svg';
+  function mk(tag,at){var e=document.createElementNS(NS,tag);for(var k in at)e.setAttribute(k,at[k]);return e;}
+  function cellColor(v,i,s){
+    if(s.phase==='done'){
+      if(v<PIVOT)return{f:'#58a6ff33',s:'#58a6ff'};
+      if(v===PIVOT)return{f:'#8b949e33',s:'#8b949e'};
+      return{f:'#f8514933',s:'#f85149'};
+    }
+    if(i<s.lo)return{f:'#58a6ff33',s:'#58a6ff'};
+    if(i>=s.lo && i<s.mid)return{f:'#8b949e33',s:'#8b949e'};
+    if(i>s.hi)return{f:'#f8514933',s:'#f85149'};
+    if(i===s.mid)return{f:'#3fb95033',s:'#3fb950'};
+    return{f:'#21262d',s:'#555'};
+  }
+  function draw(s){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    svg.appendChild(mk('rect',{x:0,y:0,width:560,height:220,fill:'#0d1117'}));
+    var n=s.arr.length, bw=46, bh=40, by=50, bx0=30;
+    for(var i=0;i<n;i++){
+      var x=bx0+i*bw;
+      var c=cellColor(s.arr[i],i,s);
+      var sw=(i===s.mid&&s.phase!=='done')?'2.5':'1.5';
+      svg.appendChild(mk('rect',{x:x+2,y:by,width:bw-4,height:bh,fill:c.f,stroke:c.s,'stroke-width':sw,rx:'4'}));
+      var tv=mk('text',{x:x+bw/2,y:by+bh/2+6,'text-anchor':'middle',fill:'#c9d1d9','font-size':'15','font-family':'monospace','font-weight':'700'});
+      tv.textContent=s.arr[i];svg.appendChild(tv);
+      var ix=mk('text',{x:x+bw/2,y:by-8,'text-anchor':'middle',fill:'#8b949e','font-size':'10','font-family':'monospace'});
+      ix.textContent=i;svg.appendChild(ix);
+    }
+    // Pointer arrows below array
+    function ptr(pos,col,lbl,yoff){
+      if(pos<0||pos>=n)return;
+      var cx=bx0+pos*bw+bw/2, cy=by+bh+10+yoff;
+      svg.appendChild(mk('polygon',{points:cx+','+cy+' '+(cx-7)+','+(cy+16)+' '+(cx+7)+','+(cy+16),fill:col}));
+      var t=mk('text',{x:cx,y:cy+28,'text-anchor':'middle',fill:col,'font-size':'11','font-family':'monospace','font-weight':'700'});
+      t.textContent=lbl;svg.appendChild(t);
+    }
+    ptr(s.lo,'#58a6ff','lo',0);
+    ptr(s.mid,'#3fb950','mid',s.mid===s.lo?18:0);
+    ptr(s.hi,'#f85149','hi',s.hi===s.mid||s.hi===s.lo?36:0);
+    // Region labels
+    var regions=[{start:0,end:s.lo-1,col:'#58a6ff',lbl:'< pivot'},{start:s.lo,end:s.mid-1,col:'#8b949e',lbl:'= pivot'},{start:s.mid,end:s.hi,col:'#555',lbl:'unknown'},{start:s.hi+1,end:n-1,col:'#f85149',lbl:'> pivot'}];
+    regions.forEach(function(r){
+      if(r.start>r.end)return;
+      var mx=bx0+((r.start+r.end)/2)*bw+bw/2;
+      var rl=mk('text',{x:mx,y:by-20,'text-anchor':'middle',fill:r.col,'font-size':'10','font-family':'monospace'});
+      rl.textContent=r.lbl;svg.appendChild(rl);
+    });
+    // Legend
+    var leg=[['#58a6ff','< 1'],['#8b949e','= 1'],['#555','?'],['#f85149','> 1']];
+    leg.forEach(function(l,li){
+      svg.appendChild(mk('rect',{x:10+li*90,y:198,width:11,height:11,fill:l[0]+'44',stroke:l[0],'stroke-width':'1',rx:'2'}));
+      var lt=mk('text',{x:25+li*90,y:207,fill:'#8b949e','font-size':'10','font-family':'monospace'});lt.textContent=l[1];svg.appendChild(lt);
+    });
+    document.getElementById('vz17lo').textContent=s.lo;
+    document.getElementById('vz17mid').textContent=s.mid;
+    document.getElementById('vz17hi').textContent=s.hi;
+    document.getElementById('vz17lbl').textContent=s.label;
+    document.getElementById('vz17txt').textContent=s.text;
+    document.getElementById('vz17prev').disabled=(cur<=0);
+    document.getElementById('vz17next').disabled=(cur>=steps.length-1);
+  }
+  window.vz17step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    draw(steps[cur]);
+  };
+  window.vz17reset=function(){
+    cur=-1;
+    draw({arr:ORIG.slice(),lo:0,mid:0,hi:8,phase:'init',label:'READY',text:'Input [2,0,1,2,1,0,2,0,1], pivot=1. Blue=<1, Grey==1, Red=>1. Press Next.'});
+    document.getElementById('vz17lo').textContent=0;
+    document.getElementById('vz17mid').textContent=0;
+    document.getElementById('vz17hi').textContent=8;
+    document.getElementById('vz17prev').disabled=true;
+    document.getElementById('vz17next').disabled=false;
+  };
+  vz17reset();
+})();
+</script>
+
+    <div class="callout insight">
+      <div class="callout-title">Why DNF Is Critical</div>
+      Without DNF (or an equivalent post-processing step), Quicksort degenerates to
+      <strong>O(n²) on arrays with all identical elements</strong>. With DNF, all copies of the pivot
+      value are placed in the middle in a single O(n) pass and are never touched again —
+      turning a worst-case scenario into a trivial O(n) operation. In practice, three-way
+      partitioning is essential for competitive Quicksort implementations.
+    </div>
+
+    <!-- QUICKSORT ALGORITHM -->
+    <h3 class="subsec" id="qs-algo">Quicksort Algorithm</h3>
+
+    <p>
+      Using either Hoare or DNF partitioning, the top-level Quicksort is straightforward.
+      The pivot is first placed in its final sorted position by the partition function, which returns
+      the pivot's final index <code>mid</code>. Both sides are then sorted recursively.
+    </p>
+
+    <div class="algo-header">
+      Algorithm 18 — Quicksort
+      <span class="algo-complexity">Avg O(n log n) · Worst O(n²)</span>
+    </div>
+<pre class="code-block has-header">function QUICKSORT(array[lo..hi]):
+    if hi &gt; lo then:
+        pivot = array[lo]                  // choose first element as pivot
+        mid   = PARTITION(array[lo..hi], pivot)
+        QUICKSORT(array[lo .. mid-1])      // sort left (elements &lt; pivot)
+        QUICKSORT(array[mid+1 .. hi])      // sort right (elements &gt; pivot)
+
+// Initial call:
+QUICKSORT(array, 1, len(array))</pre>
+
+<div id="vz18-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:13px;font-weight:700;color:#f0883e;">Algorithm 18 — Quicksort Recursion Tree</span>
+    <span style="font-size:11px;color:#8b949e;font-family:monospace;">Avg O(n log n) · Worst O(n²)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:14px 16px;border-right:1px solid #30363d;">
+      <svg id="vz18svg" viewBox="0 0 560 220" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+      <div id="vz18lbl" style="font-size:11px;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;font-family:monospace;">READY</div>
+      <div id="vz18txt" style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;">Input [3,6,8,10,1,2,1]. Watch how Quicksort partitions recursively. Press Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Depth</div>
+          <div id="vz18depth" style="font-size:1.2em;font-weight:700;color:#c9d1d9;">0</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Sorted</div>
+          <div id="vz18sorted" style="font-size:1.2em;font-weight:700;color:#3fb950;">0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <button onclick="vz18step(-1)" id="vz18prev" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;" disabled>&#9664; Prev</button>
+        <button onclick="vz18step(1)" id="vz18next" style="background:#1f6feb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Next &#9654;</button>
+        <button onclick="vz18reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  // Recursion tree steps for [3,6,8,10,1,2,1]
+  // We show key states: initial, after each partition, base cases, final
+  var steps=[
+    {depth:0,sorted:0,label:'INITIAL',text:'QUICKSORT([3,6,8,10,1,2,1]). Depth 0. Pick pivot=3 (first element).',
+     nodes:[{arr:[3,6,8,10,1,2,1],x:280,y:20,active:true,done:false,pivot:null}]},
+    {depth:1,sorted:0,label:'PARTITION',text:'Partition around pivot=3: [1,2,1] | 3 | [6,8,10]. Pivot 3 placed at index 3.',
+     nodes:[{arr:[1,2,1,3,6,8,10],x:280,y:20,active:false,done:false,pivot:3},{arr:[1,2,1],x:150,y:75,active:true,done:false,pivot:null},{arr:[3],x:280,y:75,active:false,done:true,pivot:3},{arr:[6,8,10],x:410,y:75,active:false,done:false,pivot:null}]},
+    {depth:2,sorted:1,label:'RECURSE LEFT',text:'QUICKSORT([1,2,1]). Pick pivot=1. Partition: [] | 1 | [2,1] → [1,1,2]. Pivot at idx 0.',
+     nodes:[{arr:[1,2,1,3,6,8,10],x:280,y:20,active:false,done:false,pivot:3},{arr:[1,1,2],x:150,y:75,active:false,done:false,pivot:1},{arr:[3],x:280,y:75,active:false,done:true,pivot:3},{arr:[6,8,10],x:410,y:75,active:false,done:false,pivot:null},{arr:[],x:80,y:130,active:false,done:true,pivot:null},{arr:[1],x:150,y:130,active:false,done:true,pivot:1},{arr:[1,2],x:220,y:130,active:true,done:false,pivot:null}]},
+    {depth:3,sorted:3,label:'BASE CASES',text:'[1,2] → pivot=1, partitions to [1]|[2]. Both base cases. Left [1,1,2] fully sorted.',
+     nodes:[{arr:[1,2,1,3,6,8,10],x:280,y:20,active:false,done:false,pivot:3},{arr:[1,1,2],x:150,y:75,active:false,done:true,pivot:1},{arr:[3],x:280,y:75,active:false,done:true,pivot:3},{arr:[6,8,10],x:410,y:75,active:true,done:false,pivot:null},{arr:[],x:80,y:130,active:false,done:true,pivot:null},{arr:[1],x:150,y:130,active:false,done:true,pivot:1},{arr:[1],x:200,y:130,active:false,done:true,pivot:null},{arr:[2],x:240,y:130,active:false,done:true,pivot:null}]},
+    {depth:2,sorted:3,label:'RECURSE RIGHT',text:'QUICKSORT([6,8,10]). Pivot=6. Partition: [] | 6 | [8,10]. Pivot 6 placed.',
+     nodes:[{arr:[1,1,2,3,6,8,10],x:280,y:20,active:false,done:false,pivot:3},{arr:[1,1,2],x:150,y:75,active:false,done:true,pivot:null},{arr:[3],x:280,y:75,active:false,done:true,pivot:3},{arr:[6,8,10],x:410,y:75,active:false,done:false,pivot:6},{arr:[],x:350,y:130,active:false,done:true,pivot:null},{arr:[6],x:410,y:130,active:false,done:true,pivot:6},{arr:[8,10],x:470,y:130,active:true,done:false,pivot:null}]},
+    {depth:3,sorted:5,label:'FINAL',text:'[8,10] → pivot=8, [8]|[10]. Both trivially sorted. All done!',
+     nodes:[{arr:[1,1,2,3,6,8,10],x:280,y:20,active:false,done:true,pivot:null},{arr:[1,1,2],x:150,y:75,active:false,done:true,pivot:null},{arr:[3],x:280,y:75,active:false,done:true,pivot:3},{arr:[6,8,10],x:410,y:75,active:false,done:true,pivot:null},{arr:[8],x:450,y:130,active:false,done:true,pivot:8},{arr:[10],x:490,y:130,active:false,done:true,pivot:null}]}
+  ];
+  var cur=-1;
+  var svg=document.getElementById('vz18svg');
+  var NS='http://www.w3.org/2000/svg';
+  function mk(tag,at){var e=document.createElementNS(NS,tag);for(var k in at)e.setAttribute(k,at[k]);return e;}
+  function drawNode(n){
+    var r=14, fx=n.x, fy=n.y;
+    var arr=n.arr;
+    if(!arr||arr.length===0){
+      // empty array — draw small circle
+      var c=mk('circle',{cx:fx,cy:fy+r,r:10,fill:'#21262d',stroke:'#30363d','stroke-width':'1.2'});
+      svg.appendChild(c);
+      var t=mk('text',{x:fx,y:fy+r+4,'text-anchor':'middle',fill:'#8b949e','font-size':'9','font-family':'monospace'});
+      t.textContent='[]';svg.appendChild(t);
+      return;
+    }
+    var bw=Math.min(22, Math.floor(120/arr.length)), bh=20;
+    var totalW=arr.length*bw;
+    var startX=fx-totalW/2;
+    for(var i=0;i<arr.length;i++){
+      var bx=startX+i*bw, by=fy;
+      var fc='#21262d', sc='#555';
+      if(n.done){fc='#3fb95022';sc='#3fb950';}
+      else if(n.active){fc='#58a6ff22';sc='#58a6ff';}
+      if(n.pivot!==null && arr[i]===n.pivot && n.done){fc='#f0883e33';sc='#f0883e';}
+      svg.appendChild(mk('rect',{x:bx+1,y:by,width:bw-2,height:bh,fill:fc,stroke:sc,'stroke-width':'1',rx:'2'}));
+      var tv=mk('text',{x:bx+bw/2,y:by+13,'text-anchor':'middle',fill:'#c9d1d9','font-size':'10','font-family':'monospace','font-weight':'700'});
+      tv.textContent=arr[i];svg.appendChild(tv);
+    }
+  }
+  function draw(s){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    svg.appendChild(mk('rect',{x:0,y:0,width:560,height:220,fill:'#0d1117'}));
+    // Draw connecting lines first
+    if(s.nodes.length>1){
+      // Lines from root to children
+      var root=s.nodes[0];
+      for(var i=1;i<s.nodes.length;i++){
+        var ch=s.nodes[i];
+        var lx1=root.x, ly1=root.y+20;
+        var lx2=ch.x, ly2=ch.y;
+        svg.appendChild(mk('line',{x1:lx1,y1:ly1,x2:lx2,y2:ly2,stroke:'#30363d','stroke-width':'1','stroke-dasharray':'3,3'}));
+      }
+    }
+    // Additional level 3 connections
+    if(s.nodes.length>7){
+      var lv2nodes=s.nodes.slice(1,4);
+      var lv3nodes=s.nodes.slice(4);
+      if(lv2nodes[0]){
+        lv3nodes.forEach(function(ch){
+          var p=lv2nodes[0];
+          if(Math.abs(ch.x-p.x)<100){
+            svg.appendChild(mk('line',{x1:p.x,y1:p.y+20,x2:ch.x,y2:ch.y,stroke:'#30363d','stroke-width':'1','stroke-dasharray':'3,3'}));
+          }
+        });
+      }
+    }
+    s.nodes.forEach(function(n){drawNode(n);});
+    // Final sorted array at bottom if done
+    if(s.label==='FINAL'){
+      var fa=[1,1,2,3,6,8,10];
+      var bw=36, startX=280-fa.length*bw/2;
+      var lbl=mk('text',{x:280,y:185,'text-anchor':'middle',fill:'#3fb950','font-size':'10','font-family':'monospace'});
+      lbl.textContent='Sorted:';svg.appendChild(lbl);
+      for(var i=0;i<fa.length;i++){
+        svg.appendChild(mk('rect',{x:startX+i*bw+1,y:190,width:bw-2,height:22,fill:'#3fb95022',stroke:'#3fb950','stroke-width':'1.2',rx:'3'}));
+        var tv=mk('text',{x:startX+i*bw+bw/2,y:205,'text-anchor':'middle',fill:'#3fb950','font-size':'12','font-family':'monospace','font-weight':'700'});
+        tv.textContent=fa[i];svg.appendChild(tv);
+      }
+    }
+    document.getElementById('vz18depth').textContent=s.depth;
+    document.getElementById('vz18sorted').textContent=s.sorted;
+    document.getElementById('vz18lbl').textContent=s.label;
+    document.getElementById('vz18txt').textContent=s.text;
+    document.getElementById('vz18prev').disabled=(cur<=0);
+    document.getElementById('vz18next').disabled=(cur>=steps.length-1);
+  }
+  window.vz18step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    draw(steps[cur]);
+  };
+  window.vz18reset=function(){
+    cur=-1;
+    draw({depth:0,sorted:0,label:'READY',text:'Input [3,6,8,10,1,2,1]. Watch how Quicksort partitions recursively. Press Next.',
+      nodes:[{arr:[3,6,8,10,1,2,1],x:280,y:20,active:true,done:false,pivot:null}]});
+    document.getElementById('vz18prev').disabled=true;
+    document.getElementById('vz18next').disabled=false;
+  };
+  vz18reset();
+})();
+</script>
+
+    <div class="callout insight">
+      <div class="callout-title">Space Optimisation — Tail-Call on the Larger Half</div>
+      Quicksort is <em>not technically in-place</em> even with in-place partitioning, because
+      the recursion stack uses O(log n)–O(n) space. To guarantee O(log n) stack space,
+      always recurse on the <strong>smaller</strong> half first. Then either use tail-call optimisation
+      or replace the second recursive call with a loop. This ensures the recursion depth
+      is bounded by O(log n) regardless of pivot quality.
+    </div>
+
+    <!-- COMPLEXITY ANALYSIS -->
+    <h3 class="subsec" id="qs-complexity">Complexity Analysis</h3>
+
+    <h4 class="subsubsec">Best Case — O(n log n)</h4>
+    <p>
+      The best case arises when every pivot chosen is the exact median of the remaining
+      subarray, resulting in perfectly balanced partitions. The recursion tree has height
+      log&#8322;(n) and each level does O(n) total partitioning work, giving
+      <span class="complexity-tag">T(n) = 2T(n/2) + O(n) = O(n log n)</span>.
+    </p>
+
+    <h4 class="subsubsec">Worst Case — O(n²)</h4>
+    <p>
+      The worst case arises when the pivot is always the minimum or maximum element —
+      for example, if we always pick the first element as pivot on an already-sorted array.
+      Each partition splits the array into sizes 0 and n−1, giving O(n) levels of recursion.
+    </p>
+    <div class="callout warn">
+      <div class="callout-title">Worst Case Trigger</div>
+      <strong>Sorted or reverse-sorted input with a fixed pivot choice (e.g., always pick first element)</strong>
+      causes O(n²) behaviour. The recurrence is:
+      <br><br>
+      <code>T(n) = T(n-1) + T(0) + cn = T(n-1) + cn</code>
+      <br><br>
+      Telescoping: T(n) = cn + c(n−1) + ... + c·1 = c·n(n+1)/2 = <strong>O(n²)</strong>.
+    </div>
+
+    <h4 class="subsubsec">Average Case — O(n log n)</h4>
+    <p>
+      The average case is O(n log n). Two proofs are given in the course notes:
+    </p>
+
+    <p><strong>Coin-flip (intuitive) proof:</strong></p>
+    <p>
+      Define a "good pivot" as one in the middle 50% of the array (between the 25th and 75th percentile).
+      A good pivot produces partitions of sizes at most 0.25n and 0.75n. The deepest branch of the
+      recursion tree has length at most log<sub>4/3</sub>(n) = O(log n). Since half of all possible pivots
+      are "good", we expect every second pivot to be good. The expected tree height is therefore
+      2·log<sub>4/3</sub>(n) = O(log n). Each level does O(n) work, so the average case is O(n log n).
+    </p>
+
+    <p><strong>Recurrence (rigorous) proof sketch:</strong></p>
+    <p>
+      If the k-th smallest element is selected as pivot, the recurrence is:
+    </p>
+
+<pre class="code-block">E[T(n)] = n + 1 + (1/n) * sum_{k=1}^{n} (E[T(k-1)] + E[T(n-k)])
+        = n + 1 + (2/n) * sum_{k=1}^{n} E[T(k-1)]</pre>
+
+    <p>
+      Using the substitution method (multiply by n, write the equation for n−1, subtract,
+      and telescope), one arrives at:
+    </p>
+<pre class="code-block">E[T(n)] / (n+1) = E[T(n-1)] / n + 2/(n+1)
+               = sum_{k=1}^{n} 2/(k+1)   (telescoping)
+               = O(log n)
+
+Therefore  E[T(n)] = O(n log n).</pre>
+
+    <!-- RANDOMIZED QUICKSORT -->
+    <h3 class="subsec" id="randomized">Randomised Quicksort</h3>
+
+    <p>
+      The worst case is triggered by adversarial input when using a deterministic pivot rule
+      (e.g., always pick the first element). The fix: <strong>select the pivot uniformly at random</strong>
+      from the subarray before each partitioning step.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Randomised Quicksort</div>
+      With a uniformly random pivot, the <strong>expected</strong> time complexity of Quicksort is
+      <span class="complexity-tag">O(n log n)</span> for any input — including sorted arrays.
+    </div>
+
+    <p>
+      Why does randomisation help? A deterministic adversary can no longer construct a bad
+      input for a fixed pivot rule, because the pivot selection is unpredictable. The expected
+      behaviour of randomised Quicksort matches the average-case analysis above — O(n log n)
+      regardless of input order. In practice, a simple swap of a random element into the first
+      position before partitioning is sufficient.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Practical Note</div>
+      Randomised Quicksort is the algorithm of choice in most real-world implementations.
+      Although the worst case is still theoretically O(n²), the probability of encountering it
+      is astronomically small for large n. Introsort (used in C++ STL) combines Quicksort
+      with Heapsort as a fallback to guarantee O(n log n) in the absolute worst case.
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 2 – ORDER STATISTICS AND SELECTION
+  ════════════════════════════════════════════════════════════════ -->
+  <section class="content-section" id="order-stats">
+    <h2 class="sec-title"><span class="sec-num">Ch. 4</span> Order Statistics and Selection</h2>
+  <button class="review-btn" data-week="3" data-sec="order-stats"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — k-th Order Statistic</div>
+      The <strong>k-th order statistic</strong> of a sequence of n elements is the k-th smallest element.
+      <ul>
+        <li>1st order statistic = minimum.</li>
+        <li>n-th order statistic = maximum.</li>
+        <li>Median = the ⌊(n+1)/2⌋-th order statistic (or the average of the two middle elements for even n).</li>
+      </ul>
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">The Selection Problem</div>
+      Given an unsorted sequence of n elements and a value k (1 &le; k &le; n), find the
+      k-th smallest element without necessarily sorting the entire sequence.
+      <br><br>
+      <strong>Naive solution:</strong> Sort then index → O(n log n).<br>
+      <strong>Goal:</strong> Can we do better — specifically O(n)?
+    </div>
+
+    <!-- MIN/MAX -->
+    <h3 class="subsec" id="minmax">4.1 Finding Minimums and Maximums</h3>
+
+    <p>
+      Finding just the minimum (or just the maximum) is straightforward in O(n) with a single
+      linear scan, using exactly <strong>n − 1 comparisons</strong>. This is optimal: every comparison
+      can only eliminate one element from consideration, so we need at least n − 1 comparisons
+      to identify the minimum among n elements.
+    </p>
+
+    <div class="algo-header">
+      Algorithm 21 — Select Minimum
+      <span class="algo-complexity">O(n) · n-1 comparisons</span>
+    </div>
+<pre class="code-block has-header">function SELECT_MIN(array[1..n]):
+    min = array[1]
+    for i = 2 to n do:
+        if array[i] &lt; min then:
+            min = array[i]
+    return min</pre>
+
+<div id="vz21-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:13px;font-weight:700;color:#f0883e;">Algorithm 21 — Select Minimum</span>
+    <span style="font-size:11px;color:#8b949e;font-family:monospace;">O(n) · n−1 comparisons</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:14px 16px;border-right:1px solid #30363d;">
+      <svg id="vz21svg" viewBox="0 0 560 220" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+      <div id="vz21lbl" style="font-size:11px;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;font-family:monospace;">READY</div>
+      <div id="vz21txt" style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;">Input [3,1,4,1,5,9,2,6]. Orange arrow = current min. Blue = current element. Press Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Cur min</div>
+          <div id="vz21min" style="font-size:1.2em;font-weight:700;color:#f0883e;">—</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Step</div>
+          <div id="vz21step" style="font-size:1.2em;font-weight:700;color:#c9d1d9;">0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <button onclick="vz21step(-1)" id="vz21prev" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;" disabled>&#9664; Prev</button>
+        <button onclick="vz21step(1)" id="vz21next" style="background:#1f6feb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Next &#9654;</button>
+        <button onclick="vz21reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var ARR=[3,1,4,1,5,9,2,6];
+  var steps=[];
+  (function(){
+    var n=ARR.length, mn=ARR[0];
+    steps.push({cur:0,min:mn,minIdx:0,stepN:0,label:'INIT',text:'min = arr[0] = '+mn+'. Start scanning from index 1.'});
+    for(var i=1;i<n;i++){
+      var v=ARR[i];
+      var prev=mn;
+      var changed=v<mn;
+      if(changed)mn=v;
+      steps.push({cur:i,min:mn,minIdx:changed?i:steps[steps.length-1].minIdx,stepN:i,label:'i='+i,
+        text:'arr['+i+']='+v+(changed?' < min('+prev+') → update min='+v:' ≥ min('+mn+') → no change')+'.'});
+    }
+    steps.push({cur:-1,min:mn,minIdx:steps[steps.length-1].minIdx,stepN:n-1,label:'DONE',text:'Scan complete. Minimum = '+mn+'. Used '+(n-1)+' comparisons.'});
+  })();
+  var cur=-1;
+  var svg=document.getElementById('vz21svg');
+  var NS='http://www.w3.org/2000/svg';
+  function mk(tag,at){var e=document.createElementNS(NS,tag);for(var k in at)e.setAttribute(k,at[k]);return e;}
+  function draw(s){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    svg.appendChild(mk('rect',{x:0,y:0,width:560,height:220,fill:'#0d1117'}));
+    var n=ARR.length, bw=52, bh=44, by=60, bx0=30;
+    for(var i=0;i<n;i++){
+      var x=bx0+i*bw;
+      var isCur=(i===s.cur), isMin=(i===s.minIdx), isDone=(s.cur===-1);
+      var fc='#21262d', sc='#555', sw='1.5';
+      if(isDone&&i===s.minIdx){fc='#f0883e44';sc='#f0883e';sw='2.5';}
+      else if(isCur&&isMin){fc='#f0883e44';sc='#f0883e';sw='2.5';}
+      else if(isCur){fc='#58a6ff33';sc='#58a6ff';sw='2.5';}
+      else if(isMin){fc='#f0883e22';sc='#f0883e';sw='2';}
+      else if(!isDone && i<s.cur){fc='#21262d';sc='#30363d';}
+      svg.appendChild(mk('rect',{x:x+2,y:by,width:bw-4,height:bh,fill:fc,stroke:sc,'stroke-width':sw,rx:'4'}));
+      var tv=mk('text',{x:x+bw/2,y:by+bh/2+6,'text-anchor':'middle',fill:'#c9d1d9','font-size':'16','font-family':'monospace','font-weight':'700'});
+      tv.textContent=ARR[i];svg.appendChild(tv);
+      var ix=mk('text',{x:x+bw/2,y:by-8,'text-anchor':'middle',fill:'#8b949e','font-size':'10','font-family':'monospace'});
+      ix.textContent=i;svg.appendChild(ix);
+    }
+    // Current element arrow (blue, above)
+    if(s.cur>=0&&s.cur<n){
+      var cx=bx0+s.cur*bw+bw/2, cy=by-18;
+      svg.appendChild(mk('polygon',{points:cx+','+cy+' '+(cx-7)+','+(cy-16)+' '+(cx+7)+','+(cy-16),fill:'#58a6ff'}));
+      var t=mk('text',{x:cx,y:cy-20,'text-anchor':'middle',fill:'#58a6ff','font-size':'10','font-family':'monospace'});
+      t.textContent='i';svg.appendChild(t);
+    }
+    // Min arrow (orange, below)
+    if(s.minIdx>=0){
+      var mx2=bx0+s.minIdx*bw+bw/2, my2=by+bh+10;
+      svg.appendChild(mk('polygon',{points:mx2+','+my2+' '+(mx2-7)+','+(my2+16)+' '+(mx2+7)+','+(my2+16),fill:'#f0883e'}));
+      var mt=mk('text',{x:mx2,y:my2+28,'text-anchor':'middle',fill:'#f0883e','font-size':'11','font-family':'monospace','font-weight':'700'});
+      mt.textContent='min';svg.appendChild(mt);
+    }
+    // Scanned bar
+    if(s.cur>0){
+      var scanW=(s.cur<n?s.cur:n)*bw-4;
+      svg.appendChild(mk('rect',{x:bx0+2,y:by+bh+48,width:scanW,height:4,fill:'#58a6ff66',rx:'2'}));
+      var sl=mk('text',{x:bx0+scanW/2,y:by+bh+60,'text-anchor':'middle',fill:'#8b949e','font-size':'9','font-family':'monospace'});
+      sl.textContent='scanned';svg.appendChild(sl);
+    }
+    document.getElementById('vz21min').textContent=s.min;
+    document.getElementById('vz21step').textContent=s.stepN;
+    document.getElementById('vz21lbl').textContent=s.label;
+    document.getElementById('vz21txt').textContent=s.text;
+    document.getElementById('vz21prev').disabled=(cur<=0);
+    document.getElementById('vz21next').disabled=(cur>=steps.length-1);
+  }
+  window.vz21step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    draw(steps[cur]);
+  };
+  window.vz21reset=function(){
+    cur=-1;
+    draw({cur:0,min:ARR[0],minIdx:0,stepN:0,label:'READY',text:'Input [3,1,4,1,5,9,2,6]. Orange arrow = current min. Blue = current element. Press Next.'});
+    document.getElementById('vz21min').textContent='—';
+    document.getElementById('vz21step').textContent='0';
+    document.getElementById('vz21prev').disabled=true;
+    document.getElementById('vz21next').disabled=false;
+  };
+  vz21reset();
+})();
+</script>
+
+    <h4 class="subsubsec">Finding Both Min and Max Simultaneously</h4>
+
+    <p>
+      A naive adaptation of the above would find both min and max in <strong>2n − 2</strong> comparisons
+      (two comparisons per element). However, we can do better using a <em>pairwise</em> strategy.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Simultaneous Min-Max</div>
+      Both the minimum and maximum of a sequence of n elements can be found using
+      at most <strong>3⌊n/2⌋ − 2</strong> ≈ <strong>1.5n comparisons</strong>, which is optimal (this is the lower bound).
+    </div>
+
+    <p>
+      <strong>The trick:</strong> Process elements in <em>pairs</em>. For each pair, first compare the two elements
+      with each other (1 comparison), then compare the smaller with the current minimum
+      (1 comparison) and the larger with the current maximum (1 comparison). This gives
+      3 comparisons per pair (3n/2 total) rather than 4 (2n total) — saving 25% of comparisons.
+    </p>
+
+    <div class="algo-header">
+      Algorithm 22 — Select Min and Max Simultaneously
+      <span class="algo-complexity">O(n) · ~1.5n comparisons</span>
+    </div>
+<pre class="code-block has-header">function SELECT_MINMAX(array[1..n]):
+    min = array[1]
+    max = array[1]
+
+    // start at index 2 if n is odd (already initialised with array[1])
+    // start at index 1 if n is even (pair up all elements)
+    for i = 1 + (n mod 2) to n, step 2 do:
+        if array[i] &lt; array[i+1] then:       // 1 comparison
+            if array[i]   &lt; min then min = array[i]      // 1 comparison
+            if array[i+1] &gt; max then max = array[i+1]    // 1 comparison
+        else:
+            if array[i]   &gt; max then max = array[i]      // 1 comparison
+            if array[i+1] &lt; min then min = array[i+1]    // 1 comparison
+
+    return min, max    // total: at most 3*(n/2) = 1.5n comparisons</pre>
+
+<div id="vz22-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:13px;font-weight:700;color:#f0883e;">Algorithm 22 — Select Min and Max</span>
+    <span style="font-size:11px;color:#8b949e;font-family:monospace;">O(n) · ~1.5n comparisons</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:14px 16px;border-right:1px solid #30363d;">
+      <svg id="vz22svg" viewBox="0 0 560 220" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+      <div id="vz22lbl" style="font-size:11px;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;font-family:monospace;">READY</div>
+      <div id="vz22txt" style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;">Input [3,1,4,1,5,9,2,6]. Process in pairs. Blue=min, Orange=max. Press Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Cur min</div>
+          <div id="vz22min" style="font-size:1.2em;font-weight:700;color:#58a6ff;">—</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Cur max</div>
+          <div id="vz22max" style="font-size:1.2em;font-weight:700;color:#f0883e;">—</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Cmps</div>
+          <div id="vz22cmps" style="font-size:1.2em;font-weight:700;color:#c9d1d9;">0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <button onclick="vz22step(-1)" id="vz22prev" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;" disabled>&#9664; Prev</button>
+        <button onclick="vz22step(1)" id="vz22next" style="background:#1f6feb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Next &#9654;</button>
+        <button onclick="vz22reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var ARR=[3,1,4,1,5,9,2,6];
+  var steps=[];
+  (function(){
+    var n=ARR.length, mn=ARR[0], mx=ARR[0], cmps=0;
+    steps.push({mn:mn,mx:mx,cmps:cmps,pair:[-1,-1],minIdx:0,maxIdx:0,label:'INIT',text:'min=arr[0]='+mn+', max=arr[0]='+mn+'. n='+n+' (even) → start at i=0, step 2.'});
+    var start=n%2===1?1:0;
+    for(var i=start;i<n;i+=2){
+      var a=ARR[i], b=ARR[i+1];
+      cmps++;
+      var prevMn=mn, prevMx=mx;
+      var smaller,larger,sIdx,lIdx;
+      if(a<b){smaller=a;larger=b;sIdx=i;lIdx=i+1;}
+      else{smaller=b;larger=a;sIdx=i+1;lIdx=i;}
+      steps.push({mn:mn,mx:mx,cmps:cmps,pair:[i,i+1],minIdx:steps[steps.length-1].minIdx,maxIdx:steps[steps.length-1].maxIdx,label:'PAIR '+i+'–'+(i+1),text:'Compare arr['+i+']='+a+' vs arr['+(i+1)+']='+b+'. Smaller='+smaller+', Larger='+larger+'. Compare smaller vs min, larger vs max.'});
+      var mnUpdated=false,mxUpdated=false;
+      cmps++;
+      if(smaller<mn){mn=smaller; mnUpdated=true;}
+      cmps++;
+      if(larger>mx){mx=larger; mxUpdated=true;}
+      var parts=[];
+      if(mnUpdated)parts.push('min→'+mn);
+      if(mxUpdated)parts.push('max→'+mx);
+      if(!parts.length)parts.push('no updates');
+      var newMinIdx=mnUpdated?sIdx:steps[steps.length-1].minIdx;
+      var newMaxIdx=mxUpdated?lIdx:steps[steps.length-1].maxIdx;
+      steps.push({mn:mn,mx:mx,cmps:cmps,pair:[-1,-1],minIdx:newMinIdx,maxIdx:newMaxIdx,label:'UPDATE',text:'3 comparisons this pair. '+parts.join(', ')+'. min='+mn+', max='+mx+', total cmps='+cmps+'.'});
+    }
+    steps.push({mn:mn,mx:mx,cmps:cmps,pair:[-1,-1],minIdx:steps[steps.length-1].minIdx,maxIdx:steps[steps.length-1].maxIdx,label:'DONE',text:'Done! min='+mn+', max='+mx+'. Used '+cmps+' comparisons vs '+(2*n-2)+' naive. Saved '+(2*n-2-cmps)+' comparisons.'});
+  })();
+  var cur=-1;
+  var svg=document.getElementById('vz22svg');
+  var NS='http://www.w3.org/2000/svg';
+  function mk(tag,at){var e=document.createElementNS(NS,tag);for(var k in at)e.setAttribute(k,at[k]);return e;}
+  function draw(s){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    svg.appendChild(mk('rect',{x:0,y:0,width:560,height:220,fill:'#0d1117'}));
+    var n=ARR.length, bw=52, bh=44, by=55, bx0=30;
+    for(var i=0;i<n;i++){
+      var x=bx0+i*bw;
+      var inPair=(s.pair[0]===i||s.pair[1]===i);
+      var isMin=(i===s.minIdx), isMax=(i===s.maxIdx);
+      var fc='#21262d', sc='#555', sw='1.5';
+      if(s.label==='DONE'){
+        if(isMin){fc='#58a6ff33';sc='#58a6ff';sw='2.5';}
+        else if(isMax){fc='#f0883e33';sc='#f0883e';sw='2.5';}
+      } else {
+        if(inPair){fc='#bc8cff22';sc='#bc8cff';sw='2.5';}
+        if(isMin&&!inPair){fc='#58a6ff22';sc='#58a6ff';}
+        if(isMax&&!inPair){fc='#f0883e22';sc='#f0883e';}
+      }
+      svg.appendChild(mk('rect',{x:x+2,y:by,width:bw-4,height:bh,fill:fc,stroke:sc,'stroke-width':sw,rx:'4'}));
+      var tv=mk('text',{x:x+bw/2,y:by+bh/2+6,'text-anchor':'middle',fill:'#c9d1d9','font-size':'16','font-family':'monospace','font-weight':'700'});
+      tv.textContent=ARR[i];svg.appendChild(tv);
+      var ix=mk('text',{x:x+bw/2,y:by-8,'text-anchor':'middle',fill:'#8b949e','font-size':'10','font-family':'monospace'});
+      ix.textContent=i;svg.appendChild(ix);
+    }
+    // Pair bracket
+    if(s.pair[0]>=0){
+      var p0=s.pair[0], p1=s.pair[1];
+      var bx0b=bx0+p0*bw+2, bx1b=bx0+p1*bw+bw-2;
+      var bry=by+bh+8;
+      svg.appendChild(mk('line',{x1:bx0b,y1:bry,x2:bx1b,y2:bry,stroke:'#bc8cff','stroke-width':'2'}));
+      svg.appendChild(mk('line',{x1:bx0b,y1:bry-5,x2:bx0b,y2:bry,stroke:'#bc8cff','stroke-width':'2'}));
+      svg.appendChild(mk('line',{x1:bx1b,y1:bry-5,x2:bx1b,y2:bry,stroke:'#bc8cff','stroke-width':'2'}));
+      var bt=mk('text',{x:(bx0b+bx1b)/2,y:bry+14,'text-anchor':'middle',fill:'#bc8cff','font-size':'10','font-family':'monospace'});
+      bt.textContent='comparing pair';svg.appendChild(bt);
+    }
+    // Min/Max arrows
+    if(s.minIdx>=0){
+      var mx2=bx0+s.minIdx*bw+bw/2, my2=by+bh+(s.pair[0]>=0?35:10);
+      svg.appendChild(mk('polygon',{points:mx2+','+my2+' '+(mx2-6)+','+(my2+14)+' '+(mx2+6)+','+(my2+14),fill:'#58a6ff'}));
+      var mt=mk('text',{x:mx2,y:my2+26,'text-anchor':'middle',fill:'#58a6ff','font-size':'10','font-family':'monospace'});
+      mt.textContent='min';svg.appendChild(mt);
+    }
+    if(s.maxIdx>=0&&s.maxIdx!==s.minIdx){
+      var mxX=bx0+s.maxIdx*bw+bw/2, mxY=by+bh+(s.pair[0]>=0?35:10);
+      svg.appendChild(mk('polygon',{points:mxX+','+mxY+' '+(mxX-6)+','+(mxY+14)+' '+(mxX+6)+','+(mxY+14),fill:'#f0883e'}));
+      var mxt=mk('text',{x:mxX,y:mxY+26,'text-anchor':'middle',fill:'#f0883e','font-size':'10','font-family':'monospace'});
+      mxt.textContent='max';svg.appendChild(mxt);
+    }
+    // Comparison counter bar
+    var maxCmps=2*n-2;
+    var barW=200, barX=320, barY=185;
+    svg.appendChild(mk('rect',{x:barX,y:barY,width:barW,height:10,fill:'#21262d',stroke:'#30363d','stroke-width':'1',rx:'3'}));
+    svg.appendChild(mk('rect',{x:barX,y:barY,width:Math.round(barW*(s.cmps/maxCmps)),height:10,fill:'#3fb950',rx:'3'}));
+    var bt2=mk('text',{x:barX+barW/2,y:barY+24,'text-anchor':'middle',fill:'#8b949e','font-size':'10','font-family':'monospace'});
+    bt2.textContent=s.cmps+' / '+maxCmps+' (naive) cmps';svg.appendChild(bt2);
+    svg.appendChild(mk('text',{x:barX,y:barY-4,fill:'#3fb950','font-size':'9','font-family':'monospace','text-anchor':'start'})).textContent='cmps used';
+    document.getElementById('vz22min').textContent=s.mn;
+    document.getElementById('vz22max').textContent=s.mx;
+    document.getElementById('vz22cmps').textContent=s.cmps;
+    document.getElementById('vz22lbl').textContent=s.label;
+    document.getElementById('vz22txt').textContent=s.text;
+    document.getElementById('vz22prev').disabled=(cur<=0);
+    document.getElementById('vz22next').disabled=(cur>=steps.length-1);
+  }
+  window.vz22step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    draw(steps[cur]);
+  };
+  window.vz22reset=function(){
+    cur=-1;
+    draw({mn:ARR[0],mx:ARR[0],cmps:0,pair:[-1,-1],minIdx:0,maxIdx:0,label:'READY',text:'Input [3,1,4,1,5,9,2,6]. Process in pairs. Blue=min, Orange=max. Press Next.'});
+    document.getElementById('vz22min').textContent='—';
+    document.getElementById('vz22max').textContent='—';
+    document.getElementById('vz22cmps').textContent='0';
+    document.getElementById('vz22prev').disabled=true;
+    document.getElementById('vz22next').disabled=false;
+  };
+  vz22reset();
+})();
+</script>
+
+    <!-- QUICKSELECT -->
+    <h3 class="subsec" id="quickselect">4.2 The Quickselect Algorithm</h3>
+
+    <p>
+      For the general k-th order statistic, the key insight from Quicksort is that after
+      partitioning, the pivot is in its final sorted position. If the pivot ends up at position
+      <code>mid</code>, then:
+    </p>
+    <ul>
+      <li>If <code>k = mid</code>: the pivot <em>is</em> the k-th order statistic. Done.</li>
+      <li>If <code>k &lt; mid</code>: the answer lies in the left sub-array. Discard the right.</li>
+      <li>If <code>k &gt; mid</code>: the answer lies in the right sub-array. Discard the left.</li>
+    </ul>
+
+    <p>
+      This means we only ever recurse into <strong>one</strong> of the two sub-arrays — unlike Quicksort
+      which recurses into both. In the best case this makes Quickselect O(n).
+    </p>
+
+    <div class="algo-header">
+      Algorithm 23 — Quickselect
+      <span class="algo-complexity">Avg O(n) · Worst O(n²)</span>
+    </div>
+<pre class="code-block has-header">function QUICKSELECT(array[lo..hi], k):
+    if hi &gt; lo then:
+        pivot = array[lo]                      // choose pivot (first element)
+        mid   = PARTITION(array[lo..hi], pivot)
+
+        if k &lt; mid then:
+            return QUICKSELECT(array[lo .. mid-1], k)   // answer in left half
+        elif k &gt; mid then:
+            return QUICKSELECT(array[mid+1 .. hi], k)   // answer in right half
+        else:
+            return array[k]                    // pivot IS the k-th element
+    else:
+        return array[k]                        // base case: single element</pre>
+
+<div id="vz23-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:13px;font-weight:700;color:#f0883e;">Algorithm 23 — Quickselect</span>
+    <span style="font-size:11px;color:#8b949e;font-family:monospace;">Avg O(n) · Worst O(n²)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:14px 16px;border-right:1px solid #30363d;">
+      <svg id="vz23svg" viewBox="0 0 560 220" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+      <div id="vz23lbl" style="font-size:11px;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;font-family:monospace;">READY</div>
+      <div id="vz23txt" style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;">Input [3,6,8,10,1,2,1], find 3rd smallest (k=3). Greys = discarded half. Press Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Target k</div>
+          <div id="vz23k" style="font-size:1.2em;font-weight:700;color:#bc8cff;">3</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Sub size</div>
+          <div id="vz23size" style="font-size:1.2em;font-weight:700;color:#c9d1d9;">7</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <button onclick="vz23step(-1)" id="vz23prev" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;" disabled>&#9664; Prev</button>
+        <button onclick="vz23step(1)" id="vz23next" style="background:#1f6feb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Next &#9654;</button>
+        <button onclick="vz23reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  // [3,6,8,10,1,2,1], k=3 (0-indexed: find element at sorted position 2, which is 2)
+  // Actually use 1-indexed k=3 meaning 3rd smallest
+  // Sorted: [1,1,2,3,6,8,10] → 3rd = 2
+  var ORIG=[3,6,8,10,1,2,1], K=2; // 0-indexed
+  var steps=[
+    {arr:[3,6,8,10,1,2,1],lo:0,hi:6,active:[0,1,2,3,4,5,6],pivot:-1,k:K,size:7,label:'INITIAL',text:'Array [3,6,8,10,1,2,1]. Find 3rd smallest (k=2 0-indexed). Pivot = arr[0]=3.'},
+    {arr:[1,1,2,3,6,8,10],lo:0,hi:6,active:[0,1,2,3,4,5,6],pivot:3,pivotIdx:3,k:K,size:7,label:'PARTITION',text:'Partition around pivot=3. Result: [1,1,2,3,6,8,10]. Pivot 3 lands at index 3 (mid=3). k=2 < mid=3 → recurse LEFT.'},
+    {arr:[1,1,2,3,6,8,10],lo:0,hi:2,active:[0,1,2],pivot:1,pivotIdx:0,discardRight:true,k:K,size:3,label:'DISCARD RIGHT',text:'Discard right half [3,6,8,10]. Recurse on [1,1,2] (lo=0, hi=2). Pivot=arr[0]=1. Partition → [1,1,2], pivot at idx 0. k=2 > mid=0 → recurse RIGHT.'},
+    {arr:[1,1,2,3,6,8,10],lo:1,hi:2,active:[1,2],pivot:1,pivotIdx:1,discardLeft:true,k:K,size:2,label:'DISCARD LEFT',text:'Discard left [1]. Recurse on [1,2] (lo=1, hi=2). Pivot=arr[1]=1. Partition: [1]|1|[2]. Pivot at idx 1. k=2 > mid=1 → recurse RIGHT.'},
+    {arr:[1,1,2,3,6,8,10],lo:2,hi:2,active:[2],pivot:2,pivotIdx:2,k:K,size:1,label:'FOUND!',text:'Recurse on [2] (lo=2, hi=2). Single element. k=2 = lo=2 = hi=2. Return arr[2]=2. The 3rd smallest is 2!'}
+  ];
+  var cur=-1;
+  var svg=document.getElementById('vz23svg');
+  var NS='http://www.w3.org/2000/svg';
+  function mk(tag,at){var e=document.createElementNS(NS,tag);for(var k in at)e.setAttribute(k,at[k]);return e;}
+  function draw(s){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    svg.appendChild(mk('rect',{x:0,y:0,width:560,height:220,fill:'#0d1117'}));
+    var n=s.arr.length, bw=56, bh=44, by=60, bx0=30;
+    var activeSet=new Set(s.active);
+    for(var i=0;i<n;i++){
+      var x=bx0+i*bw;
+      var isActive=activeSet.has(i), isPivot=(i===s.pivotIdx), isTarget=(i===K&&s.label==='FOUND!');
+      var fc='#21262d', sc='#555', sw='1.5';
+      if(!isActive){fc='#0d1117';sc='#30363d';}
+      else if(isTarget){fc='#3fb95044';sc='#3fb950';sw='2.5';}
+      else if(isPivot){fc='#f0883e44';sc='#f0883e';sw='2.5';}
+      else if(isActive){fc='#58a6ff22';sc='#58a6ff';}
+      svg.appendChild(mk('rect',{x:x+2,y:by,width:bw-4,height:bh,fill:fc,stroke:sc,'stroke-width':sw,rx:'4'}));
+      var col=isActive?'#c9d1d9':'#555';
+      if(isTarget)col='#3fb950';
+      if(isPivot&&isActive)col='#f0883e';
+      var tv=mk('text',{x:x+bw/2,y:by+bh/2+6,'text-anchor':'middle',fill:col,'font-size':'15','font-family':'monospace','font-weight':'700'});
+      tv.textContent=s.arr[i];svg.appendChild(tv);
+      // Index labels
+      var ix=mk('text',{x:x+bw/2,y:by-8,'text-anchor':'middle',fill:isActive?'#8b949e':'#555','font-size':'10','font-family':'monospace'});
+      ix.textContent=i;svg.appendChild(ix);
+      // k marker
+      if(i===K){
+        var km=mk('text',{x:x+bw/2,y:by-18,'text-anchor':'middle',fill:'#bc8cff','font-size':'9','font-family':'monospace','font-weight':'700'});
+        km.textContent='k='+K;svg.appendChild(km);
+      }
+    }
+    // Active range bracket below
+    if(s.active.length>0){
+      var rlo=Math.min.apply(null,s.active), rhi=Math.max.apply(null,s.active);
+      var brx0=bx0+rlo*bw+2, brx1=bx0+rhi*bw+bw-2, bry=by+bh+12;
+      svg.appendChild(mk('line',{x1:brx0,y1:bry,x2:brx1,y2:bry,stroke:'#58a6ff','stroke-width':'1.5'}));
+      svg.appendChild(mk('line',{x1:brx0,y1:bry-5,x2:brx0,y2:bry,stroke:'#58a6ff','stroke-width':'1.5'}));
+      svg.appendChild(mk('line',{x1:brx1,y1:bry-5,x2:brx1,y2:bry,stroke:'#58a6ff','stroke-width':'1.5'}));
+      var blt=mk('text',{x:(brx0+brx1)/2,y:bry+12,'text-anchor':'middle',fill:'#58a6ff','font-size':'9','font-family':'monospace'});
+      blt.textContent='active range ['+rlo+'..'+rhi+']';svg.appendChild(blt);
+    }
+    // Pivot arrow
+    if(s.pivotIdx>=0&&activeSet.has(s.pivotIdx)){
+      var px=bx0+s.pivotIdx*bw+bw/2, py=by+bh+32;
+      svg.appendChild(mk('polygon',{points:px+','+py+' '+(px-6)+','+(py+14)+' '+(px+6)+','+(py+14),fill:'#f0883e'}));
+      var pt=mk('text',{x:px,y:py+26,'text-anchor':'middle',fill:'#f0883e','font-size':'10','font-family':'monospace'});
+      pt.textContent='pivot';svg.appendChild(pt);
+    }
+    // Found marker
+    if(s.label==='FOUND!'){
+      var fx2=bx0+K*bw+bw/2, fy2=by-30;
+      svg.appendChild(mk('polygon',{points:fx2+','+fy2+' '+(fx2-8)+','+(fy2-16)+' '+(fx2+8)+','+(fy2-16),fill:'#3fb950'}));
+      var ft=mk('text',{x:fx2,y:fy2-20,'text-anchor':'middle',fill:'#3fb950','font-size':'10','font-family':'monospace','font-weight':'700'});
+      ft.textContent='ANSWER';svg.appendChild(ft);
+    }
+    document.getElementById('vz23k').textContent=K+1;
+    document.getElementById('vz23size').textContent=s.size;
+    document.getElementById('vz23lbl').textContent=s.label;
+    document.getElementById('vz23txt').textContent=s.text;
+    document.getElementById('vz23prev').disabled=(cur<=0);
+    document.getElementById('vz23next').disabled=(cur>=steps.length-1);
+  }
+  window.vz23step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    draw(steps[cur]);
+  };
+  window.vz23reset=function(){
+    cur=-1;
+    draw({arr:ORIG.slice(),lo:0,hi:6,active:[0,1,2,3,4,5,6],pivot:-1,pivotIdx:-1,k:K,size:7,label:'READY',text:'Input [3,6,8,10,1,2,1], find 3rd smallest (k=3). Greys = discarded half. Press Next.'});
+    document.getElementById('vz23prev').disabled=true;
+    document.getElementById('vz23next').disabled=false;
+  };
+  vz23reset();
+})();
+</script>
+
+    <h4 class="subsubsec">Quickselect Complexity</h4>
+
+    <table>
+      <thead><tr><th>Case</th><th>Time</th><th>Explanation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Best</td>
+          <td><span class="complexity-tag">O(n)</span></td>
+          <td>Pivot is always perfect median; recurrence T(n) = T(n/2) + n → O(n).</td>
+        </tr>
+        <tr>
+          <td>Average</td>
+          <td><span class="complexity-tag">O(n)</span></td>
+          <td>Expected with random pivot; same argument as randomised Quicksort (see §4.3).</td>
+        </tr>
+        <tr>
+          <td>Worst</td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td>Pivot is always min/max; T(n) = T(n-1) + n → O(n²).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      The average case recurrence for Quickselect (using the same averaging argument as Quicksort) gives:
+    </p>
+<pre class="code-block">T(n) = n + (2/n) * sum_{i=0}^{n-1} T(i)
+
+This solves to T(n) = O(n).</pre>
+
+    <!-- RANDOMISED PIVOT SELECTION -->
+    <h3 class="subsec" id="rand-pivot">4.3 Randomised Pivot Selection</h3>
+
+    <p>
+      By selecting the pivot uniformly at random, Quickselect achieves <strong>expected O(n)</strong>
+      time. This is the simplest and empirically fastest strategy.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Randomised Quickselect</div>
+      Using randomised pivot selection, Quickselect has <strong>expected run time O(n)</strong>.
+    </div>
+
+    <p><strong>Proof sketch (by induction):</strong></p>
+    <p>
+      Let T(n) denote the expected run time on an array of size n. Averaging over all possible
+      pivot positions i (each equally likely with probability 1/n):
+    </p>
+<pre class="code-block">E[T(n)] = (n+1) + (1/n) * [sum_{i=1}^{k-1} E[T(n-i)] + sum_{i=k+1}^{n} E[T(i-1)]]
+
+Rearranging and bounding both sums by the larger half of terms:
+
+E[T(n)] ≤ (n+1) + (2/n) * sum_{i=n/2}^{n-1} E[T(i)]</pre>
+
+    <p>
+      We claim E[T(n)] ≤ 4n. The base case T(1) = 2 ≤ 4 holds. For the inductive step,
+      assuming E[T(i)] ≤ 4i for all i &lt; n:
+    </p>
+<pre class="code-block">E[T(n)] ≤ (n+1) + (2/n) * sum_{i=n/2}^{n-1} 4i
+        ≤ (n+1) + (8/n) * [n(n-1)/2 - (n/2)(n/2-1)/2]
+        ≤ (n+1) + (8/n) * (3n²/8)
+        = (n+1) + 3n
+        ≤ 4n + 1 ≈ 4n = C·n
+
+Choosing C = 4 confirms E[T(n)] = O(n).</pre>
+
+    <!-- MEDIAN OF MEDIANS -->
+    <h3 class="subsec" id="mom">4.4 Median of Medians (Deterministic O(n) Selection)</h3>
+
+    <p>
+      While randomised Quickselect has excellent expected performance, it is not
+      <em>deterministic</em> — there is always a (vanishingly small) chance of hitting the O(n²)
+      worst case. The <strong>Median of Medians</strong> algorithm (Blum–Floyd–Pratt–Rivest–Tarjan, 1971)
+      achieves <strong>guaranteed worst-case O(n)</strong> selection by choosing a provably "good enough"
+      pivot deterministically.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">The Key Insight</div>
+      We do not need the <em>exact</em> median as a pivot. We only need a pivot that splits the
+      array into two sub-arrays each of size at most a <em>fixed fraction</em> (e.g. 70%) of n.
+      Any such pivot guarantees the recursion depth is O(log n), giving O(n) total work.
+      Median of Medians finds a pivot guaranteed to lie between the 30th and 70th percentile.
+    </div>
+
+    <h4 class="subsubsec">The Algorithm — Step by Step</h4>
+
+    <ol>
+      <li><strong>Divide</strong> the n elements into ⌈n/5⌉ groups of at most 5 elements each.</li>
+      <li><strong>Find the median of each group</strong> using insertion sort (O(1) per group since groups have constant size 5). This produces ⌈n/5⌉ medians.</li>
+      <li><strong>Recursively find the median of those medians</strong> by calling Quickselect (with MoM pivot selection) on the list of ⌈n/5⌉ medians.</li>
+      <li><strong>Use the resulting "median of medians" as the pivot</strong> for the main partition step.</li>
+    </ol>
+
+    <div class="algo-header">
+      Algorithm 24 — Median of Medians
+      <span class="algo-complexity">O(n) worst case</span>
+    </div>
+<pre class="code-block has-header">function MEDIAN_OF_MEDIANS(array[lo..hi]):
+    if hi - lo &lt; 5 then:
+        return MEDIAN_OF_FIVE(array[lo..hi])     // base case: sort directly
+    else:
+        medians = empty array
+        for i = lo to hi, step 5 do:
+            j = min(i + 4, hi)
+            median = MEDIAN_OF_FIVE(array[i..j]) // median of small group
+            medians.append(median)
+        n = length(medians)
+        return QUICKSELECT(medians[1..n], floor((n+1)/2))
+                                    // recursively find true median of medians
+                                    // NOTE: this QUICKSELECT call must also
+                                    // use MEDIAN_OF_MEDIANS for pivot selection!
+
+function MEDIAN_OF_FIVE(array[lo..hi]):
+    INSERTION_SORT(array[lo..hi])               // O(1) since at most 5 elements
+    return array[(lo + hi) / 2]                 // return middle element</pre>
+
+<div id="vz24-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:13px;font-weight:700;color:#f0883e;">Algorithm 24 — Median of Medians</span>
+    <span style="font-size:11px;color:#8b949e;font-family:monospace;">O(n) worst case</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:14px 16px;border-right:1px solid #30363d;">
+      <svg id="vz24svg" viewBox="0 0 560 220" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+      <div id="vz24lbl" style="font-size:11px;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;font-family:monospace;">READY</div>
+      <div id="vz24txt" style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;">Input [1,3,9,7,2,8,4,6,5,10]. Groups of 5 → find medians → median of medians. Press Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Group sz</div>
+          <div style="font-size:1.2em;font-weight:700;color:#c9d1d9;">5</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Medians</div>
+          <div id="vz24meds" style="font-size:1.2em;font-weight:700;color:#bc8cff;">0</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:8px;padding:8px 10px;min-width:60px;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;">Split</div>
+          <div id="vz24split" style="font-size:1.2em;font-weight:700;color:#3fb950;">—</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <button onclick="vz24step(-1)" id="vz24prev" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;" disabled>&#9664; Prev</button>
+        <button onclick="vz24step(1)" id="vz24next" style="background:#1f6feb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Next &#9654;</button>
+        <button onclick="vz24reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var ARR=[1,3,9,7,2,8,4,6,5,10];
+  // Groups: [1,3,9,7,2] and [8,4,6,5,10]
+  // Sorted group1: [1,2,3,7,9] → median=3
+  // Sorted group2: [4,5,6,8,10] → median=6
+  // Medians: [3,6] → median of medians = 3 (or 6; with QUICKSELECT on 2 elements, index 0 = 3 if sorted)
+  // Actually median of [3,6] at floor((2+1)/2)=1 → 3
+  var steps=[
+    {phase:'input',group1hi:-1,group2hi:-1,medians:[],pivot:-1,meds:0,split:'—',
+     label:'INPUT',text:'Array [1,3,9,7,2,8,4,6,5,10]. n=10. Divide into ⌈10/5⌉=2 groups of 5.'},
+    {phase:'groups',group1hi:4,group2hi:-1,medians:[],pivot:-1,meds:0,split:'—',
+     label:'GROUP 1',text:'Group 1: [1,3,9,7,2]. Sort (insertion sort, O(1) for 5 elements) → [1,2,3,7,9]. Median = middle = 3.'},
+    {phase:'groups',group1hi:4,group2hi:9,medians:[3],pivot:-1,meds:1,split:'—',
+     label:'GROUP 2',text:'Group 2: [8,4,6,5,10]. Sort → [4,5,6,8,10]. Median = 6. Medians array = [3,6].'},
+    {phase:'medians',group1hi:4,group2hi:9,medians:[3,6],pivot:-1,meds:2,split:'—',
+     label:'MEDIANS ARRAY',text:'Medians array [3,6]. Find true median by QUICKSELECT([3,6], k=⌊(2+1)/2⌋=1). Sorted [3,6] → 1st = 3.'},
+    {phase:'pivot',group1hi:4,group2hi:9,medians:[3,6],pivot:3,meds:2,split:'30%/30%',
+     label:'PIVOT FOUND',text:'Pivot = 3 (median of medians). Guaranteed to be in 30th–70th percentile. At least 3n/10 elements above and below.'},
+    {phase:'partition',group1hi:4,group2hi:9,medians:[3,6],pivot:3,meds:2,split:'30%/70%',
+     partArr:[1,2,3,8,4,6,5,10,9,7],pivotPos:2,
+     label:'PARTITION',text:'Partition [1,3,9,7,2,8,4,6,5,10] around pivot=3. Result: [1,2,3, | 4,5,6,7,8,9,10]. Pivot at index 2. ≥ 3 elements on each side.'}
+  ];
+  var cur=-1;
+  var svg=document.getElementById('vz24svg');
+  var NS='http://www.w3.org/2000/svg';
+  function mk(tag,at){var e=document.createElementNS(NS,tag);for(var k in at)e.setAttribute(k,at[k]);return e;}
+  function drawArr(arr,y,bw,bh,bx0,getColor,getTextColor){
+    for(var i=0;i<arr.length;i++){
+      var x=bx0+i*bw;
+      var cols=getColor(i,arr[i]);
+      svg.appendChild(mk('rect',{x:x+1,y:y,width:bw-2,height:bh,fill:cols.f,stroke:cols.s,'stroke-width':cols.sw||'1.5',rx:'3'}));
+      var tc=getTextColor?getTextColor(i,arr[i]):'#c9d1d9';
+      var tv=mk('text',{x:x+bw/2,y:y+bh/2+5,'text-anchor':'middle',fill:tc,'font-size':'13','font-family':'monospace','font-weight':'700'});
+      tv.textContent=arr[i];svg.appendChild(tv);
+    }
+  }
+  function draw(s){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    svg.appendChild(mk('rect',{x:0,y:0,width:560,height:220,fill:'#0d1117'}));
+    var n=ARR.length, bw=38, bh=32, by=20, bx0=20;
+    // Input row label
+    var lbl2=mk('text',{x:bx0,y:by-4,fill:'#8b949e','font-size':'10','font-family':'monospace'});lbl2.textContent='Input:';svg.appendChild(lbl2);
+    drawArr(ARR,by,bw,bh,bx0,function(i,v){
+      if(s.phase==='partition'){
+        // After partition
+        var pArr=[1,2,3,8,4,6,5,10,9,7];
+        if(i<=s.pivotPos)return{f:'#58a6ff22',s:'#58a6ff'};
+        return{f:'#f8514922',s:'#f85149'};
+      }
+      // Group coloring
+      var g1=[0,1,2,3,4], g2=[5,6,7,8,9];
+      if(s.group1hi>=4&&g1.indexOf(i)>=0)return{f:'#bc8cff22',s:'#bc8cff'};
+      if(s.group2hi>=9&&g2.indexOf(i)>=0)return{f:'#f0883e22',s:'#f0883e'};
+      return{f:'#21262d',s:'#555'};
+    });
+    // Group brackets
+    if(s.group1hi>=4){
+      var bx0b=bx0, bx1b=bx0+5*bw-2, bry=by+bh+6;
+      svg.appendChild(mk('line',{x1:bx0b,y1:bry,x2:bx1b,y2:bry,stroke:'#bc8cff','stroke-width':'1.5'}));
+      [bx0b,bx1b].forEach(function(x){svg.appendChild(mk('line',{x1:x,y1:bry,x2:x,y2:bry+6,stroke:'#bc8cff','stroke-width':'1.5'}));});
+      var gt=mk('text',{x:(bx0b+bx1b)/2,y:bry+18,'text-anchor':'middle',fill:'#bc8cff','font-size':'9','font-family':'monospace'});
+      gt.textContent='Group 1';svg.appendChild(gt);
+    }
+    if(s.group2hi>=9){
+      var bx0c=bx0+5*bw, bx1c=bx0+10*bw-2, bry2=by+bh+6;
+      svg.appendChild(mk('line',{x1:bx0c,y1:bry2,x2:bx1c,y2:bry2,stroke:'#f0883e','stroke-width':'1.5'}));
+      [bx0c,bx1c].forEach(function(x){svg.appendChild(mk('line',{x1:x,y1:bry2,x2:x,y2:bry2+6,stroke:'#f0883e','stroke-width':'1.5'}));});
+      var gt2=mk('text',{x:(bx0c+bx1c)/2,y:bry2+18,'text-anchor':'middle',fill:'#f0883e','font-size':'9','font-family':'monospace'});
+      gt2.textContent='Group 2';svg.appendChild(gt2);
+    }
+    // Sorted groups row
+    if(s.phase==='groups'||s.phase==='medians'||s.phase==='pivot'||s.phase==='partition'){
+      var sy=90;
+      var sg1=[1,2,3,7,9], sg2=[4,5,6,8,10];
+      var slbl=mk('text',{x:bx0,y:sy-4,fill:'#8b949e','font-size':'10','font-family':'monospace'});slbl.textContent='Sorted:';svg.appendChild(slbl);
+      var bwS=bw;
+      for(var gi=0;gi<5;gi++){
+        var sx=bx0+gi*bwS;
+        var isM1=(gi===2);
+        svg.appendChild(mk('rect',{x:sx+1,y:sy,width:bwS-2,height:bh-4,fill:isM1?'#bc8cff44':'#bc8cff22',stroke:'#bc8cff','stroke-width':isM1?'2':'1',rx:'3'}));
+        var stv=mk('text',{x:sx+bwS/2,y:sy+bh-4-4,'text-anchor':'middle',fill:'#c9d1d9','font-size':'12','font-family':'monospace','font-weight':'700'});
+        stv.textContent=sg1[gi];svg.appendChild(stv);
+      }
+      for(var gi2=0;gi2<5;gi2++){
+        var sx2=bx0+(gi2+5)*bwS;
+        var isM2=(gi2===2);
+        svg.appendChild(mk('rect',{x:sx2+1,y:sy,width:bwS-2,height:bh-4,fill:isM2?'#f0883e44':'#f0883e22',stroke:'#f0883e','stroke-width':isM2?'2':'1',rx:'3'}));
+        var stv2=mk('text',{x:sx2+bwS/2,y:sy+bh-4-4,'text-anchor':'middle',fill:'#c9d1d9','font-size':'12','font-family':'monospace','font-weight':'700'});
+        stv2.textContent=sg2[gi2];svg.appendChild(stv2);
+      }
+      // Median markers
+      var m1x=bx0+2*bwS+bwS/2, m2x=bx0+7*bwS+bwS/2;
+      var markerY=sy+bh-4+8;
+      [m1x,m2x].forEach(function(mx2,mi){
+        var col=mi===0?'#bc8cff':'#f0883e';
+        svg.appendChild(mk('polygon',{points:mx2+','+markerY+' '+(mx2-5)+','+(markerY+12)+' '+(mx2+5)+','+(markerY+12),fill:col}));
+        var mt=mk('text',{x:mx2,y:markerY+22,'text-anchor':'middle',fill:col,'font-size':'9','font-family':'monospace'});
+        mt.textContent='med';svg.appendChild(mt);
+      });
+    }
+    // Medians array row
+    if(s.medians&&s.medians.length>0){
+      var my3=150;
+      var mlbl=mk('text',{x:bx0,y:my3-4,fill:'#8b949e','font-size':'10','font-family':'monospace'});mlbl.textContent='Medians:';svg.appendChild(mlbl);
+      for(var mi=0;mi<s.medians.length;mi++){
+        var isPivotM=(s.medians[mi]===s.pivot);
+        svg.appendChild(mk('rect',{x:bx0+60+mi*44+1,y:my3,width:40,height:28,fill:isPivotM?'#3fb95044':'#bc8cff22',stroke:isPivotM?'#3fb950':'#bc8cff','stroke-width':isPivotM?'2.5':'1.5',rx:'4'}));
+        var mvt=mk('text',{x:bx0+60+mi*44+21,y:my3+19,'text-anchor':'middle',fill:isPivotM?'#3fb950':'#bc8cff','font-size':'14','font-family':'monospace','font-weight':'700'});
+        mvt.textContent=s.medians[mi];svg.appendChild(mvt);
+        if(isPivotM){
+          var pt=mk('text',{x:bx0+60+mi*44+21,y:my3-5,'text-anchor':'middle',fill:'#3fb950','font-size':'9','font-family':'monospace','font-weight':'700'});
+          pt.textContent='pivot';svg.appendChild(pt);
+        }
+      }
+      var mlbl2=mk('text',{x:bx0+60+s.medians.length*44+8,y:my3+19,fill:'#8b949e','font-size':'10','font-family':'monospace'});
+      mlbl2.textContent='→ median of medians';svg.appendChild(mlbl2);
+    }
+    // Partition result row
+    if(s.phase==='partition'){
+      var prArr=[1,2,3,4,5,6,7,8,9,10];
+      var pry=185;
+      var prlbl=mk('text',{x:bx0,y:pry-4,fill:'#8b949e','font-size':'10','font-family':'monospace'});prlbl.textContent='After:';svg.appendChild(prlbl);
+      for(var pi=0;pi<prArr.length;pi++){
+        var pfc=pi<=2?'#58a6ff22':'#f8514922', psc=pi<=2?'#58a6ff':'#f85149';
+        if(pi===2){pfc='#f0883e44';psc='#f0883e';}
+        svg.appendChild(mk('rect',{x:bx0+40+pi*bw+1,y:pry,width:bw-2,height:24,fill:pfc,stroke:psc,'stroke-width':'1.2',rx:'3'}));
+        var pv2=mk('text',{x:bx0+40+pi*bw+bw/2,y:pry+16,'text-anchor':'middle',fill:'#c9d1d9','font-size':'12','font-family':'monospace','font-weight':'700'});
+        pv2.textContent=prArr[pi];svg.appendChild(pv2);
+      }
+    }
+    document.getElementById('vz24meds').textContent=s.meds;
+    document.getElementById('vz24split').textContent=s.split;
+    document.getElementById('vz24lbl').textContent=s.label;
+    document.getElementById('vz24txt').textContent=s.text;
+    document.getElementById('vz24prev').disabled=(cur<=0);
+    document.getElementById('vz24next').disabled=(cur>=steps.length-1);
+  }
+  window.vz24step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    draw(steps[cur]);
+  };
+  window.vz24reset=function(){
+    cur=-1;
+    draw(steps[0]);
+    document.getElementById('vz24meds').textContent='0';
+    document.getElementById('vz24split').textContent='—';
+    document.getElementById('vz24prev').disabled=true;
+    document.getElementById('vz24next').disabled=false;
+  };
+  vz24reset();
+})();
+</script>
+
+    <div class="callout insight">
+      <div class="callout-title">Mutual Recursion</div>
+      <code>MEDIAN_OF_MEDIANS</code> calls <code>QUICKSELECT</code>, and <code>QUICKSELECT</code> calls
+      <code>MEDIAN_OF_MEDIANS</code> to select its pivot. These functions are <strong>mutually recursive</strong>
+      — they call back and forth on each other. This is what makes the analysis subtle.
+    </div>
+
+    <h4 class="subsubsec">Why the Pivot is "Good Enough" — The 30% Guarantee</h4>
+
+    <p>
+      Let <em>m</em> = median of medians (the pivot). Consider the ⌈n/5⌉ groups sorted by their medians:
+    </p>
+
+    <ul>
+      <li>By definition of median, at least half the group medians are &le; m and at least half are &ge; m.</li>
+      <li>For each group whose median is &le; m: within that group of 5, at least 3 elements (the median and the 2 below it) are &le; m. So there are at least 3 × (n/10) = <strong>3n/10 elements &le; m</strong>.</li>
+      <li>Symmetrically, at least <strong>3n/10 elements are &ge; m</strong>.</li>
+    </ul>
+
+    <p>
+      Therefore, after partitioning with m as pivot, both sub-arrays have size at most
+      n − 3n/10 = <strong>7n/10</strong>. The pivot is guaranteed to split at worst <strong>70:30</strong>.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Worst-Case O(n) Performance</div>
+      Quickselect using the Median of Medians strategy has worst-case run time <span class="complexity-tag">O(n)</span>.
+    </div>
+
+    <h4 class="subsubsec">Complexity Analysis — The Recurrence</h4>
+
+    <p>
+      Let T(n) be the time taken by Quickselect with the MoM pivot strategy. There are three
+      contributions to the cost:
+    </p>
+
+    <ul>
+      <li><strong>T(n/5):</strong> The recursive call inside <code>MEDIAN_OF_MEDIANS</code> to find the true median of the n/5 group medians.</li>
+      <li><strong>T(7n/10):</strong> The main recursive call in Quickselect. The pivot guarantees at most 7n/10 elements on the larger side.</li>
+      <li><strong>O(n):</strong> Linear work for the partition step plus finding the medians of all n/5 groups of 5.</li>
+    </ul>
+
+    <div class="callout cplx">
+      <div class="callout-title">Recurrence Relation</div>
+      <code>T(n) = T(n/5) + T(7n/10) + an</code>&nbsp;&nbsp;&nbsp;with&nbsp;<code>T(0) = 0</code>
+      <br><br>
+      Note: n/5 + 7n/10 = 2n/10 + 7n/10 = 9n/10 &lt; n, so the subproblems together are
+      strictly smaller than the original — a necessary condition for linear time.
+    </div>
+
+    <p><strong>Proof that T(n) = O(n) (by induction):</strong></p>
+
+    <p>
+      Choose a constant C &ge; 10a (where a is the linear-time constant in O(n) above).
+      We prove T(n) &le; Cn for all n.
+    </p>
+
+    <p><em>Base case:</em> T(0) = 0 &le; C × 0. Holds trivially.</p>
+
+    <p><em>Inductive step:</em> Assume T(n) &le; Cn for all n &lt; N. Then:</p>
+
+<pre class="code-block">T(N) = aN + T(N/5) + T(7N/10)
+     ≤ aN + C(N/5) + C(7N/10)    [inductive hypothesis]
+     = aN + CN/5 + 7CN/10
+     = aN + 9CN/10
+
+Since C ≥ 10a  ⟹  a ≤ C/10  ⟹  aN ≤ CN/10
+
+Therefore:
+T(N) ≤ CN/10 + 9CN/10 = CN
+
+By induction, T(n) ≤ Cn = O(n) for all n &gt; 0. ∎</pre>
+
+    <div class="callout warn">
+      <div class="callout-title">Why Groups of 5 Specifically?</div>
+      <ul>
+        <li>Groups smaller than 5 (e.g. 3): the guarantee drops to &lt;70:30 in the worst case, and T(n/3) + T(2n/3) with T(n/3) + T(2n/3) = n is not sufficient for O(n).</li>
+        <li>Groups of exactly 5 give the 70:30 split, and T(n/5) + T(7n/10) = 9n/10 &lt; n — this is what makes the induction work.</li>
+        <li>Larger groups (e.g. 7) also work theoretically but increase the constant factor (finding medians of groups of 7 takes more work).</li>
+        <li>5 is the smallest odd group size for which the algorithm is provably linear — a careful balance between the 30% guarantee and the constant factor overhead.</li>
+      </ul>
+    </div>
+
+    <!-- BALANCED QUICKSORT -->
+    <h3 class="subsec" id="balanced-qs">4.4 (cont.) Improving Quicksort with MoM</h3>
+
+    <p>
+      Armed with a deterministic O(n) selection algorithm, we can now make Quicksort
+      worst-case O(n log n) — sometimes called <strong>Balanced Quicksort</strong>.
+    </p>
+
+    <p>
+      Before each partition step, call <code>MEDIAN_OF_MEDIANS</code> to find the true median and
+      use it as the pivot. The pivot always splits the array at least 70:30, guaranteeing O(log n)
+      recursion depth and O(n) work per level.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Balanced Quicksort</div>
+      Quicksort using Median of Medians pivot selection has
+      <strong>worst-case O(n log n)</strong> time, matching Merge Sort and Heap Sort.
+    </div>
+
+    <h4 class="subsubsec">Updated Quickselect with MoM Pivot</h4>
+
+    <div class="algo-header">
+      Quickselect with Median-of-Medians Pivot
+      <span class="algo-complexity">O(n) worst case</span>
+    </div>
+<pre class="code-block has-header">function QUICKSELECT(array[lo..hi], k):
+    if lo &gt;= hi then:
+        return array[k]
+    pivot = MEDIAN_OF_MEDIANS(array, lo, hi)   // guaranteed "good" pivot
+    mid   = PARTITION(array[lo..hi], pivot)
+    if k &lt; mid then:
+        return QUICKSELECT(array[lo .. mid-1], k)
+    elif k &gt; mid then:
+        return QUICKSELECT(array[mid+1 .. hi], k)
+    else:
+        return array[k]</pre>
+
+    <div class="callout insight">
+      <div class="callout-title">Practical Reality — The Anticlimax</div>
+      Despite the beautiful theoretical guarantee, <strong>randomised Quicksort outperforms
+      MoM-based Quicksort in practice</strong>. The MoM approach has large constant factors
+      due to the overhead of finding medians of groups and the multiple passes over the data.
+      In real systems, simple random pivot selection gives excellent empirical performance
+      with negligible probability of hitting the worst case. MoM is primarily of
+      <em>theoretical</em> importance — but it is profoundly satisfying to see a deterministic
+      linear-time selection algorithm exist.
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <h3 class="subsec">Algorithm Comparison Summary</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Purpose</th>
+          <th>Best</th>
+          <th>Average</th>
+          <th>Worst</th>
+          <th>Space</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Quicksort (fixed pivot)</td>
+          <td>Sort</td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+          <td>O(n²)</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Quicksort (random pivot)</td>
+          <td>Sort</td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+          <td>O(n²) exp.</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Quicksort (MoM pivot)</td>
+          <td>Sort</td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Quickselect (fixed pivot)</td>
+          <td>k-th order stat</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(n²)</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Quickselect (random pivot)</td>
+          <td>k-th order stat</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(n²) exp.</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Quickselect (MoM pivot)</td>
+          <td>k-th order stat</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Min/Max scan</td>
+          <td>Minimum or max</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(1)</td>
+        </tr>
+        <tr>
+          <td>Simultaneous Min+Max</td>
+          <td>Both min and max</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(1)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- PARTITION COMPARISON TABLE -->
+    <h3 class="subsec">Partition Scheme Comparison</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Scheme</th>
+          <th>In-place?</th>
+          <th>Stable?</th>
+          <th>Handles Duplicates?</th>
+          <th>Swaps</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Naive 3-way</td>
+          <td>No (O(n) space)</td>
+          <td>Yes</td>
+          <td>Yes (separate equal bucket)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Hoare</td>
+          <td>Yes</td>
+          <td>No</td>
+          <td>Poorly (all equal → left)</td>
+          <td>Each element swapped at most once</td>
+        </tr>
+        <tr>
+          <td>Dutch National Flag</td>
+          <td>Yes</td>
+          <td>No</td>
+          <td>Excellent (equal section ignored in recursion)</td>
+          <td>Each element touched at most once</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </section>
+
+  <!-- ===== INTERACTIVE DEMO: DUTCH NATIONAL FLAG ===== -->
+  <section class="content-section" id="w3-demo">
+    <h2 class="sec-title"><span class="sec-num">Interactive</span> Dutch National Flag Partition</h2>
+    <button class="review-btn" data-week="3" data-sec="w3-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+    <div class="algo-demo">
+      <p class="demo-eyebrow">Algorithm Demo</p>
+      <p class="demo-lede">DNF partitions an array into three regions: elements &lt;pivot (blue), =pivot (green), &gt;pivot (orange). Three pointers maintain the invariant. <b>Click Step</b> to advance.</p>
+      <div class="demo-board" id="d3-board">
+        <div class="demo-stage">
+          <svg id="d3-svg" viewBox="0 0 800 280" style="display:block;width:100%;height:auto;background:#0d1117"></svg>
+        </div>
+        <div class="demo-panel">
+          <div class="demo-narrate">
+            <div class="demo-step-label" id="d3-label">READY</div>
+            <div class="demo-step-text" id="d3-text">Array [3,7,1,5,2,8,4,5,6] with pivot=5. Click Step.</div>
+            <div class="demo-stats">
+              <div class="demo-chip"><span class="k">Steps</span><span class="v" id="d3-steps">0</span></div>
+              <div class="demo-chip"><span class="k">Swaps</span><span class="v" id="d3-swaps">0</span></div>
+              <div class="demo-chip" id="d3-chip-done"><span class="k">Done</span><span class="v" id="d3-done">No</span></div>
+            </div>
+          </div>
+          <div class="demo-side">
+            <h4>Pointers</h4>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.82em;line-height:2.1">
+              <div><span style="color:#58a6ff">lo</span> = <span id="d3-lo" style="color:#58a6ff">0</span></div>
+              <div><span style="color:#79c0ff">mid</span> = <span id="d3-mid" style="color:#79c0ff">0</span></div>
+              <div><span style="color:#f0883e">hi</span> = <span id="d3-hi" style="color:#f0883e">8</span></div>
+              <div style="margin-top:8px;color:var(--text-muted)">arr[mid]: <span id="d3-curr" style="color:var(--text)">—</span></div>
+              <div>pivot: <span style="color:#3fb950">5</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-controls">
+          <button class="demo-btn primary" id="d3-step-btn">Step →</button>
+          <button class="demo-btn" id="d3-run-btn">Run ▶</button>
+          <button class="demo-btn" id="d3-reset-btn">Reset</button>
+          <div class="demo-spd"><span>Speed</span><input type="range" id="d3-spd" min="1" max="5" value="3"><span id="d3-spd-lbl">3×</span></div>
+        </div>
+        <div class="demo-hint">DNF partition: key step in 3-way Quicksort for handling duplicate elements efficiently</div>
+      </div>
+    </div>
+  </section>
+
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+</html>

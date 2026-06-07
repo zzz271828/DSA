@@ -1,0 +1,2601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 9 – Search Trees | FIT2004</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+  --text: #c9d1d9; --text-muted: #8b949e;
+  --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+  --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+}
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+nav ul { list-style: none; }
+nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+nav ul li a:hover { color: var(--text); background: var(--bg3); }
+nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+main { flex: 1; max-width: 860px; padding: 48px 56px; }
+.week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+.week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+.week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+.topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+section.content-section { margin-bottom: 56px; }
+h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+p { margin-bottom: 14px; }
+.callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+.callout.def { background: #1f6feb0d; border-color: var(--blue); }
+.callout.thm { background: #3fb9500d; border-color: var(--green); }
+.callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+.callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+.callout.warn { background: #f851490d; border-color: var(--red); }
+.callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.callout.def .callout-title { color: var(--blue); }
+.callout.thm .callout-title { color: var(--green); }
+.callout.cplx .callout-title { color: var(--orange); }
+.callout.insight .callout-title { color: var(--purple); }
+.callout.warn .callout-title { color: var(--red); }
+pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+.algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+.algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+td { padding: 10px 16px; border: 1px solid var(--border); }
+tr:nth-child(even) td { background: var(--bg2); }
+code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+ul, ol { padding-left: 24px; margin-bottom: 14px; }
+li { margin-bottom: 7px; }
+.complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+@media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html" class="current"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#motivation" class="sub">Motivation</a></li>
+    <li><a href="#bst" class="sub">Binary Search Trees</a></li>
+    <li><a href="#avl" class="sub">AVL Trees</a></li>
+    <li><a href="#twothree" class="sub">2-3 Trees</a></li>
+    <li><a href="#rbt" class="sub">Red-Black Trees</a></li>
+    <li><a href="#compare" class="sub">Comparing AVL &amp; RB</a></li>
+    <li><a href="#quick-ref" class="sub">Quick Reference</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ─── HEADER ─────────────────────────────────────────────── -->
+  <div class="week-header">
+    <div class="week-badge">Week 9 &mdash; Chapter 10</div>
+    <h1>Search Trees</h1>
+    <p class="subtitle">Chapter 10 of course notes &mdash; Lecture 9 (Rafael Dowsley)</p>
+    <div class="topics">
+      <span>Binary Search Trees</span>
+      <span>AVL Trees</span>
+      <span>Rotations</span>
+      <span>2-3 Trees</span>
+      <span>Red-Black Trees</span>
+      <span>LLRBT</span>
+      <span>Self-Balancing</span>
+      <span>O(log n) Guaranteed</span>
+    </div>
+  </div>
+
+  <!-- ─── MOTIVATION ─────────────────────────────────────────── -->
+  <section class="content-section" id="motivation">
+    <h2 class="sec-title"><span class="sec-num">Motivation</span> Lookup Tables &amp; The Problem with Plain BSTs</h2>
+  <button class="review-btn" data-week="9" data-sec="motivation"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+    <p>
+      A <strong>lookup table</strong> (dictionary / dynamic set) supports three core operations: <em>insert</em>, <em>search</em>, and <em>delete</em> by key. An ordered array achieves O(log n) search via binary search, but insertion and deletion require O(n) shifting — we can do better.
+    </p>
+    <p>
+      A Binary Search Tree promises O(log n) for all three operations — but only when the tree is <em>balanced</em>. The critical weakness of a plain BST is that it can degenerate. If keys are inserted in sorted order, every new node is appended to the right, producing a structure indistinguishable from a linked list with height n.
+    </p>
+
+    <div class="callout warn">
+      <div class="callout-title">Worst-Case Degeneration</div>
+      Inserting keys 1, 2, 3, 4, 5, … in order into a plain BST produces a right-skewed linked list of height n. Search, insert, and delete all become <strong>Θ(n)</strong> in this case.
+    </div>
+
+    <p>
+      The solution studied in this chapter is to use <strong>self-balancing</strong> BSTs — data structures that automatically restructure themselves after each modification to guarantee O(log n) height at all times.
+    </p>
+  </section>
+
+  <!-- ─── SECTION 10.1: BST ──────────────────────────────────── -->
+  <section class="content-section" id="bst">
+    <h2 class="sec-title"><span class="sec-num">§ 10.1</span> Binary Search Trees</h2>
+  <button class="review-btn" data-week="9" data-sec="bst"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec" id="bst-property">The BST Property</h3>
+    <div class="callout def">
+      <div class="callout-title">Definition — Binary Search Tree</div>
+      A <strong>Binary Search Tree</strong> is a rooted binary tree in which, for every node <em>u</em> with key <em>k</em>:
+      <ul style="margin-top:8px;">
+        <li>Every key in <em>u</em>'s left subtree is <strong>strictly less than</strong> <em>k</em>.</li>
+        <li>Every key in <em>u</em>'s right subtree is <strong>strictly greater than</strong> <em>k</em>.</li>
+      </ul>
+      Keys are assumed to be unique. Nodes typically store a key-value pair; we focus on keys.
+    </div>
+
+    <p>
+      A direct consequence of this property is that an <strong>inorder traversal</strong> (visit left subtree, then current node, then right subtree) of any BST visits keys in non-decreasing sorted order. This means a BST implicitly maintains a sorted sequence.
+    </p>
+
+    <h4 class="subsubsec">Example BST</h4>
+    <pre class="code-block">         10
+        /  \
+       7    20
+      / \   / \
+     3   9 14  33
+    / \ / \   / \
+   1  5 8  12 31  37
+       \       \
+        (...)  28
+                \
+                27
+</pre>
+
+    <h3 class="subsec" id="bst-ops">Core Operations</h3>
+
+    <h4 class="subsubsec">Search</h4>
+    <p>Starting at the root, compare the target key <em>k</em> against the current node's key <em>r</em>:</p>
+    <ul>
+      <li>If <em>k = r</em>: key found.</li>
+      <li>If <em>k &lt; r</em>: recurse into the left subtree.</li>
+      <li>If <em>k &gt; r</em>: recurse into the right subtree.</li>
+      <li>If we reach a NULL: key not in tree.</li>
+    </ul>
+
+    <div class="algo-header">
+      BST-Search(node, k)
+      <span class="algo-complexity">O(h) — h = height of tree</span>
+    </div>
+    <pre class="code-block has-header">BST-Search(node, k):
+    if node == NULL:
+        return NULL          // key not found
+    if k == node.key:
+        return node          // found
+    elif k &lt; node.key:
+        return BST-Search(node.left, k)
+    else:
+        return BST-Search(node.right, k)</pre>
+
+    <h4 class="subsubsec">Insert</h4>
+    <p>Perform a search for the key. If not found, insert a new node at the NULL position where the search terminated.</p>
+
+    <div class="algo-header">
+      BST-Insert(node, k)
+      <span class="algo-complexity">O(h)</span>
+    </div>
+    <pre class="code-block has-header">BST-Insert(node, k):
+    if node == NULL:
+        return new Node(k)   // create leaf
+    if k &lt; node.key:
+        node.left = BST-Insert(node.left, k)
+    elif k &gt; node.key:
+        node.right = BST-Insert(node.right, k)
+    // if k == node.key: key already present, do nothing (or update value)
+    return node</pre>
+
+    <h4 class="subsubsec">Delete</h4>
+    <p>There are three cases depending on how many children the target node has:</p>
+    <ol>
+      <li><strong>Leaf node (no children):</strong> Simply remove it.</li>
+      <li><strong>One child:</strong> Replace the node with its single child (promote the child).</li>
+      <li><strong>Two children:</strong> Find the <em>inorder successor</em> (smallest key in right subtree) or <em>inorder predecessor</em> (largest in left subtree). Swap the target's key with the successor/predecessor, then delete the successor/predecessor (which has at most one child — the right case then recurses into case 1 or 2).</li>
+    </ol>
+
+    <div class="algo-header">
+      BST-Delete(node, k)
+      <span class="algo-complexity">O(h)</span>
+    </div>
+    <pre class="code-block has-header">BST-Delete(node, k):
+    if node == NULL:
+        return NULL
+    if k &lt; node.key:
+        node.left = BST-Delete(node.left, k)
+    elif k &gt; node.key:
+        node.right = BST-Delete(node.right, k)
+    else:                        // k == node.key: delete this node
+        if node.left == NULL:
+            return node.right    // case 1 or case 2 (right child or NULL)
+        elif node.right == NULL:
+            return node.left     // case 2 (left child)
+        else:
+            // case 3: replace with inorder successor
+            successor = BST-Minimum(node.right)
+            node.key = successor.key
+            node.right = BST-Delete(node.right, successor.key)
+    return node
+
+BST-Minimum(node):
+    while node.left != NULL:
+        node = node.left
+    return node</pre>
+
+<!-- ══ Widget 1: BST Insert & Search ══ -->
+<div id="vz_bst_widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.65em;letter-spacing:0.2em;text-transform:uppercase;color:#3fb950;">Interactive</span>
+    <span style="font-size:0.95em;font-weight:600;color:#c9d1d9;flex:1;">BST Insert &amp; Search — Animated Walkthrough</span>
+    <span style="font-family:monospace;font-size:0.75em;color:#8b949e;">Insert [5,3,7,1,4,6,8] then search</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <div style="background:#0d1117;position:relative;">
+      <svg id="vz_bst_svg" viewBox="0 0 520 300" style="display:block;width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <g id="vz_bst_edges"></g>
+        <g id="vz_bst_nodes"></g>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;gap:10px;background:#161b22;">
+      <div>
+        <div style="font-family:monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz_bst_lbl">Ready</div>
+        <div style="font-size:0.87em;line-height:1.5;min-height:56px;color:#c9d1d9;" id="vz_bst_narr">Press <b>Next Step</b> to begin inserting keys one by one.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Height</span>
+          <span style="font-size:1.3em;font-weight:700;color:#c9d1d9;" id="vz_bst_stat_h">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Inserted</span>
+          <span style="font-size:1.3em;font-weight:700;color:#c9d1d9;" id="vz_bst_stat_n">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Comparisons</span>
+          <span style="font-size:1.3em;font-weight:700;color:#c9d1d9;" id="vz_bst_stat_c">0</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz_bststep()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #1f6feb;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;" id="vz_bst_btnNext">Next Step ▶</button>
+        <button onclick="vz_bstreset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset ↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <h3 class="subsec" id="bst-complexity">Height and Complexity</h3>
+
+    <div class="callout cplx">
+      <div class="callout-title">Time Complexity Summary — Plain BST</div>
+      <table>
+        <thead>
+          <tr><th>Operation</th><th>Average Case</th><th>Worst Case (degenerate)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Search</td><td>O(log n)</td><td>O(n)</td></tr>
+          <tr><td>Insert</td><td>O(log n)</td><td>O(n)</td></tr>
+          <tr><td>Delete</td><td>O(log n)</td><td>O(n)</td></tr>
+          <tr><td>Space</td><td colspan="2">O(n)</td></tr>
+        </tbody>
+      </table>
+      The worst case occurs when keys are inserted in sorted (or reverse-sorted) order, causing the tree to degenerate into a linked list of height n.
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight</div>
+      The fundamental limitation of a plain BST is that its height is determined by insertion <em>order</em>, not by the number of elements. Two trees storing the same n keys can have heights ranging from &lfloor;log&#8322;(n+1)&rfloor; (perfectly balanced) to n (completely skewed). Self-balancing trees solve this by enforcing a height bound of O(log n) after every operation.
+    </div>
+  </section>
+
+  <!-- ─── SECTION 10.2: AVL ─────────────────────────────────── -->
+  <section class="content-section" id="avl">
+    <h2 class="sec-title"><span class="sec-num">§ 10.2</span> AVL Trees</h2>
+  <button class="review-btn" data-week="9" data-sec="avl"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The <strong>AVL Tree</strong> (named after Adelson-Velskii and Landis, 1962) was the first self-balancing BST ever invented. It enforces a strict local balance condition: at every node, the heights of the left and right subtrees differ by at most 1. This is sufficient to guarantee O(log n) height globally.
+    </p>
+
+    <h3 class="subsec" id="avl-def">Definition and Balance Factor</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — AVL Tree</div>
+      An <strong>AVL Tree</strong> is a BST in which, for every node <em>u</em>:
+      <br><br>
+      <code>balance_factor(u) = height(u.left) − height(u.right)</code>
+      <br><br>
+      and <strong>|balance_factor(u)| ≤ 1</strong> (i.e., balance factor ∈ {−1, 0, 1}).
+      <br><br>
+      Convention: <code>height(NULL) = 0</code>. A node with no children has height 1 and balance factor 0.
+    </div>
+
+    <p>
+      <strong>Why O(log n) height?</strong> The tightest an AVL tree can pack nodes at each height is related to Fibonacci numbers. Let N(h) denote the minimum number of nodes in an AVL tree of height h. Then:
+    </p>
+    <ul>
+      <li>N(1) = 1, N(2) = 2</li>
+      <li>N(h) = N(h−1) + N(h−2) + 1 (the worst case: one subtree has height h−1, the other h−2)</li>
+      <li>This recurrence gives N(h) = Fib(h+2) − 1, where Fib is the Fibonacci sequence.</li>
+      <li>Since Fib(h) grows as φ<sup>h</sup>/√5 (φ ≈ 1.618), we get n ≥ N(h) ∼ φ<sup>h</sup>, so h = O(log n).</li>
+    </ul>
+
+    <div class="callout thm">
+      <div class="callout-title">Height Bound</div>
+      The height of an AVL tree with n nodes is <strong>Θ(log n)</strong>. More precisely, the height is at most 1.44 · log&#8322;(n+2) − 0.328.
+    </div>
+
+    <p>
+      In practice, storing the <strong>height</strong> at each node (rather than the balance factor directly) is much easier to maintain after rotations — just take <code>max(height(left), height(right)) + 1</code> after each update. The balance factor is then computed on-demand.
+    </p>
+
+    <h3 class="subsec" id="avl-rotations">Rotations — The Rebalancing Primitives</h3>
+
+    <p>
+      Rotations are local restructuring operations that change the shape of the tree while preserving the BST in-order property. They are the building blocks for all AVL (and Red-Black tree) rebalancing.
+    </p>
+
+    <h4 class="subsubsec">Left Rotation (of node x)</h4>
+    <p>Used when <code>x</code> is right-heavy. <code>y = x.right</code> is promoted; <code>x</code> becomes <code>y</code>'s left child. <code>y</code>'s original left subtree (ST2) is rehomed as <code>x</code>'s right subtree.</p>
+
+    <pre class="code-block">    BEFORE            AFTER
+      x                 y
+     / \               / \
+   ST1   y           x   ST3
+        / \          / \
+      ST2 ST3      ST1  ST2
+
+  x's left  (ST1) stays left of x.
+  y's right (ST3) stays right of y.
+  y's left  (ST2) becomes right of x.
+  y is promoted; x demoted to y's left child.</pre>
+
+    <div class="algo-header">
+      Left-Rotate(x)
+      <span class="algo-complexity">O(1)</span>
+    </div>
+    <pre class="code-block has-header">Left-Rotate(x):
+    y = x.right
+    x.right = y.left       // ST2 rehomed
+    if y.left != NULL:
+        y.left.parent = x
+    y.parent = x.parent    // link y to x's old parent
+    if x.parent == NULL:
+        root = y
+    elif x == x.parent.left:
+        x.parent.left = y
+    else:
+        x.parent.right = y
+    y.left = x             // x becomes y's left child
+    x.parent = y
+    // update heights
+    x.height = 1 + max(height(x.left), height(x.right))
+    y.height = 1 + max(height(y.left), height(y.right))</pre>
+
+    <h4 class="subsubsec">Right Rotation (of node y)</h4>
+    <p>Mirror image of left rotation. <code>x = y.left</code> is promoted; <code>y</code> becomes <code>x</code>'s right child. <code>x</code>'s original right subtree (ST2) is rehomed as <code>y</code>'s left subtree.</p>
+
+    <pre class="code-block">    BEFORE            AFTER
+      y                 x
+     / \               / \
+    x  ST3           ST1   y
+   / \                    / \
+ ST1 ST2               ST2  ST3
+
+  x's left  (ST1) stays left of x.
+  y's right (ST3) stays right of y.
+  x's right (ST2) becomes left of y.
+  x is promoted; y demoted to x's right child.</pre>
+
+    <div class="algo-header">
+      Right-Rotate(y)
+      <span class="algo-complexity">O(1)</span>
+    </div>
+    <pre class="code-block has-header">Right-Rotate(y):
+    x = y.left
+    y.left = x.right       // ST2 rehomed
+    if x.right != NULL:
+        x.right.parent = y
+    x.parent = y.parent
+    if y.parent == NULL:
+        root = x
+    elif y == y.parent.right:
+        y.parent.right = x
+    else:
+        y.parent.left = x
+    x.right = y
+    y.parent = x
+    // update heights
+    y.height = 1 + max(height(y.left), height(y.right))
+    x.height = 1 + max(height(x.left), height(x.right))</pre>
+
+    <h3 class="subsec" id="avl-cases">The Four Imbalance Cases</h3>
+
+    <p>
+      An imbalance occurs whenever a node's balance factor reaches +2 or −2. There are exactly four cases, determined by the imbalanced node's balance factor and its relevant child's balance factor. Rebalancing is always done <strong>bottom-up</strong>, starting from the deepest imbalanced node.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Why Bottom-Up?</div>
+      Fixing a low-level imbalance may automatically fix a higher-level imbalance — redundant rotations are avoided. Always rebalance the deepest node first.
+    </div>
+
+    <h4 class="subsubsec">Case 1: Left-Left (LL)</h4>
+    <p>
+      Imbalanced node <code>y</code> has <code>balance_factor = +2</code>, and its left child <code>x</code> has <code>balance_factor ∈ {0, 1}</code>. The tree is left-heavy at both levels. Fix: a single <strong>right rotation on y</strong>.
+    </p>
+    <pre class="code-block">  bf=+2
+    y
+   / \
+  x  ST3      bf=0 or 1
+ / \
+ST1 ST2
+
+  ──Right-Rotate(y)──&gt;
+
+     x
+    / \
+  ST1   y
+       / \
+     ST2 ST3
+
+New balance factors: if x was bf=0 → x becomes −1, y becomes +1.
+                     if x was bf=1 → x becomes 0,  y becomes 0.</pre>
+
+    <h4 class="subsubsec">Case 2: Left-Right (LR)</h4>
+    <p>
+      Imbalanced node <code>z</code> has <code>balance_factor = +2</code>, and its left child <code>x</code> has <code>balance_factor = −1</code>. The tree is left-heavy at <code>z</code> but right-heavy at <code>x</code>. Fix: <strong>left rotation on x</strong> (converts to LL case), then <strong>right rotation on z</strong>.
+    </p>
+    <pre class="code-block">  bf=+2
+    z
+   / \
+  x  ST4     bf=−1
+ / \
+ST1  y       bf ∈ {−1,0,1}
+    / \
+  ST2 ST3
+
+  ──Left-Rotate(x)──&gt;  (now LL case)
+
+  bf=+2
+    z
+   / \
+  y  ST4
+ / \
+x  ST3
+/ \
+ST1 ST2
+
+  ──Right-Rotate(z)──&gt;
+
+       y
+      / \
+     x   z
+    / \ / \
+  ST1 ST2 ST3 ST4</pre>
+
+    <h4 class="subsubsec">Case 3: Right-Right (RR)</h4>
+    <p>Mirror of LL. Imbalanced node has <code>balance_factor = −2</code>, right child has <code>balance_factor ∈ {0, −1}</code>. Fix: single <strong>left rotation</strong> on the imbalanced node.</p>
+
+    <h4 class="subsubsec">Case 4: Right-Left (RL)</h4>
+    <p>Mirror of LR. Imbalanced node has <code>balance_factor = −2</code>, right child has <code>balance_factor = +1</code>. Fix: <strong>right rotation on right child</strong> (converts to RR), then <strong>left rotation on imbalanced node</strong>.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Case</th>
+          <th>Node BF</th>
+          <th>Child BF</th>
+          <th>Fix</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Left-Left (LL)</td><td>+2</td><td>left child: 0 or +1</td><td>Right-Rotate(node)</td></tr>
+        <tr><td>Left-Right (LR)</td><td>+2</td><td>left child: −1</td><td>Left-Rotate(left child), then Right-Rotate(node)</td></tr>
+        <tr><td>Right-Right (RR)</td><td>−2</td><td>right child: 0 or −1</td><td>Left-Rotate(node)</td></tr>
+        <tr><td>Right-Left (RL)</td><td>−2</td><td>right child: +1</td><td>Right-Rotate(right child), then Left-Rotate(node)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec" id="avl-ops">Insert and Delete</h3>
+
+    <h4 class="subsubsec">AVL Insert</h4>
+    <p>
+      Insertion into an AVL tree proceeds in two phases:
+    </p>
+    <ol>
+      <li><strong>Standard BST insert:</strong> Find the correct leaf position and insert the new node.</li>
+      <li><strong>Rebalance pass (bottom-up):</strong> Walk up the tree from the inserted node toward the root. At each ancestor, update the stored height and check the balance factor. If a violation is found (|bf| = 2), apply the appropriate rotation (one of the four cases above). After the rotation, the subtree's height is restored to what it was before the insertion, so <strong>at most one rotation (single or double) is needed</strong> and the walk can stop.</li>
+    </ol>
+
+    <div class="algo-header">
+      AVL-Insert(root, k)
+      <span class="algo-complexity">O(log n)</span>
+    </div>
+    <pre class="code-block has-header">AVL-Insert(root, k):
+    // Phase 1: BST insert
+    node = BST-Insert(root, k)    // standard BST insert
+    // Phase 2: walk up and rebalance
+    current = node.parent
+    while current != NULL:
+        update_height(current)
+        bf = balance_factor(current)
+        if bf == 2:               // left-heavy
+            if balance_factor(current.left) &gt;= 0:  // LL case
+                Right-Rotate(current)
+            else:                                    // LR case
+                Left-Rotate(current.left)
+                Right-Rotate(current)
+            break                 // at most 1 rotation restores balance
+        elif bf == -2:            // right-heavy
+            if balance_factor(current.right) &lt;= 0:  // RR case
+                Left-Rotate(current)
+            else:                                     // RL case
+                Right-Rotate(current.right)
+                Left-Rotate(current)
+            break
+        current = current.parent</pre>
+
+<!-- ══ Widget 2: AVL Rotations ══ -->
+<div id="vz_avl_widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.65em;letter-spacing:0.2em;text-transform:uppercase;color:#bc8cff;">Interactive</span>
+    <span style="font-size:0.95em;font-weight:600;color:#c9d1d9;flex:1;">AVL Rotations — Imbalance Detection &amp; Fix</span>
+    <span style="font-family:monospace;font-size:0.75em;color:#8b949e;">Insert [10,20,30,25] — RR then RL cases</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <div style="background:#0d1117;position:relative;">
+      <svg id="vz_avl_svg" viewBox="0 0 520 300" style="display:block;width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <g id="vz_avl_edges"></g>
+        <g id="vz_avl_nodes"></g>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;gap:10px;background:#161b22;">
+      <div>
+        <div style="font-family:monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz_avl_lbl">Ready</div>
+        <div style="font-size:0.87em;line-height:1.5;min-height:56px;color:#c9d1d9;" id="vz_avl_narr">Press <b>Next Step</b> to watch AVL insertions trigger rotations. Balance factors shown on each node.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Height</span>
+          <span style="font-size:1.3em;font-weight:700;color:#c9d1d9;" id="vz_avl_stat_h">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Rotations</span>
+          <span style="font-size:1.3em;font-weight:700;color:#f85149;" id="vz_avl_stat_r">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Max |BF|</span>
+          <span style="font-size:1.3em;font-weight:700;color:#c9d1d9;" id="vz_avl_stat_bf">0</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz_avlstep()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #1f6feb;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;" id="vz_avl_btnNext">Next Step ▶</button>
+        <button onclick="vz_avlreset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset ↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="callout thm">
+      <div class="callout-title">Insert Rotation Count</div>
+      An AVL tree insert requires <strong>at most one rotation</strong> (single or double). After the rotation, the subtree height is exactly what it was before the insertion, so no further ancestors can be unbalanced.
+    </div>
+
+    <h4 class="subsubsec">AVL Delete</h4>
+    <p>
+      Deletion is more involved:
+    </p>
+    <ol>
+      <li><strong>Standard BST delete:</strong> Remove the target node using the standard three-case BST deletion procedure (leaf, one child, or replace with inorder successor).</li>
+      <li><strong>Rebalance pass (bottom-up):</strong> Walk up from the physically deleted node's parent (or the successor's original position) to the root. At each node, update heights and rebalance if needed. Unlike insert, deletion may require <strong>O(log n) rotations</strong> because each rotation can reduce a subtree's height, potentially unbalancing an ancestor further up.</li>
+    </ol>
+
+    <div class="callout warn">
+      <div class="callout-title">Delete vs Insert — Rotation Count</div>
+      Insert: at most 1 rotation (single or double). Delete: potentially O(log n) rotations — one per level on the path from deletion site to root.
+    </div>
+
+    <h3 class="subsec" id="avl-complexity">Complexity of AVL Trees</h3>
+
+    <div class="callout cplx">
+      <div class="callout-title">AVL Tree Complexity</div>
+      <table>
+        <thead>
+          <tr><th>Operation</th><th>Time</th><th>Rotations</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Search</td><td>Θ(log n)</td><td>0</td></tr>
+          <tr><td>Insert</td><td>Θ(log n)</td><td>≤ 1 (single or double)</td></tr>
+          <tr><td>Delete</td><td>Θ(log n)</td><td>O(log n)</td></tr>
+          <tr><td>Space</td><td colspan="2">O(n)</td></tr>
+        </tbody>
+      </table>
+      Height is <strong>Θ(log n)</strong> — all operations are proportional to height.
+    </div>
+  </section>
+
+  <!-- ─── SECTION 10.3: 2-3 TREES ───────────────────────────── -->
+  <section class="content-section" id="twothree">
+    <h2 class="sec-title"><span class="sec-num">§ 10.3</span> 2-3 Trees</h2>
+  <button class="review-btn" data-week="9" data-sec="twothree"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Invented by John Hopcroft (Turing Award, 1986) in 1970, a <strong>Perfectly Balanced 2-3 Search Tree</strong> (or simply <em>2-3 Tree</em>) achieves a different kind of balance: all leaves are at the <em>same depth</em>. Instead of restructuring the tree after each modification, it allows nodes to temporarily expand, then splits them back into legal size. The tree grows upward (a new root is created when the root overflows) rather than downward.
+    </p>
+
+    <p>
+      2-3 trees are a special case of <strong>B-Trees</strong> (order 3), which generalise to larger node capacities for disk-based storage. They are also the conceptual foundation for Red-Black Trees.
+    </p>
+
+    <h3 class="subsec" id="twothree-nodes">Node Types</h3>
+
+    <div class="callout def">
+      <div class="callout-title">2-Node</div>
+      Contains <strong>one key K</strong> and has <strong>two children</strong>:
+      <ul style="margin-top:8px;">
+        <li>Left subtree: all keys &lt; K</li>
+        <li>Right subtree: all keys &gt; K</li>
+      </ul>
+      Identical to a standard BST node.
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">3-Node</div>
+      Contains <strong>two keys K1 &lt; K2</strong> and has <strong>three children</strong>:
+      <ul style="margin-top:8px;">
+        <li>Left subtree: all keys &lt; K1</li>
+        <li>Middle subtree: all keys with K1 &lt; key &lt; K2</li>
+        <li>Right subtree: all keys &gt; K2</li>
+      </ul>
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Perfectly Balanced 2-3 Search Tree</div>
+      A tree whose nodes are all 2-nodes or 3-nodes, and in which <strong>all leaves are at the same depth</strong>.
+    </div>
+
+    <h4 class="subsubsec">Example 2-3 Tree</h4>
+    <pre class="code-block">            [11]
+           /    \
+        [4,7]   [25,31]
+       /  |  \   /   |  \
+     [2] [5] [8,9] [14] [20] [28] ...
+                  (leaves all at same depth)</pre>
+
+    <h4 class="subsubsec">Searching in a 2-3 Tree</h4>
+    <p>The search procedure is a natural generalisation of BST search. At each node:</p>
+    <ul>
+      <li>If the node is a 2-node with key K: compare with K, go left or right.</li>
+      <li>If the node is a 3-node with keys K1, K2: compare with K1 and K2 to determine which of the three subtrees to recurse into.</li>
+    </ul>
+
+    <h3 class="subsec" id="twothree-insert">Insertion</h3>
+
+    <p>
+      Insertion in a 2-3 tree never adds a leaf at the bottom directly — instead it always modifies existing nodes and propagates changes upward. The tree grows at the <em>top</em>, not the bottom.
+    </p>
+
+    <p>Step 1: Search for the key to find the leaf it would land in.</p>
+    <p>Step 2 (at the leaf):</p>
+    <ul>
+      <li><strong>Leaf is a 2-node:</strong> Add the key to turn the leaf into a 3-node. Done.</li>
+      <li><strong>Leaf is a 3-node:</strong> Temporarily create a 4-node (3 keys, 4 children). This is illegal and must be fixed.</li>
+    </ul>
+    <p>Step 3 (fixing a 4-node): <strong>Split the 4-node</strong> — the middle key is promoted to the parent, and the 4-node becomes two 2-nodes.</p>
+    <ul>
+      <li>If the parent was a 2-node, it becomes a 3-node — done.</li>
+      <li>If the parent was a 3-node, it becomes a 4-node — recurse upward.</li>
+      <li>If the 4-node is the root: create a new root containing the middle key, with the two halves as children. <strong>The tree grows by one level.</strong></li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight — Growth Direction</div>
+      In a plain BST, the tree grows at the bottom (new leaves are added). In a 2-3 tree, the tree grows at the top — a new root is created when the root overflows. This is why all leaves always remain at the same depth.
+    </div>
+
+    <div class="algo-header">
+      Insert-23Tree(tree, k)
+      <span class="algo-complexity">O(log n)</span>
+    </div>
+    <pre class="code-block has-header">Insert-23Tree(tree, k):
+    leaf = Search-23Tree(tree.root, k)
+    if k already in tree: return (or update value)
+
+    add key k to leaf (temporarily creating a 4-node if needed)
+
+    node = leaf
+    while node is a 4-node:
+        split(node):
+            mid = middle key of node
+            left_half  = new 2-node with left key
+            right_half = new 2-node with right key
+            promote mid to node.parent
+            replace node with left_half and right_half as children of parent
+        node = node.parent (now possibly a 4-node itself)
+
+    if tree.root is a 4-node:
+        split root: create new root with mid,
+                    left and right halves as children</pre>
+
+<!-- ══ Widget 3: 2-3 Tree Insertion ══ -->
+<div id="vz_tt_widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.65em;letter-spacing:0.2em;text-transform:uppercase;color:#f0883e;">Interactive</span>
+    <span style="font-size:0.95em;font-weight:600;color:#c9d1d9;flex:1;">2-3 Tree Insertion — Splits &amp; Promotions</span>
+    <span style="font-family:monospace;font-size:0.75em;color:#8b949e;">Insert [10,20,5,6,12,30] step by step</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <div style="background:#0d1117;position:relative;">
+      <svg id="vz_tt_svg" viewBox="0 0 520 300" style="display:block;width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <g id="vz_tt_edges"></g>
+        <g id="vz_tt_nodes"></g>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;gap:10px;background:#161b22;">
+      <div>
+        <div style="font-family:monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz_tt_lbl">Ready</div>
+        <div style="font-size:0.87em;line-height:1.5;min-height:56px;color:#c9d1d9;" id="vz_tt_narr">Press <b>Next Step</b> to insert keys. Watch how 3-nodes split and propagate middle keys upward.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Height</span>
+          <span style="font-size:1.3em;font-weight:700;color:#c9d1d9;" id="vz_tt_stat_h">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Splits</span>
+          <span style="font-size:1.3em;font-weight:700;color:#f0883e;" id="vz_tt_stat_s">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Nodes</span>
+          <span style="font-size:1.3em;font-weight:700;color:#c9d1d9;" id="vz_tt_stat_n">0</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz_ttstep()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #1f6feb;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;" id="vz_tt_btnNext">Next Step ▶</button>
+        <button onclick="vz_ttreset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset ↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <h4 class="subsubsec">Worked Example: Inserting into a 3-node leaf (split propagates up)</h4>
+    <pre class="code-block">Before: insert key 10 into a tree where the target leaf [8,9] is a 3-node.
+
+Step 1: [8,9] + 10 → temporary 4-node [8,9,10]
+
+Step 2: Split [8,9,10]:
+    promote 9 to parent
+    left = [8], right = [10]
+
+Step 3: Parent absorbs 9. If parent was [4,7] → becomes [4,7,9] (4-node).
+
+Step 4: Split [4,7,9]:
+    promote 7 to grandparent
+    left = [4], right = [9]
+    ...continues up if grandparent also becomes a 4-node</pre>
+
+    <h3 class="subsec" id="twothree-delete">Deletion</h3>
+
+    <p>
+      Deletion preserves the "all leaves at same depth" invariant using the following strategy: ensure the node being visited on the way <em>down</em> is never a 2-node (i.e., has at least 2 keys). This way, when we reach the target, we can safely delete one key without creating an empty (0-key) node.
+    </p>
+
+    <h4 class="subsubsec">Case: Deleting a Leaf Key</h4>
+    <p>The main idea is to maintain the invariant on the way down — the node currently being visited is not a 2-node. Use one of three fixes when a 2-node is encountered:</p>
+    <ol>
+      <li><strong>Root merging:</strong> If root and both children are 2-nodes, merge them into a single 4-node (tree height decreases by 1).</li>
+      <li><strong>Rotation (borrow from sibling):</strong> If the current child is a 2-node but its immediate sibling is not, rotate the smallest sibling key into the parent and the smallest parent key into the current child.</li>
+      <li><strong>Merge with sibling:</strong> If the current child and its immediate sibling are both 2-nodes, merge them with the separating key from the parent into a 4-node and proceed into it.</li>
+    </ol>
+    <p>After reaching the leaf and deleting the key, undo any remaining temporary 4-nodes on the way back up.</p>
+
+    <h4 class="subsubsec">Case: Deleting an Internal Key</h4>
+    <p>Navigate down to the key while maintaining the invariant. When the key is found in an internal node, continue down to its <strong>inorder successor</strong> (smallest key in the right subtree), while still maintaining the invariant. Swap the target key with the successor, then delete the successor from the leaf.</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Deletion Guarantee</div>
+      By maintaining the invariant that every visited node has ≥ 2 keys, we guarantee the leaf we ultimately delete from is not a 2-node — so no "underflow" occurs and the tree remains valid.
+    </div>
+
+    <h3 class="subsec" id="twothree-complexity">Height and Complexity</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">Height of a 2-3 Tree</div>
+      All leaves are at depth h. The minimum number of nodes m satisfies m ≥ 2<sup>h+1</sup> − 1 (the all-2-nodes case). Therefore h = O(log m). Since n ≥ m:
+      <br><br>
+      <strong>h = O(log n)</strong> — the height is logarithmic regardless of insertion order.
+    </div>
+
+    <div class="callout cplx">
+      <div class="callout-title">2-3 Tree Complexity</div>
+      <table>
+        <thead>
+          <tr><th>Operation</th><th>Time</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Search</td><td>O(log n)</td><td>1 node per level, O(1) work each</td></tr>
+          <tr><td>Insert</td><td>O(log n)</td><td>1 pass down + ≤ 1 pass up</td></tr>
+          <tr><td>Delete</td><td>O(log n)</td><td>1 pass down + 1 pass up</td></tr>
+          <tr><td>Space</td><td colspan="2">O(n)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Practical Limitation</div>
+      2-3 trees are elegant in theory but have two types of nodes with different structures. This creates many cases in implementation (the node type changes during splits and merges), making the code complex and introducing constant-factor overhead. <strong>Red-Black Trees</strong> encode the same structure in a standard BST, avoiding this complexity.
+    </div>
+  </section>
+
+  <!-- ─── SECTION 10.4: RED-BLACK TREES ─────────────────────── -->
+  <section class="content-section" id="rbt">
+    <h2 class="sec-title"><span class="sec-num">§ 10.4</span> Red-Black Trees</h2>
+  <button class="review-btn" data-week="9" data-sec="rbt"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Red-Black Trees (first introduced by Guibas and Sedgewick in 1978) encode the structure of a 2-3 tree inside a plain BST using a single bit of colour information per node. This course focuses on the <strong>Left-Leaning Red-Black Tree (LLRBT)</strong> variant introduced by Sedgewick in 2008, which has a clean one-to-one correspondence with 2-3 trees.
+    </p>
+
+    <h3 class="subsec" id="rbt-def">Definition — Left-Leaning Red-Black Tree</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Left-Leaning RBT (LLRBT)</div>
+      A Left-Leaning Red-Black Tree is a BST where nodes/edges are coloured black or red such that:
+      <ol style="margin-top:10px;">
+        <li>The colour of a non-root node equals the colour of its single incoming edge. The <strong>root is always black</strong>.</li>
+        <li><strong>All red links lean left</strong> — every red link goes to a left child.</li>
+        <li><strong>No node has two consecutive red links</strong> — no red node has a red child.</li>
+        <li><strong>Perfect black balance</strong> — for any node, the number of black edges on every path to a descendant leaf is the same.</li>
+      </ol>
+      The <strong>black height</strong> of the tree is the number of black edges between the root and any leaf.
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Colour Encoding</div>
+      The colour is stored as a single bit <em>inside the node</em> (not on the edge). The colour of a node is defined as the colour of its incoming edge (the edge from its parent). The root has no incoming edge, so it is defined to be black. This single bit determines the entire structure.
+    </div>
+
+    <h4 class="subsubsec">Height Bound</h4>
+    <p>
+      The black height of an LLRBT equals the height of the corresponding 2-3 tree, which is O(log n). Since no two consecutive red edges exist, any root-to-leaf path has at most twice the black height in total edges. Therefore:
+    </p>
+    <div class="callout thm">
+      <div class="callout-title">LLRBT Height</div>
+      The height of an LLRBT with n keys is <strong>O(log n)</strong>. More precisely, height ≤ 2 · black_height + 1 ≤ 2 · log&#8322;(n+1) + 1.
+    </div>
+
+    <h3 class="subsec" id="rbt-equiv">Equivalence with 2-3 Trees</h3>
+
+    <p>
+      There is an exact <strong>one-to-one correspondence</strong> between LLRBTs and 2-3 Trees. To convert a 2-3 tree to an LLRBT:
+    </p>
+    <ol>
+      <li>For every 3-node [K1, K2]: separate it into two nodes. K2 becomes the BST node; K1 becomes K2's left child with a <strong>red</strong> edge.</li>
+      <li>All original inter-node edges become <strong>black</strong>.</li>
+      <li>Children of the 3-node are redistributed: left and middle children of K1 stay; middle child of K2's original 3-node becomes K1's right child; right child stays K2's right child.</li>
+      <li>Unflatten so all edges point downward.</li>
+    </ol>
+
+    <pre class="code-block">2-3 tree 3-node:          LLRBT encoding:
+
+    [K1, K2]                    K2 (black)
+   /   |    \          →       /
+ L    M      R               K1 (RED)
+                             /  \
+                            L    M
+                        (right child R stays with K2)</pre>
+
+    <p>The reverse: to read a 3-node out of an LLRBT, find any black node with a red left child — together they form a 3-node.</p>
+
+    <table>
+      <thead>
+        <tr><th>2-3 Tree Node</th><th>LLRBT Representation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2-node (1 key)</td><td>Black node with no red child</td></tr>
+        <tr><td>3-node (2 keys)</td><td>Black node with a red left child</td></tr>
+        <tr><td>(Temporary) 4-node (3 keys)</td><td>Black node with two red children (illegal — triggers rebalancing)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec" id="rbt-insert">Insertion</h3>
+
+    <p>
+      Insertion produces the same end result as 2-3 tree insertion, expressed in LLRBT operations.
+    </p>
+
+    <h4 class="subsubsec">Step 1: Insert as a Red Node</h4>
+    <p>
+      Search for the key. If not found, insert a new node with a <strong>red</strong> edge/colour. This preserves perfect black balance (a red node doesn't change black-edge counts on any path). However, it may violate other LLRBT properties.
+    </p>
+
+    <h4 class="subsubsec">Step 2: Walk Up and Apply the Adjustment Procedure</h4>
+    <p>
+      Moving from the insertion point upward to the root, at each node apply these checks in order:
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">LLRBT Adjustment Procedure (per node, bottom-up)</div>
+      <ol>
+        <li><strong>Condition 1 — Right-leaning red:</strong> If the node has only one red child and it is the <em>right</em> child → <strong>Left-Rotate</strong> the node. (Red links must lean left.)</li>
+        <li><strong>Condition 2 — Two consecutive left reds:</strong> If the left child is red and the left child's left child is also red → <strong>Right-Rotate</strong> the node. (No two consecutive reds.)</li>
+        <li><strong>Condition 3 — Both children red:</strong> If both children are red → <strong>Flip colours</strong> of the node and both children. (Equivalent to promoting the middle key of a 4-node in the 2-3 tree.)</li>
+        <li><strong>Condition 4 (optional early stop):</strong> If the current node is black and none of conditions 1–3 fired, stop (no further adjustments needed).</li>
+        <li><strong>Condition 5:</strong> If the current node is the root, paint it black.</li>
+      </ol>
+    </div>
+
+    <div class="algo-header">
+      LLRBT-Insert(root, k)
+      <span class="algo-complexity">O(log n)</span>
+    </div>
+    <pre class="code-block has-header">LLRBT-Insert(root, k):
+    root = insert_rec(root, k)
+    root.colour = BLACK          // Condition 5
+
+insert_rec(node, k):
+    if node == NULL:
+        return new Node(k, RED)  // insert as red leaf
+
+    if k &lt; node.key:
+        node.left = insert_rec(node.left, k)
+    elif k &gt; node.key:
+        node.right = insert_rec(node.right, k)
+    // else: k == node.key → already exists, no change
+
+    // Apply adjustment conditions bottom-up (on the way back up the recursion)
+    if is_red(node.right) and not is_red(node.left):   // Condition 1
+        node = Left-Rotate(node)
+    if is_red(node.left) and is_red(node.left.left):   // Condition 2
+        node = Right-Rotate(node)
+    if is_red(node.left) and is_red(node.right):       // Condition 3
+        Flip-Colours(node)
+
+    return node
+
+is_red(node):
+    return node != NULL and node.colour == RED
+
+Flip-Colours(node):
+    node.colour        = RED
+    node.left.colour   = BLACK
+    node.right.colour  = BLACK</pre>
+
+<!-- ══ Widget 4: Red-Black Tree ══ -->
+<div id="vz_rbt_widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.65em;letter-spacing:0.2em;text-transform:uppercase;color:#f85149;">Interactive</span>
+    <span style="font-size:0.95em;font-weight:600;color:#c9d1d9;flex:1;">Red-Black Tree Insertions — Rotations &amp; Recolorings</span>
+    <span style="font-family:monospace;font-size:0.75em;color:#8b949e;">Insert [10,20,30,15] — violations &amp; fixes</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <div style="background:#0d1117;position:relative;">
+      <svg id="vz_rbt_svg" viewBox="0 0 520 300" style="display:block;width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <g id="vz_rbt_edges"></g>
+        <g id="vz_rbt_nodes"></g>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;gap:10px;background:#161b22;">
+      <div>
+        <div style="font-family:monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz_rbt_lbl">Ready</div>
+        <div style="font-size:0.87em;line-height:1.5;min-height:56px;color:#c9d1d9;" id="vz_rbt_narr">Press <b>Next Step</b> to insert keys into an RBT. Red nodes shown in <span style="color:#f85149">red</span>, black nodes in grey.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Blk Height</span>
+          <span style="font-size:1.3em;font-weight:700;color:#c9d1d9;" id="vz_rbt_stat_bh">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Rotations</span>
+          <span style="font-size:1.3em;font-weight:700;color:#f85149;" id="vz_rbt_stat_r">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Recolors</span>
+          <span style="font-size:1.3em;font-weight:700;color:#58a6ff;" id="vz_rbt_stat_rc">0</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz_rbtstep()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #1f6feb;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;" id="vz_rbt_btnNext">Next Step ▶</button>
+        <button onclick="vz_rbtreset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset ↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <h4 class="subsubsec">The Three Insertion Sub-Cases (into a 2-node and a 3-node)</h4>
+
+    <p><strong>Inserting into a 2-node:</strong></p>
+    <ul>
+      <li><em>New key inserted as left child:</em> No violation — left-leaning red link already correct. No adjustment needed.</li>
+      <li><em>New key inserted as right child:</em> Condition 1 fires → Left-Rotate. Now the new red link leans left. Done.</li>
+    </ul>
+
+    <p><strong>Inserting into a 3-node</strong> (black node B with red left child A):</p>
+    <ul>
+      <li><em>New key is largest (inserted as right child of B):</em> Both children of B are now red → Condition 3: Flip colours. B turns red (promotes up), A and new node turn black.</li>
+      <li><em>New key is smallest (inserted as left child of A):</em> Two consecutive left reds → Condition 2: Right-Rotate B → now both children red → Condition 3: Flip colours.</li>
+      <li><em>New key is between A and B (inserted as right child of A):</em> Condition 1: Left-Rotate A → reduces to previous case (two consecutive left reds) → Condition 2 + 3.</li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Colour Flip = 4-Node Split in 2-3 Tree</div>
+      The colour flip operation (both children red → parent becomes red, children become black) is exactly equivalent to the 4-node split in a 2-3 tree: the middle key is promoted to the parent, and the two outer keys become separate 2-nodes.
+    </div>
+
+    <h4 class="subsubsec">Worked Example: Inserting keys 27, 35, 10</h4>
+    <pre class="code-block">Starting from existing LLRBT. Insert 27:
+  → Inserted as red at leaf position under node 28.
+  → No Condition fires at node 28. Done (Condition 4).
+
+Insert 35:
+  → At insertion point (node 33): Condition 1 fires → Left-Rotate(33).
+  → At node 37: Condition 2 fires → Right-Rotate(37).
+  → At node 35: Condition 3 fires → Flip-Colours(35).
+  → At node 31: Condition 1 fires → Left-Rotate(31).
+  → At node 35: Condition 4 holds. Done.
+
+Insert 10:
+  → At node 9: Condition 3 → Flip-Colours(9).
+  → At node 7: Condition 3 → Flip-Colours(7).
+  → At node 11: no condition fires.
+  → At root node 25: Condition 2 → Right-Rotate(25).
+  → At node 11: Condition 3 → Flip-Colours(11).
+  → Node 11 is root → Paint black (Condition 5). Done.
+
+Result matches exactly what 2-3 tree insertion produces.</pre>
+
+    <h3 class="subsec" id="rbt-delete">Deletion</h3>
+
+    <p>
+      Deletion in an LLRBT mirrors deletion in a 2-3 tree. The core invariant maintained on the way down is: the current node being visited is <em>not</em> a 2-node (equivalently, it is red, or it has a red child). This ensures that when we reach the target key, we can delete it without creating an empty node.
+    </p>
+
+    <p>The adjustment operations used on the way down include:</p>
+    <ul>
+      <li><strong>Move-Red-Left:</strong> When the current node's left child is a 2-node, borrow from the right — flip colours, then conditionally rotate.</li>
+      <li><strong>Move-Red-Right:</strong> Mirror operation for moving right.</li>
+      <li><strong>Balance:</strong> Apply the standard bottom-up conditions (same as insert) on the way back up.</li>
+    </ul>
+
+    <p>For full implementation details, see Chapter 3 of <em>Algorithms</em> (4th edition) by Sedgewick &amp; Wayne.</p>
+
+    <div class="callout cplx">
+      <div class="callout-title">LLRBT Complexity</div>
+      <table>
+        <thead>
+          <tr><th>Operation</th><th>Time</th><th>Black Height</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Search</td><td>O(log n)</td><td rowspan="3" style="vertical-align:middle; text-align:center;">O(log n)</td></tr>
+          <tr><td>Insert</td><td>O(log n)</td></tr>
+          <tr><td>Delete</td><td>O(log n)</td></tr>
+          <tr><td>Space</td><td colspan="2">O(n)</td></tr>
+        </tbody>
+      </table>
+      Complexity follows directly from the one-to-one correspondence with 2-3 trees: every operation mirrors its 2-3 tree counterpart, which is O(log n).
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Why RBTs Are Used in Practice</div>
+      While 2-3 trees are conceptually elegant, they require handling two different node types with many special cases. RBTs encode the same logical structure in a uniform BST — every node has exactly two child pointers plus one colour bit. This uniformity makes implementation cleaner and more cache-friendly in practice. Java's <code>TreeMap</code> and C++'s <code>std::map</code> both use Red-Black Trees internally.
+    </div>
+  </section>
+
+  <!-- ─── SECTION 10.5: COMPARISON ──────────────────────────── -->
+  <section class="content-section" id="compare">
+    <h2 class="sec-title"><span class="sec-num">§ 10.5</span> Comparing AVL and Red-Black Trees</h2>
+  <button class="review-btn" data-week="9" data-sec="compare"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Both AVL trees and Red-Black Trees (LLRBT) are self-balancing BSTs that guarantee O(log n) worst-case time for search, insert, and delete. They are <strong>asymptotically equivalent</strong>. The difference lies in concrete efficiency and the trade-off between read-heavy and write-heavy workloads.
+    </p>
+
+    <h3 class="subsec">Height and Strictness of Balance</h3>
+
+    <p>
+      AVL trees enforce a stricter balance condition (|balance_factor| ≤ 1 at every node) than RBTs. This leads to a smaller maximum height:
+    </p>
+    <ul>
+      <li><strong>AVL:</strong> height ≤ 1.44 · log&#8322;(n+2) ≈ 1.44 log n</li>
+      <li><strong>RBT:</strong> height ≤ 2 · log&#8322;(n+1) ≈ 2 log n</li>
+    </ul>
+    <p>
+      In absolute terms, an AVL tree is never taller than a Red-Black tree of the same size. A shorter tree means fewer comparisons per search — AVL trees win on pure lookup-intensive workloads.
+    </p>
+
+    <h3 class="subsec">Rotation Cost on Modifications</h3>
+
+    <p>
+      The cost of maintaining balance during insert and delete:
+    </p>
+    <ul>
+      <li><strong>AVL Insert:</strong> at most 1 rotation (single or double). Very cheap.</li>
+      <li><strong>AVL Delete:</strong> O(log n) rotations in the worst case. Can be expensive.</li>
+      <li><strong>RBT Insert:</strong> at most 2 rotations + O(log n) colour flips. Rotations are cheap; colour flips are O(1) each but happen along the whole path.</li>
+      <li><strong>RBT Delete:</strong> at most 3 rotations + O(log n) colour changes. Generally fewer restructuring operations than AVL delete.</li>
+    </ul>
+
+    <div class="callout thm">
+      <div class="callout-title">Amortised Perspective</div>
+      Although RBT insert can trigger O(log n) colour flips, colour flips are very cheap in practice (just setting a bit). The number of actual structural rotations is bounded by a small constant per operation in both trees when amortised. However, AVL trees need to update heights on every ancestor node during a rotation cascade, while RBTs can stop early (Condition 4 early-stop).
+    </div>
+
+    <h3 class="subsec">Comparison Summary Table</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>AVL Tree</th>
+          <th>Left-Leaning Red-Black Tree</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Balance condition</td>
+          <td>|bf| ≤ 1 at every node</td>
+          <td>Perfect black balance; no consecutive reds</td>
+        </tr>
+        <tr>
+          <td>Max height</td>
+          <td>≈ 1.44 log n</td>
+          <td>≈ 2 log n</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>Θ(log n) — faster in practice (shorter tree)</td>
+          <td>Θ(log n)</td>
+        </tr>
+        <tr>
+          <td>Insert rotations</td>
+          <td>≤ 1 (single or double)</td>
+          <td>≤ 2 rotations + O(log n) colour flips</td>
+        </tr>
+        <tr>
+          <td>Delete rotations</td>
+          <td>O(log n) rotations</td>
+          <td>≤ 3 rotations + O(log n) colour changes</td>
+        </tr>
+        <tr>
+          <td>Insert time</td>
+          <td>Θ(log n)</td>
+          <td>Θ(log n)</td>
+        </tr>
+        <tr>
+          <td>Delete time</td>
+          <td>Θ(log n)</td>
+          <td>Θ(log n)</td>
+        </tr>
+        <tr>
+          <td>Extra storage per node</td>
+          <td>Height (integer — ~4 bytes)</td>
+          <td>Colour (1 bit — packed into a flag)</td>
+        </tr>
+        <tr>
+          <td>Implementation complexity</td>
+          <td>Moderate — 4 rotation cases</td>
+          <td>Moderate — 3 adjustment conditions</td>
+        </tr>
+        <tr>
+          <td>Best for</td>
+          <td>Read-intensive / lookup-heavy workloads</td>
+          <td>Write-intensive / balanced read-write workloads</td>
+        </tr>
+        <tr>
+          <td>Used in</td>
+          <td>Databases (some), AVL-specific libraries</td>
+          <td>Java TreeMap, C++ std::map, Linux CFS scheduler</td>
+        </tr>
+        <tr>
+          <td>Conceptual basis</td>
+          <td>Direct height balancing</td>
+          <td>Encoding of 2-3 tree in a BST</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">When to Use Which</h3>
+
+    <ul>
+      <li>
+        <strong>Use AVL trees</strong> when the workload is heavily read-dominated (many more lookups than insertions/deletions). The stricter balance means shorter trees and fewer comparisons per search.
+      </li>
+      <li>
+        <strong>Use Red-Black Trees</strong> when the workload involves frequent insertions and deletions, or when writes and reads are balanced. Fewer structural changes per write operation makes RBTs faster in practice for mixed workloads. This is why almost every general-purpose ordered map in a standard library uses an RBT.
+      </li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Real-World Usage</div>
+      <ul style="margin-top:4px;">
+        <li><strong>Java:</strong> <code>TreeMap</code> and <code>TreeSet</code> — Red-Black Tree.</li>
+        <li><strong>C++ STL:</strong> <code>std::map</code>, <code>std::set</code>, <code>std::multimap</code> — Red-Black Tree.</li>
+        <li><strong>Linux kernel:</strong> Completely Fair Scheduler (CFS) task queue — Red-Black Tree.</li>
+        <li><strong>Python:</strong> <code>sortedcontainers.SortedDict</code> — B-Tree variant.</li>
+        <li>AVL trees appear in some database index implementations where lookup speed is critical.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─── QUICK REFERENCE ────────────────────────────────────── -->
+  <section class="content-section" id="quick-ref">
+    <h2 class="sec-title"><span class="sec-num">Ref</span> Quick Reference — All Three Trees</h2>
+  <button class="review-btn" data-week="9" data-sec="quick-ref"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>BST (plain)</th>
+          <th>AVL Tree</th>
+          <th>2-3 Tree</th>
+          <th>LLRBT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Height (worst)</td>
+          <td>O(n)</td>
+          <td>O(log n)</td>
+          <td>O(log n)</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>O(n) worst</td>
+          <td>Θ(log n)</td>
+          <td>O(log n)</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Insert</td>
+          <td>O(n) worst</td>
+          <td>Θ(log n)</td>
+          <td>O(log n)</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Delete</td>
+          <td>O(n) worst</td>
+          <td>Θ(log n)</td>
+          <td>O(log n)</td>
+          <td>O(log n)</td>
+        </tr>
+        <tr>
+          <td>Space</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+        </tr>
+        <tr>
+          <td>Guaranteed O(log n)?</td>
+          <td>No</td>
+          <td>Yes</td>
+          <td>Yes</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Node structure</td>
+          <td>key + 2 child ptrs</td>
+          <td>key + 2 child ptrs + height</td>
+          <td>1 or 2 keys + 2 or 3 child ptrs</td>
+          <td>key + 2 child ptrs + 1 colour bit</td>
+        </tr>
+        <tr>
+          <td>Practical use</td>
+          <td>Simple cases / known inputs</td>
+          <td>Read-heavy</td>
+          <td>Conceptual / B-tree basis</td>
+          <td>General purpose standard lib</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Key Algorithmic Ideas to Remember</h3>
+    <ol>
+      <li><strong>BST inorder = sorted order.</strong> Any inorder traversal visits keys in ascending sequence.</li>
+      <li><strong>AVL balance factor ∈ {−1, 0, 1}.</strong> If |bf| = 2, rotate. Four cases: LL (right-rotate), LR (left-rotate child, right-rotate node), RR (left-rotate), RL (right-rotate child, left-rotate node).</li>
+      <li><strong>AVL insert ≤ 1 rotation; AVL delete ≤ O(log n) rotations.</strong></li>
+      <li><strong>2-3 tree grows at the top.</strong> New keys enter at leaves but the tree height increases only by adding a new root level — leaves stay at constant depth.</li>
+      <li><strong>LLRBT = 2-3 tree encoded in BST.</strong> Red left-link = two keys of a 3-node. Colour flip = 4-node split. The 3 adjustment conditions (rotate-left, rotate-right, flip) handle all insertion cases.</li>
+      <li><strong>RBT is used in practice.</strong> Uniform node structure and fewer rotation counts on writes make it the choice for real-world ordered map implementations.</li>
+    </ol>
+  </section>
+
+<!-- ═══════════════════════════════════════════════════════
+     INTERACTIVE DEMO — AVL Tree Insertions (Week 9)
+     ═══════════════════════════════════════════════════════ -->
+<section class="content-section algo-demo" id="w9-demo">
+  <h2 class="sec-title"><span class="sec-num">Demo</span> AVL Tree — Automatic Rebalancing</h2>
+  <p class="demo-eyebrow">interactive demo</p>
+  <p class="demo-lede">Insert keys in sequence and watch the AVL tree stay balanced. When a subtree's balance factor exceeds ±1, a <b>rotation</b> restores the AVL property.</p>
+
+  <div class="demo-board">
+    <div class="demo-stage">
+      <svg id="d9-svg" viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg">
+        <!-- Tree rendered dynamically by JS -->
+        <g id="d9-tree-edges"></g>
+        <g id="d9-tree-nodes"></g>
+      </svg>
+    </div>
+
+    <div class="demo-panel">
+      <div class="demo-narrate">
+        <p class="demo-step-label" id="d9-label">Ready</p>
+        <p class="demo-step-text" id="d9-text">Insert sequence: <code>[4, 2, 6, 1, 3, 5, 7, 8]</code>. Press <b>Insert next</b> to proceed.</p>
+        <div class="demo-stats">
+          <div class="demo-chip"><span class="k">Inserted</span><span class="v" id="d9-s-count">0 / 8</span></div>
+          <div class="demo-chip"><span class="k">Rotations</span><span class="v" id="d9-s-rots">0</span></div>
+          <div class="demo-chip good"><span class="k">Height</span><span class="v" id="d9-s-height">0</span></div>
+        </div>
+      </div>
+      <div class="demo-side">
+        <h4>Balance Factors</h4>
+        <div id="d9-bflist" style="font-size:0.8em;font-family:monospace;line-height:2;color:#8b949e;">
+          (tree empty)
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-controls">
+      <button class="demo-btn primary" id="d9-step">Insert next ▶</button>
+      <button class="demo-btn" id="d9-run">Run all</button>
+      <button class="demo-btn" id="d9-reset">Reset</button>
+      <div class="demo-spd">
+        <label for="d9-spd">Speed</label>
+        <input type="range" id="d9-spd" min="0.5" max="4" step="0.5" value="1">
+      </div>
+    </div>
+  </div>
+  <p class="demo-hint">AVL trees guarantee height ≤ 1.44 log₂(n) — at most 44% taller than a perfectly balanced tree. Balance factors ±2 trigger rotations.</p>
+  <button class="review-btn" data-week="9" data-sec="w9-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+</section>
+
+
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     Widget 1 — BST Insert & Search
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg';
+
+// ─── State ───────────────────────────────────────────────────────────────────
+var bst_stepIdx=0, bst_done=false;
+var bst_tree=null; // each node: {key,left,right,x,y,highlight,newNode}
+var bst_comparisons=0;
+var bst_highlightPath=[]; // list of keys on active path
+var bst_foundKey=null, bst_notFound=false;
+
+// ─── Steps script ────────────────────────────────────────────────────────────
+var bst_steps=[
+  {lbl:'Step 1 — Insert 5',narr:'Empty tree. 5 becomes the root.',
+   action:function(){bst_insertNode(5,'new');}},
+  {lbl:'Step 2 — Insert 3',narr:'3 &lt; 5 → go left. Empty → insert here.',
+   action:function(){bst_traceInsert(3,[5]);}},
+  {lbl:'Step 3 — Insert 7',narr:'7 &gt; 5 → go right. Empty → insert.',
+   action:function(){bst_traceInsert(7,[5]);}},
+  {lbl:'Step 4 — Insert 1',narr:'1 &lt; 5 → left, 1 &lt; 3 → left. Insert.',
+   action:function(){bst_traceInsert(1,[5,3]);}},
+  {lbl:'Step 5 — Insert 4',narr:'4 &lt; 5 → left, 4 &gt; 3 → right. Insert.',
+   action:function(){bst_traceInsert(4,[5,3]);}},
+  {lbl:'Step 6 — Insert 6',narr:'6 &gt; 5 → right, 6 &lt; 7 → left. Insert.',
+   action:function(){bst_traceInsert(6,[5,7]);}},
+  {lbl:'Step 7 — Insert 8',narr:'8 &gt; 5 → right, 8 &gt; 7 → right. Insert.',
+   action:function(){bst_traceInsert(8,[5,7]);}},
+  {lbl:'Step 8 — Search 4',narr:'Path: 5 (4&lt;5→left) → 3 (4&gt;3→right) → <b style="color:#3fb950">4 FOUND!</b>',
+   action:function(){bst_searchKey(4,[5,3,4],true);}},
+  {lbl:'Step 9 — Search 9',narr:'Path: 5→7→8→null. <b style="color:#f85149">NOT FOUND.</b>',
+   action:function(){bst_searchKey(9,[5,7,8],false);}},
+];
+
+function bst_insertNode(key,highlight){
+  if(!bst_tree){
+    bst_tree={key:key,left:null,right:null};
+  } else {
+    var cur=bst_tree;
+    while(true){
+      if(key<cur.key){if(!cur.left){cur.left={key:key,left:null,right:null};break;}else cur=cur.left;}
+      else{if(!cur.right){cur.right={key:key,left:null,right:null};break;}else cur=cur.right;}
+    }
+  }
+  bst_highlightPath=[];
+  bst_foundKey=(highlight==='new')?key:null;
+  bst_notFound=false;
+  bst_comparisons=0;
+  bst_render();
+}
+
+function bst_traceInsert(key,path){
+  bst_insertNode(key,null);
+  bst_highlightPath=path.concat([key]);
+  bst_foundKey=key;
+  bst_notFound=false;
+  bst_comparisons=path.length+1;
+  bst_render();
+}
+
+function bst_searchKey(key,path,found){
+  bst_highlightPath=path;
+  bst_foundKey=found?key:null;
+  bst_notFound=!found;
+  bst_comparisons=path.length;
+  bst_render();
+}
+
+function bst_treeHeight(n){
+  if(!n)return 0;
+  return 1+Math.max(bst_treeHeight(n.left),bst_treeHeight(n.right));
+}
+
+function bst_countNodes(n){
+  if(!n)return 0;
+  return 1+bst_countNodes(n.left)+bst_countNodes(n.right);
+}
+
+function bst_layout(node,depth,counter){
+  if(!node)return;
+  bst_layout(node.left,depth+1,counter);
+  node.x=counter.v*68+50;
+  node.y=depth*62+40;
+  counter.v++;
+  bst_layout(node.right,depth+1,counter);
+}
+
+function bst_render(){
+  var edg=document.getElementById('vz_bst_edges');
+  var nod=document.getElementById('vz_bst_nodes');
+  if(!edg||!nod)return;
+  edg.innerHTML='';nod.innerHTML='';
+  if(!bst_tree)return;
+
+  var ctr={v:0};
+  bst_layout(bst_tree,0,ctr);
+
+  // collect BFS
+  var queue=[bst_tree],all=[];
+  while(queue.length){var n=queue.shift();all.push(n);if(n.left)queue.push(n.left);if(n.right)queue.push(n.right);}
+
+  // edges
+  all.forEach(function(n){
+    [n.left,n.right].forEach(function(c){
+      if(!c)return;
+      var line=document.createElementNS(NS,'line');
+      line.setAttribute('x1',n.x);line.setAttribute('y1',n.y);
+      line.setAttribute('x2',c.x);line.setAttribute('y2',c.y);
+      line.setAttribute('stroke','#30363d');line.setAttribute('stroke-width','2');
+      edg.appendChild(line);
+    });
+  });
+
+  // nodes
+  all.forEach(function(n){
+    var onPath=bst_highlightPath.indexOf(n.key)>=0;
+    var isFound=bst_foundKey===n.key;
+    var fill='#21262d',stroke='#30363d',txtCol='#c9d1d9',sw='2';
+    if(isFound&&!bst_notFound){fill='#3fb9500d';stroke='#3fb950';sw='2.5';txtCol='#3fb950';}
+    else if(bst_notFound&&onPath){fill='#f851490d';stroke='#f85149';sw='2';txtCol='#f85149';}
+    else if(onPath){fill='#1f6feb1a';stroke='#58a6ff';sw='2.5';txtCol='#58a6ff';}
+    var g=document.createElementNS(NS,'g');
+    var c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r','20');
+    c.setAttribute('fill',fill);c.setAttribute('stroke',stroke);c.setAttribute('stroke-width',sw);
+    g.appendChild(c);
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('x',n.x);t.setAttribute('y',n.y);
+    t.setAttribute('fill',txtCol);t.setAttribute('font-size','13');t.setAttribute('font-weight','700');
+    t.setAttribute('font-family','monospace');t.setAttribute('text-anchor','middle');
+    t.setAttribute('dominant-baseline','central');t.textContent=n.key;
+    g.appendChild(t);
+    nod.appendChild(g);
+  });
+
+  var h=bst_treeHeight(bst_tree);
+  var nc=bst_countNodes(bst_tree);
+  var s1=document.getElementById('vz_bst_stat_h');
+  var s2=document.getElementById('vz_bst_stat_n');
+  var s3=document.getElementById('vz_bst_stat_c');
+  if(s1)s1.textContent=h;
+  if(s2)s2.textContent=nc;
+  if(s3)s3.textContent=bst_comparisons;
+}
+
+function vz_bststep(){
+  if(bst_done)return;
+  var step=bst_steps[bst_stepIdx];
+  step.action();
+  var lbl=document.getElementById('vz_bst_lbl');
+  var narr=document.getElementById('vz_bst_narr');
+  if(lbl)lbl.textContent=step.lbl;
+  if(narr)narr.innerHTML=step.narr;
+  bst_stepIdx++;
+  if(bst_stepIdx>=bst_steps.length){
+    bst_done=true;
+    var btn=document.getElementById('vz_bst_btnNext');
+    if(btn){btn.disabled=true;btn.style.opacity='0.4';}
+  }
+}
+
+function vz_bstreset(){
+  bst_stepIdx=0;bst_done=false;bst_tree=null;
+  bst_highlightPath=[];bst_foundKey=null;bst_notFound=false;bst_comparisons=0;
+  var edg=document.getElementById('vz_bst_edges');
+  var nod=document.getElementById('vz_bst_nodes');
+  if(edg)edg.innerHTML='';if(nod)nod.innerHTML='';
+  var lbl=document.getElementById('vz_bst_lbl');
+  var narr=document.getElementById('vz_bst_narr');
+  if(lbl)lbl.textContent='Ready';
+  if(narr)narr.innerHTML='Press <b>Next Step</b> to begin inserting keys one by one.';
+  var s1=document.getElementById('vz_bst_stat_h');
+  var s2=document.getElementById('vz_bst_stat_n');
+  var s3=document.getElementById('vz_bst_stat_c');
+  if(s1)s1.textContent='0';if(s2)s2.textContent='0';if(s3)s3.textContent='0';
+  var btn=document.getElementById('vz_bst_btnNext');
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+}
+
+window.vz_bststep=vz_bststep;
+window.vz_bstreset=vz_bstreset;
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     Widget 2 — AVL Rotations
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg';
+
+// ─── AVL helpers ─────────────────────────────────────────────────────────────
+function avl_h(n){return n?n.h:-1;}
+function avl_upd(n){if(!n)return;n.h=1+Math.max(avl_h(n.l),avl_h(n.r));n.bf=avl_h(n.l)-avl_h(n.r);}
+function avl_rotL(x){var y=x.r;x.r=y.l;y.l=x;avl_upd(x);avl_upd(y);return y;}
+function avl_rotR(y){var x=y.l;y.l=x.r;x.r=y;avl_upd(y);avl_upd(x);return x;}
+function avl_ins(node,key){
+  if(!node)return{key:key,l:null,r:null,h:0,bf:0};
+  if(key<node.key)node.l=avl_ins(node.l,key);
+  else if(key>node.key)node.r=avl_ins(node.r,key);
+  else return node;
+  avl_upd(node);
+  if(node.bf>1){if(key<node.l.key)return avl_rotR(node);else{node.l=avl_rotL(node.l);return avl_rotR(node);}}
+  if(node.bf<-1){if(key>node.r.key)return avl_rotL(node);else{node.r=avl_rotR(node.r);return avl_rotL(node);}}
+  return node;
+}
+function avl_cloneTree(n){
+  if(!n)return null;
+  return{key:n.key,l:avl_cloneTree(n.l),r:avl_cloneTree(n.r),h:n.h,bf:n.bf,hilight:n.hilight||null};
+}
+
+// ─── State ───────────────────────────────────────────────────────────────────
+var avl_root=null, avl_stepIdx=0, avl_done=false;
+var avl_rots=0, avl_hiNodes=[], avl_hiType=null;
+
+var avl_steps=[
+  {lbl:'Step 1 — Insert 10',narr:'Root is empty → 10 becomes root. Balance factor = 0.',
+   action:function(){avl_root=avl_ins(avl_root,10);avl_hiNodes=[10];avl_hiType='new';}},
+  {lbl:'Step 2 — Insert 20',narr:'20 &gt; 10 → right child. BF(10) = −1, still balanced.',
+   action:function(){avl_root=avl_ins(avl_root,20);avl_hiNodes=[20];avl_hiType='new';}},
+  {lbl:'Step 3 — Insert 30 — IMBALANCE',narr:'30 &gt; 10 → right, 30 &gt; 20 → right. BF(10) = <b style="color:#f85149">−2</b>! Right-right imbalance detected!',
+   action:function(){avl_hiNodes=[10];avl_hiType='imbalance';avl_root={key:10,l:null,r:{key:20,l:null,r:{key:30,l:null,r:null,h:0,bf:0},h:1,bf:-1},h:2,bf:-2};}},
+  {lbl:'Step 4 — Left Rotation at 10',narr:'Left rotation at node 10. 20 rises to become root. All balanced!',
+   action:function(){avl_rots++;avl_root=avl_ins({key:10,l:null,r:null,h:0,bf:0},20);avl_root=avl_ins(avl_root,30);avl_hiNodes=[20];avl_hiType='rotated';}},
+  {lbl:'Step 5 — Insert 25 — IMBALANCE',narr:'25 → right of 20, left of 30. BF(20) = <b style="color:#f85149">−2</b>! Right-left imbalance. Need double rotation.',
+   action:function(){var tmp={key:20,l:{key:10,l:null,r:null,h:0,bf:0},r:{key:30,l:{key:25,l:null,r:null,h:0,bf:0},r:null,h:1,bf:1},h:3,bf:-2};avl_upd(tmp.r.l);avl_upd(tmp.r);avl_upd(tmp.l);avl_upd(tmp);avl_root=tmp;avl_hiNodes=[20,30];avl_hiType='imbalance';}},
+  {lbl:'Step 6 — Right Rotation at 30',narr:'Step 1 of double rotation: right rotation at 30. 25 becomes parent of 30.',
+   action:function(){avl_rots++;var tmp={key:20,l:{key:10,l:null,r:null,h:0,bf:0},r:{key:25,l:null,r:{key:30,l:null,r:null,h:0,bf:0},h:1,bf:-1},h:2,bf:-1};avl_upd(tmp.r.r);avl_upd(tmp.r);avl_upd(tmp.l);avl_upd(tmp);avl_root=tmp;avl_hiNodes=[25,30];avl_hiType='rotated';}},
+  {lbl:'Step 7 — Left Rotation at 20',narr:'Step 2: left rotation at 20. 25 becomes new root. <b style="color:#3fb950">Balanced!</b>',
+   action:function(){avl_rots++;avl_root=null;avl_root=avl_ins(avl_root,25);avl_root=avl_ins(avl_root,20);avl_root=avl_ins(avl_root,30);avl_root=avl_ins(avl_root,10);avl_hiNodes=[25];avl_hiType='rotated';}},
+];
+
+function avl_layout(node,depth,counter){
+  if(!node)return;
+  avl_layout(node.l,depth+1,counter);
+  node.x=counter.v*72+50;node.y=depth*68+40;
+  counter.v++;
+  avl_layout(node.r,depth+1,counter);
+}
+
+function avl_bfColor(bf){
+  if(bf===0)return'#8b949e';
+  if(Math.abs(bf)===1)return'#58a6ff';
+  return'#f85149';
+}
+
+function avl_render(){
+  var edg=document.getElementById('vz_avl_edges');
+  var nod=document.getElementById('vz_avl_nodes');
+  if(!edg||!nod)return;
+  edg.innerHTML='';nod.innerHTML='';
+  if(!avl_root)return;
+
+  var ctr={v:0};avl_layout(avl_root,0,ctr);
+
+  var queue=[avl_root],all=[];
+  while(queue.length){var n=queue.shift();all.push(n);if(n.l)queue.push(n.l);if(n.r)queue.push(n.r);}
+
+  all.forEach(function(n){
+    [n.l,n.r].forEach(function(c){
+      if(!c)return;
+      var line=document.createElementNS(NS,'line');
+      line.setAttribute('x1',n.x);line.setAttribute('y1',n.y);
+      line.setAttribute('x2',c.x);line.setAttribute('y2',c.y);
+      line.setAttribute('stroke','#30363d');line.setAttribute('stroke-width','2');
+      edg.appendChild(line);
+    });
+  });
+
+  all.forEach(function(n){
+    var onHi=avl_hiNodes.indexOf(n.key)>=0;
+    var fill='#21262d',stroke='#30363d',txtCol='#c9d1d9',sw='2';
+    if(onHi){
+      if(avl_hiType==='new'){fill='#3fb9500d';stroke='#3fb950';sw='2.5';txtCol='#3fb950';}
+      else if(avl_hiType==='imbalance'){fill='#f851490d';stroke='#f85149';sw='2.5';txtCol='#f85149';}
+      else if(avl_hiType==='rotated'){fill='#bc8cff0d';stroke='#bc8cff';sw='2.5';txtCol='#bc8cff';}
+    }
+    var g=document.createElementNS(NS,'g');
+    var c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r','20');
+    c.setAttribute('fill',fill);c.setAttribute('stroke',stroke);c.setAttribute('stroke-width',sw);
+    g.appendChild(c);
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('x',n.x);t.setAttribute('y',n.y);
+    t.setAttribute('fill',txtCol);t.setAttribute('font-size','13');t.setAttribute('font-weight','700');
+    t.setAttribute('font-family','monospace');t.setAttribute('text-anchor','middle');
+    t.setAttribute('dominant-baseline','central');t.textContent=n.key;
+    g.appendChild(t);
+    // balance factor label
+    var bfv=n.bf!==undefined?n.bf:0;
+    var bf=document.createElementNS(NS,'text');
+    bf.setAttribute('x',n.x+18);bf.setAttribute('y',n.y-16);
+    bf.setAttribute('fill',avl_bfColor(bfv));bf.setAttribute('font-size','10');
+    bf.setAttribute('font-weight','700');bf.setAttribute('font-family','monospace');
+    bf.setAttribute('text-anchor','middle');
+    bf.textContent=(bfv>0?'+':'')+bfv;
+    g.appendChild(bf);
+    nod.appendChild(g);
+  });
+
+  // stats
+  var treeH=avl_root?avl_root.h+1:0;
+  var maxBF=0;all.forEach(function(n){if(Math.abs(n.bf||0)>maxBF)maxBF=Math.abs(n.bf||0);});
+  var s1=document.getElementById('vz_avl_stat_h');
+  var s2=document.getElementById('vz_avl_stat_r');
+  var s3=document.getElementById('vz_avl_stat_bf');
+  if(s1)s1.textContent=treeH;
+  if(s2)s2.textContent=avl_rots;
+  if(s3)s3.textContent=maxBF;
+}
+
+function vz_avlstep(){
+  if(avl_done)return;
+  var step=avl_steps[avl_stepIdx];
+  step.action();
+  avl_render();
+  var lbl=document.getElementById('vz_avl_lbl');
+  var narr=document.getElementById('vz_avl_narr');
+  if(lbl)lbl.textContent=step.lbl;
+  if(narr)narr.innerHTML=step.narr;
+  avl_stepIdx++;
+  if(avl_stepIdx>=avl_steps.length){
+    avl_done=true;
+    var btn=document.getElementById('vz_avl_btnNext');
+    if(btn){btn.disabled=true;btn.style.opacity='0.4';}
+  }
+}
+
+function vz_avlreset(){
+  avl_root=null;avl_stepIdx=0;avl_done=false;avl_rots=0;avl_hiNodes=[];avl_hiType=null;
+  var edg=document.getElementById('vz_avl_edges');
+  var nod=document.getElementById('vz_avl_nodes');
+  if(edg)edg.innerHTML='';if(nod)nod.innerHTML='';
+  var lbl=document.getElementById('vz_avl_lbl');
+  var narr=document.getElementById('vz_avl_narr');
+  if(lbl)lbl.textContent='Ready';
+  if(narr)narr.innerHTML='Press <b>Next Step</b> to watch AVL insertions trigger rotations. Balance factors shown on each node.';
+  var s1=document.getElementById('vz_avl_stat_h');
+  var s2=document.getElementById('vz_avl_stat_r');
+  var s3=document.getElementById('vz_avl_stat_bf');
+  if(s1)s1.textContent='0';if(s2)s2.textContent='0';if(s3)s3.textContent='0';
+  var btn=document.getElementById('vz_avl_btnNext');
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+}
+
+window.vz_avlstep=vz_avlstep;
+window.vz_avlreset=vz_avlreset;
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     Widget 3 — 2-3 Tree Insertion
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg';
+
+// A 2-3 tree node: {keys:[k1] or [k1,k2], children:[c0,c1] or [c0,c1,c2], x, y, hi}
+var tt_root=null, tt_stepIdx=0, tt_done=false;
+var tt_splits=0, tt_hiKeys=[], tt_hiType=null;
+
+// ─── 2-3 tree insert ─────────────────────────────────────────────────────────
+function tt_newLeaf(k){return{keys:[k],children:[],x:0,y:0,hi:false};}
+
+function tt_insertRec(node,key){
+  // Returns an overflow object {mid,left,right} if a split occurred, else null
+  if(node.children.length===0){
+    // leaf
+    if(node.keys.indexOf(key)>=0)return null;
+    node.keys.push(key);node.keys.sort(function(a,b){return a-b;});
+    if(node.keys.length<=2)return null;
+    // split: 3 keys → push mid up
+    var mid=node.keys[1];
+    var left={keys:[node.keys[0]],children:[],x:0,y:0,hi:false};
+    var right={keys:[node.keys[2]],children:[],x:0,y:0,hi:false};
+    tt_splits++;
+    return{mid:mid,left:left,right:right};
+  } else {
+    // internal
+    var idx=node.keys.length;
+    for(var i=0;i<node.keys.length;i++){if(key<node.keys[i]){idx=i;break;}}
+    var ov=tt_insertRec(node.children[idx],key);
+    if(!ov)return null;
+    // absorb mid
+    node.keys.splice(idx,0,ov.mid);
+    node.children.splice(idx,1,ov.left,ov.right);
+    if(node.keys.length<=2)return null;
+    // split this node
+    var mid2=node.keys[1];
+    var left2={keys:[node.keys[0]],children:node.children.slice(0,2),x:0,y:0,hi:false};
+    var right2={keys:[node.keys[2]],children:node.children.slice(2,4),x:0,y:0,hi:false};
+    tt_splits++;
+    return{mid:mid2,left:left2,right:right2};
+  }
+}
+
+function tt_insert(key){
+  if(!tt_root){tt_root=tt_newLeaf(key);return;}
+  var ov=tt_insertRec(tt_root,key);
+  if(ov){
+    tt_root={keys:[ov.mid],children:[ov.left,ov.right],x:0,y:0,hi:false};
+  }
+}
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+function tt_collectLeaves(node){
+  if(!node)return[];
+  if(node.children.length===0)return[node];
+  var leaves=[];
+  node.children.forEach(function(c){leaves=leaves.concat(tt_collectLeaves(c));});
+  return leaves;
+}
+
+function tt_assignX(node,depth){
+  if(!node)return;
+  if(node.children.length===0){return;}
+  node.children.forEach(function(c){tt_assignX(c,depth+1);});
+  // center x between leftmost and rightmost child
+  node.x=(node.children[0].x+node.children[node.children.length-1].x)/2;
+}
+
+function tt_layoutLeaves(node,depth){
+  var leaves=tt_collectLeaves(node);
+  var spacing=60;
+  for(var i=0;i<leaves.length;i++){
+    leaves[i].x=30+i*spacing;
+    leaves[i].y=depth*72+50;
+  }
+}
+
+function tt_treeDepth(node){
+  if(!node||node.children.length===0)return 1;
+  return 1+tt_treeDepth(node.children[0]);
+}
+
+function tt_layoutTree(node){
+  if(!node)return;
+  var d=tt_treeDepth(node);
+  tt_layoutLeaves(node,d-1);
+  // bottom-up x assignment for internals
+  function assignInternal(n,dep){
+    if(!n||n.children.length===0)return;
+    n.children.forEach(function(c){assignInternal(c,dep+1);});
+    n.x=(n.children[0].x+n.children[n.children.length-1].x)/2;
+    n.y=dep*72+50;
+  }
+  assignInternal(node,0);
+}
+
+// ─── Render ──────────────────────────────────────────────────────────────────
+function tt_collectAll(node){
+  if(!node)return[];
+  var arr=[node];
+  node.children.forEach(function(c){arr=arr.concat(tt_collectAll(c));});
+  return arr;
+}
+
+function tt_countAll(node){
+  return tt_collectAll(node).length;
+}
+
+function tt_render(){
+  var edg=document.getElementById('vz_tt_edges');
+  var nod=document.getElementById('vz_tt_nodes');
+  if(!edg||!nod)return;
+  edg.innerHTML='';nod.innerHTML='';
+  if(!tt_root)return;
+
+  tt_layoutTree(tt_root);
+  var all=tt_collectAll(tt_root);
+
+  // edges
+  all.forEach(function(n){
+    n.children.forEach(function(c){
+      var line=document.createElementNS(NS,'line');
+      line.setAttribute('x1',n.x);line.setAttribute('y1',n.y);
+      line.setAttribute('x2',c.x);line.setAttribute('y2',c.y);
+      line.setAttribute('stroke','#30363d');line.setAttribute('stroke-width','2');
+      edg.appendChild(line);
+    });
+  });
+
+  // nodes
+  all.forEach(function(n){
+    var isHi=n.hi;
+    var isSplit=tt_hiType==='split'&&isHi;
+    var isNew=tt_hiType==='new'&&isHi;
+    var g=document.createElementNS(NS,'g');
+
+    if(n.keys.length===1){
+      // 2-node: circle
+      var fill=isSplit?'#f0883e0d':isNew?'#3fb9500d':'#21262d';
+      var stroke=isSplit?'#f0883e':isNew?'#3fb950':'#30363d';
+      var sw=isHi?'2.5':'2';
+      var txtCol=isSplit?'#f0883e':isNew?'#3fb950':'#c9d1d9';
+      var c=document.createElementNS(NS,'circle');
+      c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r','18');
+      c.setAttribute('fill',fill);c.setAttribute('stroke',stroke);c.setAttribute('stroke-width',sw);
+      g.appendChild(c);
+      var t=document.createElementNS(NS,'text');
+      t.setAttribute('x',n.x);t.setAttribute('y',n.y);
+      t.setAttribute('fill',txtCol);t.setAttribute('font-size','12');t.setAttribute('font-weight','700');
+      t.setAttribute('font-family','monospace');t.setAttribute('text-anchor','middle');
+      t.setAttribute('dominant-baseline','central');t.textContent=n.keys[0];
+      g.appendChild(t);
+    } else {
+      // 3-node: wider rounded rect
+      var fill2=isSplit?'#f0883e0d':isNew?'#3fb9500d':'#21262d';
+      var stroke2=isSplit?'#f0883e':isNew?'#3fb950':'#58a6ff';
+      var sw2=isHi?'2.5':'2';
+      var txtCol2=isSplit?'#f0883e':isNew?'#3fb950':'#79c0ff';
+      var rx=document.createElementNS(NS,'rect');
+      rx.setAttribute('x',n.x-32);rx.setAttribute('y',n.y-16);
+      rx.setAttribute('width','64');rx.setAttribute('height','32');
+      rx.setAttribute('rx','10');rx.setAttribute('fill',fill2);
+      rx.setAttribute('stroke',stroke2);rx.setAttribute('stroke-width',sw2);
+      g.appendChild(rx);
+      // divider
+      var div=document.createElementNS(NS,'line');
+      div.setAttribute('x1',n.x);div.setAttribute('y1',n.y-14);
+      div.setAttribute('x2',n.x);div.setAttribute('y2',n.y+14);
+      div.setAttribute('stroke',stroke2);div.setAttribute('stroke-width','1');
+      g.appendChild(div);
+      // key labels
+      var t1=document.createElementNS(NS,'text');
+      t1.setAttribute('x',n.x-12);t1.setAttribute('y',n.y);
+      t1.setAttribute('fill',txtCol2);t1.setAttribute('font-size','12');t1.setAttribute('font-weight','700');
+      t1.setAttribute('font-family','monospace');t1.setAttribute('text-anchor','middle');
+      t1.setAttribute('dominant-baseline','central');t1.textContent=n.keys[0];
+      g.appendChild(t1);
+      var t2=document.createElementNS(NS,'text');
+      t2.setAttribute('x',n.x+12);t2.setAttribute('y',n.y);
+      t2.setAttribute('fill',txtCol2);t2.setAttribute('font-size','12');t2.setAttribute('font-weight','700');
+      t2.setAttribute('font-family','monospace');t2.setAttribute('text-anchor','middle');
+      t2.setAttribute('dominant-baseline','central');t2.textContent=n.keys[1];
+      g.appendChild(t2);
+    }
+    nod.appendChild(g);
+  });
+
+  var d=tt_treeDepth(tt_root);
+  var nc=tt_countAll(tt_root);
+  var s1=document.getElementById('vz_tt_stat_h');
+  var s2=document.getElementById('vz_tt_stat_s');
+  var s3=document.getElementById('vz_tt_stat_n');
+  if(s1)s1.textContent=d;if(s2)s2.textContent=tt_splits;if(s3)s3.textContent=nc;
+}
+
+// ─── Steps ───────────────────────────────────────────────────────────────────
+var tt_steps=[
+  {lbl:'Step 1 — Insert 10',narr:'Single 2-node: [10].',
+   action:function(){tt_insert(10);tt_hiType='new';tt_root.hi=true;}},
+  {lbl:'Step 2 — Insert 20',narr:'[10] → [10,20]: becomes a 3-node.',
+   action:function(){tt_insert(20);tt_hiType='new';tt_root.hi=true;}},
+  {lbl:'Step 3 — Insert 5 → SPLIT',narr:'Would be 4-node [5,10,20]. Split: promote 10 up. Left=[5], Root=[10], Right=[20].',
+   action:function(){tt_insert(5);tt_hiType='split';tt_root.hi=true;}},
+  {lbl:'Step 4 — Insert 6',narr:'6 &lt; 10 → go left → [5] becomes [5,6] (3-node leaf).',
+   action:function(){tt_insert(6);tt_hiType='new';
+    // highlight left child
+    if(tt_root&&tt_root.children.length>0)tt_root.children[0].hi=true;
+   }},
+  {lbl:'Step 5 — Insert 12',narr:'10 &lt; 12 &lt; ∞ → go right → [20] becomes [12,20] (3-node leaf).',
+   action:function(){tt_insert(12);tt_hiType='new';
+    if(tt_root&&tt_root.children.length>1)tt_root.children[tt_root.children.length-1].hi=true;
+   }},
+  {lbl:'Step 6 — Insert 30 → SPLIT',narr:'30 &gt; 20 → goes to right leaf [12,20], makes 4-node. Split: promote 20 up. Root becomes [10,20].',
+   action:function(){tt_insert(30);tt_hiType='split';tt_root.hi=true;}},
+];
+
+function vz_ttstep(){
+  if(tt_done)return;
+  // clear all highlights
+  var all=tt_collectAll(tt_root||{keys:[],children:[]});
+  all.forEach(function(n){n.hi=false;});
+  tt_hiType=null;
+
+  var step=tt_steps[tt_stepIdx];
+  step.action();
+  tt_render();
+  var lbl=document.getElementById('vz_tt_lbl');
+  var narr=document.getElementById('vz_tt_narr');
+  if(lbl)lbl.textContent=step.lbl;
+  if(narr)narr.innerHTML=step.narr;
+  tt_stepIdx++;
+  if(tt_stepIdx>=tt_steps.length){
+    tt_done=true;
+    var btn=document.getElementById('vz_tt_btnNext');
+    if(btn){btn.disabled=true;btn.style.opacity='0.4';}
+  }
+}
+
+function vz_ttreset(){
+  tt_root=null;tt_stepIdx=0;tt_done=false;tt_splits=0;tt_hiKeys=[];tt_hiType=null;
+  var edg=document.getElementById('vz_tt_edges');
+  var nod=document.getElementById('vz_tt_nodes');
+  if(edg)edg.innerHTML='';if(nod)nod.innerHTML='';
+  var lbl=document.getElementById('vz_tt_lbl');
+  var narr=document.getElementById('vz_tt_narr');
+  if(lbl)lbl.textContent='Ready';
+  if(narr)narr.innerHTML='Press <b>Next Step</b> to insert keys. Watch how 3-nodes split and propagate middle keys upward.';
+  var s1=document.getElementById('vz_tt_stat_h');
+  var s2=document.getElementById('vz_tt_stat_s');
+  var s3=document.getElementById('vz_tt_stat_n');
+  if(s1)s1.textContent='0';if(s2)s2.textContent='0';if(s3)s3.textContent='0';
+  var btn=document.getElementById('vz_tt_btnNext');
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+}
+
+window.vz_ttstep=vz_ttstep;
+window.vz_ttreset=vz_ttreset;
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     Widget 4 — Red-Black Tree
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg';
+var RED='red',BLACK='black';
+
+// ─── RBT node ────────────────────────────────────────────────────────────────
+// {key, color, left, right, x, y, hi}
+
+var rbt_root=null, rbt_stepIdx=0, rbt_done=false;
+var rbt_rots=0, rbt_recolors=0, rbt_hiNodes=[], rbt_hiType=null;
+
+function rbt_isRed(n){return n&&n.color===RED;}
+
+function rbt_rotL(h){
+  var x=h.right;h.right=x.left;x.left=h;
+  x.color=h.color;h.color=RED;
+  return x;
+}
+function rbt_rotR(h){
+  var x=h.left;h.left=x.right;x.right=h;
+  x.color=h.color;h.color=RED;
+  return x;
+}
+function rbt_flip(h){
+  h.color=(h.color===RED)?BLACK:RED;
+  if(h.left)h.left.color=(h.left.color===RED)?BLACK:RED;
+  if(h.right)h.right.color=(h.right.color===RED)?BLACK:RED;
+}
+
+function rbt_ins(h,key){
+  if(!h)return{key:key,color:RED,left:null,right:null,x:0,y:0,hi:false};
+  if(key<h.key)h.left=rbt_ins(h.left,key);
+  else if(key>h.key)h.right=rbt_ins(h.right,key);
+  // fix-up
+  if(rbt_isRed(h.right)&&!rbt_isRed(h.left)){h=rbt_rotL(h);rbt_rots++;}
+  if(rbt_isRed(h.left)&&rbt_isRed(h.left&&h.left.left)){h=rbt_rotR(h);rbt_rots++;}
+  if(rbt_isRed(h.left)&&rbt_isRed(h.right)){rbt_flip(h);rbt_recolors++;}
+  return h;
+}
+
+function rbt_insert(key){
+  rbt_root=rbt_ins(rbt_root,key);
+  rbt_root.color=BLACK;
+}
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+function rbt_layout(node,depth,counter){
+  if(!node)return;
+  rbt_layout(node.left,depth+1,counter);
+  node.x=counter.v*72+50;node.y=depth*68+40;
+  counter.v++;
+  rbt_layout(node.right,depth+1,counter);
+}
+
+function rbt_collectAll(node){
+  if(!node)return[];
+  return[node].concat(rbt_collectAll(node.left)).concat(rbt_collectAll(node.right));
+}
+
+function rbt_blackHeight(node){
+  if(!node)return 0;
+  var bh=rbt_blackHeight(node.left);
+  return (node.color===BLACK?1:0)+bh;
+}
+
+// ─── Render ──────────────────────────────────────────────────────────────────
+function rbt_render(){
+  var edg=document.getElementById('vz_rbt_edges');
+  var nod=document.getElementById('vz_rbt_nodes');
+  if(!edg||!nod)return;
+  edg.innerHTML='';nod.innerHTML='';
+  if(!rbt_root)return;
+
+  var ctr={v:0};rbt_layout(rbt_root,0,ctr);
+  var all=rbt_collectAll(rbt_root);
+
+  // draw edge colored by child color
+  all.forEach(function(n){
+    [n.left,n.right].forEach(function(c){
+      if(!c)return;
+      var line=document.createElementNS(NS,'line');
+      line.setAttribute('x1',n.x);line.setAttribute('y1',n.y);
+      line.setAttribute('x2',c.x);line.setAttribute('y2',c.y);
+      var edgeCol=c.color===RED?'#f8514966':'#30363d';
+      line.setAttribute('stroke',edgeCol);line.setAttribute('stroke-width','2');
+      edg.appendChild(line);
+    });
+  });
+
+  all.forEach(function(n){
+    var onHi=rbt_hiNodes.indexOf(n.key)>=0;
+    var isRed=n.color===RED;
+    // node color
+    var fill,stroke,txtCol,sw='2';
+    if(isRed){fill='#f851490d';stroke='#f85149';txtCol='#f85149';}
+    else{fill='#21262d';stroke='#8b949e';txtCol='#c9d1d9';}
+    // highlight override
+    if(onHi&&rbt_hiType==='rotate'){stroke='#bc8cff';sw='2.5';}
+    if(onHi&&rbt_hiType==='recolor'){stroke='#58a6ff';sw='2.5';}
+
+    var g=document.createElementNS(NS,'g');
+    var c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r','20');
+    c.setAttribute('fill',fill);c.setAttribute('stroke',stroke);c.setAttribute('stroke-width',sw);
+    g.appendChild(c);
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('x',n.x);t.setAttribute('y',n.y);
+    t.setAttribute('fill',txtCol);t.setAttribute('font-size','13');t.setAttribute('font-weight','700');
+    t.setAttribute('font-family','monospace');t.setAttribute('text-anchor','middle');
+    t.setAttribute('dominant-baseline','central');t.textContent=n.key;
+    g.appendChild(t);
+    // color label
+    var cl=document.createElementNS(NS,'text');
+    cl.setAttribute('x',n.x);cl.setAttribute('y',n.y+30);
+    cl.setAttribute('fill',isRed?'#f85149':'#8b949e');cl.setAttribute('font-size','8');
+    cl.setAttribute('font-family','monospace');cl.setAttribute('text-anchor','middle');
+    cl.textContent=isRed?'R':'B';
+    g.appendChild(cl);
+    nod.appendChild(g);
+  });
+
+  var bh=rbt_blackHeight(rbt_root);
+  var s1=document.getElementById('vz_rbt_stat_bh');
+  var s2=document.getElementById('vz_rbt_stat_r');
+  var s3=document.getElementById('vz_rbt_stat_rc');
+  if(s1)s1.textContent=bh;if(s2)s2.textContent=rbt_rots;if(s3)s3.textContent=rbt_recolors;
+}
+
+// ─── Steps ───────────────────────────────────────────────────────────────────
+var rbt_steps=[
+  {lbl:'Step 1 — Insert 10',
+   narr:'New node = red. Root → recolor to black. Tree: [10-black].',
+   action:function(){rbt_insert(10);rbt_hiNodes=[10];rbt_hiType=null;}},
+  {lbl:'Step 2 — Insert 20',
+   narr:'20 &gt; 10 → right child, colored red. Parent 10 is black → no violation.',
+   action:function(){rbt_insert(20);rbt_hiNodes=[20];rbt_hiType=null;}},
+  {lbl:'Step 3 — Insert 30 — VIOLATION',
+   narr:'30 &gt; 20 → right child, red. Parent 20 is <b style="color:#f85149">red</b>! Uncle (left of 10) is null/black. Right-right case → <b style="color:#bc8cff">Left rotate + recolor</b>.',
+   action:function(){var before=rbt_rots;rbt_insert(30);if(rbt_rots>before)rbt_hiNodes=[20];else rbt_hiNodes=[30];rbt_hiType='rotate';}},
+  {lbl:'Step 4 — After Rotation',
+   narr:'20 is new root (black), left=10 (red), right=30 (red). <b style="color:#3fb950">Balanced!</b>',
+   action:function(){rbt_hiNodes=[];rbt_hiType=null;rbt_render();}},
+  {lbl:'Step 5 — Insert 15',
+   narr:'15 → right of 10. Parent 10 is <b style="color:#f85149">red</b>! Uncle 30 is also red → <b style="color:#58a6ff">recolor</b>: parent 10 and uncle 30 → black; grandparent 20 → red → root → black.',
+   action:function(){var before=rbt_recolors;rbt_insert(15);rbt_hiNodes=[10,30,20];rbt_hiType='recolor';}},
+];
+
+function vz_rbtstep(){
+  if(rbt_done)return;
+  var step=rbt_steps[rbt_stepIdx];
+  step.action();
+  rbt_render();
+  var lbl=document.getElementById('vz_rbt_lbl');
+  var narr=document.getElementById('vz_rbt_narr');
+  if(lbl)lbl.textContent=step.lbl;
+  if(narr)narr.innerHTML=step.narr;
+  rbt_stepIdx++;
+  if(rbt_stepIdx>=rbt_steps.length){
+    rbt_done=true;
+    var btn=document.getElementById('vz_rbt_btnNext');
+    if(btn){btn.disabled=true;btn.style.opacity='0.4';}
+  }
+}
+
+function vz_rbtreset(){
+  rbt_root=null;rbt_stepIdx=0;rbt_done=false;rbt_rots=0;rbt_recolors=0;
+  rbt_hiNodes=[];rbt_hiType=null;
+  var edg=document.getElementById('vz_rbt_edges');
+  var nod=document.getElementById('vz_rbt_nodes');
+  if(edg)edg.innerHTML='';if(nod)nod.innerHTML='';
+  var lbl=document.getElementById('vz_rbt_lbl');
+  var narr=document.getElementById('vz_rbt_narr');
+  if(lbl)lbl.textContent='Ready';
+  if(narr)narr.innerHTML='Press <b>Next Step</b> to insert keys into an RBT. Red nodes shown in <span style="color:#f85149">red</span>, black nodes in grey.';
+  var s1=document.getElementById('vz_rbt_stat_bh');
+  var s2=document.getElementById('vz_rbt_stat_r');
+  var s3=document.getElementById('vz_rbt_stat_rc');
+  if(s1)s1.textContent='0';if(s2)s2.textContent='0';if(s3)s3.textContent='0';
+  var btn=document.getElementById('vz_rbt_btnNext');
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+}
+
+window.vz_rbtstep=vz_rbtstep;
+window.vz_rbtreset=vz_rbtreset;
+})();
+</script>
+
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+<!-- ═══════════════════ Week 9 — AVL Tree Demo Script ═══════════════════ -->
+<script>
+(function(){
+  'use strict';
+  // ── AVL Tree data structure ──────────────────────────────────────────────
+  // Each node: { key, left, right, height, bf, x, y, id }
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const INSERT_SEQ = [4, 2, 6, 1, 3, 5, 7, 8];
+
+  let root = null;
+  let nodeCount = 0;
+  let rotCount = 0;
+  let insertIdx = 0;
+  let busy = false;
+  let finished = false;
+  let spd = 1;
+  let lastInserted = null;   // key of last inserted node (for highlight)
+  let lastRotated = [];      // keys involved in last rotation
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms / spd));
+
+  function setStep(label, html) {
+    document.getElementById('d9-label').textContent = label;
+    document.getElementById('d9-text').innerHTML = html;
+  }
+
+  // ── AVL helpers ──────────────────────────────────────────────────────────
+  function height(n) { return n ? n.height : -1; }
+
+  function updateHeight(n) {
+    if (!n) return;
+    n.height = 1 + Math.max(height(n.left), height(n.right));
+    n.bf = height(n.left) - height(n.right);
+  }
+
+  function rotateRight(y) {
+    const x = y.left;
+    const T2 = x.right;
+    x.right = y;
+    y.left = T2;
+    updateHeight(y);
+    updateHeight(x);
+    return x;
+  }
+
+  function rotateLeft(x) {
+    const y = x.right;
+    const T2 = y.left;
+    y.left = x;
+    x.right = T2;
+    updateHeight(x);
+    updateHeight(y);
+    return y;
+  }
+
+  function insert(node, key) {
+    if (!node) {
+      return { key, left: null, right: null, height: 0, bf: 0 };
+    }
+    if (key < node.key) node.left = insert(node.left, key);
+    else if (key > node.key) node.right = insert(node.right, key);
+    else return node; // duplicate
+
+    updateHeight(node);
+
+    // Rebalance
+    if (node.bf > 1) {
+      if (key < node.left.key) {
+        // LL → right rotation
+        lastRotated = [node.key, node.left.key];
+        return rotateRight(node);
+      } else {
+        // LR → left rotation on left child, then right rotation
+        lastRotated = [node.key, node.left.key];
+        node.left = rotateLeft(node.left);
+        return rotateRight(node);
+      }
+    }
+    if (node.bf < -1) {
+      if (key > node.right.key) {
+        // RR → left rotation
+        lastRotated = [node.key, node.right.key];
+        return rotateLeft(node);
+      } else {
+        // RL → right rotation on right child, then left rotation
+        lastRotated = [node.key, node.right.key];
+        node.right = rotateRight(node.right);
+        return rotateLeft(node);
+      }
+    }
+    return node;
+  }
+
+  // ── Layout computation ───────────────────────────────────────────────────
+  // Assign x positions via inorder traversal, y via depth
+  function layoutTree(node, depth, counter) {
+    if (!node) return;
+    layoutTree(node.left, depth + 1, counter);
+    node.x = counter.val * 90 + 55;   // 90px per inorder rank
+    node.y = depth * 80 + 50;
+    counter.val++;
+    layoutTree(node.right, depth + 1, counter);
+  }
+
+  // ── SVG rendering ────────────────────────────────────────────────────────
+  function bfColor(bf) {
+    if (bf === 0) return '#8b949e';
+    if (Math.abs(bf) === 1) return '#58a6ff';
+    return '#f85149';
+  }
+
+  function renderTree(highlightInserted, highlightRotated) {
+    const edgeG = document.getElementById('d9-tree-edges');
+    const nodeG = document.getElementById('d9-tree-nodes');
+    edgeG.innerHTML = '';
+    nodeG.innerHTML = '';
+
+    if (!root) return;
+
+    // Layout
+    const counter = { val: 0 };
+    layoutTree(root, 0, counter);
+
+    // Collect all nodes via BFS
+    const queue = [root];
+    const allNodes = [];
+    while (queue.length) {
+      const n = queue.shift();
+      allNodes.push(n);
+      if (n.left) queue.push(n.left);
+      if (n.right) queue.push(n.right);
+    }
+
+    // Draw edges
+    allNodes.forEach(n => {
+      [n.left, n.right].forEach(child => {
+        if (!child) return;
+        const line = document.createElementNS(SVG_NS, 'line');
+        line.setAttribute('x1', n.x);
+        line.setAttribute('y1', n.y);
+        line.setAttribute('x2', child.x);
+        line.setAttribute('y2', child.y);
+        line.setAttribute('stroke', '#30363d');
+        line.setAttribute('stroke-width', '2');
+        edgeG.appendChild(line);
+      });
+    });
+
+    // Update balance factor list
+    const bfEl = document.getElementById('d9-bflist');
+    const bfLines = allNodes.map(n => {
+      const c = bfColor(n.bf);
+      return `<span style="color:#c9d1d9">${n.key}</span>: <span style="color:${c}">${n.bf > 0 ? '+' : ''}${n.bf}</span>`;
+    });
+    bfEl.innerHTML = bfLines.join('<br>') || '(tree empty)';
+
+    // Draw nodes
+    allNodes.forEach(n => {
+      // Choose fill/stroke
+      let fill = '#21262d', stroke = '#c9d1d9', sw = '2', txtColor = '#c9d1d9';
+
+      if (highlightInserted && n.key === highlightInserted) {
+        fill = '#f0883e44'; stroke = '#f0883e'; sw = '2.5'; txtColor = '#f0883e';
+      } else if (highlightRotated && highlightRotated.includes(n.key)) {
+        fill = '#bc8cff44'; stroke = '#bc8cff'; sw = '2.5'; txtColor = '#bc8cff';
+      }
+
+      const g = document.createElementNS(SVG_NS, 'g');
+
+      const circ = document.createElementNS(SVG_NS, 'circle');
+      circ.setAttribute('cx', n.x);
+      circ.setAttribute('cy', n.y);
+      circ.setAttribute('r', '24');
+      circ.setAttribute('fill', fill);
+      circ.setAttribute('stroke', stroke);
+      circ.setAttribute('stroke-width', sw);
+      g.appendChild(circ);
+
+      // Key label
+      const keyTxt = document.createElementNS(SVG_NS, 'text');
+      keyTxt.setAttribute('x', n.x);
+      keyTxt.setAttribute('y', n.y);
+      keyTxt.setAttribute('fill', txtColor);
+      keyTxt.setAttribute('font-size', '14');
+      keyTxt.setAttribute('font-weight', '700');
+      keyTxt.setAttribute('font-family', 'monospace');
+      keyTxt.setAttribute('text-anchor', 'middle');
+      keyTxt.setAttribute('dominant-baseline', 'central');
+      keyTxt.textContent = n.key;
+      g.appendChild(keyTxt);
+
+      // Balance factor label (top-right of circle)
+      const bfTxt = document.createElementNS(SVG_NS, 'text');
+      bfTxt.setAttribute('x', n.x + 18);
+      bfTxt.setAttribute('y', n.y - 18);
+      bfTxt.setAttribute('fill', bfColor(n.bf));
+      bfTxt.setAttribute('font-size', '10');
+      bfTxt.setAttribute('font-weight', '700');
+      bfTxt.setAttribute('font-family', 'monospace');
+      bfTxt.setAttribute('text-anchor', 'middle');
+      bfTxt.textContent = (n.bf > 0 ? '+' : '') + n.bf;
+      g.appendChild(bfTxt);
+
+      nodeG.appendChild(g);
+    });
+
+    // Update height stat
+    document.getElementById('d9-s-height').textContent = root ? root.height + 1 : 0;
+  }
+
+  // ── Insert one key ───────────────────────────────────────────────────────
+  async function insertKey(key) {
+    lastRotated = [];
+    const rotBefore = rotCount;
+
+    setStep('Inserting ' + key, `Finding correct BST position for <code>${key}</code>...`);
+    await sleep(350);
+
+    root = insert(root, key);
+    nodeCount++;
+    lastInserted = key;
+
+    const rotHappened = lastRotated.length > 0;
+    if (rotHappened) rotCount++;
+
+    renderTree(key, rotHappened ? lastRotated : []);
+
+    document.getElementById('d9-s-count').textContent = nodeCount + ' / 8';
+    document.getElementById('d9-s-rots').textContent = String(rotCount);
+
+    if (rotHappened) {
+      setStep('Rotation performed!', `Inserted <code>${key}</code>. <b style="color:#f85149">Balance factor exceeded ±1</b> at node <code>${lastRotated[0]}</code> — performing <b style="color:#bc8cff">rotation</b> to restore AVL property.`);
+      await sleep(700);
+    } else {
+      setStep('Inserted ' + key, `<code>${key}</code> placed in BST order. All balance factors ∈ {−1, 0, 1} — <b style="color:#3fb950">tree is balanced!</b>`);
+    }
+
+    await sleep(300);
+    renderTree(null, []);
+  }
+
+  async function doStep() {
+    if (busy || finished) return;
+    busy = true;
+    document.getElementById('d9-step').disabled = true;
+    document.getElementById('d9-run').disabled = true;
+
+    if (insertIdx < INSERT_SEQ.length) {
+      await insertKey(INSERT_SEQ[insertIdx]);
+      insertIdx++;
+    }
+
+    if (insertIdx >= INSERT_SEQ.length) {
+      finished = true;
+      setStep('All keys inserted!', `<b style="color:#3fb950">AVL tree complete!</b> ${nodeCount} nodes, ${rotCount} rotation(s) performed. Height = ${root ? root.height + 1 : 0}.`);
+      renderTree(null, []);
+    } else {
+      document.getElementById('d9-step').disabled = false;
+      document.getElementById('d9-run').disabled = false;
+    }
+    busy = false;
+  }
+
+  async function runAll() {
+    if (busy || finished) return;
+    document.getElementById('d9-step').disabled = true;
+    document.getElementById('d9-run').disabled = true;
+    while (!finished && insertIdx < INSERT_SEQ.length) {
+      await doStep();
+      if (!finished) await sleep(300);
+    }
+  }
+
+  function resetDemo() {
+    if (busy) return;
+    root = null;
+    nodeCount = 0;
+    rotCount = 0;
+    insertIdx = 0;
+    finished = false;
+    lastInserted = null;
+    lastRotated = [];
+    document.getElementById('d9-tree-edges').innerHTML = '';
+    document.getElementById('d9-tree-nodes').innerHTML = '';
+    document.getElementById('d9-bflist').innerHTML = '(tree empty)';
+    document.getElementById('d9-s-count').textContent = '0 / 8';
+    document.getElementById('d9-s-rots').textContent = '0';
+    document.getElementById('d9-s-height').textContent = '0';
+    setStep('Ready', 'Insert sequence: <code>[4, 2, 6, 1, 3, 5, 7, 8]</code>. Press <b>Insert next</b> to proceed.');
+    document.getElementById('d9-step').disabled = false;
+    document.getElementById('d9-run').disabled = false;
+  }
+
+  document.getElementById('d9-step').addEventListener('click', doStep);
+  document.getElementById('d9-run').addEventListener('click', runAll);
+  document.getElementById('d9-reset').addEventListener('click', resetDemo);
+  document.getElementById('d9-spd').addEventListener('input', function() { spd = parseFloat(this.value); });
+})();
+</script>
+</html>

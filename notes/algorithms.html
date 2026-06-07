@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithms Reference — FIT2004</title>
+<style>
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+    --text: #c9d1d9; --text-muted: #8b949e;
+    --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+    --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+    --yellow: #e3b341;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px; line-height: 1.6;
+    display: flex; min-height: 100vh;
+  }
+  nav {
+    width: 240px; background: var(--bg2); border-right: 1px solid var(--border);
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    padding: 24px 0; flex-shrink: 0;
+  }
+  nav .logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  nav .logo a { color: var(--text-muted); text-decoration: none; font-size: 12px; }
+  nav .logo a:hover { color: var(--blue); }
+  nav .logo .title { font-size: 15px; font-weight: 600; color: var(--text); margin-top: 6px; }
+  nav h3 { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); padding: 0 20px 8px; }
+  nav a.week-link { display: block; padding: 6px 20px; color: var(--text-muted); text-decoration: none; font-size: 13px; transition: background .15s, color .15s; }
+  nav a.week-link:hover { background: var(--bg3); color: var(--blue); }
+  nav .divider { height: 1px; background: var(--border); margin: 12px 0; }
+  nav a.cat-link { display: block; padding: 5px 20px 5px 28px; color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color .15s; }
+  nav a.cat-link:hover { color: var(--cyan); }
+  main { flex: 1; padding: 48px 56px; max-width: 1280px; overflow-x: hidden; }
+  h1 { font-size: 32px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 32px; }
+
+  .search-wrap { margin-bottom: 28px; position: relative; }
+  .search-wrap input {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); font-size: 14px; padding: 10px 16px 10px 40px;
+    border-radius: 8px; outline: none; transition: border-color .2s;
+  }
+  .search-wrap input:focus { border-color: var(--blue); }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+  .result-count { margin-top: 8px; font-size: 12px; color: var(--text-muted); }
+
+  .section-header { display: flex; align-items: center; gap: 12px; margin: 48px 0 14px; }
+  .section-header h2 { font-size: 20px; font-weight: 600; color: var(--text); }
+  .section-header .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border); }
+  .section-anchor { scroll-margin-top: 24px; }
+
+  .tbl-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--bg3); }
+  thead th { padding: 11px 13px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); white-space: nowrap; }
+  tbody tr { border-top: 1px solid var(--border); transition: background .1s; }
+  tbody tr:hover { background: var(--bg2); }
+  tbody tr.hidden { display: none; }
+  td { padding: 9px 13px; vertical-align: top; }
+  td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+  td a.algo-link { color: var(--text); text-decoration: none; }
+  td a.algo-link:hover { color: var(--blue); text-decoration: underline; }
+
+  .idea { font-size: 12px; color: var(--text); font-style: italic; max-width: 280px; }
+  .notation { font-size: 11px; color: var(--text-muted); font-family: "SF Mono", Menlo, Consolas, monospace; line-height: 1.7; }
+
+  .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; white-space: nowrap; font-family: "SF Mono", Menlo, Monaco, Consolas, monospace; }
+  .pill-blue   { background: rgba(88,166,255,.12); color: var(--blue);   border: 1px solid rgba(88,166,255,.3); }
+  .pill-green  { background: rgba(63,185,80,.12);  color: var(--green);  border: 1px solid rgba(63,185,80,.3);  }
+  .pill-orange { background: rgba(240,136,62,.12); color: var(--orange); border: 1px solid rgba(240,136,62,.3); }
+  .pill-red    { background: rgba(248,81,73,.12);  color: var(--red);    border: 1px solid rgba(248,81,73,.3);  }
+  .pill-purple { background: rgba(188,140,255,.12);color: var(--purple); border: 1px solid rgba(188,140,255,.3);}
+  .pill-cyan   { background: rgba(121,192,255,.12);color: var(--cyan);   border: 1px solid rgba(121,192,255,.3);}
+
+  .week-ref { font-size: 12px; color: var(--text-muted); text-decoration: none; white-space: nowrap; }
+  .week-ref:hover { color: var(--blue); }
+  code { font-family: "SF Mono", Menlo, Monaco, Consolas, monospace; font-size: 12px; color: var(--cyan); }
+  .note { font-size: 12px; color: var(--text-muted); }
+  .note strong { color: var(--text); }
+
+  .par-dc     { border-left: 3px solid var(--blue);   }
+  .par-greedy { border-left: 3px solid var(--green);  }
+  .par-dp     { border-left: 3px solid var(--purple); }
+  .par-flow   { border-left: 3px solid var(--orange); }
+  .par-graph  { border-left: 3px solid var(--cyan);   }
+  .par-sort   { border-left: 3px solid var(--yellow); }
+  .par-struct { border-left: 3px solid var(--red);    }
+
+  mark { background: rgba(88,166,255,.25); color: var(--blue); border-radius: 2px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-muted); }
+  .legend-bar { width: 14px; height: 14px; border-radius: 3px; }
+
+  @media (max-width: 900px) { nav { display: none; } main { padding: 24px 20px; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">
+    <a href="index.html">← Back to index</a>
+    <div class="title">Algorithm Reference</div>
+  </div>
+  <h3>By Week</h3>
+  <a class="week-link" href="week1.html">Week 1 — Complexity &amp; D&amp;C</a>
+  <a class="week-link" href="week2.html">Week 2 — Verification &amp; Sorting</a>
+  <a class="week-link" href="week3.html">Week 3 — Quicksort &amp; Selection</a>
+  <a class="week-link" href="week4.html">Week 4 — Graph Basics</a>
+  <a class="week-link" href="week5.html">Week 5 — Greedy Algorithms</a>
+  <a class="week-link" href="week6.html">Week 6 — Dynamic Programming</a>
+  <a class="week-link" href="week7.html">Week 7 — DP Graph Algorithms</a>
+  <a class="week-link" href="week8.html">Week 8 — Tries &amp; Suffix Trees</a>
+  <a class="week-link" href="week9.html">Week 9 — Search Trees</a>
+  <a class="week-link" href="week10.html">Week 10 — Network Flow</a>
+  <a class="week-link" href="week11.html">Week 11 — Advanced Flow</a>
+  <div class="divider"></div>
+  <h3>By Category</h3>
+  <a class="cat-link" href="#sorting">Sorting</a>
+  <a class="cat-link" href="#dc">Divide &amp; Conquer</a>
+  <a class="cat-link" href="#graph">Graph Traversal</a>
+  <a class="cat-link" href="#greedy">Greedy / MST / SP</a>
+  <a class="cat-link" href="#dp">Dynamic Programming</a>
+  <a class="cat-link" href="#flow">Network Flow</a>
+  <a class="cat-link" href="#structures">Data Structures</a>
+  <a class="cat-link" href="#string">String Structures</a>
+</nav>
+
+<main>
+  <h1>Algorithm Reference Table</h1>
+  <p class="subtitle">FIT2004 · All 60+ algorithms — complexities, core ideas, notation guide, and key properties.</p>
+
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="search" placeholder="Search algorithms, complexities, paradigms…" oninput="filterTable()">
+    <div class="result-count" id="result-count"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-bar" style="background:var(--yellow)"></div>Sorting</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--blue)"></div>Divide &amp; Conquer</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--cyan)"></div>Graph / Traversal</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--green)"></div>Greedy</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--purple)"></div>Dynamic Programming</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--orange)"></div>Network Flow</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--red)"></div>Data Structures</div>
+  </div>
+
+  <!-- ══════════════════════ SORTING ══════════════════════ -->
+  <div class="section-header section-anchor" id="sorting">
+    <h2>Sorting Algorithms</h2><span class="badge">8 algorithms</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Algorithm</th>
+        <th>Core Idea</th>
+        <th>Best</th><th>Average</th><th>Worst</th><th>Space</th>
+        <th>Notation</th>
+        <th>Stable?</th><th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr class="par-sort" data-search="insertion sort comparison in-place stable">
+          <td><a class="algo-link" href="week2.html">Insertion Sort</a></td>
+          <td class="idea">Build the sorted portion one element at a time by shifting larger elements right to make room.</td>
+          <td><span class="pill pill-green">Ω(n)</span></td>
+          <td><span class="pill pill-orange">Θ(n²)</span></td>
+          <td><span class="pill pill-red">O(n²)</span></td>
+          <td><span class="pill pill-green">O(1)</span></td>
+          <td class="notation">n = number of elements</td>
+          <td>✓ Yes</td>
+          <td class="note">Best case on nearly-sorted input. Used as base in hybrid sorts (Timsort).</td>
+        </tr>
+        <tr class="par-sort" data-search="selection sort comparison in-place unstable">
+          <td><a class="algo-link" href="week2.html">Selection Sort</a></td>
+          <td class="idea">Repeatedly scan the unsorted portion to find its minimum, then swap it into place.</td>
+          <td><span class="pill pill-red">Ω(n²)</span></td>
+          <td><span class="pill pill-red">Θ(n²)</span></td>
+          <td><span class="pill pill-red">O(n²)</span></td>
+          <td><span class="pill pill-green">O(1)</span></td>
+          <td class="notation">n = number of elements</td>
+          <td>✗ No</td>
+          <td class="note">Exactly n−1 swaps — minimal write operations. Not adaptive.</td>
+        </tr>
+        <tr class="par-sort" data-search="merge sort comparison divide conquer stable">
+          <td><a class="algo-link" href="week1.html">Merge Sort</a></td>
+          <td class="idea">Recursively split the array in half, sort each half independently, then merge the two sorted halves.</td>
+          <td><span class="pill pill-blue">Ω(n log n)</span></td>
+          <td><span class="pill pill-blue">Θ(n log n)</span></td>
+          <td><span class="pill pill-blue">O(n log n)</span></td>
+          <td><span class="pill pill-orange">O(n)</span></td>
+          <td class="notation">n = number of elements</td>
+          <td>✓ Yes</td>
+          <td class="note">Optimal comparison sort. Preferred for linked lists and external sorting.</td>
+        </tr>
+        <tr class="par-sort" data-search="heapsort heap comparison in-place unstable">
+          <td><a class="algo-link" href="week2.html">Heapsort</a></td>
+          <td class="idea">Build a max-heap in O(n), then repeatedly extract the maximum by swapping root with last and sifting down.</td>
+          <td><span class="pill pill-blue">Ω(n log n)</span></td>
+          <td><span class="pill pill-blue">Θ(n log n)</span></td>
+          <td><span class="pill pill-blue">O(n log n)</span></td>
+          <td><span class="pill pill-green">O(1)</span></td>
+          <td class="notation">n = number of elements</td>
+          <td>✗ No</td>
+          <td class="note">In-place and worst-case O(n log n). Poor cache performance vs Quicksort.</td>
+        </tr>
+        <tr class="par-sort" data-search="quicksort comparison partition hoare dnf pivot">
+          <td><a class="algo-link" href="week3.html">Quicksort</a></td>
+          <td class="idea">Partition around a pivot so all elements left &lt; pivot ≤ right, then recurse on each side.</td>
+          <td><span class="pill pill-blue">Ω(n log n)</span></td>
+          <td><span class="pill pill-blue">Θ(n log n)</span></td>
+          <td><span class="pill pill-red">O(n²)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td class="notation">n = number of elements</td>
+          <td>✗ No</td>
+          <td class="note">Expected O(n log n) with random pivot. DNF variant handles many duplicates well.</td>
+        </tr>
+        <tr class="par-sort" data-search="counting sort linear non-comparison integer stable">
+          <td><a class="algo-link" href="week2.html">Counting Sort</a></td>
+          <td class="idea">Count occurrences of each value, compute cumulative counts, then write elements to their correct positions.</td>
+          <td><span class="pill pill-green">Ω(n + k)</span></td>
+          <td><span class="pill pill-green">Θ(n + k)</span></td>
+          <td><span class="pill pill-green">O(n + k)</span></td>
+          <td><span class="pill pill-green">O(k)</span></td>
+          <td class="notation">n = number of elements<br>k = value range (max − min + 1)</td>
+          <td>✓ Yes</td>
+          <td class="note">Breaks the Ω(n log n) comparison lower bound by using integer structure.</td>
+        </tr>
+        <tr class="par-sort" data-search="radix sort linear non-comparison digit stable lsd">
+          <td><a class="algo-link" href="week2.html">Radix Sort (LSD)</a></td>
+          <td class="idea">Sort by each digit position from least to most significant, using a stable sort (e.g. counting sort) each pass.</td>
+          <td><span class="pill pill-green">Ω(d·n)</span></td>
+          <td><span class="pill pill-green">Θ(d·n)</span></td>
+          <td><span class="pill pill-green">O(d·n)</span></td>
+          <td><span class="pill pill-orange">O(n + k)</span></td>
+          <td class="notation">n = number of elements<br>d = number of digit positions<br>k = alphabet/base size</td>
+          <td>✓ Yes</td>
+          <td class="note">Requires stable sub-sort per digit. Works on strings and fixed-width integers.</td>
+        </tr>
+        <tr class="par-sort" data-search="bucket sort linear distribution stable">
+          <td><a class="algo-link" href="week2.html">Bucket Sort</a></td>
+          <td class="idea">Distribute elements into equally-spaced buckets by value, sort each bucket individually, then concatenate.</td>
+          <td><span class="pill pill-green">Ω(n + k)</span></td>
+          <td><span class="pill pill-green">Θ(n + k)</span></td>
+          <td><span class="pill pill-red">O(n²)</span></td>
+          <td><span class="pill pill-orange">O(n)</span></td>
+          <td class="notation">n = number of elements<br>k = number of buckets</td>
+          <td>✓ Yes</td>
+          <td class="note">Average O(n) for uniformly distributed input. Degrades if elements cluster.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ D&C ══════════════════════ -->
+  <div class="section-header section-anchor" id="dc">
+    <h2>Divide &amp; Conquer</h2><span class="badge">4 algorithms</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Algorithm</th>
+        <th>Core Idea</th>
+        <th>Time</th><th>Space</th>
+        <th>Notation</th>
+        <th>Recurrence</th><th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr class="par-dc" data-search="binary search divide conquer search sorted">
+          <td><a class="algo-link" href="week1.html">Binary Search</a></td>
+          <td class="idea">Halve the search space each step by comparing the target with the midpoint of the remaining range.</td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-green">O(1)</span></td>
+          <td class="notation">n = number of elements in sorted array</td>
+          <td><code>T(n)=T(n/2)+O(1)</code></td>
+          <td class="note">Requires sorted array. Master Theorem Case 2 → Θ(log n).</td>
+        </tr>
+        <tr class="par-dc" data-search="merge sort divide conquer sorting stable">
+          <td><a class="algo-link" href="week1.html">Merge Sort</a></td>
+          <td class="idea">Split in half, sort each half recursively, merge the two sorted halves in O(n).</td>
+          <td><span class="pill pill-blue">O(n log n)</span></td>
+          <td><span class="pill pill-orange">O(n)</span></td>
+          <td class="notation">n = number of elements</td>
+          <td><code>T(n)=2T(n/2)+O(n)</code></td>
+          <td class="note">Master Theorem Case 2. Optimal worst-case comparison sort.</td>
+        </tr>
+        <tr class="par-dc" data-search="quickselect selection order statistics median divide conquer kth">
+          <td><a class="algo-link" href="week3.html">Quickselect</a></td>
+          <td class="idea">Partition around a pivot; only recurse into the side that contains the k-th element.</td>
+          <td><span class="pill pill-green">O(n)</span> avg</td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td class="notation">n = number of elements<br>k = target rank (1-indexed)</td>
+          <td><code>T(n)=T(n/2)+O(n)</code> avg</td>
+          <td class="note">Expected O(n) with random pivot; worst O(n²). Use MoM for guaranteed O(n).</td>
+        </tr>
+        <tr class="par-dc" data-search="median of medians mom selection worst case linear order statistics">
+          <td><a class="algo-link" href="week3.html">Median of Medians</a></td>
+          <td class="idea">Group elements into sets of 5, find each group's median, then recurse on those medians to find a guaranteed good pivot.</td>
+          <td><span class="pill pill-green">O(n)</span> worst</td>
+          <td><span class="pill pill-orange">O(n)</span></td>
+          <td class="notation">n = number of elements</td>
+          <td><code>T(n)≤T(⌈n/5⌉)+T(7n/10)+O(n)</code></td>
+          <td class="note">Guarantees pivot ≥ 30% and ≤ 70% of elements. Large constant; rarely used in practice.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ GRAPH ══════════════════════ -->
+  <div class="section-header section-anchor" id="graph">
+    <h2>Graph Traversal &amp; Basics</h2><span class="badge">6 algorithms</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Algorithm</th>
+        <th>Core Idea</th>
+        <th>Time</th><th>Space</th>
+        <th>Notation</th>
+        <th>Representation</th><th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr class="par-graph" data-search="dfs depth first search graph traversal cycle back edge">
+          <td><a class="algo-link" href="week4.html">DFS</a></td>
+          <td class="idea">Explore as deep as possible along one branch before backtracking to try other branches.</td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>Adjacency list</td>
+          <td class="note">Uses a stack (or recursion). Classifies edges: tree, back, forward, cross.</td>
+        </tr>
+        <tr class="par-graph" data-search="bfs breadth first search graph traversal shortest unweighted queue">
+          <td><a class="algo-link" href="week4.html">BFS</a></td>
+          <td class="idea">Explore all neighbours at the current distance before moving to vertices one step further away.</td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>Adjacency list</td>
+          <td class="note">Uses a queue. Finds shortest paths in unweighted graphs.</td>
+        </tr>
+        <tr class="par-graph" data-search="topological sort dag directed acyclic dfs post-order ordering">
+          <td><a class="algo-link" href="week4.html">Topological Sort (DFS)</a></td>
+          <td class="idea">Run DFS and push each vertex onto a stack immediately after all its outgoing neighbours finish — reversing the stack gives the topological order.</td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>Adjacency list</td>
+          <td class="note">Only valid on DAGs. A back edge in DFS indicates a cycle (no valid ordering).</td>
+        </tr>
+        <tr class="par-graph" data-search="kahn topological sort bfs in-degree dag">
+          <td><a class="algo-link" href="week4.html">Kahn's Algorithm</a></td>
+          <td class="idea">Start with vertices of in-degree 0, emit them in order, and decrement neighbours' in-degrees — adding newly zero-degree vertices to the queue.</td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>Adj list + in-degree array</td>
+          <td class="note">BFS-based. If output has fewer than V vertices, graph has a cycle.</td>
+        </tr>
+        <tr class="par-graph" data-search="union find disjoint set path compression union by rank kruskal">
+          <td><a class="algo-link" href="week4.html">Union-Find</a></td>
+          <td class="idea">Represent each connected component as a rooted tree; merge components by linking one root to another, and flatten paths during lookup.</td>
+          <td><span class="pill pill-green">O(α(n))</span> amortised</td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of elements<br>α(n) = inverse Ackermann (≤ 4 for all practical n)</td>
+          <td>Parent array</td>
+          <td class="note">Path compression + union by rank gives near-O(1) per operation. Used in Kruskal's.</td>
+        </tr>
+        <tr class="par-graph" data-search="scc strongly connected components kosaraju two pass dfs">
+          <td><a class="algo-link" href="week4.html">SCC — Kosaraju's</a></td>
+          <td class="idea">First DFS on G records finish times; second DFS on the reversed graph G<sup>T</sup> in reverse-finish order discovers each SCC.</td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>Adj list + reversed graph</td>
+          <td class="note">Two full DFS passes. Each vertex belongs to exactly one SCC.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ GREEDY ══════════════════════ -->
+  <div class="section-header section-anchor" id="greedy">
+    <h2>Greedy — Shortest Paths &amp; MST</h2><span class="badge">5 algorithms</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Algorithm</th>
+        <th>Core Idea</th>
+        <th>Time</th><th>Space</th>
+        <th>Notation</th>
+        <th>Structure Used</th><th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr class="par-greedy" data-search="dijkstra shortest path greedy non-negative weights relaxation">
+          <td><a class="algo-link" href="week5.html">Dijkstra's</a></td>
+          <td class="idea">Always settle (finalise) the unvisited vertex with the smallest current distance, then relax all its outgoing edges.</td>
+          <td><span class="pill pill-blue">O((V + E) log V)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>Min-heap / Priority Queue</td>
+          <td class="note">Non-negative edge weights only. Single-source. Greedy choice property holds because weights ≥ 0.</td>
+        </tr>
+        <tr class="par-greedy" data-search="prim mst minimum spanning tree greedy cut property">
+          <td><a class="algo-link" href="week5.html">Prim's (MST)</a></td>
+          <td class="idea">Grow the MST one vertex at a time by always adding the cheapest edge that connects the current tree to a new vertex.</td>
+          <td><span class="pill pill-blue">O((V + E) log V)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>Min-heap on edge weights</td>
+          <td class="note">Similar structure to Dijkstra's but key = edge weight to tree, not distance from source.</td>
+        </tr>
+        <tr class="par-greedy" data-search="kruskal mst minimum spanning tree greedy union find cycle">
+          <td><a class="algo-link" href="week5.html">Kruskal's (MST)</a></td>
+          <td class="idea">Sort all edges by weight and greedily add each edge if it does not form a cycle (checked via Union-Find).</td>
+          <td><span class="pill pill-blue">O(E log E)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>Sorted edges + Union-Find</td>
+          <td class="note">O(E log E) dominated by sorting. Works on disconnected graphs (gives MSF).</td>
+        </tr>
+        <tr class="par-greedy" data-search="activity selection interval scheduling greedy finish time">
+          <td><a class="algo-link" href="week5.html">Activity Selection</a></td>
+          <td class="idea">Sort intervals by finish time and always pick the next interval that starts after the last selected one ends.</td>
+          <td><span class="pill pill-blue">O(n log n)</span></td>
+          <td><span class="pill pill-green">O(1)</span></td>
+          <td class="notation">n = number of activities/intervals</td>
+          <td>Sort by finish time</td>
+          <td class="note">Greedy choice: earliest finish leaves the most room for future activities.</td>
+        </tr>
+        <tr class="par-greedy" data-search="huffman coding greedy compression prefix-free tree frequency">
+          <td><a class="algo-link" href="week5.html">Huffman Coding</a></td>
+          <td class="idea">Repeatedly merge the two nodes with the lowest frequency into a new combined node until one tree remains.</td>
+          <td><span class="pill pill-blue">O(n log n)</span></td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of distinct symbols</td>
+          <td>Min-heap on frequency</td>
+          <td class="note">Produces optimal prefix-free binary code. Greedy: lowest-frequency symbols get longest codes.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ DP ══════════════════════ -->
+  <div class="section-header section-anchor" id="dp">
+    <h2>Dynamic Programming</h2><span class="badge">12 algorithms</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Algorithm</th>
+        <th>Core Idea</th>
+        <th>Time</th><th>Space</th>
+        <th>Notation</th>
+        <th>DP Shape</th><th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr class="par-dp" data-search="fibonacci dp memoization bottom-up">
+          <td><a class="algo-link" href="week6.html">Fibonacci (DP)</a></td>
+          <td class="idea">Compute F(n) = F(n−1) + F(n−2) iteratively, keeping only the last two values to avoid recomputing overlapping subproblems.</td>
+          <td><span class="pill pill-green">O(n)</span></td>
+          <td><span class="pill pill-green">O(1)</span></td>
+          <td class="notation">n = index of desired Fibonacci number</td>
+          <td>1D rolling</td>
+          <td class="note">Canonical intro to DP. Naïve recursion is O(2<sup>n</sup>) due to repeated subproblems.</td>
+        </tr>
+        <tr class="par-dp" data-search="01 knapsack dp subset sum capacity weight value items">
+          <td><a class="algo-link" href="week6.html">0/1 Knapsack</a></td>
+          <td class="idea">For each item in order, decide: skip it (take previous best) or take it (add its value + best for remaining capacity).</td>
+          <td><span class="pill pill-orange">O(nW)</span></td>
+          <td><span class="pill pill-orange">O(nW)</span></td>
+          <td class="notation">n = number of items<br>W = knapsack capacity</td>
+          <td>2D: items × capacity</td>
+          <td class="note">Pseudo-polynomial (W can be exponential in input size). NP-hard in general.</td>
+        </tr>
+        <tr class="par-dp" data-search="unbounded knapsack coin change dp items capacity">
+          <td><a class="algo-link" href="week6.html">Unbounded Knapsack</a></td>
+          <td class="idea">Like 0/1 knapsack but each item can be used any number of times; reuse the same row when computing.</td>
+          <td><span class="pill pill-orange">O(nW)</span></td>
+          <td><span class="pill pill-orange">O(W)</span></td>
+          <td class="notation">n = number of item types<br>W = knapsack capacity</td>
+          <td>1D: capacity (updated in-place)</td>
+          <td class="note">Generalises coin change. Space-optimised to O(W) by processing items in-place.</td>
+        </tr>
+        <tr class="par-dp" data-search="edit distance levenshtein string dp alignment insert delete replace">
+          <td><a class="algo-link" href="week6.html">Edit Distance (Levenshtein)</a></td>
+          <td class="idea">Build a table where each cell is the minimum insert/delete/replace operations to transform a prefix of s into a prefix of t.</td>
+          <td><span class="pill pill-orange">O(mn)</span></td>
+          <td><span class="pill pill-orange">O(mn)</span></td>
+          <td class="notation">m = length of string s<br>n = length of string t</td>
+          <td>2D: len(s) × len(t)</td>
+          <td class="note">Used in spell-check, DNA alignment, diff tools. Can reconstruct alignment via backtracking.</td>
+        </tr>
+        <tr class="par-dp" data-search="lcs longest common subsequence string dp characters">
+          <td><a class="algo-link" href="week6.html">Longest Common Subsequence</a></td>
+          <td class="idea">If current characters match, extend the LCS of both prefixes; otherwise take the best of skipping one character from either string.</td>
+          <td><span class="pill pill-orange">O(mn)</span></td>
+          <td><span class="pill pill-orange">O(mn)</span></td>
+          <td class="notation">m = length of first string<br>n = length of second string</td>
+          <td>2D: len(s) × len(t)</td>
+          <td class="note">Foundation for edit distance and Unix <code>diff</code>.</td>
+        </tr>
+        <tr class="par-dp" data-search="matrix chain multiplication dp parenthesisation interval">
+          <td><a class="algo-link" href="week6.html">Matrix Chain Multiplication</a></td>
+          <td class="idea">For each chain length, try every split point and pick the split that minimises the total multiplication cost.</td>
+          <td><span class="pill pill-red">O(n³)</span></td>
+          <td><span class="pill pill-orange">O(n²)</span></td>
+          <td class="notation">n = number of matrices in the chain</td>
+          <td>2D interval DP</td>
+          <td class="note">Interval DP pattern: solve all sub-chains of length 2, then 3, …, then n.</td>
+        </tr>
+        <tr class="par-dp" data-search="coin change dp minimum coins denomination target amount">
+          <td><a class="algo-link" href="week6.html">Coin Change (min coins)</a></td>
+          <td class="idea">For each amount from 1 to target, try every coin denomination and take 1 + the best solution for the remainder.</td>
+          <td><span class="pill pill-orange">O(nW)</span></td>
+          <td><span class="pill pill-orange">O(W)</span></td>
+          <td class="notation">n = number of coin denominations<br>W = target amount</td>
+          <td>1D: amounts 0 … W</td>
+          <td class="note">Unbounded knapsack variant. Reconstruct solution by backtracking the decision table.</td>
+        </tr>
+        <tr class="par-dp" data-search="bellman ford shortest path negative weights dp relaxation cycle detection">
+          <td><a class="algo-link" href="week7.html">Bellman-Ford</a></td>
+          <td class="idea">Relax all edges V−1 times; shortest paths with at most k edges are correct after k rounds, and a (V)th relaxation signals a negative cycle.</td>
+          <td><span class="pill pill-orange">O(VE)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>1D dist array, V−1 passes over E</td>
+          <td class="note">Handles negative edge weights. Detects negative cycles. DP over shortest-path length.</td>
+        </tr>
+        <tr class="par-dp" data-search="floyd warshall all pairs shortest path dp intermediate vertex">
+          <td><a class="algo-link" href="week7.html">Floyd-Warshall</a></td>
+          <td class="idea">For each possible intermediate vertex k, check whether routing any pair (i, j) through k gives a shorter path than the current best.</td>
+          <td><span class="pill pill-red">O(V³)</span></td>
+          <td><span class="pill pill-red">O(V²)</span></td>
+          <td class="notation">V = number of vertices</td>
+          <td>2D dist matrix, V phases</td>
+          <td class="note">All-pairs shortest paths. Negative cycle detected if dist[v][v] &lt; 0 after completion.</td>
+        </tr>
+        <tr class="par-dp" data-search="critical path method dag longest path project scheduling est lst float">
+          <td><a class="algo-link" href="week7.html">Critical Path Method</a></td>
+          <td class="idea">Forward pass in topological order gives earliest start times; backward pass gives latest start times; zero-float tasks form the critical path.</td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td><span class="pill pill-blue">O(V)</span></td>
+          <td class="notation">V = number of tasks (vertices)<br>E = number of dependencies (edges)</td>
+          <td>1D on DAG topo order</td>
+          <td class="note">Longest path in a DAG. Float = LST − EST; tasks with float = 0 cannot be delayed.</td>
+        </tr>
+        <tr class="par-dp" data-search="longest increasing subsequence lis patience sort binary search">
+          <td><a class="algo-link" href="week6.html">Longest Increasing Subsequence</a></td>
+          <td class="idea">Maintain the smallest tail element seen for each subsequence length; binary search determines where each new element extends or replaces.</td>
+          <td><span class="pill pill-blue">O(n log n)</span></td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of elements</td>
+          <td>1D patience-sort array</td>
+          <td class="note">Naïve DP is O(n²). Patience-sort trick reduces to O(n log n) via binary search.</td>
+        </tr>
+        <tr class="par-dp" data-search="optimal sequence alignment dp edit distance affine gap">
+          <td><a class="algo-link" href="week6.html">Optimal Sequence Alignment</a></td>
+          <td class="idea">Extend edit distance with a scoring function for matches, mismatches, and gaps — choose the alignment that maximises (or minimises) total score.</td>
+          <td><span class="pill pill-orange">O(mn)</span></td>
+          <td><span class="pill pill-orange">O(mn)</span></td>
+          <td class="notation">m = length of first sequence<br>n = length of second sequence</td>
+          <td>2D scoring matrix</td>
+          <td class="note">Generalises edit distance. Used in bioinformatics (Needleman-Wunsch, Smith-Waterman).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ FLOW ══════════════════════ -->
+  <div class="section-header section-anchor" id="flow">
+    <h2>Network Flow</h2><span class="badge">7 algorithms</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Algorithm</th>
+        <th>Core Idea</th>
+        <th>Time</th><th>Space</th>
+        <th>Notation</th>
+        <th>Path Strategy</th><th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr class="par-flow" data-search="ford fulkerson max flow network augmenting path residual graph">
+          <td><a class="algo-link" href="week10.html">Ford-Fulkerson</a></td>
+          <td class="idea">Repeatedly find any path from source to sink in the residual graph and push as much flow as the bottleneck edge allows.</td>
+          <td><span class="pill pill-orange">O(E · |f*|)</span></td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td class="notation">E = number of edges<br>|f*| = value of maximum flow</td>
+          <td>DFS (any path)</td>
+          <td class="note">May not terminate with irrational capacities. Terminates and is O(E|f*|) for integers.</td>
+        </tr>
+        <tr class="par-flow" data-search="edmonds karp max flow bfs shortest augmenting path polynomial">
+          <td><a class="algo-link" href="week10.html">Edmonds-Karp</a></td>
+          <td class="idea">Ford-Fulkerson using BFS to always find the shortest (fewest-edge) augmenting path, guaranteeing polynomial termination.</td>
+          <td><span class="pill pill-red">O(VE²)</span></td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td class="notation">V = number of vertices<br>E = number of edges</td>
+          <td>BFS (shortest path)</td>
+          <td class="note">At most O(VE) augmentations since each BFS path length is non-decreasing.</td>
+        </tr>
+        <tr class="par-flow" data-search="bipartite matching maximum matching network flow reduction">
+          <td><a class="algo-link" href="week10.html">Bipartite Matching</a></td>
+          <td class="idea">Model as max-flow with unit capacities: source to all left vertices, each left-right edge, all right vertices to sink — max-flow = max matching.</td>
+          <td><span class="pill pill-orange">O(E√V)</span></td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td class="notation">V = total vertices (left + right)<br>E = number of possible matches</td>
+          <td>BFS phases (Hopcroft-Karp)</td>
+          <td class="note">Hopcroft-Karp finds augmenting paths in BFS layers for O(E√V). Simpler: O(VE) via Ford-Fulkerson.</td>
+        </tr>
+        <tr class="par-flow" data-search="min cut max flow theorem s-t cut capacity reachable">
+          <td><a class="algo-link" href="week10.html">Min-Cut (Max-Flow Theorem)</a></td>
+          <td class="idea">After max-flow terminates, BFS on the residual graph from the source — reachable vertices form one side of the min s-t cut.</td>
+          <td>—</td>
+          <td>—</td>
+          <td class="notation">s = source, t = sink<br>V = vertices, E = edges</td>
+          <td>Residual reachability (BFS)</td>
+          <td class="note">Max-flow value = min-cut capacity (Max-Flow Min-Cut Theorem). Cut edges are saturated.</td>
+        </tr>
+        <tr class="par-flow" data-search="circulation lower bound demand supply feasibility flow">
+          <td><a class="algo-link" href="week11.html">Circulation with Lower Bounds</a></td>
+          <td class="idea">Subtract lower bounds from capacities to get a standard flow network with super-source/sink; check feasibility by computing max-flow on the modified graph.</td>
+          <td><span class="pill pill-red">O(VE²)</span></td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td class="notation">V = vertices, E = edges<br>Lower bound l(e) ≤ capacity c(e)</td>
+          <td>Reduction to max-flow</td>
+          <td class="note">Feasible circulation exists iff the modified max-flow saturates all edges from super-source.</td>
+        </tr>
+        <tr class="par-flow" data-search="project selection closure problem flow min cut profit dependency">
+          <td><a class="algo-link" href="week11.html">Project Selection (Closure)</a></td>
+          <td class="idea">Connect source to profitable projects and costly resources to sink; a min s-t cut separates "selected" from "rejected" optimally.</td>
+          <td><span class="pill pill-red">O(VE²)</span></td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td class="notation">V = projects + resources<br>E = dependency edges</td>
+          <td>Reduction to min s-t cut</td>
+          <td class="note">Profit (selected) − min-cut value = optimal profit. Dependencies become infinite-capacity edges.</td>
+        </tr>
+        <tr class="par-flow" data-search="survey design flow matching customer product constraints bounds">
+          <td><a class="algo-link" href="week11.html">Survey Design</a></td>
+          <td class="idea">Add per-customer and per-product capacity bounds as edges; whether a valid survey exists reduces to a feasible flow in the constructed network.</td>
+          <td><span class="pill pill-red">O(VE²)</span></td>
+          <td><span class="pill pill-blue">O(V + E)</span></td>
+          <td class="notation">V = customers + products<br>E = customer-product pairs</td>
+          <td>Reduction to flow feasibility</td>
+          <td class="note">Lower/upper bounds on edges model "each customer answers at least/at most k questions".</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ STRUCTURES ══════════════════════ -->
+  <div class="section-header section-anchor" id="structures">
+    <h2>Search Trees &amp; Data Structures</h2><span class="badge">8 structures</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Structure</th>
+        <th>Core Idea</th>
+        <th>Search</th><th>Insert</th><th>Delete</th><th>Space</th>
+        <th>Notation</th>
+        <th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr class="par-struct" data-search="bst binary search tree ordered search insert delete height">
+          <td><a class="algo-link" href="week9.html">BST (unbalanced)</a></td>
+          <td class="idea">Maintain the invariant: all keys in the left subtree &lt; node key &lt; all keys in right subtree, enabling O(h) lookup.</td>
+          <td><span class="pill pill-blue">O(h)</span></td>
+          <td><span class="pill pill-blue">O(h)</span></td>
+          <td><span class="pill pill-blue">O(h)</span></td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of stored keys<br>h = tree height (worst case h = n for sorted input)</td>
+          <td class="note">No balance guarantee: sorted insertion gives a linked list. Average h = O(log n) for random.</td>
+        </tr>
+        <tr class="par-struct" data-search="avl tree balanced rotation height balance factor">
+          <td><a class="algo-link" href="week9.html">AVL Tree</a></td>
+          <td class="idea">After every insert or delete, check the balance factor (height difference) at each ancestor and perform rotations to restore the ±1 invariant.</td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of keys<br>h = O(log n) guaranteed</td>
+          <td class="note">Balance factor ∈ {−1, 0, 1} at every node. More rotations per op than Red-Black but shorter tree.</td>
+        </tr>
+        <tr class="par-struct" data-search="red black tree rbt balanced search insert delete five properties">
+          <td><a class="algo-link" href="week9.html">Red-Black Tree</a></td>
+          <td class="idea">Colour nodes red or black and enforce five colour properties so no root-to-leaf path is more than twice any other, bounding height to 2 log n.</td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of keys<br>h ≤ 2 log(n+1)</td>
+          <td class="note">At most 2 rotations per insert, 3 per delete. Used in Linux scheduler, Java TreeMap, C++ std::map.</td>
+        </tr>
+        <tr class="par-struct" data-search="2-3 tree balanced perfect multi-way search node split">
+          <td><a class="algo-link" href="week9.html">2-3 Tree</a></td>
+          <td class="idea">Allow each node to hold 1 or 2 keys (and 2 or 3 children); when a node overflows (3 keys), push the middle key up to the parent.</td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of stored keys</td>
+          <td class="note">All leaves at the same depth — perfect height balance guaranteed. Conceptual precursor to B-trees.</td>
+        </tr>
+        <tr class="par-struct" data-search="b tree database disk balanced multi-way search minimum degree page">
+          <td><a class="algo-link" href="week9.html">B-Tree (order t)</a></td>
+          <td class="idea">Generalise 2-3 trees to allow t−1 to 2t−1 keys per node, sizing nodes to fit one disk page to minimise I/O operations.</td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of keys<br>t = minimum degree (t ≥ 2)</td>
+          <td class="note">Height ≤ log<sub>t</sub>(n). Disk-friendly: fewer seeks. Used in all major databases and file systems.</td>
+        </tr>
+        <tr class="par-struct" data-search="heap binary max min priority queue heapsort sift">
+          <td><a class="algo-link" href="week2.html">Binary Heap</a></td>
+          <td class="idea">Store elements in an array with parent ≤ children (min-heap); restore the invariant after insert (rise/bubble-up) or delete (fall/sift-down).</td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(log n)</span></td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of elements<br>Build-heap: O(n) via bottom-up sift-down</td>
+          <td class="note">Build-heap O(n) (not O(n log n)). Extract-min O(log n). Basis for Dijkstra's, Prim's, Heapsort.</td>
+        </tr>
+        <tr class="par-struct" data-search="hash table hash map chaining probing load factor search insert">
+          <td><a class="algo-link" href="week2.html">Hash Table</a></td>
+          <td class="idea">Map each key to an array index via a hash function; resolve collisions by chaining (linked lists) or open addressing (probing).</td>
+          <td><span class="pill pill-green">O(1)</span> avg</td>
+          <td><span class="pill pill-green">O(1)</span> avg</td>
+          <td><span class="pill pill-green">O(1)</span> avg</td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of stored keys<br>α = load factor = n / table size</td>
+          <td class="note">Worst case O(n). Keep α &lt; 0.75 for expected O(1). Universal hashing prevents adversarial worst cases.</td>
+        </tr>
+        <tr class="par-struct" data-search="union find disjoint set path compression union by rank component">
+          <td><a class="algo-link" href="week4.html">Union-Find</a></td>
+          <td class="idea">Represent each component as a rooted tree; flatten paths on every Find (path compression) and always attach shorter trees under taller ones (union by rank).</td>
+          <td><span class="pill pill-green">O(α(n))</span></td>
+          <td><span class="pill pill-green">O(α(n))</span></td>
+          <td>—</td>
+          <td><span class="pill pill-blue">O(n)</span></td>
+          <td class="notation">n = number of elements<br>α(n) = inverse Ackermann (≤ 4 always)</td>
+          <td class="note">With both optimisations: effectively O(1) per operation. Without: O(log n).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ STRINGS ══════════════════════ -->
+  <div class="section-header section-anchor" id="string">
+    <h2>String Structures &amp; Algorithms</h2><span class="badge">6 algorithms</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Structure / Algorithm</th>
+        <th>Core Idea</th>
+        <th>Build Time</th><th>Space</th><th>Query Time</th>
+        <th>Notation</th>
+        <th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr class="par-struct" data-search="trie prefix trie character tree string search lookup">
+          <td><a class="algo-link" href="week8.html">Prefix Trie</a></td>
+          <td class="idea">Store a set of strings as paths in a tree where every edge carries one character, sharing common prefixes.</td>
+          <td><span class="pill pill-orange">O(N · m)</span></td>
+          <td><span class="pill pill-orange">O(N · m)</span></td>
+          <td><span class="pill pill-blue">O(m)</span></td>
+          <td class="notation">N = number of strings<br>m = length of string being queried</td>
+          <td class="note">Each character is one node. Supports prefix search, auto-complete. Space-heavy for large alphabets.</td>
+        </tr>
+        <tr class="par-struct" data-search="patricia trie radix trie compressed space efficient single-child">
+          <td><a class="algo-link" href="week8.html">Patricia Trie (Compressed Trie)</a></td>
+          <td class="idea">Collapse any chain of single-child nodes into a single edge labelled with the full substring, reducing node count to O(N).</td>
+          <td><span class="pill pill-orange">O(N · m)</span></td>
+          <td><span class="pill pill-blue">O(N)</span></td>
+          <td><span class="pill pill-blue">O(m)</span></td>
+          <td class="notation">N = number of strings<br>m = query string length</td>
+          <td class="note">O(N) nodes for N strings regardless of their lengths. Edges store substrings, not single chars.</td>
+        </tr>
+        <tr class="par-struct" data-search="suffix trie all suffixes substring search pattern matching">
+          <td><a class="algo-link" href="week8.html">Suffix Trie</a></td>
+          <td class="idea">Insert all n suffixes of a text into a trie so that any pattern can be found in O(pattern length) time by traversal from the root.</td>
+          <td><span class="pill pill-red">O(m²)</span></td>
+          <td><span class="pill pill-red">O(m²)</span></td>
+          <td><span class="pill pill-blue">O(p)</span></td>
+          <td class="notation">m = text length<br>p = pattern length</td>
+          <td class="note">Uncompressed; O(m²) space makes it impractical for long texts. Conceptual basis for suffix trees.</td>
+        </tr>
+        <tr class="par-struct" data-search="suffix tree ukkonen compressed substring lcp generalized">
+          <td><a class="algo-link" href="week8.html">Suffix Tree</a></td>
+          <td class="idea">Compress the suffix trie by merging single-child chains; Ukkonen's algorithm builds this in O(m) time using implicit suffix links.</td>
+          <td><span class="pill pill-blue">O(m)</span></td>
+          <td><span class="pill pill-blue">O(m)</span></td>
+          <td><span class="pill pill-blue">O(p)</span></td>
+          <td class="notation">m = text length<br>p = pattern length</td>
+          <td class="note">O(m) nodes. Supports LCS, LCP, all-occurrences queries. Edge labels stored as (start, end) index pairs.</td>
+        </tr>
+        <tr class="par-struct" data-search="suffix array sorted suffixes indices binary search lcp">
+          <td><a class="algo-link" href="week8.html">Suffix Array</a></td>
+          <td class="idea">Sort all suffix start indices lexicographically; pattern search is then a binary search over the sorted suffix order.</td>
+          <td><span class="pill pill-blue">O(m log m)</span></td>
+          <td><span class="pill pill-blue">O(m)</span></td>
+          <td><span class="pill pill-blue">O(p log m)</span></td>
+          <td class="notation">m = text length<br>p = pattern length</td>
+          <td class="note">More cache-friendly than suffix tree. Can be built in O(m) with DC3/SA-IS; O(m log m) with radix sort.</td>
+        </tr>
+        <tr class="par-struct" data-search="kmp knuth morris pratt string matching pattern failure function z-function">
+          <td><a class="algo-link" href="week8.html">KMP String Matching</a></td>
+          <td class="idea">Pre-compute a failure function giving the longest proper prefix of the pattern that is also a suffix; on mismatch, jump back using this table instead of restarting.</td>
+          <td><span class="pill pill-blue">O(m)</span> build</td>
+          <td><span class="pill pill-blue">O(m)</span></td>
+          <td><span class="pill pill-blue">O(n)</span> search</td>
+          <td class="notation">m = pattern length<br>n = text length</td>
+          <td class="note">Total O(n + m). Each character processed at most twice. Never goes backwards in text.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ MASTER THEOREM ══════════════════════ -->
+  <div class="section-header section-anchor" id="master">
+    <h2>Master Theorem Quick Reference</h2>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Case</th><th>Core Idea</th><th>Condition</th><th>Solution</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr data-search="master theorem case 1 leaves dominate">
+          <td><strong>Case 1</strong></td>
+          <td class="idea">The work done at the leaves dominates — there are polynomially more leaf nodes than work done at each level.</td>
+          <td><code>f(n) = O(n^(log_b a − ε))</code>, ε &gt; 0</td>
+          <td><span class="pill pill-blue">T(n) = Θ(n^(log_b a))</span></td>
+          <td class="note">Strassen: a=7, b=2, f=Θ(n²), log₂7≈2.81 → Θ(n^2.81)</td>
+        </tr>
+        <tr data-search="master theorem case 2 balanced equal work">
+          <td><strong>Case 2</strong></td>
+          <td class="idea">Work per level is the same at every level of the recursion tree, so we pay that cost once per level (log n levels total).</td>
+          <td><code>f(n) = Θ(n^(log_b a))</code></td>
+          <td><span class="pill pill-blue">T(n) = Θ(n^(log_b a) · log n)</span></td>
+          <td class="note">Merge sort: a=2, b=2, f=Θ(n), log₂2=1 → Θ(n log n)</td>
+        </tr>
+        <tr data-search="master theorem case 3 root dominates combine">
+          <td><strong>Case 3</strong></td>
+          <td class="idea">The combine step at the root dominates — the per-level cost grows fast enough to dwarf the recursive sub-calls.</td>
+          <td><code>f(n) = Ω(n^(log_b a + ε))</code> + regularity</td>
+          <td><span class="pill pill-blue">T(n) = Θ(f(n))</span></td>
+          <td class="note">T(n)=2T(n/2)+n²: a=2,b=2,f=n²=Ω(n^(1+1)) → Θ(n²)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════ COMPLEXITY NOTATION ══════════════════════ -->
+  <div class="section-header section-anchor" id="complexity">
+    <h2>Asymptotic Notation</h2>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Notation</th><th>Core Idea</th><th>Formal Definition</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr data-search="big o notation upper bound worst case asymptotic">
+          <td><code>O(f(n))</code></td>
+          <td class="idea">The algorithm never does more work than c·f(n) for large enough n — this is the worst-case guarantee.</td>
+          <td>∃ c &gt; 0, n₀: T(n) ≤ c·f(n) for all n ≥ n₀</td>
+          <td>Upper bound</td>
+        </tr>
+        <tr data-search="omega notation lower bound best case asymptotic">
+          <td><code>Ω(f(n))</code></td>
+          <td class="idea">The algorithm always does at least c·f(n) work — used to state that no algorithm can do better than this.</td>
+          <td>∃ c &gt; 0, n₀: T(n) ≥ c·f(n) for all n ≥ n₀</td>
+          <td>Lower bound</td>
+        </tr>
+        <tr data-search="theta notation tight bound exact both sides asymptotic">
+          <td><code>Θ(f(n))</code></td>
+          <td class="idea">The algorithm's cost is sandwiched between two constants times f(n) — both an upper and lower bound simultaneously.</td>
+          <td>T(n) is both O(f(n)) and Ω(f(n))</td>
+          <td>Tight bound</td>
+        </tr>
+        <tr data-search="little o strict upper bound asymptotic limit">
+          <td><code>o(f(n))</code></td>
+          <td class="idea">The algorithm's cost grows strictly slower than f(n) — the ratio T(n)/f(n) goes to zero.</td>
+          <td>lim<sub>n→∞</sub> T(n)/f(n) = 0</td>
+          <td>Strict upper bound</td>
+        </tr>
+        <tr data-search="little omega strict lower bound asymptotic limit">
+          <td><code>ω(f(n))</code></td>
+          <td class="idea">The algorithm's cost grows strictly faster than f(n) — the ratio T(n)/f(n) goes to infinity.</td>
+          <td>lim<sub>n→∞</sub> T(n)/f(n) = ∞</td>
+          <td>Strict lower bound</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="height: 80px;"></div>
+</main>
+
+<script>
+function filterTable() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const rows = document.querySelectorAll('tbody tr[data-search]');
+  let shown = 0;
+  rows.forEach(row => {
+    const haystack = (row.dataset.search + ' ' + row.textContent).toLowerCase();
+    if (!q || haystack.includes(q)) {
+      row.classList.remove('hidden'); shown++;
+      if (q) highlightRow(row, q); else clearHighlights(row);
+    } else { row.classList.add('hidden'); clearHighlights(row); }
+  });
+  const countEl = document.getElementById('result-count');
+  countEl.textContent = q ? shown + ' algorithm' + (shown !== 1 ? 's' : '') + ' match "' + q + '"' : '';
+}
+function highlightRow(row, q) {
+  row.querySelectorAll('td.idea, td.note, td.notation').forEach(td => {
+    const text = td.textContent;
+    const idx = text.toLowerCase().indexOf(q);
+    if (idx !== -1) {
+      td.innerHTML = esc(text.slice(0, idx)) + '<mark>' + esc(text.slice(idx, idx + q.length)) + '</mark>' + esc(text.slice(idx + q.length));
+    }
+  });
+}
+function clearHighlights(row) {
+  row.querySelectorAll('mark').forEach(m => m.replaceWith(document.createTextNode(m.textContent)));
+}
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

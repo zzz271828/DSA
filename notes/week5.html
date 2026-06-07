@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 5 — Greedy Algorithms | FIT2004</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+      --text: #c9d1d9; --text-muted: #8b949e;
+      --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+      --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+    nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+    nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+    nav ul { list-style: none; }
+    nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+    nav ul li a:hover { color: var(--text); background: var(--bg3); }
+    nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+    nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+    main { flex: 1; max-width: 860px; padding: 48px 56px; }
+    .week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+    .week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+    .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+    section.content-section { margin-bottom: 56px; }
+    h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+    h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+    h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+    p { margin-bottom: 14px; }
+    .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+    .callout.def { background: #1f6feb0d; border-color: var(--blue); }
+    .callout.thm { background: #3fb9500d; border-color: var(--green); }
+    .callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+    .callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+    .callout.warn { background: #f851490d; border-color: var(--red); }
+    .callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .callout.def .callout-title { color: var(--blue); }
+    .callout.thm .callout-title { color: var(--green); }
+    .callout.cplx .callout-title { color: var(--orange); }
+    .callout.insight .callout-title { color: var(--purple); }
+    .callout.warn .callout-title { color: var(--red); }
+    pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+    .algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+    .algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+    pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+    th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    td { padding: 10px 16px; border: 1px solid var(--border); }
+    tr:nth-child(even) td { background: var(--bg2); }
+    code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+    ul, ol { padding-left: 24px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+    .complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    @media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+  
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html" class="current"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#greedy-intro" class="sub">Greedy Paradigm</a></li>
+    <li><a href="#dijkstra" class="sub">Dijkstra's Algorithm</a></li>
+    <li><a href="#mst" class="sub">Minimum Spanning Trees</a></li>
+    <li><a href="#prims" class="sub">Prim's Algorithm</a></li>
+    <li><a href="#kruskals" class="sub">Kruskal's Algorithm</a></li>
+    <li><a href="#comparison" class="sub">Prim's vs Kruskal's</a></li>
+    <li><a href="#summary" class="sub">Quick Reference</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="week-header">
+    <div class="week-badge">Week 5 &mdash; Chapter 6</div>
+    <h1>Greedy Algorithms</h1>
+    <p class="subtitle">Dijkstra's shortest paths &bull; Prim's MST &bull; Kruskal's MST &bull; Union-Find</p>
+    <div class="topics">
+      <span>Greedy Paradigm</span>
+      <span>Edge Relaxation</span>
+      <span>Dijkstra's Algorithm</span>
+      <span>Minimum Spanning Trees</span>
+      <span>Prim's Algorithm</span>
+      <span>Kruskal's Algorithm</span>
+      <span>Union-Find</span>
+      <span>Exchange Argument</span>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 0: GREEDY PARADIGM -->
+  <!-- ============================================================ -->
+  <section class="content-section" id="greedy-intro">
+    <h2 class="sec-title"><span class="sec-num">Intro</span> The Greedy Paradigm</h2>
+  <button class="review-btn" data-week="5" data-sec="greedy-intro"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Greedy Algorithm</div>
+      <p>A <strong>greedy algorithm</strong> makes a <em>locally optimal choice</em> at each step and commits to it, hoping to reach a globally optimal solution. It never reconsiders past choices.</p>
+    </div>
+
+    <h3 class="subsec">When Does Greedy Work?</h3>
+    <p>Not every problem admits a greedy solution. Two key properties must hold:</p>
+    <ul>
+      <li><strong>Greedy choice property:</strong> A globally optimal solution can always be reached by making a locally optimal (greedy) choice. The choice made first is safe — it does not preclude finding the global optimum.</li>
+      <li><strong>Optimal substructure:</strong> An optimal solution to the problem contains optimal solutions to its subproblems. This is also required for dynamic programming, but greedy algorithms additionally need the greedy choice property.</li>
+    </ul>
+
+    <h3 class="subsec">Greedy vs Dynamic Programming</h3>
+    <table>
+      <thead>
+        <tr><th>Property</th><th>Greedy</th><th>Dynamic Programming</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Optimal substructure</td><td>Required</td><td>Required</td></tr>
+        <tr><td>Greedy choice property</td><td>Required</td><td>Not required</td></tr>
+        <tr><td>Overlapping subproblems</td><td>Not needed</td><td>Required (motivates memoisation)</td></tr>
+        <tr><td>Approach</td><td>Top-down, one pass</td><td>Bottom-up or top-down with memo</td></tr>
+        <tr><td>Typical speed</td><td>Faster in practice</td><td>Slower but more general</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Exchange Argument — Correctness Proof Technique</h3>
+    <p>The standard way to prove a greedy algorithm correct is the <strong>exchange argument</strong>:</p>
+    <ol>
+      <li>Assume there exists an optimal solution <em>OPT</em> that differs from the greedy solution.</li>
+      <li>Find the first place they differ. Show that you can <em>swap</em> the optimal choice for the greedy choice without making the solution worse.</li>
+      <li>By repeated swaps, transform <em>OPT</em> into the greedy solution while not increasing cost, proving the greedy solution is also optimal.</li>
+    </ol>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight</div>
+      <p>Both Prim's and Kruskal's correctness proofs use a specific form of the exchange argument: they maintain an invariant that the current partial solution is a subset of <em>some</em> MST. When the greedy edge is not already in that MST, they construct a new MST that includes the greedy edge with equal or lesser weight — proving the greedy choice is safe.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 6.1: DIJKSTRA -->
+  <!-- ============================================================ -->
+  <section class="content-section" id="dijkstra">
+    <h2 class="sec-title"><span class="sec-num">6.1</span> Dijkstra's Algorithm</h2>
+  <button class="review-btn" data-week="5" data-sec="dijkstra"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Problem — Single-Source Shortest Paths (SSSP)</div>
+      <p>Given a weighted directed (or undirected) graph <em>G = (V, E)</em> with <strong>non-negative</strong> edge weights and a source vertex <em>s</em>, find the shortest path distance from <em>s</em> to every other vertex.</p>
+    </div>
+
+    <h3 class="subsec">Why BFS Doesn't Work for Weighted Graphs</h3>
+    <p>Breadth-first search finds shortest paths in terms of <em>number of edges</em>. In an unweighted graph all edges have weight 1, so fewest edges = shortest distance. Once we introduce different weights, a path with more edges may be shorter overall. For example:</p>
+    <ul>
+      <li>Path A: 1 edge of weight 100</li>
+      <li>Path B: 5 edges each of weight 1 — total weight 5</li>
+    </ul>
+    <p>BFS picks Path A (fewer edges) but Path B is actually shorter. We need a priority queue that orders by cumulative weight, not hop count.</p>
+
+    <h3 class="subsec">Edge Relaxation</h3>
+    <p>All shortest-path algorithms maintain a <strong>distance estimate</strong> <code>dist[v]</code> for each vertex — the length of the shortest path found <em>so far</em>. The core operation is <strong>relaxation</strong>: if we find a path to <em>v</em> via <em>u</em> that is shorter than our current estimate, we update it.</p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Relaxation (Triangle Inequality Enforcement)</div>
+      <p>Relaxing an edge <em>(u, v)</em> means checking whether the path <em>s &rarr; u &rarr; v</em> is shorter than the current best known path to <em>v</em>, and updating if so.</p>
+    </div>
+
+    <div class="algo-header">Algorithm 37 — Edge Relaxation <span class="algo-complexity">O(1)</span></div>
+    <pre class="code-block has-header">function RELAX(e = (u, v)):
+    if dist[v] &gt; dist[u] + w(u, v) then
+        dist[v] = dist[u] + w(u, v)
+        pred[v] = u</pre>
+
+<!-- ── Alg 37 Widget ── -->
+<div id="vz37-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;">Visualization</span>
+    <span style="font-size:.9em;font-weight:600;color:#c9d1d9;flex:1;">Alg 37 — Edge Relaxation</span>
+    <span style="font-family:monospace;font-size:.75em;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(1)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <svg id="vz37-svg" viewBox="0 0 520 240" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column;gap:10px;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz37-label">STEP 0 / 5</div>
+        <div style="font-size:.88em;line-height:1.55;color:#c9d1d9;min-height:64px;" id="vz37-text">Click <strong>Step</strong> to begin the edge relaxation walkthrough.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="vz37-chips">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">dist[u]</span>
+          <span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz37-du">3</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">dist[v]</span>
+          <span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz37-dv">10</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:80px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Relaxed?</span>
+          <span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz37-rel">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 18px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz37step()" id="vz37-btn-step" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Step →</button>
+    <button onclick="vz37reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset ↺</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.69em;color:#8b949e;margin-left:auto;">Two scenarios: relax succeeds, then relax skipped</span>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('vz37-svg');
+  var stepIdx=0;
+
+  function mk(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var k in attrs) el.setAttribute(k,attrs[k]);
+    return el;
+  }
+
+  function buildSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    // background rect
+    svg.appendChild(mk('rect',{x:0,y:0,width:520,height:240,fill:'#0d1117'}));
+
+    // arrow marker
+    var defs=mk('defs',{});
+    var marker=mk('marker',{id:'vz37arr','markerWidth':'8','markerHeight':'8','refX':'6','refY':'3','orient':'auto'});
+    var poly=mk('polygon',{points:'0 0, 8 3, 0 6',fill:'#8b949e'});
+    marker.appendChild(poly);
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+
+    // edge line u->v
+    var line=mk('line',{id:'vz37-edge',x1:130,y1:120,x2:370,y2:120,stroke:'#8b949e','stroke-width':'2.5','marker-end':'url(#vz37arr)'});
+    svg.appendChild(line);
+
+    // weight label on edge
+    var wlbl=mk('text',{id:'vz37-wlbl',x:250,y:108,'text-anchor':'middle',fill:'#f0883e','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+    wlbl.textContent='w = 5';
+    svg.appendChild(wlbl);
+
+    // node u
+    svg.appendChild(mk('circle',{id:'vz37-cu',cx:100,cy:120,r:28,fill:'#21262d',stroke:'#c9d1d9','stroke-width':'2.5'}));
+    var lu=mk('text',{x:100,y:126,'text-anchor':'middle',fill:'#c9d1d9','font-size':'17','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+    lu.textContent='u'; svg.appendChild(lu);
+    var du=mk('text',{id:'vz37-dlbl-u',x:100,y:82,'text-anchor':'middle',fill:'#58a6ff','font-size':'13','font-family':'JetBrains Mono,monospace'});
+    du.textContent='dist=3'; svg.appendChild(du);
+
+    // node v
+    svg.appendChild(mk('circle',{id:'vz37-cv',cx:420,cy:120,r:28,fill:'#21262d',stroke:'#c9d1d9','stroke-width':'2.5'}));
+    var lv=mk('text',{x:420,y:126,'text-anchor':'middle',fill:'#c9d1d9','font-size':'17','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+    lv.textContent='v'; svg.appendChild(lv);
+    var dv=mk('text',{id:'vz37-dlbl-v',x:420,y:82,'text-anchor':'middle',fill:'#58a6ff','font-size':'13','font-family':'JetBrains Mono,monospace'});
+    dv.textContent='dist=10'; svg.appendChild(dv);
+
+    // scenario label
+    var sc=mk('text',{id:'vz37-sc',x:260,y:200,'text-anchor':'middle',fill:'#8b949e','font-size':'12','font-family':'JetBrains Mono,monospace'});
+    sc.textContent='Scenario 1: dist[u]=3'; svg.appendChild(sc);
+
+    // check annotation (hidden)
+    var ann=mk('text',{id:'vz37-ann',x:260,y:165,'text-anchor':'middle',fill:'#3fb950','font-size':'13','font-family':'JetBrains Mono,monospace','opacity':'0'});
+    ann.textContent='3+5=8 < 10 ✓ Relax!'; svg.appendChild(ann);
+  }
+
+  var steps=[
+    {
+      action:function(){
+        setNode('vz37-cu','#21262d','#c9d1d9');
+        setNode('vz37-cv','#21262d','#c9d1d9');
+        setEdge('#8b949e');
+        setAttr('vz37-ann','opacity','0');
+        setAttr('vz37-dlbl-u','fill','#58a6ff'); setText('vz37-dlbl-u','dist=3');
+        setAttr('vz37-dlbl-v','fill','#58a6ff'); setText('vz37-dlbl-v','dist=10');
+        setText('vz37-sc','Scenario 1: dist[u]=3, dist[v]=10, w=5');
+        setChips('3','10','—');
+        setText('vz37-label','STEP 1 / 5');
+        setText('vz37-text','u has dist=3, v has dist=10. Edge u→v has weight w=5. We will check whether relaxing this edge can improve v\'s distance.');
+      }
+    },
+    {
+      action:function(){
+        setNode('vz37-cu','#1f6feb22','#58a6ff');
+        setEdge('#f0883e');
+        setAttr('vz37-ann','opacity','0');
+        setChips('3','10','—');
+        setText('vz37-label','STEP 2 / 5');
+        setText('vz37-text','Check: dist[u] + w = 3 + 5 = 8. Is 8 < dist[v]=10? YES — relaxation condition holds!');
+      }
+    },
+    {
+      action:function(){
+        setNode('vz37-cv','#3fb95022','#3fb950');
+        setEdge('#3fb950');
+        setAttr('vz37-ann','fill','#3fb950'); setAttr('vz37-ann','opacity','1');
+        setText('vz37-ann','3+5=8 < 10 ✓  dist[v] ← 8');
+        setAttr('vz37-dlbl-v','fill','#3fb950'); setText('vz37-dlbl-v','dist=8');
+        setChips('3','8','YES ✓');
+        document.getElementById('vz37-chips').querySelectorAll('.vz37-rel-chip').forEach(function(c){c.style.color='#3fb950';});
+        document.getElementById('vz37-rel').style.color='#3fb950';
+        setText('vz37-label','STEP 3 / 5');
+        setText('vz37-text','Relax! dist[v] updated from 10 → 8. Also set pred[v] = u to record the path. Node v flashes green to indicate update.');
+      }
+    },
+    {
+      action:function(){
+        setNode('vz37-cu','#21262d','#c9d1d9');
+        setNode('vz37-cv','#21262d','#c9d1d9');
+        setEdge('#8b949e');
+        setAttr('vz37-ann','opacity','0');
+        setAttr('vz37-dlbl-u','fill','#58a6ff'); setText('vz37-dlbl-u','dist=6');
+        setAttr('vz37-dlbl-v','fill','#58a6ff'); setText('vz37-dlbl-v','dist=8');
+        setText('vz37-sc','Scenario 2: dist[u]=6, dist[v]=8, w=5');
+        setChips('6','8','—');
+        document.getElementById('vz37-rel').style.color='#c9d1d9';
+        setText('vz37-label','STEP 4 / 5');
+        setText('vz37-text','Scenario 2: Now suppose dist[u]=6 (and dist[v]=8 from before). Check: dist[u]+w = 6+5 = 11. Is 11 < dist[v]=8?');
+      }
+    },
+    {
+      action:function(){
+        setNode('vz37-cu','#f851490d','#f85149');
+        setEdge('#f85149');
+        setAttr('vz37-ann','fill','#f85149'); setAttr('vz37-ann','opacity','1');
+        setText('vz37-ann','6+5=11 > 8  ✗  No relaxation');
+        setChips('6','8','NO ✗');
+        document.getElementById('vz37-rel').style.color='#f85149';
+        setText('vz37-label','STEP 5 / 5');
+        setText('vz37-text','6+5=11 > dist[v]=8. No relaxation needed — the current path to v is already better. dist[v] stays at 8.');
+      }
+    }
+  ];
+
+  function setAttr(id,attr,val){ var el=document.getElementById(id); if(el) el.setAttribute(attr,val); }
+  function setText(id,txt){ var el=document.getElementById(id); if(el) el.textContent=txt; }
+  function setNode(id,fill,stroke){
+    var el=document.getElementById(id);
+    if(el){ el.setAttribute('fill',fill); el.setAttribute('stroke',stroke); }
+  }
+  function setEdge(col){
+    var el=document.getElementById('vz37-edge');
+    if(el) el.setAttribute('stroke',col);
+    // update arrow marker color
+    var poly=document.querySelector('#vz37arr polygon');
+    if(poly) poly.setAttribute('fill',col);
+  }
+  function setChips(du,dv,rel){
+    setText('vz37-du',du); setText('vz37-dv',dv); setText('vz37-rel',rel);
+  }
+
+  buildSVG();
+
+  window.vz37step=function(){
+    if(stepIdx>=steps.length){ return; }
+    steps[stepIdx].action();
+    stepIdx++;
+    document.getElementById('vz37-btn-step').disabled=(stepIdx>=steps.length);
+  };
+
+  window.vz37reset=function(){
+    stepIdx=0;
+    buildSVG();
+    setChips('3','10','—');
+    setText('vz37-label','STEP 0 / 5');
+    setText('vz37-text','Click Step to begin the edge relaxation walkthrough.');
+    document.getElementById('vz37-btn-step').disabled=false;
+  };
+})();
+</script>
+<!-- ── End Alg 37 Widget ── -->
+
+    <p>The <code>pred</code> (predecessor) array stores each vertex's parent in the shortest-path tree. Once all distances are finalised, the actual shortest path to any vertex can be reconstructed by tracing back through <code>pred</code>.</p>
+
+    <h3 class="subsec">Key Ideas Behind Dijkstra's Algorithm</h3>
+    <div class="callout insight">
+      <div class="callout-title">Greedy Insight</div>
+      <ol>
+        <li><strong>Non-negative weights imply monotone paths:</strong> Any sub-path of a shortest path is itself a shortest path. Adding more edges with non-negative weights can only increase total distance — never decrease it.</li>
+        <li><strong>Safe greedy extraction:</strong> Suppose we know the exact shortest distances to every vertex in some settled set <em>S</em>. Among all vertices not yet in <em>S</em>, the one with the minimum current estimate <em>has its distance finalised</em> — no other path can provide a shortcut because all remaining edges are non-negative.</li>
+        <li><strong>Visit in distance order:</strong> Dijkstra's therefore works like a weighted BFS, visiting vertices in order of their distance from the source, using a min-priority queue.</li>
+      </ol>
+    </div>
+
+    <h3 class="subsec">Algorithm: Standard Version</h3>
+    <p>The classical description uses a priority queue pre-loaded with all vertices, supporting a <em>decrease-key</em> operation.</p>
+
+    <div class="algo-header">Algorithm 38 — Dijkstra's Algorithm (Standard) <span class="algo-complexity">O((|V|+|E|) log |V|)</span></div>
+    <pre class="code-block has-header">function DIJKSTRA(G = (V, E), s):
+    dist[1..n] = ∞
+    pred[1..n] = 0
+    dist[s] = 0
+    Q = priority_queue(V[1..n], key(v) = dist[v])   // min-heap over all vertices
+
+    while Q is not empty do
+        u = Q.pop_min()                              // extract closest unvisited vertex
+        for each edge e = (u, v) that goes from u to a node still in Q do
+            // Priority queue keys must be updated if relax improves a distance estimate!
+            RELAX(e)
+
+    return dist[1..n], pred[1..n]</pre>
+
+<!-- ── Alg 38/39 Widget ── -->
+<div id="vz38-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;">Visualization</span>
+    <span style="font-size:.9em;font-weight:600;color:#c9d1d9;flex:1;">Alg 38/39 — Dijkstra's Algorithm</span>
+    <span style="font-family:monospace;font-size:.75em;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(|E| log|V|)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <svg id="vz38-svg" viewBox="0 0 520 300" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz38-label">READY</div>
+        <div style="font-size:.84em;line-height:1.5;color:#c9d1d9;min-height:60px;" id="vz38-text">Click <strong>Step</strong> to trace Dijkstra from S. Alg 39 (improved, no decrease-key) uses the same logic with a min-heap push instead of key update.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">Extracted</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz38-extracted">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">PQ size</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz38-pqsize">1</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">Shortest T</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz38-shortest">∞</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;margin-bottom:6px;">Priority Queue</div>
+        <div id="vz38-pq-list" style="font-family:'JetBrains Mono',monospace;font-size:.75em;color:#58a6ff;line-height:1.8;">(S,0)</div>
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;margin-bottom:4px;">Distances</div>
+        <div id="vz38-dist-list" style="font-family:'JetBrains Mono',monospace;font-size:.72em;line-height:1.8;"></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 18px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz38step()" id="vz38-btn-step" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #1f6feb66;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step →</button>
+    <button onclick="vz38reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset ↺</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;margin-left:auto;">Green=finalized · Orange=processing · Blue=updated</span>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('vz38-svg');
+  var INF=Infinity;
+
+  // Nodes: S A B C T
+  var NODES=[
+    {id:0,label:'S',x:80,y:150},
+    {id:1,label:'A',x:210,y:70},
+    {id:2,label:'B',x:210,y:230},
+    {id:3,label:'C',x:360,y:70},
+    {id:4,label:'T',x:450,y:150}
+  ];
+  // Directed edges [from,to,w]
+  var EDGES=[[0,1,4],[0,2,2],[2,1,1],[1,3,5],[2,3,8],[3,4,2],[1,4,6]];
+
+  var nodeCircles={}, nodeLabels={}, distLabels={}, edgeLines={};
+
+  function mk(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var k in attrs) el.setAttribute(k,attrs[k]);
+    return el;
+  }
+
+  function buildSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    nodeCircles={}; nodeLabels={}; distLabels={}; edgeLines={};
+
+    var defs=mk('defs',{});
+    var markers={
+      'def':  {id:'arr-def',  fill:'#30363d'},
+      'blue': {id:'arr-blue', fill:'#58a6ff'},
+      'orange':{id:'arr-orange',fill:'#f0883e'},
+      'green':{id:'arr-green',fill:'#3fb950'},
+      'red':  {id:'arr-red',  fill:'#f85149'}
+    };
+    for(var k in markers){
+      var m=markers[k];
+      var marker=mk('marker',{id:m.id,'markerWidth':'8','markerHeight':'6','refX':'20','refY':'3','orient':'auto'});
+      var poly=mk('polygon',{points:'0 0, 8 3, 0 6',fill:m.fill});
+      marker.appendChild(poly); defs.appendChild(marker);
+    }
+    svg.appendChild(defs);
+
+    for(var i=0;i<EDGES.length;i++){
+      var e=EDGES[i];
+      var a=NODES[e[0]], b=NODES[e[1]], w=e[2];
+      var dx=b.x-a.x, dy=b.y-a.y, len=Math.sqrt(dx*dx+dy*dy);
+      var ux=dx/len, uy=dy/len;
+      var x1=a.x+ux*22, y1=a.y+uy*22, x2=b.x-ux*24, y2=b.y-uy*24;
+      var ox=-uy*11, oy=ux*11;
+      var line=mk('line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:'#30363d','stroke-width':'2','marker-end':'url(#arr-def)'});
+      svg.appendChild(line);
+      edgeLines[e[0]+'-'+e[1]]=line;
+      var mx=(x1+x2)/2+ox, my=(y1+y2)/2+oy;
+      var wtxt=mk('text',{x:mx,y:my+4,'text-anchor':'middle',fill:'#8b949e','font-size':'12','font-family':'JetBrains Mono,monospace'});
+      wtxt.textContent=w; svg.appendChild(wtxt);
+    }
+
+    for(var j=0;j<NODES.length;j++){
+      var nd=NODES[j];
+      var circ=mk('circle',{cx:nd.x,cy:nd.y,r:20,fill:'#21262d',stroke:'#c9d1d9','stroke-width':'2'});
+      svg.appendChild(circ); nodeCircles[j]=circ;
+      var lbl=mk('text',{x:nd.x,y:nd.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      lbl.textContent=nd.label; svg.appendChild(lbl); nodeLabels[j]=lbl;
+      var dlbl=mk('text',{x:nd.x,y:nd.y-28,'text-anchor':'middle',fill:'#58a6ff','font-size':'11','font-family':'JetBrains Mono,monospace'});
+      dlbl.textContent=j===0?'0':'∞'; svg.appendChild(dlbl); distLabels[j]=dlbl;
+    }
+  }
+
+  function setNode(i,style){
+    var styles={
+      def:  ['#21262d','#c9d1d9','#c9d1d9','2'],
+      pq:   ['#1f6feb22','#58a6ff','#c9d1d9','2'],
+      proc: ['#f0883e33','#f0883e','#f0883e','3'],
+      done: ['#3fb95022','#3fb950','#3fb950','2']
+    };
+    var s=styles[style]||styles.def;
+    nodeCircles[i].setAttribute('fill',s[0]);
+    nodeCircles[i].setAttribute('stroke',s[1]);
+    nodeCircles[i].setAttribute('stroke-width',s[3]);
+    nodeLabels[i].setAttribute('fill',s[2]);
+  }
+
+  function setEdge(a,b,col){
+    var el=edgeLines[a+'-'+b];
+    if(!el) return;
+    var mmap={def:'#30363d',blue:'#58a6ff',orange:'#f0883e',green:'#3fb950',red:'#f85149'};
+    el.setAttribute('stroke',mmap[col]||col);
+    el.setAttribute('stroke-width',col==='def'?'2':'3');
+    el.setAttribute('marker-end','url(#arr-'+col+')');
+  }
+
+  function resetEdges(){
+    for(var k in edgeLines){
+      edgeLines[k].setAttribute('stroke','#30363d');
+      edgeLines[k].setAttribute('stroke-width','2');
+      edgeLines[k].setAttribute('marker-end','url(#arr-def)');
+    }
+  }
+
+  function fmtD(d){ return d===INF?'∞':d; }
+
+  function updateUI(dist,final,pq,label,text,extracted,shortest){
+    var pqhtml=''; if(pq.length===0) pqhtml='(empty)';
+    else pqhtml=pq.map(function(e){return '('+NODES[e[1]].label+','+fmtD(e[0])+')'}).join('<br>');
+    document.getElementById('vz38-pq-list').innerHTML=pqhtml;
+    var dhtml='';
+    for(var i=0;i<NODES.length;i++){
+      var col=final[i]?'#3fb950':dist[i]<INF?'#79c0ff':'#8b949e';
+      dhtml+='<span style="color:'+col+'">'+NODES[i].label+': '+fmtD(dist[i])+(final[i]?' ✓':'')+'</span><br>';
+    }
+    document.getElementById('vz38-dist-list').innerHTML=dhtml;
+    document.getElementById('vz38-label').textContent=label;
+    document.getElementById('vz38-text').textContent=text;
+    document.getElementById('vz38-extracted').textContent=extracted;
+    document.getElementById('vz38-pqsize').textContent=pq.length;
+    document.getElementById('vz38-shortest').textContent=fmtD(shortest);
+    for(var j=0;j<NODES.length;j++){
+      distLabels[j].textContent=fmtD(dist[j]);
+    }
+  }
+
+  var stepIdx=0;
+  var stepDefs=[];
+
+  function buildSteps(){
+    stepDefs=[];
+    var dist=[0,INF,INF,INF,INF];
+    var final=[false,false,false,false,false];
+    var pred=[-1,-1,-1,-1,-1];
+    var pq=[[0,0]];
+    var adj={0:[],1:[],2:[],3:[],4:[]};
+    for(var i=0;i<EDGES.length;i++) adj[EDGES[i][0]].push([EDGES[i][1],EDGES[i][2]]);
+    var extracted=0;
+
+    // Step 0: init
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:0,
+      label:'STEP 1 — INIT',
+      text:'Initialise dist[S]=0, all others=∞. Priority queue = {(S,0)}.',
+      nodeStyle:function(d,f){ for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def'); resetEdges(); }
+    });
+
+    // Extract S(0)
+    pq.sort(function(a,b){return a[0]-b[0];}); var cur=pq.shift();
+    var u=cur[1],ud=cur[0]; final[u]=true; extracted++;
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:extracted,
+      label:'STEP 2 — Extract S (dist=0)',
+      text:'Extract S (dist=0) from PQ. S is now finalized. Relax edges S→A(4) and S→B(2).',
+      nodeStyle:function(d,f){ for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def'); setNode(0,'proc'); resetEdges(); }
+    });
+
+    // Relax S→A and S→B
+    for(var ni=0;ni<adj[0].length;ni++){
+      var v=adj[0][ni][0], w=adj[0][ni][2]||adj[0][ni][1];
+      // fix: adj[from] = [[to,w],...]
+    }
+    // redo adj correctly
+    adj={0:[],1:[],2:[],3:[],4:[]};
+    for(var ei=0;ei<EDGES.length;ei++) adj[EDGES[ei][0]].push([EDGES[ei][1],EDGES[ei][2]]);
+
+    // process S
+    for(var ni=0;ni<adj[u].length;ni++){
+      var vn=adj[u][ni][0], wn=adj[u][ni][1];
+      var nd2=ud+wn;
+      if(nd2<dist[vn]){ dist[vn]=nd2; pred[vn]=u; pq.push([nd2,vn]); }
+    }
+
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:extracted,
+      label:'STEP 3 — Relax S→A, S→B',
+      text:'Relax S→A: 0+4=4 < ∞ → dist[A]=4. Relax S→B: 0+2=2 < ∞ → dist[B]=2. Both labels update.',
+      nodeStyle:function(d,f){
+        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
+        setNode(0,'done'); resetEdges(); setEdge(0,1,'blue'); setEdge(0,2,'blue');
+      }
+    });
+
+    // Extract B(2)
+    pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
+    u=cur[1]; ud=cur[0]; final[u]=true; extracted++;
+    var distBeforeB=dist.slice();
+    // relax B's edges
+    for(var ni=0;ni<adj[u].length;ni++){
+      var vn=adj[u][ni][0], wn=adj[u][ni][1];
+      var nd2=ud+wn;
+      if(nd2<dist[vn]){ dist[vn]=nd2; pred[vn]=u; pq.push([nd2,vn]); }
+    }
+
+    stepDefs.push({dist:distBeforeB,final:final.slice(),pred:pred.slice(),pq:pq.concat([]).map(function(x){return x.slice();}),extracted:extracted,
+      label:'STEP 4 — Extract B (dist=2)',
+      text:'B has smallest dist=2. Extract B (finalized). Relax B→A: 2+1=3 < 4 → dist[A]=3! Relax B→C: 2+8=10 < ∞ → dist[C]=10.',
+      nodeStyle:function(d,f){
+        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
+        setNode(2,'proc'); resetEdges();
+        for(var i=0;i<5;i++) if(pred[i]>=0) setEdge(pred[i],i,'green');
+      }
+    });
+
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:extracted,
+      label:'STEP 5 — After relaxing B\'s edges',
+      text:'dist[A] updated 4→3 (via B). dist[C]=10 (new). Priority queue now has (A,3),(C,10),(T=∞).',
+      nodeStyle:function(d,f){
+        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
+        resetEdges(); setEdge(2,1,'blue'); setEdge(2,3,'blue');
+        for(var i=0;i<5;i++) if(pred[i]>=0) setEdge(pred[i],i,'green');
+      }
+    });
+
+    // Extract A(3)
+    pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
+    u=cur[1]; ud=cur[0]; final[u]=true; extracted++;
+    var distBeforeA=dist.slice(), predBeforeA=pred.slice();
+    for(var ni=0;ni<adj[u].length;ni++){
+      var vn=adj[u][ni][0], wn=adj[u][ni][1];
+      if(!final[vn]){ var nd2=ud+wn; if(nd2<dist[vn]){ dist[vn]=nd2; pred[vn]=u; pq.push([nd2,vn]); } }
+    }
+
+    stepDefs.push({dist:distBeforeA,final:final.slice(),pred:predBeforeA.slice(),pq:pq.slice(),extracted:extracted,
+      label:'STEP 6 — Extract A (dist=3)',
+      text:'A has smallest dist=3. Extract A (finalized). Relax A→C: 3+5=8 < 10 → dist[C]=8. Relax A→T: 3+6=9 < ∞ → dist[T]=9.',
+      nodeStyle:function(d,f){
+        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
+        setNode(1,'proc'); resetEdges();
+        for(var i=0;i<5;i++) if(predBeforeA[i]>=0) setEdge(predBeforeA[i],i,'green');
+      }
+    });
+
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:extracted,
+      label:'STEP 7 — After relaxing A\'s edges',
+      text:'dist[C] updated 10→8 (via A). dist[T]=9 (new). PQ: (C,8),(T,9).',
+      nodeStyle:function(d,f){
+        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
+        resetEdges(); setEdge(1,3,'blue'); setEdge(1,4,'blue');
+        for(var i=0;i<5;i++) if(pred[i]>=0) setEdge(pred[i],i,'green');
+      }
+    });
+
+    // Extract C(8)
+    pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
+    u=cur[1]; ud=cur[0]; final[u]=true; extracted++;
+    var distBeforeC=dist.slice(), predBeforeC=pred.slice();
+    for(var ni=0;ni<adj[u].length;ni++){
+      var vn=adj[u][ni][0], wn=adj[u][ni][1];
+      if(!final[vn]){ var nd2=ud+wn; if(nd2<dist[vn]){ dist[vn]=nd2; pred[vn]=u; pq.push([nd2,vn]); } }
+    }
+
+    stepDefs.push({dist:distBeforeC,final:final.slice(),pred:predBeforeC.slice(),pq:pq.slice(),extracted:extracted,
+      label:'STEP 8 — Extract C (dist=8)',
+      text:'Extract C (dist=8). Relax C→T: 8+2=10 > dist[T]=9 — no update. T already has a better path via A.',
+      nodeStyle:function(d,f){
+        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
+        setNode(3,'proc'); resetEdges();
+        for(var i=0;i<5;i++) if(predBeforeC[i]>=0) setEdge(predBeforeC[i],i,'green');
+        setEdge(3,4,'red');
+      }
+    });
+
+    // Extract T(9)
+    pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
+    u=cur[1]; ud=cur[0]; final[u]=true; extracted++;
+
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:[],extracted:extracted,
+      label:'STEP 9 — Extract T (dist=9). Done!',
+      text:'Extract T (dist=9, finalized). PQ empty. Shortest S→B→A→T = 0+2+1+6 = 9. All distances found!',
+      nodeStyle:function(d,f){
+        for(var i=0;i<5;i++) setNode(i,'done');
+        resetEdges();
+        for(var i=0;i<5;i++) if(pred[i]>=0) setEdge(pred[i],i,'green');
+      }
+    });
+  }
+
+  function doStep(){
+    if(stepIdx>=stepDefs.length) return;
+    var s=stepDefs[stepIdx];
+    s.nodeStyle(s.dist,s.final);
+    for(var i=0;i<NODES.length;i++) distLabels[i].textContent=fmtD(s.dist[i]);
+    updateUI(s.dist,s.final,s.pq,s.label,s.text,s.extracted,s.dist[4]);
+    stepIdx++;
+    document.getElementById('vz38-btn-step').disabled=(stepIdx>=stepDefs.length);
+  }
+
+  buildSVG();
+  buildSteps();
+  // show init state
+  for(var i=0;i<NODES.length;i++) distLabels[i].textContent=i===0?'0':'∞';
+  document.getElementById('vz38-dist-list').innerHTML=
+    NODES.map(function(n,i){ return '<span style="color:#8b949e">'+n.label+': '+(i===0?'0':'∞')+'</span>'; }).join('<br>');
+
+  window.vz38step=doStep;
+
+  window.vz38reset=function(){
+    stepIdx=0;
+    buildSVG();
+    buildSteps();
+    for(var i=0;i<NODES.length;i++) distLabels[i].textContent=i===0?'0':'∞';
+    document.getElementById('vz38-label').textContent='READY';
+    document.getElementById('vz38-text').textContent='Click Step to trace Dijkstra from S. Alg 39 (improved, no decrease-key) uses the same logic with a min-heap push instead of key update.';
+    document.getElementById('vz38-pq-list').textContent='(S,0)';
+    document.getElementById('vz38-dist-list').innerHTML=
+      NODES.map(function(n,i){ return '<span style="color:#8b949e">'+n.label+': '+(i===0?'0':'∞')+'</span>'; }).join('<br>');
+    document.getElementById('vz38-extracted').textContent='0';
+    document.getElementById('vz38-pqsize').textContent='1';
+    document.getElementById('vz38-shortest').textContent='∞';
+    document.getElementById('vz38-btn-step').disabled=false;
+  };
+})();
+</script>
+<!-- ── End Alg 38/39 Widget ── -->
+
+    <p>Once a vertex <em>u</em> is popped from <em>Q</em>, its distance estimate is <em>final</em> and will never improve further. We only relax edges to vertices still in <em>Q</em> (unvisited vertices).</p>
+
+    <h3 class="subsec">Algorithm: Improved Version (No Decrease-Key)</h3>
+    <p>Most standard library priority queues do not support decrease-key. A common practical variant avoids it entirely:</p>
+    <ul>
+      <li>Start with only the source in the queue.</li>
+      <li>When an edge is relaxed, <em>push</em> the target vertex again with its new (lower) distance as the key.</li>
+      <li>When popping, check if the popped key equals <code>dist[u]</code>. If not, it is stale — skip it.</li>
+    </ul>
+
+    <div class="algo-header">Algorithm 39 — Dijkstra's Algorithm (Improved, No Decrease-Key) <span class="algo-complexity">O(|E| log |V|)</span></div>
+    <pre class="code-block has-header">function DIJKSTRA(G = (V, E), s):
+    dist[1..n] = ∞
+    pred[1..n] = 0
+    dist[s] = 0
+    Q = priority_queue()
+    Q.push(s, key = 0)
+
+    while Q is not empty do
+        u, key = Q.pop_min()
+        if dist[u] == key then              // skip stale (out-of-date) entries
+            for each edge e = (u, v) adjacent to u do
+                if dist[v] &gt; dist[u] + w(u, v) then
+                    dist[v] = dist[u] + w(u, v)
+                    pred[v] = u
+                    Q.push(v, key = dist[v])
+
+    return dist[1..n], pred[1..n]</pre>
+
+    <p>The queue may now hold up to <em>|E|</em> entries instead of <em>|V|</em>, but since log(|E|) = O(log|V|) for simple graphs, the asymptotic complexity is unchanged.</p>
+
+    <h3 class="subsec">Step-by-Step Example Trace</h3>
+    <p>Consider the graph from the slides with vertices A, B, C, D, E and edges:</p>
+    <table>
+      <thead><tr><th>Edge</th><th>Weight</th><th>Edge</th><th>Weight</th></tr></thead>
+      <tbody>
+        <tr><td>A &rarr; B</td><td>10</td><td>C &rarr; B</td><td>3</td></tr>
+        <tr><td>A &rarr; C</td><td>5</td><td>C &rarr; E</td><td>2</td></tr>
+        <tr><td>B &rarr; D</td><td>1</td><td>C &rarr; D</td><td>9</td></tr>
+        <tr><td>D &rarr; E</td><td>4</td><td>E &rarr; D</td><td>6</td></tr>
+      </tbody>
+    </table>
+
+    <p>Source = A. Initial: <code>dist = [A:0, B:∞, C:∞, D:∞, E:∞]</code></p>
+
+    <table>
+      <thead>
+        <tr><th>Step</th><th>Pop u</th><th>Action</th><th>dist[A]</th><th>dist[B]</th><th>dist[C]</th><th>dist[D]</th><th>dist[E]</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>A (0)</td><td>Relax A&rarr;B: 0+10=10; Relax A&rarr;C: 0+5=5</td><td>0</td><td>10</td><td>5</td><td>∞</td><td>∞</td></tr>
+        <tr><td>2</td><td>C (5)</td><td>Relax C&rarr;B: 5+3=8 &lt; 10; Relax C&rarr;E: 5+2=7; Relax C&rarr;D: 5+9=14</td><td>0</td><td>8</td><td>5</td><td>14</td><td>7</td></tr>
+        <tr><td>3</td><td>E (7)</td><td>Relax E&rarr;D: 7+6=13 &lt; 14; update pred[D]=E</td><td>0</td><td>8</td><td>5</td><td>13</td><td>7</td></tr>
+        <tr><td>4</td><td>B (8)</td><td>Relax B&rarr;D: 8+1=9 &lt; 13; update pred[D]=B</td><td>0</td><td>8</td><td>5</td><td>9</td><td>7</td></tr>
+        <tr><td>5</td><td>D (9)</td><td>Relax D&rarr;E: 9+4=13 &gt; 7; no update</td><td>0</td><td>8</td><td>5</td><td>9</td><td>7</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Final distances from A:</strong> A=0, B=8, C=5, D=9, E=7</p>
+    <p><strong>Shortest path to D:</strong> A &rarr; C &rarr; B &rarr; D (cost 5+3+1=9), reconstructed via pred: pred[D]=B, pred[B]=C, pred[C]=A.</p>
+
+    <h3 class="subsec">Correctness Proof</h3>
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Correctness of Dijkstra's Algorithm</div>
+      <p>Given a graph G = (V, E) with non-negative weights and source s, Dijkstra's algorithm correctly finds shortest-path distances to each vertex v &isin; V.</p>
+    </div>
+
+    <p><strong>Proof by induction</strong> on the set S of vertices removed from Q:</p>
+    <ul>
+      <li><strong>Base case:</strong> The source s is removed first with dist[s] = 0, which is correct since there are no negative edges.</li>
+      <li><strong>Inductive step:</strong> Assume dist[v] is correct for all v &isin; S. Let u be the next vertex removed. Suppose for contradiction there exists a shorter path P: s &rarr;&thinsp;&hellip;&thinsp;&rarr; u with length less than dist[u].
+        <ul>
+          <li>Let x be the furthest vertex along P that lies in S. By the inductive hypothesis, dist[x] is correct.</li>
+          <li>Let y be the next vertex on P after x.</li>
+          <li>Since all edge weights are non-negative, dist(s &rarr; y) &le; dist(s &rarr; u) &lt; dist[u].</li>
+          <li>Edge (x, y) was relaxed when x was popped, so dist[y] = dist(s &rarr; y) &lt; dist[u].</li>
+          <li>If y &ne; u: Dijkstra's would have popped y before u since dist[y] &lt; dist[u]. Contradiction.</li>
+          <li>If y = u: dist[y] &lt; dist[u] = dist[y]. Contradiction.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="callout warn">
+      <div class="callout-title">Critical Dependency on Non-negative Weights</div>
+      <p>The proof breaks down with negative weights. If a negative edge exists, the sub-path s &rarr; y could have a larger weight than the full path s &rarr; y &rarr; &hellip; &rarr; u (because the negative edge later decreases the total). So dist[y] &ge; dist[u] would not be a contradiction, and Dijkstra's could extract u before finalising the true shortest path via y.</p>
+      <p>For graphs with negative weights, use the <strong>Bellman-Ford algorithm</strong> instead (O(|V||E|)).</p>
+    </div>
+
+    <h3 class="subsec">Complexity Analysis</h3>
+    <p>The total cost formula is: <span class="complexity-tag">O(|E| &middot; T<sub>update</sub> + |V| &middot; T<sub>find</sub>)</span></p>
+    <p>Every edge is relaxed exactly once (update operation), and every vertex is extracted from the queue exactly once (find operation).</p>
+
+    <table>
+      <thead>
+        <tr><th>Priority Queue Implementation</th><th>T<sub>update</sub></th><th>T<sub>find</sub></th><th>Total Complexity</th><th>Best for</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Array (scan all vertices)</td><td>O(1)</td><td>O(|V|)</td><td><strong>O(|V|&sup2;)</strong></td><td>Dense graphs where |E| = &Theta;(|V|&sup2;)</td></tr>
+        <tr><td>Binary heap (min-heap)</td><td>O(log|V|)</td><td>O(log|V|)</td><td><strong>O((|V|+|E|) log|V|) = O(|E| log|V|)</strong></td><td>Sparse graphs</td></tr>
+        <tr><td>Fibonacci heap</td><td>O(1) amortised</td><td>O(log|V|)</td><td><strong>O(|E| + |V| log|V|)</strong></td><td>Theoretically optimal; slow in practice</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity Note</div>
+      <p>For a connected graph, |E| &ge; |V| - 1, so the |E| log|V| term dominates. The complexity simplifies to <strong>&Theta;(E log V)</strong> when using a binary heap. Note that O(log|E|) = O(log|V|) for simple graphs since |E| &le; |V|&sup2;, so the improved version (no decrease-key) has the same asymptotic complexity.</p>
+    </div>
+
+    <h3 class="subsec">Practical Implementation Notes</h3>
+    <ul>
+      <li>The standard library version (Python's <code>heapq</code>, Java's <code>PriorityQueue</code>) does not support decrease-key. Use the lazy deletion approach (Algorithm 39) instead.</li>
+      <li>In the lazy version, the queue may contain multiple entries for the same vertex. When a stale entry is popped (<code>key &gt; dist[u]</code>), simply skip it.</li>
+      <li>To reconstruct the shortest path to any vertex, trace back through the <code>pred</code> array until reaching the source.</li>
+    </ul>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 6.2: MST -->
+  <!-- ============================================================ -->
+  <section class="content-section" id="mst">
+    <h2 class="sec-title"><span class="sec-num">6.2</span> Minimum Spanning Trees</h2>
+  <button class="review-btn" data-week="5" data-sec="mst"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Spanning Tree</div>
+      <p>A <strong>spanning tree</strong> of a connected undirected graph G = (V, E) is a subgraph T that contains all vertices V and a subset E' &sub; E of edges such that T is a tree (connected and acyclic). Any spanning tree of a graph with |V| vertices has exactly |V| - 1 edges.</p>
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Minimum Spanning Tree (MST)</div>
+      <p>A <strong>minimum spanning tree</strong> of a weighted undirected graph is a spanning tree whose total edge weight is minimum over all possible spanning trees. Formally, we minimise:</p>
+      <p style="margin: 8px 0 8px 24px; font-family: monospace;">w(T) = &sum;<sub>(u,v) &isin; E(T)</sub> w(u,v)</p>
+      <p>There may be multiple MSTs with the same minimum weight if tie-breaking edge weights exist.</p>
+    </div>
+
+    <h3 class="subsec">Properties of MSTs</h3>
+
+    <h4 class="subsubsec">Cut Property (Safe Edges)</h4>
+    <div class="callout thm">
+      <div class="callout-title">Cut Property</div>
+      <p>Let S be any subset of vertices (a <em>cut</em>). Among all edges crossing the cut (with one endpoint in S and one in V &setminus; S), the <strong>minimum weight crossing edge</strong> is safe to add to the MST — it is guaranteed to belong to some MST.</p>
+    </div>
+    <p>This is the property that Prim's algorithm exploits: the set S is the tree built so far, and Prim's always picks the lightest edge crossing from S to V &setminus; S.</p>
+
+    <h4 class="subsubsec">Cycle Property</h4>
+    <div class="callout thm">
+      <div class="callout-title">Cycle Property</div>
+      <p>For any cycle C in the graph, the <strong>maximum weight edge</strong> of C does not belong to any MST (assuming all edge weights are distinct). More generally, the heaviest edge in any cycle can always be excluded.</p>
+    </div>
+    <p>This is the property that Kruskal's algorithm exploits: it only adds edges that do not create a cycle, effectively always avoiding the maximum edge in any cycle.</p>
+
+    <h4 class="subsubsec">Exchange Argument (General MST Invariant)</h4>
+    <p>Both Prim's and Kruskal's maintain the same invariant throughout execution:</p>
+    <div class="callout insight">
+      <div class="callout-title">MST Invariant</div>
+      <p>At every iteration, the current set of selected edges T is a subset of some minimum spanning tree of G.</p>
+    </div>
+    <p>The exchange argument shows that when the greedy edge e is not in the assumed MST M, we can swap it with the heaviest edge on the alternative path in M (the edge x). Since w(e) &le; w(x) by the greedy choice, the new tree M' = M &cup; {e} &setminus; {x} has w(M') &le; w(M), and since M was already minimum, w(M') = w(M), so M' is also an MST containing e.</p>
+
+    <h3 class="subsec">General MST Strategy</h3>
+    <p>An edge e is called <strong>safe</strong> if T &cup; {e} is a subset of some MST. Both greedy algorithms follow this generic strategy:</p>
+    <div class="algo-header">Generic MST Algorithm</div>
+    <pre class="code-block has-header">T = empty
+while T has fewer than |V| - 1 edges:
+    find an edge e that is safe (does not violate the MST invariant)
+    T = T ∪ {e}
+return T</pre>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 6.2.1: PRIM'S -->
+  <!-- ============================================================ -->
+  <section class="content-section" id="prims">
+    <h2 class="sec-title"><span class="sec-num">6.2.1</span> Prim's Algorithm</h2>
+  <button class="review-btn" data-week="5" data-sec="prims"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Key Idea</h3>
+    <p>Prim's algorithm grows the MST one vertex at a time, starting from an arbitrary root. At each step, it adds the <strong>lightest edge connecting the current tree T to a vertex not yet in T</strong>. This is analogous to Dijkstra's algorithm, with one crucial difference:</p>
+
+    <table>
+      <thead><tr><th>Property</th><th>Dijkstra's</th><th>Prim's</th></tr></thead>
+      <tbody>
+        <tr><td>Goal</td><td>Shortest path tree from source</td><td>Minimum spanning tree</td></tr>
+        <tr><td>Priority key for vertex v</td><td>Total distance from source: dist[u] + w(u,v)</td><td>Just the edge weight: w(u,v)</td></tr>
+        <tr><td>dist[v] meaning</td><td>Shortest cumulative distance from source</td><td>Minimum edge weight to connect v to tree</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Prim's vs Dijkstra's — The One Difference</div>
+      <p>In Dijkstra's, when relaxing edge (u, v), the new candidate distance is <strong>dist[u] + w(u, v)</strong> (cumulative path length). In Prim's, the new candidate key is just <strong>w(u, v)</strong> (the edge weight alone). Everything else — the priority queue, the pred/parent array, the loop structure — is identical.</p>
+    </div>
+
+    <h3 class="subsec">Algorithm</h3>
+
+    <div class="algo-header">Algorithm 40 — Prim's Algorithm <span class="algo-complexity">O(|E| log|V|)</span></div>
+    <pre class="code-block has-header">function PRIM(G = (V, E), r):
+    dist[1..n] = ∞
+    parent[1..n] = null
+    T = ({r}, empty)                          // MST starts with root only
+    dist[r] = 0
+    Q = priority_queue(V[1..n], key(v) = dist[v])   // min-heap over all vertices
+
+    while Q is not empty do
+        u = Q.pop_min()                       // closest vertex to tree
+        T.add_vertex(u)
+        T.add_edge(parent[u], u)              // add the connecting edge to MST
+
+        for each edge e = (u, v) adjacent to u do
+            if v not in T and dist[v] &gt; w(u, v) then
+                // Remember to update the key of v in the priority queue!
+                dist[v] = w(u, v)             // NOTE: only edge weight, not cumulative!
+                parent[v] = u
+
+    return T</pre>
+
+<!-- ── Alg 40 Widget ── -->
+<div id="vz40-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;">Visualization</span>
+    <span style="font-size:.9em;font-weight:600;color:#c9d1d9;flex:1;">Alg 40 — Prim's MST Algorithm</span>
+    <span style="font-family:monospace;font-size:.75em;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(|E| log|V|)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <svg id="vz40-svg" viewBox="0 0 520 300" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz40-label">READY</div>
+        <div style="font-size:.84em;line-height:1.55;color:#c9d1d9;min-height:60px;" id="vz40-text">Click <strong>Step</strong> to grow the MST from node A. Green edges/nodes = in MST. Orange = current cut edges.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">MST nodes</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz40-mst-nodes">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">MST weight</span>
+          <span style="font-size:1.2em;font-weight:700;color:#3fb950;" id="vz40-mst-w">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">Edges added</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz40-mst-edges">0</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;margin-bottom:4px;">MST edges so far</div>
+        <div id="vz40-mst-list" style="font-family:'JetBrains Mono',monospace;font-size:.75em;color:#3fb950;line-height:1.8;">—</div>
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;margin-bottom:4px;">Key (dist to tree)</div>
+        <div id="vz40-key-list" style="font-family:'JetBrains Mono',monospace;font-size:.72em;line-height:1.8;"></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 18px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz40step()" id="vz40-btn-step" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #1f6feb66;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step →</button>
+    <button onclick="vz40reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset ↺</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;margin-left:auto;">Green=MST · Orange=cut edges · Grey=not yet reachable</span>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('vz40-svg');
+
+  // Nodes: A B C D E
+  var NODES=[
+    {id:0,label:'A',x:100,y:150},
+    {id:1,label:'B',x:240,y:70},
+    {id:2,label:'C',x:320,y:200},
+    {id:3,label:'D',x:420,y:100},
+    {id:4,label:'E',x:440,y:220}
+  ];
+  // Undirected edges [a,b,w]
+  var EDGES=[
+    [0,1,2],[0,2,3],[1,2,1],[1,3,4],[2,3,3],[2,4,5],[3,4,1]
+  ];
+  var INF=999;
+
+  var nodeCircles={}, nodeLabels={}, keyLabels={}, edgeEls={};
+
+  function mk(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var k in attrs) el.setAttribute(k,attrs[k]);
+    return el;
+  }
+
+  function edgeKey(a,b){ return Math.min(a,b)+'-'+Math.max(a,b); }
+
+  function buildSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    nodeCircles={}; nodeLabels={}; keyLabels={}; edgeEls={};
+
+    for(var i=0;i<EDGES.length;i++){
+      var e=EDGES[i], a=NODES[e[0]], b=NODES[e[1]], w=e[2];
+      var dx=b.x-a.x, dy=b.y-a.y, len=Math.sqrt(dx*dx+dy*dy);
+      var ox=-dy/len*11, oy=dx/len*11;
+      var line=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(line);
+      edgeEls[edgeKey(e[0],e[1])]=line;
+      var mx=(a.x+b.x)/2+ox, my=(a.y+b.y)/2+oy;
+      var wt=mk('text',{x:mx,y:my+4,'text-anchor':'middle',fill:'#8b949e','font-size':'12','font-family':'JetBrains Mono,monospace'});
+      wt.textContent=w; svg.appendChild(wt);
+    }
+
+    for(var j=0;j<NODES.length;j++){
+      var nd=NODES[j];
+      var circ=mk('circle',{cx:nd.x,cy:nd.y,r:20,fill:'#21262d',stroke:'#c9d1d9','stroke-width':'2'});
+      svg.appendChild(circ); nodeCircles[j]=circ;
+      var lbl=mk('text',{x:nd.x,y:nd.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      lbl.textContent=nd.label; svg.appendChild(lbl); nodeLabels[j]=lbl;
+      var klbl=mk('text',{x:nd.x,y:nd.y-27,'text-anchor':'middle',fill:'#8b949e','font-size':'11','font-family':'JetBrains Mono,monospace'});
+      klbl.textContent=j===0?'0':'∞'; svg.appendChild(klbl); keyLabels[j]=klbl;
+    }
+  }
+
+  function setNode(i,style){
+    var cols={def:['#21262d','#c9d1d9'],mst:['#3fb95022','#3fb950'],proc:['#f0883e33','#f0883e'],cut:['#1f6feb22','#58a6ff']};
+    var c=cols[style]||cols.def;
+    nodeCircles[i].setAttribute('fill',c[0]); nodeCircles[i].setAttribute('stroke',c[1]);
+    nodeLabels[i].setAttribute('fill',c[1]);
+  }
+
+  function setEdge(a,b,style){
+    var el=edgeEls[edgeKey(a,b)]; if(!el) return;
+    var cols={def:['#30363d','2'],mst:['#3fb950','3'],cut:['#f0883e','2.5'],tried:['#58a6ff','2']};
+    var c=cols[style]||cols.def;
+    el.setAttribute('stroke',c[0]); el.setAttribute('stroke-width',c[1]);
+  }
+
+  var stepIdx=0;
+  var stepDefs=[];
+
+  function buildSteps(){
+    stepDefs=[];
+    var INF2=999;
+    var key=[0,INF2,INF2,INF2,INF2];
+    var parent=[-1,-1,-1,-1,-1];
+    var inMST=[false,false,false,false,false];
+    var mstEdges=[];
+    var mstW=0;
+
+    // build adjacency
+    var adj={0:[],1:[],2:[],3:[],4:[]};
+    for(var i=0;i<EDGES.length;i++){
+      adj[EDGES[i][0]].push([EDGES[i][1],EDGES[i][2]]);
+      adj[EDGES[i][1]].push([EDGES[i][0],EDGES[i][2]]);
+    }
+
+    function fmtKey(k){ return k>=INF2?'∞':k; }
+
+    function snapKeyList(k,inM){
+      var html='';
+      for(var i=0;i<NODES.length;i++){
+        var col=inM[i]?'#3fb950':k[i]<INF2?'#f0883e':'#8b949e';
+        html+='<span style="color:'+col+'">'+NODES[i].label+': '+(inM[i]?'✓':fmtKey(k[i]))+'</span><br>';
+      }
+      return html;
+    }
+
+    function snapMstList(edges){
+      if(!edges.length) return '—';
+      return edges.map(function(e){return NODES[e[0]].label+'-'+NODES[e[1]].label+'('+e[2]+')';}).join('<br>');
+    }
+
+    // Step 0: init
+    stepDefs.push({
+      label:'STEP 1 — Start at A',
+      text:'MST = {A}. key[A]=0 so A is extracted first. key[B]=key[C]=...=∞.',
+      mstNodes:0, mstW:0, mstEdges:0,
+      mstList:'—', keyList:snapKeyList(key,inMST),
+      draw:function(){
+        for(var i=0;i<NODES.length;i++) setNode(i,'def');
+        for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
+        for(var i=0;i<NODES.length;i++) keyLabels[i].textContent=i===0?'0':'∞';
+      }
+    });
+
+    // Extract A
+    inMST[0]=true;
+    for(var ni=0;ni<adj[0].length;ni++){
+      var vn=adj[0][ni][0], wn=adj[0][ni][1];
+      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=0; }
+    }
+
+    stepDefs.push({
+      label:'STEP 2 — Add A, explore cut edges',
+      text:'A added to MST. Cut edges: A-B(2) and A-C(3). Minimum cut edge = A-B(2).',
+      mstNodes:1, mstW:0, mstEdges:0,
+      mstList:'—', keyList:snapKeyList(key,inMST),
+      draw:function(){
+        setNode(0,'mst');
+        for(var i=1;i<NODES.length;i++) setNode(i,key[i]<INF2?'cut':'def');
+        for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
+        setEdge(0,1,'cut'); setEdge(0,2,'cut');
+        for(var i=0;i<NODES.length;i++) keyLabels[i].textContent=i===0?'✓':fmtKey(key[i]);
+      }
+    });
+
+    // Extract B(2) — min cut edge
+    inMST[1]=true; mstEdges.push([parent[1],1,key[1]]); mstW+=key[1];
+    var snMstW=mstW;
+    for(var ni=0;ni<adj[1].length;ni++){
+      var vn=adj[1][ni][0], wn=adj[1][ni][1];
+      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=1; }
+    }
+    var mst2=mstEdges.slice();
+
+    stepDefs.push({
+      label:'STEP 3 — Add B (key=2, edge A-B)',
+      text:'Extract B (key=2). Add edge A-B(2) to MST. New cut: B-C(1) beats A-C(3) → key[C]=1. B-D(4) sets key[D]=4.',
+      mstNodes:2, mstW:snMstW, mstEdges:1,
+      mstList:snapMstList(mst2), keyList:snapKeyList(key,inMST),
+      draw:(function(mst2snap,keysnap,inMsnap){return function(){
+        for(var i=0;i<NODES.length;i++) setNode(i,inMsnap[i]?'mst':keysnap[i]<INF2?'cut':'def');
+        for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
+        for(var i=0;i<mst2snap.length;i++) setEdge(mst2snap[i][0],mst2snap[i][1],'mst');
+        if(!inMsnap[2]) setEdge(1,2,'cut');
+        if(!inMsnap[3]) setEdge(1,3,'cut');
+        for(var i=0;i<NODES.length;i++) keyLabels[i].textContent=inMsnap[i]?'✓':fmtKey(keysnap[i]);
+      };})(mst2,key.slice(),inMST.slice())
+    });
+
+    // Extract C(1) — min cut edge
+    inMST[2]=true; mstEdges.push([parent[2],2,key[2]]); mstW+=key[2];
+    var snMstW2=mstW;
+    for(var ni=0;ni<adj[2].length;ni++){
+      var vn=adj[2][ni][0], wn=adj[2][ni][1];
+      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=2; }
+    }
+    var mst3=mstEdges.slice();
+
+    stepDefs.push({
+      label:'STEP 4 — Add C (key=1, edge B-C)',
+      text:'Extract C (key=1, via B). Add B-C(1). New cut: C-D(3) < key[D]=4 → update key[D]=3. C-E(5) new → key[E]=5.',
+      mstNodes:3, mstW:snMstW2, mstEdges:2,
+      mstList:snapMstList(mst3), keyList:snapKeyList(key,inMST),
+      draw:(function(mst3snap,keysnap,inMsnap){return function(){
+        for(var i=0;i<NODES.length;i++) setNode(i,inMsnap[i]?'mst':keysnap[i]<INF2?'cut':'def');
+        for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
+        for(var i=0;i<mst3snap.length;i++) setEdge(mst3snap[i][0],mst3snap[i][1],'mst');
+        if(!inMsnap[3]) setEdge(2,3,'cut');
+        if(!inMsnap[4]) setEdge(2,4,'cut');
+        for(var i=0;i<NODES.length;i++) keyLabels[i].textContent=inMsnap[i]?'✓':fmtKey(keysnap[i]);
+      };})(mst3,key.slice(),inMST.slice())
+    });
+
+    // Extract D(3) — min cut edge
+    inMST[3]=true; mstEdges.push([parent[3],3,key[3]]); mstW+=key[3];
+    var snMstW3=mstW;
+    for(var ni=0;ni<adj[3].length;ni++){
+      var vn=adj[3][ni][0], wn=adj[3][ni][1];
+      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=3; }
+    }
+    var mst4=mstEdges.slice();
+
+    stepDefs.push({
+      label:'STEP 5 — Add D (key=3, edge C-D)',
+      text:'Extract D (key=3, via C). Add C-D(3). Check D-E(1): 1 < key[E]=5 → update key[E]=1, parent[E]=D. Minimum cut now D-E(1).',
+      mstNodes:4, mstW:snMstW3, mstEdges:3,
+      mstList:snapMstList(mst4), keyList:snapKeyList(key,inMST),
+      draw:(function(mst4snap,keysnap,inMsnap){return function(){
+        for(var i=0;i<NODES.length;i++) setNode(i,inMsnap[i]?'mst':keysnap[i]<INF2?'cut':'def');
+        for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
+        for(var i=0;i<mst4snap.length;i++) setEdge(mst4snap[i][0],mst4snap[i][1],'mst');
+        if(!inMsnap[4]) setEdge(3,4,'cut');
+        for(var i=0;i<NODES.length;i++) keyLabels[i].textContent=inMsnap[i]?'✓':fmtKey(keysnap[i]);
+      };})(mst4,key.slice(),inMST.slice())
+    });
+
+    // Extract E(1) — last node
+    inMST[4]=true; mstEdges.push([parent[4],4,key[4]]); mstW+=key[4];
+    var snMstWFinal=mstW;
+    var mstFinal=mstEdges.slice();
+
+    stepDefs.push({
+      label:'STEP 6 — Add E (key=1, edge D-E). MST complete!',
+      text:'Extract E (key=1, via D). Add D-E(1). All nodes in MST. MST edges: A-B(2), B-C(1), C-D(3), D-E(1). Total weight = 7.',
+      mstNodes:5, mstW:snMstWFinal, mstEdges:4,
+      mstList:snapMstList(mstFinal), keyList:snapKeyList(key,inMST),
+      draw:(function(mstFsnap,keysnap,inMsnap){return function(){
+        for(var i=0;i<NODES.length;i++) setNode(i,'mst');
+        for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
+        for(var i=0;i<mstFsnap.length;i++) setEdge(mstFsnap[i][0],mstFsnap[i][1],'mst');
+        for(var i=0;i<NODES.length;i++) keyLabels[i].textContent='✓';
+      };})(mstFinal,key.slice(),inMST.slice())
+    });
+  }
+
+  function fmtKey(k){ return k>=999?'∞':k; }
+
+  function doStep(){
+    if(stepIdx>=stepDefs.length) return;
+    var s=stepDefs[stepIdx];
+    s.draw();
+    document.getElementById('vz40-label').textContent=s.label;
+    document.getElementById('vz40-text').textContent=s.text;
+    document.getElementById('vz40-mst-nodes').textContent=s.mstNodes;
+    document.getElementById('vz40-mst-w').textContent=s.mstW;
+    document.getElementById('vz40-mst-edges').textContent=s.mstEdges;
+    document.getElementById('vz40-mst-list').innerHTML=s.mstList;
+    document.getElementById('vz40-key-list').innerHTML=s.keyList;
+    stepIdx++;
+    document.getElementById('vz40-btn-step').disabled=(stepIdx>=stepDefs.length);
+  }
+
+  buildSVG();
+  buildSteps();
+  // init key list display
+  document.getElementById('vz40-key-list').innerHTML=
+    NODES.map(function(n,i){return '<span style="color:#8b949e">'+n.label+': '+(i===0?'0':'∞')+'</span>';}).join('<br>');
+
+  window.vz40step=doStep;
+
+  window.vz40reset=function(){
+    stepIdx=0;
+    buildSVG();
+    buildSteps();
+    document.getElementById('vz40-label').textContent='READY';
+    document.getElementById('vz40-text').textContent='Click Step to grow the MST from node A. Green edges/nodes = in MST. Orange = current cut edges.';
+    document.getElementById('vz40-mst-nodes').textContent='0';
+    document.getElementById('vz40-mst-w').textContent='0';
+    document.getElementById('vz40-mst-edges').textContent='0';
+    document.getElementById('vz40-mst-list').innerHTML='—';
+    document.getElementById('vz40-key-list').innerHTML=
+      NODES.map(function(n,i){return '<span style="color:#8b949e">'+n.label+': '+(i===0?'0':'∞')+'</span>';}).join('<br>');
+    document.getElementById('vz40-btn-step').disabled=false;
+  };
+})();
+</script>
+<!-- ── End Alg 40 Widget ── -->
+
+    <p>When vertex u is popped, the edge <code>(parent[u], u)</code> with weight <code>dist[u]</code> is added to the MST. The key difference from Dijkstra's is that <code>dist[v]</code> stores <em>w(u, v)</em> not <em>dist[u] + w(u, v)</em>.</p>
+
+    <h3 class="subsec">Detailed Step-by-Step Example (Prim's)</h3>
+    <p>Same graph as the slides: vertices A, B, C, D, E. Undirected edges with weights: A-B(10), A-C(5), B-C(3), B-D(1), C-D(9), C-E(2), D-E(6). Root = A.</p>
+
+    <table>
+      <thead>
+        <tr><th>Step</th><th>Pop u</th><th>Edge added to MST</th><th>Key updates</th><th>Queue (v:key)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Init</td><td>&mdash;</td><td>&mdash;</td><td>dist[A]=0</td><td>A:0, B:∞, C:∞, D:∞, E:∞</td></tr>
+        <tr><td>1</td><td>A (key=0)</td><td>&mdash; (root)</td><td>B: w(A,B)=10; C: w(A,C)=5</td><td>C:5, B:10, D:∞, E:∞</td></tr>
+        <tr><td>2</td><td>C (key=5)</td><td>A &mdash; C (w=5)</td><td>B: w(C,B)=3 &lt; 10; E: w(C,E)=2; D: w(C,D)=9</td><td>E:2, B:3, D:9</td></tr>
+        <tr><td>3</td><td>E (key=2)</td><td>C &mdash; E (w=2)</td><td>D: w(E,D)=6 &lt; 9 &rarr; update</td><td>B:3, D:6</td></tr>
+        <tr><td>4</td><td>B (key=3)</td><td>C &mdash; B (w=3)</td><td>D: w(B,D)=1 &lt; 6 &rarr; update</td><td>D:1</td></tr>
+        <tr><td>5</td><td>D (key=1)</td><td>B &mdash; D (w=1)</td><td>&mdash;</td><td>empty</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>MST edges:</strong> A-C (5), C-E (2), C-B (3), B-D (1) &bull; <strong>Total weight:</strong> 5+2+3+1 = 11</p>
+
+    <h3 class="subsec">Correctness of Prim's Algorithm</h3>
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Invariant of Prim's Algorithm</div>
+      <p>In every iteration of Prim's algorithm, the current set of selected edges T is a subset of some minimum spanning tree of G.</p>
+    </div>
+
+    <p><strong>Proof (induction on iterations):</strong></p>
+    <ul>
+      <li><strong>Base case:</strong> T is empty, so it is trivially a subset of any MST.</li>
+      <li><strong>Inductive step:</strong> Assume T is a subset of MST M. Let e = (u, v) be the lightest edge from a vertex u &isin; T to a vertex v &notin; T (Prim's choice).
+        <ul>
+          <li><strong>Case 1:</strong> e &isin; M. Then T &cup; {e} &subseteq; M, and the invariant holds.</li>
+          <li><strong>Case 2:</strong> e &notin; M. Since M is a spanning tree, M contains a unique path from u to v. At least one edge x = (a, b) on this path has a &isin; T and b &notin; T (otherwise u and v would already be connected in T). Since Prim's picks the <em>lightest</em> edge from T to outside, w(e) &le; w(x). Removing x and adding e gives a new spanning tree M' = M &cup; {e} &setminus; {x} with w(M') = w(M) + w(e) - w(x) &le; w(M). Since M is minimum, w(M') = w(M), so M' is also an MST, and T &cup; {e} &subseteq; M'.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="callout thm">
+      <div class="callout-title">Corollary — Correctness of Prim's Algorithm</div>
+      <p>Prim's algorithm produces a minimum spanning tree. Proof: The algorithm never creates a cycle (each new edge connects to a fresh vertex). Since G is connected, all vertices are eventually added. When complete, T is a spanning tree and, by the invariant, is a subset of some MST. Since all spanning trees have exactly |V|-1 edges, T itself must be that MST.</p>
+    </div>
+
+    <h3 class="subsec">Complexity of Prim's Algorithm</h3>
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      <p>Prim's algorithm has the same structure as Dijkstra's:</p>
+      <ul>
+        <li>The while loop executes |V| times (one per vertex).</li>
+        <li>Each vertex extraction from the min-heap: O(log|V|).</li>
+        <li>Each edge is examined once: &Theta;(|E|) total edge operations.</li>
+        <li>Each priority-queue key update: O(log|V|).</li>
+      </ul>
+      <p>Total: <strong>&Theta;(|E| log|V| + |V| log|V|) = &Theta;(|E| log|V|)</strong> for connected graphs (since |E| &ge; |V|-1).</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 6.2.2: KRUSKAL'S -->
+  <!-- ============================================================ -->
+  <section class="content-section" id="kruskals">
+    <h2 class="sec-title"><span class="sec-num">6.2.2</span> Kruskal's Algorithm</h2>
+  <button class="review-btn" data-week="5" data-sec="kruskals"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Key Idea</h3>
+    <p>While Prim's grows a single tree from a root, Kruskal's takes a completely different global view. It starts with a forest of |V| singleton trees and <strong>repeatedly merges the two cheapest disconnected components</strong> by adding the globally minimum weight edge that connects them.</p>
+
+    <div class="callout def">
+      <div class="callout-title">Kruskal's Strategy</div>
+      <ol>
+        <li>Sort all edges in ascending order of weight.</li>
+        <li>For each edge (u, v) in sorted order: if u and v belong to <em>different connected components</em>, add the edge to T and merge their components.</li>
+        <li>Skip edges that would create a cycle (both endpoints already in the same component).</li>
+        <li>Stop when T has |V| - 1 edges.</li>
+      </ol>
+    </div>
+
+    <h3 class="subsec">Algorithm</h3>
+
+    <div class="algo-header">Algorithm 41 — Kruskal's Algorithm <span class="algo-complexity">O(|E| log|E|) = O(|E| log|V|)</span></div>
+    <pre class="code-block has-header">function KRUSKAL(G = (V, E)):
+    sort(E, key((u,v)) = w(u,v))        // Sort edges in ascending order of weight
+
+    forest = UnionFind.initialise(n)    // |V| singleton components
+    T = (V, empty)                      // Result tree: all vertices, no edges
+
+    for each edge (u, v) in E do
+        if forest.FIND(u) != forest.FIND(v) then  // Different components?
+            forest.UNION(u, v)                     // Merge components
+            T.add_edge(u, v)                       // Add edge to MST
+
+    return T</pre>
+
+<!-- ── Alg 41 Widget ── -->
+<div id="vz41-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;">Visualization</span>
+    <span style="font-size:.9em;font-weight:600;color:#c9d1d9;flex:1;">Alg 41 — Kruskal's MST Algorithm</span>
+    <span style="font-family:monospace;font-size:.75em;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(|E| log|E|)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <svg id="vz41-svg" viewBox="0 0 520 300" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz41-label">READY</div>
+        <div style="font-size:.84em;line-height:1.55;color:#c9d1d9;min-height:60px;" id="vz41-text">Click <strong>Step</strong> to process sorted edges. Green=accepted, Red=rejected (cycle), Orange=currently being tried.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">MST edges</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz41-mst-edges">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">MST weight</span>
+          <span style="font-size:1.2em;font-weight:700;color:#3fb950;" id="vz41-mst-w">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:5px 9px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:1px;">Rejected</span>
+          <span style="font-size:1.2em;font-weight:700;color:#f85149;" id="vz41-rejected">0</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;margin-bottom:4px;">Components (Union-Find)</div>
+        <div id="vz41-uf-list" style="font-family:'JetBrains Mono',monospace;font-size:.72em;line-height:1.9;"></div>
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;margin-bottom:4px;">Edge queue (sorted)</div>
+        <div id="vz41-edge-queue" style="font-family:'JetBrains Mono',monospace;font-size:.72em;line-height:1.7;"></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 18px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz41step()" id="vz41-btn-step" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #1f6feb66;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step →</button>
+    <button onclick="vz41reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset ↺</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;margin-left:auto;">Same colour = same Union-Find component</span>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('vz41-svg');
+
+  var NODES=[
+    {id:0,label:'A',x:100,y:150},
+    {id:1,label:'B',x:240,y:70},
+    {id:2,label:'C',x:320,y:200},
+    {id:3,label:'D',x:420,y:100},
+    {id:4,label:'E',x:440,y:220}
+  ];
+  // Sorted edges by weight
+  var SORTED_EDGES=[
+    [1,2,1],[3,4,1],[0,1,2],[2,3,3],[0,2,3],[1,3,4],[2,4,5]
+  ];
+  // All edges for display
+  var ALL_EDGES=[[0,1,2],[0,2,3],[1,2,1],[1,3,4],[2,3,3],[2,4,5],[3,4,1]];
+
+  var COMP_COLORS=['#58a6ff','#f0883e','#bc8cff','#3fb950','#f85149'];
+
+  var nodeCircles={}, nodeLabels={}, edgeEls={};
+
+  function mk(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var k in attrs) el.setAttribute(k,attrs[k]);
+    return el;
+  }
+
+  function edgeKey(a,b){ return Math.min(a,b)+'-'+Math.max(a,b); }
+
+  function buildSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    nodeCircles={}; nodeLabels={}; edgeEls={};
+
+    for(var i=0;i<ALL_EDGES.length;i++){
+      var e=ALL_EDGES[i], a=NODES[e[0]], b=NODES[e[1]], w=e[2];
+      var dx=b.x-a.x, dy=b.y-a.y, len=Math.sqrt(dx*dx+dy*dy);
+      var ox=-dy/len*11, oy=dx/len*11;
+      var line=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(line);
+      edgeEls[edgeKey(e[0],e[1])]=line;
+      var mx=(a.x+b.x)/2+ox, my=(a.y+b.y)/2+oy;
+      var wt=mk('text',{x:mx,y:my+4,'text-anchor':'middle',fill:'#8b949e','font-size':'12','font-family':'JetBrains Mono,monospace'});
+      wt.textContent=w; svg.appendChild(wt);
+    }
+
+    for(var j=0;j<NODES.length;j++){
+      var nd=NODES[j];
+      var circ=mk('circle',{cx:nd.x,cy:nd.y,r:20,fill:'#21262d',stroke:'#c9d1d9','stroke-width':'2'});
+      svg.appendChild(circ); nodeCircles[j]=circ;
+      var lbl=mk('text',{x:nd.x,y:nd.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      lbl.textContent=nd.label; svg.appendChild(lbl); nodeLabels[j]=lbl;
+    }
+  }
+
+  function setEdge(a,b,style){
+    var el=edgeEls[edgeKey(a,b)]; if(!el) return;
+    var cols={def:['#30363d','2'],mst:['#3fb950','3'],reject:['#f85149','2'],try:['#f0883e','2.5']};
+    var c=cols[style]||cols.def;
+    el.setAttribute('stroke',c[0]); el.setAttribute('stroke-width',c[1]);
+  }
+
+  function setNodeComp(i,compColor){
+    nodeCircles[i].setAttribute('fill',compColor+'22');
+    nodeCircles[i].setAttribute('stroke',compColor);
+    nodeLabels[i].setAttribute('fill',compColor);
+  }
+
+  // Union-Find
+  function makeUF(n){
+    var p=[]; for(var i=0;i<n;i++) p[i]=i; return p;
+  }
+  function find(p,x){ while(p[x]!==x) x=p[x]; return x; }
+  function union(p,x,y){ p[find(p,x)]=find(p,y); }
+
+  function compLabel(p){
+    // group nodes by root
+    var groups={};
+    for(var i=0;i<NODES.length;i++){
+      var r=find(p,i);
+      if(!groups[r]) groups[r]=[];
+      groups[r].push(i);
+    }
+    var rootOrder=Object.keys(groups).sort(function(a,b){return +a-+b;});
+    var colorMap={};
+    for(var ci=0;ci<rootOrder.length;ci++) colorMap[rootOrder[ci]]=COMP_COLORS[ci%COMP_COLORS.length];
+    return {groups:groups, rootOrder:rootOrder, colorMap:colorMap};
+  }
+
+  function applyNodeColors(p){
+    var info=compLabel(p);
+    for(var i=0;i<NODES.length;i++){
+      var r=find(p,i);
+      setNodeComp(i,info.colorMap[r]);
+    }
+  }
+
+  function renderUF(p){
+    var info=compLabel(p);
+    var html='';
+    for(var ci=0;ci<info.rootOrder.length;ci++){
+      var r=info.rootOrder[ci];
+      var col=info.colorMap[r];
+      var members=info.groups[r].map(function(i){return NODES[i].label;}).join(',');
+      html+='<span style="color:'+col+'">{'+members+'}</span><br>';
+    }
+    return html;
+  }
+
+  function renderEdgeQueue(idx){
+    var html='';
+    for(var i=0;i<SORTED_EDGES.length;i++){
+      var e=SORTED_EDGES[i];
+      var label=NODES[e[0]].label+'-'+NODES[e[1]].label+'('+e[2]+')';
+      if(i<idx) html+='<span style="color:#30363d;text-decoration:line-through;">'+label+'</span><br>';
+      else if(i===idx) html+='<span style="color:#f0883e;font-weight:700;">▶ '+label+'</span><br>';
+      else html+='<span style="color:#8b949e;">'+label+'</span><br>';
+    }
+    return html;
+  }
+
+  var stepIdx=0;
+  var stepDefs=[];
+
+  function buildSteps(){
+    stepDefs=[];
+    var p=makeUF(5);
+    var mstEdges=0, mstW=0, rejected=0;
+
+    stepDefs.push({
+      label:'STEP 1 — Init: sort edges, each node its own component',
+      text:'Edges sorted by weight: B-C(1), D-E(1), A-B(2), C-D(3), A-C(3), B-D(4), C-E(5). Each node starts as its own component.',
+      mstEdges:0, mstW:0, rejected:0,
+      draw:function(){ buildSVG(); applyNodeColors(p); },
+      ufHTML:renderUF(p),
+      eqHTML:renderEdgeQueue(-1)
+    });
+
+    for(var qi=0;qi<SORTED_EDGES.length;qi++){
+      (function(qi2,pcopy,mstEcopy,mstWcopy,rejcopy){
+        var e=SORTED_EDGES[qi2];
+        var ra=find(pcopy,e[0]), rb=find(pcopy,e[1]);
+        var same=(ra===rb);
+        var label=NODES[e[0]].label+'-'+NODES[e[1]].label+'('+e[2]+')';
+
+        if(!same){
+          union(pcopy,e[0],e[1]);
+          mstEcopy++; mstWcopy+=e[2];
+          stepDefs.push({
+            label:'STEP '+(qi2+2)+' — Try '+label+' → ACCEPTED',
+            text:'FIND('+NODES[e[0]].label+') ≠ FIND('+NODES[e[1]].label+') → different components. Add edge '+label+' to MST. UNION merges components.',
+            mstEdges:mstEcopy, mstW:mstWcopy, rejected:rejcopy,
+            draw:(function(ei,mstEi){
+              return function(){
+                buildSVG();
+                // re-draw mst edges up to this point
+                for(var si=0;si<SORTED_EDGES.length;si++){
+                  if(si<ei){
+                    var se=SORTED_EDGES[si];
+                    var rxa=find(pcopy,se[0]), rxb=find(pcopy,se[1]);
+                    // if it was accepted (same comp now, and edge connects them)
+                    setEdge(se[0],se[1],'def');
+                  }
+                }
+                // draw current accepted MST edges by checking stepDefs so far
+                for(var si2=1;si2<stepDefs.length;si2++){
+                  if(stepDefs[si2] && stepDefs[si2].acceptedEdge){
+                    setEdge(stepDefs[si2].acceptedEdge[0],stepDefs[si2].acceptedEdge[1],'mst');
+                  }
+                }
+                setEdge(ei[0],ei[1],'mst');
+                applyNodeColors(pcopy);
+              };
+            })([e[0],e[1]],mstEcopy),
+            ufHTML:renderUF(pcopy),
+            eqHTML:renderEdgeQueue(qi2),
+            acceptedEdge:[e[0],e[1]]
+          });
+        } else {
+          rejcopy++;
+          stepDefs.push({
+            label:'STEP '+(qi2+2)+' — Try '+label+' → REJECTED (cycle!)',
+            text:'FIND('+NODES[e[0]].label+') = FIND('+NODES[e[1]].label+') → same component! Adding '+label+' would create a cycle. Skip.',
+            mstEdges:mstEcopy, mstW:mstWcopy, rejected:rejcopy,
+            draw:(function(ei,pcop2){
+              return function(){
+                buildSVG();
+                for(var si2=1;si2<stepDefs.length;si2++){
+                  if(stepDefs[si2] && stepDefs[si2].acceptedEdge){
+                    setEdge(stepDefs[si2].acceptedEdge[0],stepDefs[si2].acceptedEdge[1],'mst');
+                  }
+                }
+                setEdge(ei[0],ei[1],'reject');
+                applyNodeColors(pcop2);
+              };
+            })([e[0],e[1]],pcopy),
+            ufHTML:renderUF(pcopy),
+            eqHTML:renderEdgeQueue(qi2)
+          });
+        }
+      })(qi, p.slice(), mstEdges, mstW, rejected);
+
+      // Actually advance our state
+      var e2=SORTED_EDGES[qi];
+      var ra2=find(p,e2[0]), rb2=find(p,e2[1]);
+      if(ra2!==rb2){ union(p,e2[0],e2[1]); mstEdges++; mstW+=e2[2]; }
+      else { rejected++; }
+    }
+
+    // Final done step
+    stepDefs.push({
+      label:'DONE — MST complete! Weight = '+mstW,
+      text:'All edges processed. MST = {B-C(1), D-E(1), A-B(2), C-D(3)}. Total weight = 1+1+2+3 = 7.',
+      mstEdges:mstEdges, mstW:mstW, rejected:rejected,
+      draw:function(){
+        buildSVG();
+        for(var si2=1;si2<stepDefs.length;si2++){
+          if(stepDefs[si2] && stepDefs[si2].acceptedEdge){
+            setEdge(stepDefs[si2].acceptedEdge[0],stepDefs[si2].acceptedEdge[1],'mst');
+          }
+        }
+        applyNodeColors(p);
+      },
+      ufHTML:renderUF(p),
+      eqHTML:renderEdgeQueue(SORTED_EDGES.length)
+    });
+  }
+
+  function doStep(){
+    if(stepIdx>=stepDefs.length) return;
+    var s=stepDefs[stepIdx];
+    s.draw();
+    document.getElementById('vz41-label').textContent=s.label;
+    document.getElementById('vz41-text').textContent=s.text;
+    document.getElementById('vz41-mst-edges').textContent=s.mstEdges;
+    document.getElementById('vz41-mst-w').textContent=s.mstW;
+    document.getElementById('vz41-rejected').textContent=s.rejected;
+    document.getElementById('vz41-uf-list').innerHTML=s.ufHTML;
+    document.getElementById('vz41-edge-queue').innerHTML=s.eqHTML;
+    stepIdx++;
+    document.getElementById('vz41-btn-step').disabled=(stepIdx>=stepDefs.length);
+  }
+
+  buildSVG();
+  buildSteps();
+  // init display
+  var initUF=makeUF(5);
+  document.getElementById('vz41-uf-list').innerHTML=
+    NODES.map(function(n){return '<span style="color:#8b949e">{'+n.label+'}</span>';}).join('<br>');
+  document.getElementById('vz41-edge-queue').innerHTML=renderEdgeQueue(-1);
+
+  window.vz41step=doStep;
+
+  window.vz41reset=function(){
+    stepIdx=0;
+    buildSVG();
+    buildSteps();
+    document.getElementById('vz41-label').textContent='READY';
+    document.getElementById('vz41-text').textContent='Click Step to process sorted edges. Green=accepted, Red=rejected (cycle), Orange=currently being tried.';
+    document.getElementById('vz41-mst-edges').textContent='0';
+    document.getElementById('vz41-mst-w').textContent='0';
+    document.getElementById('vz41-rejected').textContent='0';
+    document.getElementById('vz41-uf-list').innerHTML=
+      NODES.map(function(n){return '<span style="color:#8b949e">{'+n.label+'}</span>';}).join('<br>');
+    document.getElementById('vz41-edge-queue').innerHTML=renderEdgeQueue(-1);
+    document.getElementById('vz41-btn-step').disabled=false;
+  };
+})();
+</script>
+<!-- ── End Alg 41 Widget ── -->
+
+    <h3 class="subsec">Detailed Step-by-Step Example (Kruskal's)</h3>
+    <p>Same graph: A, B, C, D, E with edges sorted by weight: B-D(1), C-E(2), B-C(3), D-E(4), A-C(5), C-D(9), A-B(10).</p>
+
+    <table>
+      <thead>
+        <tr><th>Step</th><th>Edge considered</th><th>Weight</th><th>Components before</th><th>Decision</th><th>MST edges so far</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Init</td><td>&mdash;</td><td>&mdash;</td><td>{A},{B},{C},{D},{E}</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>1</td><td>B &mdash; D</td><td>1</td><td>{A},{B},{C},{D},{E}</td><td>FIND(B)&ne;FIND(D) &rarr; Add</td><td>B-D</td></tr>
+        <tr><td>2</td><td>C &mdash; E</td><td>2</td><td>{A},{B,D},{C},{E}</td><td>FIND(C)&ne;FIND(E) &rarr; Add</td><td>B-D, C-E</td></tr>
+        <tr><td>3</td><td>B &mdash; C</td><td>3</td><td>{A},{B,D},{C,E}</td><td>FIND(B)&ne;FIND(C) &rarr; Add</td><td>B-D, C-E, B-C</td></tr>
+        <tr><td>4</td><td>D &mdash; E</td><td>4</td><td>{A},{B,C,D,E}</td><td>FIND(D)=FIND(E) &rarr; Skip (cycle!)</td><td>B-D, C-E, B-C</td></tr>
+        <tr><td>5</td><td>A &mdash; C</td><td>5</td><td>{A},{B,C,D,E}</td><td>FIND(A)&ne;FIND(C) &rarr; Add</td><td>B-D, C-E, B-C, A-C</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>MST edges:</strong> B-D (1), C-E (2), B-C (3), A-C (5) &bull; <strong>Total weight:</strong> 1+2+3+5 = 11</p>
+    <p>Edges C-D (9) and A-B (10) are never needed — we already have |V|-1 = 4 edges at step 5.</p>
+
+    <h3 class="subsec">Union-Find Data Structure</h3>
+    <p>Kruskal's needs to efficiently determine whether two vertices are in the same component (FIND) and merge two components (UNION). This is the <strong>Union-Find (Disjoint Sets)</strong> data structure.</p>
+
+    <h4 class="subsubsec">Core Idea: Forest of Trees</h4>
+    <p>Each component is stored as a tree. A <code>parent[]</code> array stores the parent of each node; roots are their own parents. The set representative (component ID) is the root of the tree.</p>
+    <ul>
+      <li><strong>FIND(u):</strong> Follow parent pointers from u until reaching a root. Return the root as the component representative. Time: O(tree height).</li>
+      <li><strong>UNION(u, v):</strong> Find roots of u and v. If different, attach one root as a child of the other. Time: O(FIND).</li>
+    </ul>
+
+    <div class="algo-header">Union-Find Operations</div>
+    <pre class="code-block has-header">function FIND(u):
+    while parent[u] != u do
+        u = parent[u]
+    return u
+
+function UNION(u, v):
+    root_u = FIND(u)
+    root_v = FIND(v)
+    if root_u != root_v then
+        parent[root_u] = root_v      // Attach root_u under root_v</pre>
+
+    <h4 class="subsubsec">Union by Size (Optimisation)</h4>
+    <p>To prevent trees from becoming pathologically deep (O(V) height), always attach the <em>smaller</em> tree under the <em>larger</em> tree's root. Roots store negative values representing the size of their component (e.g., a root with parent value -4 heads a component of size 4).</p>
+    <p>With union by size, the tree height is bounded by O(log V), so FIND and UNION both cost O(log V).</p>
+
+    <h4 class="subsubsec">Path Compression (Further Optimisation)</h4>
+    <p>During a FIND operation, <em>flatten the path</em> by making every visited node point directly to the root. This amortises future FIND calls to near-constant time. Combined with union by size, the amortised cost per operation is O(&alpha;(V)), where &alpha; is the inverse Ackermann function — effectively constant for all practical inputs (&alpha;(n) &lt; 5 for any n representable with the matter in the universe).</p>
+
+    <div class="callout insight">
+      <div class="callout-title">Union-Find Implementation Note</div>
+      <p>For FIT2004, you need to understand union by size. Path compression is discussed in the notes but is <strong>not examinable</strong>. With union by size alone, the total cost of all UNION and FIND operations in Kruskal's is &Theta;(V log V + E log V) = &Theta;(E log V).</p>
+    </div>
+
+    <h3 class="subsec">Correctness of Kruskal's Algorithm</h3>
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Invariant of Kruskal's Algorithm</div>
+      <p>In every iteration of Kruskal's algorithm, the current set of selected edges T is a subset of some minimum spanning tree of G.</p>
+    </div>
+
+    <p><strong>Proof (identical structure to Prim's):</strong></p>
+    <ul>
+      <li><strong>Base case:</strong> T is empty, trivially a subset of any MST.</li>
+      <li><strong>Inductive step:</strong> Assume T &subseteq; MST M. Let e = (u, v) be the lightest edge connecting two different components in T (Kruskal's choice).
+        <ul>
+          <li><strong>Case 1:</strong> e &isin; M. Then T &cup; {e} &subseteq; M and the invariant holds.</li>
+          <li><strong>Case 2:</strong> e &notin; M. M contains a unique path from u to v. Since u and v are in different components of T, at least one edge x on this M-path is not in T. Removing x disconnects M; adding e reconnects it forming M' = M &cup; {e} &setminus; {x}. Since Kruskal's picks the <em>globally lightest</em> cross-component edge, w(e) &le; w(x), so w(M') &le; w(M), meaning M' is also an MST and T &cup; {e} &subseteq; M'.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="callout thm">
+      <div class="callout-title">Corollary — Correctness of Kruskal's Algorithm</div>
+      <p>Kruskal's algorithm produces a minimum spanning tree. Union-Find explicitly prevents cycles, and since G is connected, the algorithm will find a spanning tree. By the invariant, that spanning tree is a subset of some MST. Since all spanning trees have |V|-1 edges, it equals that MST.</p>
+    </div>
+
+    <h3 class="subsec">Complexity of Kruskal's Algorithm</h3>
+    <div class="callout cplx">
+      <div class="callout-title">Complexity Breakdown</div>
+      <ul>
+        <li><strong>Sorting edges:</strong> &Theta;(|E| log|E|) = &Theta;(|E| log|V|) (since log|E| = O(log|V|&sup2;) = O(log|V|))</li>
+        <li><strong>Union-Find initialisation:</strong> &Theta;(|V|)</li>
+        <li><strong>For loop:</strong> |E| iterations, each with 2 FIND calls and at most 1 UNION.</li>
+        <li>With union by size: each FIND is O(log|V|); total UNION cost is &Theta;(|V| log|V|).</li>
+        <li><strong>Total:</strong> &Theta;(|E| log|V| + |V| log|V|) = <strong>&Theta;(|E| log|V|)</strong></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION: PRIM'S vs KRUSKAL'S -->
+  <!-- ============================================================ -->
+  <section class="content-section" id="comparison">
+    <h2 class="sec-title"><span class="sec-num">Compare</span> Prim's vs Kruskal's</h2>
+  <button class="review-btn" data-week="5" data-sec="comparison"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <table>
+      <thead>
+        <tr><th>Property</th><th>Prim's</th><th>Kruskal's</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Strategy</td><td>Grow one connected tree from a root vertex</td><td>Maintain a forest; merge cheapest pair of components</td></tr>
+        <tr><td>Data structure</td><td>Priority queue (min-heap)</td><td>Sort + Union-Find</td></tr>
+        <tr><td>Complexity</td><td>&Theta;(|E| log|V|)</td><td>&Theta;(|E| log|V|)</td></tr>
+        <tr><td>Dense graphs (|E| = &Theta;(|V|&sup2;))</td><td>Better with array-based PQ: O(|V|&sup2;)</td><td>Dominated by sort: O(|V|&sup2; log|V|)</td></tr>
+        <tr><td>Sparse graphs (|E| = &Theta;(|V|))</td><td>&Theta;(|V| log|V|)</td><td>&Theta;(|V| log|V|) &mdash; comparable</td></tr>
+        <tr><td>Graph connectivity required</td><td>Yes (must be connected)</td><td>Yes (for a spanning tree to exist)</td></tr>
+        <tr><td>Edge-sorted access needed</td><td>No (implicit via PQ)</td><td>Yes (explicit sort step)</td></tr>
+        <tr><td>Similarity to other algorithms</td><td>Very similar to Dijkstra's</td><td>Unique; uses Union-Find</td></tr>
+        <tr><td>Invariant maintained</td><td>Single connected subtree is &subseteq; some MST</td><td>Forest of subtrees is &subseteq; some MST</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">When to Use Each</h3>
+    <ul>
+      <li><strong>Prim's is preferred for dense graphs:</strong> With an array-based priority queue (O(1) update, O(|V|) extract-min), Prim's achieves O(|V|&sup2;) which is optimal for dense graphs where |E| = &Theta;(|V|&sup2;). Kruskal's always pays O(|E| log|E|) for sorting.</li>
+      <li><strong>Kruskal's is often preferred for sparse graphs:</strong> The sorting step is cheap when |E| is small, and Union-Find is simple to implement. Kruskal's also has the advantage of being able to process edges in any streaming order — you can stop as soon as |V|-1 edges have been added.</li>
+      <li><strong>In practice:</strong> Both algorithms are O(|E| log|V|) with a binary heap. Kruskal's is often simpler to implement correctly. The choice often comes down to which is easier to reason about for the specific problem.</li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Conceptual Contrast</div>
+      <p><strong>Prim's</strong> thinks globally about which vertex to add next (who is closest to the current tree?). <strong>Kruskal's</strong> thinks globally about which edge to add next (which is the cheapest edge that doesn't form a cycle?). Both are greedy, both are correct, and both achieve the same asymptotic complexity &mdash; they represent two fundamentally different decompositions of the MST problem.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION: SUMMARY -->
+  <!-- ============================================================ -->
+  <section class="content-section" id="summary">
+    <h2 class="sec-title"><span class="sec-num">Summary</span> Week 5 Quick Reference</h2>
+  <button class="review-btn" data-week="5" data-sec="summary"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <table>
+      <thead>
+        <tr><th>Algorithm</th><th>Problem</th><th>Complexity</th><th>Key Constraint</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Dijkstra's</td><td>SSSP (all shortest paths from source)</td><td>O(|E| log|V|) with binary heap</td><td>Non-negative edge weights only</td></tr>
+        <tr><td>Prim's</td><td>Minimum Spanning Tree</td><td>O(|E| log|V|) with binary heap</td><td>Connected undirected graph</td></tr>
+        <tr><td>Kruskal's</td><td>Minimum Spanning Tree</td><td>O(|E| log|V|) via sort + Union-Find</td><td>Connected undirected graph</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Key Formulas and Identities</h3>
+    <ul>
+      <li>Dijkstra relaxation: update dist[v] when <code>dist[u] + w(u,v) &lt; dist[v]</code></li>
+      <li>Prim key update: update dist[v] when <code>w(u,v) &lt; dist[v]</code> (edge weight only, no accumulation)</li>
+      <li>log|E| = O(log|V|) for simple graphs (since |E| &le; |V|&sup2;)</li>
+      <li>Any spanning tree on |V| vertices has exactly |V| - 1 edges</li>
+      <li>Dijkstra total cost: O(|E| &middot; T<sub>update</sub> + |V| &middot; T<sub>extract-min</sub>)</li>
+      <li>Kruskal's Union-Find total cost (union by size): &Theta;(V log V) for all unions</li>
+    </ul>
+
+    <h3 class="subsec">Common Exam Pitfalls</h3>
+    <div class="callout warn">
+      <div class="callout-title">Watch Out</div>
+      <ul>
+        <li><strong>Dijkstra with negative edges:</strong> Dijkstra's is <em>incorrect</em> on graphs with negative weights. The greedy argument requires that sub-paths of shortest paths are themselves shortest paths, which fails with negative weights.</li>
+        <li><strong>Prim's key is not cumulative:</strong> Unlike Dijkstra's, Prim's stores only the edge weight <code>w(u,v)</code> in <code>dist[v]</code>, not <code>dist[u] + w(u,v)</code>. A common mistake is accumulating distances as in Dijkstra's.</li>
+        <li><strong>Kruskal's cycle detection:</strong> An edge (u, v) creates a cycle if and only if FIND(u) == FIND(v) (both endpoints already in the same component). The condition is checked <em>before</em> adding the edge.</li>
+        <li><strong>MST not unique:</strong> If multiple edges have the same weight, there may be multiple MSTs. Both Prim's and Kruskal's find <em>a</em> valid MST, not necessarily the same one.</li>
+        <li><strong>Greedy correctness proof structure:</strong> For both MST algorithms, the proof has two cases: (1) the greedy edge is already in some MST &mdash; trivially safe; (2) it's not &mdash; construct an alternative MST by an exchange argument.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== INTERACTIVE DEMO: DIJKSTRA ===== -->
+  <section class="content-section" id="w5-demo">
+    <h2 class="sec-title"><span class="sec-num">Interactive</span> Dijkstra's Shortest Path Algorithm</h2>
+    <button class="review-btn" data-week="5" data-sec="w5-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+    <div class="algo-demo">
+      <p class="demo-eyebrow">Algorithm Demo</p>
+      <p class="demo-lede">Dijkstra greedily picks the unvisited node with minimum distance and relaxes its neighbors. <b>Click Run</b> to find shortest paths from node S.</p>
+      <div class="demo-board" id="d5-board">
+        <div class="demo-stage">
+          <svg id="d5-svg" viewBox="0 0 730 340" style="display:block;width:100%;height:auto;background:#0d1117"></svg>
+        </div>
+        <div class="demo-panel">
+          <div class="demo-narrate">
+            <div class="demo-step-label" id="d5-label">READY</div>
+            <div class="demo-step-text" id="d5-text">Click Run ▶ to execute Dijkstra from node S. All distances start at ∞ except S=0.</div>
+            <div class="demo-stats">
+              <div class="demo-chip"><span class="k">Steps</span><span class="v" id="d5-steps">0</span></div>
+              <div class="demo-chip"><span class="k">Relaxed</span><span class="v" id="d5-relaxed">0</span></div>
+              <div class="demo-chip" id="d5-chip-fin"><span class="k">Finalized</span><span class="v" id="d5-fin">0</span></div>
+            </div>
+          </div>
+          <div class="demo-side">
+            <h4>Priority Queue &amp; Distances</h4>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.75em;color:var(--text-muted);line-height:1.8">
+              <div>PQ: <span id="d5-pq" style="color:#58a6ff">[(S,0)]</span></div>
+              <div style="margin-top:8px" id="d5-dist-table"></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-controls">
+          <button class="demo-btn primary" id="d5-step-btn">Step →</button>
+          <button class="demo-btn" id="d5-run-btn">Run ▶</button>
+          <button class="demo-btn" id="d5-reset-btn">Reset</button>
+          <div class="demo-spd"><span>Speed</span><input type="range" id="d5-spd" min="1" max="5" value="3"><span id="d5-spd-lbl">3×</span></div>
+        </div>
+        <div class="demo-hint">Green nodes = finalized shortest distance · Orange = currently processing</div>
+      </div>
+    </div>
+  </section>
+
+
+
+</main>
+<script id="d5-script">
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.getElementById('d5-svg');
+  const LABELS=['S','A','B','C','T'];
+  const NODES=[
+    {id:0,x:110,y:170,label:'S'},
+    {id:1,x:280,y:80,label:'A'},
+    {id:2,x:280,y:260,label:'B'},
+    {id:3,x:450,y:80,label:'C'},
+    {id:4,x:610,y:170,label:'T'}
+  ];
+  // [from, to, weight]
+  const EDGES=[[0,1,4],[0,2,2],[1,2,1],[1,3,5],[2,3,8],[2,4,10],[3,4,2]];
+  let steps, stepIndex, busy, spd;
+  let nodeCircles, nodeLabels, nodeDistLabels, edgeEls, edgeWeightTxts;
+
+  function mkEl(tag,attrs){
+    const el=document.createElementNS(NS,tag);
+    for(const [k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+    return el;
+  }
+
+  function buildSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    nodeCircles=[]; nodeLabels=[]; nodeDistLabels=[]; edgeEls=[]; edgeWeightTxts=[];
+
+    // Edges
+    for(let i=0;i<EDGES.length;i++){
+      const [a,b,w]=EDGES[i];
+      const {x:x1,y:y1}=NODES[a], {x:x2,y:y2}=NODES[b];
+      const line=mkEl('line',{x1,y1,x2,y2,stroke:'#30363d','stroke-width':'2'});
+      const mx=(x1+x2)/2, my=(y1+y2)/2;
+      // offset label perpendicular
+      const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy);
+      const ox=-dy/len*12, oy=dx/len*12;
+      const wtxt=mkEl('text',{x:mx+ox,y:my+oy+4,'text-anchor':'middle',fill:'#8b949e','font-size':'12','font-family':'JetBrains Mono,monospace'});
+      wtxt.textContent=w;
+      svg.appendChild(line);
+      svg.appendChild(wtxt);
+      edgeEls.push({a,b,el:line});
+      edgeWeightTxts.push(wtxt);
+    }
+
+    // Nodes
+    for(const nd of NODES){
+      const circ=mkEl('circle',{cx:nd.x,cy:nd.y,r:'26',fill:'#21262d',stroke:'#c9d1d9','stroke-width':'2'});
+      const lbl=mkEl('text',{x:nd.x,y:nd.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'15','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      lbl.textContent=nd.label;
+      const dlbl=mkEl('text',{x:nd.x,y:nd.y-34,'text-anchor':'middle',fill:'#58a6ff','font-size':'11','font-family':'JetBrains Mono,monospace'});
+      dlbl.textContent='d=∞';
+      svg.appendChild(circ);
+      svg.appendChild(lbl);
+      svg.appendChild(dlbl);
+      nodeCircles.push(circ);
+      nodeLabels.push(lbl);
+      nodeDistLabels.push(dlbl);
+    }
+    // S starts at d=0
+    nodeDistLabels[0].textContent='d=0';
+  }
+
+  function setNodeStyle(i,style){
+    const s={default:['#21262d','#c9d1d9','2','#c9d1d9'],pq:['#58a6ff22','#58a6ff','2','#c9d1d9'],processing:['#f0883e44','#f0883e','3','#f0883e'],final:['#3fb95022','#3fb950','2','#3fb950'],start:['#3fb950','#3fb950','2','#fff']};
+    const [f,sc,sw,tf]=s[style]||s.default;
+    nodeCircles[i].setAttribute('fill',f);
+    nodeCircles[i].setAttribute('stroke',sc);
+    nodeCircles[i].setAttribute('stroke-width',sw);
+    nodeLabels[i].setAttribute('fill',tf);
+  }
+
+  function setEdgeStyle(a,b,style){
+    for(const ed of edgeEls){
+      if((ed.a===a&&ed.b===b)||(ed.a===b&&ed.b===a)){
+        if(style==='relax'){ ed.el.setAttribute('stroke','#f0883e'); ed.el.setAttribute('stroke-width','3.5'); }
+        else if(style==='sptree'){ ed.el.setAttribute('stroke','#3fb950'); ed.el.setAttribute('stroke-width','3'); }
+        else { ed.el.setAttribute('stroke','#30363d'); ed.el.setAttribute('stroke-width','2'); }
+        return;
+      }
+    }
+  }
+
+  function computeSteps(){
+    const INF=Infinity;
+    const n=NODES.length;
+    const dist=new Array(n).fill(INF);
+    const prev=new Array(n).fill(-1);
+    const finalized=new Array(n).fill(false);
+    const events=[];
+    dist[0]=0;
+    const pq=[[0,0]]; // [dist, node]
+    let stps=0, relaxed=0, fin=0;
+
+    events.push({type:'init',dist:dist.slice(),pq:[[0,0]],finalized:finalized.slice(),stps,relaxed,fin,prev:prev.slice()});
+
+    const adj={}; for(let i=0;i<n;i++) adj[i]=[];
+    for(const [a,b,w] of EDGES){ adj[a].push([b,w]); adj[b].push([a,w]); }
+
+    // Simple priority queue (re-extract)
+    while(pq.length>0){
+      pq.sort((a,b)=>a[0]-b[0]);
+      const [d,u]=pq.shift();
+      if(finalized[u]) continue;
+      finalized[u]=true; fin++;
+      stps++;
+      events.push({type:'extract',node:u,d,dist:dist.slice(),pq:pq.slice(),finalized:finalized.slice(),stps,relaxed,fin,prev:prev.slice(),msg:`Extract min: node ${LABELS[u]} (d=${d})`});
+
+      for(const [v,w] of adj[u]){
+        if(finalized[v]) continue;
+        const nd=dist[u]+w;
+        events.push({type:'relax_check',from:u,to:v,w,newDist:nd,oldDist:dist[v],dist:dist.slice(),pq:pq.slice(),finalized:finalized.slice(),stps,relaxed,fin,prev:prev.slice(),msg:`Relax edge ${LABELS[u]}→${LABELS[v]}: ${d}+${w}=${nd} vs current ${dist[v]===INF?'∞':dist[v]}`});
+        if(nd<dist[v]){
+          dist[v]=nd; prev[v]=u; relaxed++;
+          pq.push([nd,v]);
+          events.push({type:'relaxed',from:u,to:v,w,newDist:nd,dist:dist.slice(),pq:pq.slice(),finalized:finalized.slice(),stps,relaxed,fin,prev:prev.slice(),msg:`Update ${LABELS[v]}: d=${nd} (via ${LABELS[u]})`});
+        }
+      }
+    }
+    events.push({type:'done',dist:dist.slice(),pq:[],finalized:finalized.slice(),stps,relaxed,fin,prev:prev.slice(),msg:`Dijkstra complete! Shortest paths from S found.`});
+    return events;
+  }
+
+  function fmtDist(d){ return d===Infinity?'∞':d; }
+
+  function updateDistTable(dist,finalized){
+    const el=document.getElementById('d5-dist-table');
+    el.innerHTML='';
+    for(let i=0;i<NODES.length;i++){
+      const row=document.createElement('div');
+      const color=finalized[i]?'var(--green)':dist[i]<Infinity?'var(--cyan)':'var(--text-muted)';
+      row.style.color=color;
+      row.textContent=`${LABELS[i]}: d=${fmtDist(dist[i])}${finalized[i]?' ✓':''}`;
+      el.appendChild(row);
+    }
+  }
+
+  function setStep(label,text){ document.getElementById('d5-label').textContent=label; document.getElementById('d5-text').textContent=text; }
+
+  function applyEvent(ev){
+    // Reset all styles
+    for(let i=0;i<NODES.length;i++){
+      if(ev.finalized[i]) setNodeStyle(i, i===0?'start':'final');
+      else if(ev.dist[i]<Infinity) setNodeStyle(i,'pq');
+      else setNodeStyle(i,'default');
+      nodeDistLabels[i].textContent='d='+fmtDist(ev.dist[i]);
+    }
+    for(const ed of edgeEls){ ed.el.setAttribute('stroke','#30363d'); ed.el.setAttribute('stroke-width','2'); }
+    // Draw SP tree edges
+    for(let i=1;i<NODES.length;i++) if(ev.prev[i]>=0) setEdgeStyle(ev.prev[i],i,'sptree');
+
+    document.getElementById('d5-steps').textContent=ev.stps;
+    document.getElementById('d5-relaxed').textContent=ev.relaxed;
+    document.getElementById('d5-fin').textContent=ev.fin;
+    document.getElementById('d5-chip-fin').classList.toggle('good',ev.type==='done');
+    const pqStr=ev.pq.length?'[('+ev.pq.map(([d,n])=>LABELS[n]+','+fmtDist(d)).join('), (')+')]':'[ ]';
+    document.getElementById('d5-pq').textContent=pqStr;
+    updateDistTable(ev.dist,ev.finalized);
+
+    if(ev.type==='init'){
+      setStep('INIT','All distances = ∞ except S=0. Adding S to priority queue.');
+    } else if(ev.type==='extract'){
+      setNodeStyle(ev.node,'processing');
+      nodeDistLabels[ev.node].setAttribute('fill','#f0883e');
+      setStep('EXTRACT MIN', ev.msg);
+    } else if(ev.type==='relax_check'){
+      setEdgeStyle(ev.from,ev.to,'relax');
+      setStep('RELAX?', ev.msg);
+    } else if(ev.type==='relaxed'){
+      setEdgeStyle(ev.from,ev.to,'relax');
+      setNodeStyle(ev.to,'pq');
+      setStep('UPDATED', ev.msg);
+    } else if(ev.type==='done'){
+      setStep('DONE', ev.msg);
+      for(let i=0;i<NODES.length;i++) setNodeStyle(i,i===0?'start':'final');
+    }
+  }
+
+  function init(){
+    steps=computeSteps();
+    stepIndex=0;
+    busy=false;
+    buildSVG();
+    applyEvent(steps[0]);
+    document.getElementById('d5-step-btn').disabled=false;
+    document.getElementById('d5-run-btn').disabled=false;
+  }
+
+  const spdEl=document.getElementById('d5-spd');
+  const spdLbl=document.getElementById('d5-spd-lbl');
+  spdEl.addEventListener('input',()=>{ spd=+spdEl.value; spdLbl.textContent=spd+'×'; });
+  spd=+spdEl.value;
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms/spd));
+
+  document.getElementById('d5-step-btn').addEventListener('click',async()=>{
+    if(busy) return;
+    stepIndex++;
+    if(stepIndex>=steps.length){ stepIndex=steps.length-1; return; }
+    busy=true;
+    applyEvent(steps[stepIndex]);
+    await sleep(80);
+    busy=false;
+  });
+
+  document.getElementById('d5-run-btn').addEventListener('click',async()=>{
+    if(busy) return;
+    busy=true;
+    document.getElementById('d5-step-btn').disabled=true;
+    document.getElementById('d5-run-btn').disabled=true;
+    while(stepIndex<steps.length-1){
+      stepIndex++;
+      applyEvent(steps[stepIndex]);
+      await sleep(650);
+    }
+    document.getElementById('d5-step-btn').disabled=false;
+    document.getElementById('d5-run-btn').disabled=false;
+    busy=false;
+  });
+
+  document.getElementById('d5-reset-btn').addEventListener('click',()=>{ if(busy) return; init(); });
+  init();
+})();
+</script>
+
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+
+</body>
+</html>

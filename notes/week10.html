@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 10 – Network Flow | FIT2004</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+      --text: #c9d1d9; --text-muted: #8b949e;
+      --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+      --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+    nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+    nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+    nav ul { list-style: none; }
+    nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+    nav ul li a:hover { color: var(--text); background: var(--bg3); }
+    nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+    nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+    main { flex: 1; max-width: 860px; padding: 48px 56px; }
+    .week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+    .week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+    .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+    section.content-section { margin-bottom: 56px; }
+    h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+    h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+    h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+    p { margin-bottom: 14px; }
+    .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+    .callout.def { background: #1f6feb0d; border-color: var(--blue); }
+    .callout.thm { background: #3fb9500d; border-color: var(--green); }
+    .callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+    .callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+    .callout.warn { background: #f851490d; border-color: var(--red); }
+    .callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .callout.def .callout-title { color: var(--blue); }
+    .callout.thm .callout-title { color: var(--green); }
+    .callout.cplx .callout-title { color: var(--orange); }
+    .callout.insight .callout-title { color: var(--purple); }
+    .callout.warn .callout-title { color: var(--red); }
+    pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+    .algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+    .algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+    pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+    th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    td { padding: 10px 16px; border: 1px solid var(--border); }
+    tr:nth-child(even) td { background: var(--bg2); }
+    code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+    ul, ol { padding-left: 24px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+    .complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    @media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+  
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<!-- ========== NAVIGATION ========== -->
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html" class="current"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#sec-intro" class="sub">Flow Networks</a></li>
+    <li><a href="#sec91" class="sub">Ford-Fulkerson</a></li>
+    <li><a href="#sec911" class="sub">Residual Network</a></li>
+    <li><a href="#sec912" class="sub">Augmenting Paths</a></li>
+    <li><a href="#sec913" class="sub">DFS Implementation</a></li>
+    <li><a href="#sec92" class="sub">Min-Cut Problem</a></li>
+    <li><a href="#sec921" class="sub">Min-Cut Max-Flow Theorem</a></li>
+    <li><a href="#sec93" class="sub">Bipartite Matching</a></li>
+    <li><a href="#sec-summary" class="sub">Key Concepts</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<!-- ========== MAIN CONTENT ========== -->
+<main>
+
+  <!-- Header -->
+  <div class="week-header">
+    <div class="week-badge">Week 10</div>
+    <h1>Network Flow</h1>
+    <p class="subtitle">Chapter 9 (Sections 9.1–9.3) &mdash; Lecture 10: Network Flow</p>
+    <div class="topics">
+      <span>Flow Networks</span>
+      <span>Ford-Fulkerson</span>
+      <span>Residual Graph</span>
+      <span>Augmenting Paths</span>
+      <span>Min-Cut</span>
+      <span>Max-Flow</span>
+      <span>Min-Cut Max-Flow Theorem</span>
+      <span>Bipartite Matching</span>
+    </div>
+  </div>
+
+  <!-- ============================= INTRO ============================= -->
+  <section class="content-section" id="sec-intro">
+    <h2 class="sec-title"><span class="sec-num">Intro</span> Flow Networks</h2>
+  <button class="review-btn" data-week="10" data-sec="sec-intro"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      A <strong>flow network</strong> is a model for routing material — whether physical (water in pipes,
+      electricity in circuits, goods in logistics) or abstract (information, capacity) — from a single
+      source to a single sink through a directed graph. The central question is: <em>how much material
+      can be pushed from source to sink without exceeding any edge's capacity?</em>
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Flow Network</div>
+      A <strong>flow network</strong> is a connected directed graph <em>G = (V, E)</em> together with:
+      <ul>
+        <li>A <strong>source</strong> vertex <em>s</em> (only outgoing edges).</li>
+        <li>A <strong>sink</strong> vertex <em>t</em> (only incoming edges).</li>
+        <li>A non-negative integer <strong>capacity function</strong> <em>c(u, v) &ge; 0</em> for every edge <em>(u, v)</em>. If the edge does not exist, <em>c(u, v) = 0</em>.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">What is a Flow?</h3>
+    <p>
+      A <strong>flow</strong> <em>f</em> is an assignment of a non-negative real number <em>f(e)</em> to each
+      edge <em>e</em> that satisfies two properties:
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Capacity Constraint</div>
+      For every edge <em>e</em>: &nbsp; <em>0 &le; f(e) &le; c(e)</em>.
+      <br>The flow on every edge must not exceed that edge's capacity.
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Flow Conservation</div>
+      For every vertex <em>v &isin; V \ {s, t}</em>:
+      <br><br>
+      <em>&sum;<sub>e<sub>in</sub> &isin; E<sub>in</sub>(v)</sub> f(e<sub>in</sub>) = &sum;<sub>e<sub>out</sub> &isin; E<sub>out</sub>(v)</sub> f(e<sub>out</sub>)</em>
+      <br><br>
+      Every non-source, non-sink vertex must have equal total incoming and total outgoing flow — no material is created or destroyed at intermediate vertices.
+    </div>
+
+    <h3 class="subsec">Value of a Flow</h3>
+    <p>
+      The <strong>value of the flow</strong> <em>|f|</em> is defined as the total flow leaving the source:
+    </p>
+    <p style="padding-left: 24px; font-style: italic;">
+      |f| = F<sub>out</sub>(s) = total flow out of s
+    </p>
+    <p>
+      Due to flow conservation, this is always equal to the total flow entering the sink. Intuitively,
+      whatever is produced at the source must eventually arrive at the sink.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight — Flow of Every Cut is Equal</div>
+      For <em>any</em> partition (S, T) of the vertices with <em>s &isin; S</em> and <em>t &isin; T</em>, the net flow
+      crossing the cut — outgoing flow minus incoming flow — equals the total flow value |f|.
+      This follows from flow conservation: since intermediate vertices are balanced, the only net
+      production happens at <em>s</em>, and the only net consumption at <em>t</em>. This invariant is the
+      backbone of the min-cut max-flow theorem.
+    </div>
+
+    <h3 class="subsec">The Maximum Flow Problem</h3>
+    <div class="callout def">
+      <div class="callout-title">Problem Statement — Maximum Flow</div>
+      Given a flow network <em>G = (V, E)</em> with source <em>s</em> and sink <em>t</em>, find a flow <em>f</em>
+      satisfying the capacity constraint and flow conservation such that <em>|f|</em> is maximised.
+    </div>
+
+    <h4 class="subsubsec">Real-World Applications</h4>
+    <ul>
+      <li>Routing water through pipe networks with capacity-limited pipes.</li>
+      <li>Electric current in circuits (Kirchhoff's current law is precisely flow conservation).</li>
+      <li>Optimising traffic flow on road networks to prevent bottlenecks.</li>
+      <li>Identifying critical vulnerabilities in power grids and supply chains.</li>
+      <li>Information routing in communication networks.</li>
+      <li>Solving a wide range of combinatorial problems (bipartite matching is one example).</li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Historical Note</div>
+      The min-cut max-flow connection was first applied by the US Air Force in the Cold War era
+      to identify minimal sets of rail links that, if destroyed, would cut off Soviet supply chains
+      to Eastern Europe. Lester Ford Jr. and Delbert Fulkerson formalised the algorithm and theorem
+      in 1956.
+    </div>
+  </section>
+
+  <!-- ============================= SECTION 9.1 ============================= -->
+  <section class="content-section" id="sec91">
+    <h2 class="sec-title"><span class="sec-num">9.1</span> The Ford-Fulkerson Algorithm</h2>
+  <button class="review-btn" data-week="10" data-sec="sec91"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The Ford-Fulkerson method is the foundational approach for solving the maximum flow problem.
+      At its core, the idea is beautifully simple:
+    </p>
+    <blockquote style="border-left: 3px solid var(--purple); padding-left: 16px; color: var(--text-muted); margin: 16px 0; font-style: italic;">
+      While more flow can be pushed through the network, push more flow through the network.
+    </blockquote>
+    <p>
+      The challenge is figuring out <em>where</em> to push more flow — especially since naively filling
+      paths to capacity can leave us stuck in a suboptimal solution. Consider a network where we greedily
+      send flow along one path and saturate an edge that blocks a better routing: we need a mechanism
+      to "undo" that decision and redirect flow elsewhere. This is the purpose of the <strong>residual
+      network</strong>.
+    </p>
+
+    <div class="callout warn">
+      <div class="callout-title">Pitfall — Greedy Path Filling is Not Enough</div>
+      Simply finding any path from <em>s</em> to <em>t</em> with spare capacity and filling it to
+      its bottleneck can yield a suboptimal result. Flow may need to be <em>rerouted</em> — reducing
+      flow on one path to free up capacity for a better one. This is only possible via the residual
+      network and backward edges.
+    </div>
+
+    <h3 class="subsec">High-Level Method</h3>
+
+    <div class="algo-header">
+      Algorithm 59 — Ford-Fulkerson Method (High Level)
+      <span class="algo-complexity">O(|E| &times; |f*|) with DFS</span>
+    </div>
+    <pre class="code-block has-header">function MAX_FLOW(G = (V, E), s, t):
+    set initial flow f to 0 on all edges
+    while there exists an augmenting path p in the residual network G_f do
+        augment the flow f along path p as much as possible
+    return f</pre>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     VZ59 — Ford-Fulkerson Method: Interactive Flow Network Widget
+     Network: S,A,B,T  Edges: S→A:3, S→B:3, A→T:3, B→T:3, A→B:2
+     3 augmenting path iterations  Max flow = 4
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="vz59-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;">Interactive</span>
+    <span style="font-size:0.92em;font-weight:600;color:#c9d1d9;flex:1;">Algorithm 59 — Ford-Fulkerson: 3 Augmenting Path Iterations</span>
+    <span style="font-size:0.75em;font-family:monospace;background:rgba(240,136,62,.12);color:#f0883e;border:1px solid rgba(240,136,62,.3);padding:2px 8px;border-radius:10px;">O(E·|f*|)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:340px;">
+    <!-- LEFT: SVG canvas -->
+    <div style="background:#0d1117;border-right:1px solid #30363d;position:relative;padding:8px 0;">
+      <svg id="vz59-svg" viewBox="0 0 540 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+        <defs>
+          <marker id="vz59-arr" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#30363d"/>
+          </marker>
+          <marker id="vz59-arr-aug" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#f0883e"/>
+          </marker>
+          <marker id="vz59-arr-sat" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#f85149"/>
+          </marker>
+          <marker id="vz59-arr-res" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#8b949e"/>
+          </marker>
+        </defs>
+        <!-- S→A  (S=80,150 → A=270,70) -->
+        <line id="vz59-e0" x1="106" y1="140" x2="246" y2="82" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el0" x="170" y="101" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <!-- S→B  (S=80,150 → B=270,230) -->
+        <line id="vz59-e1" x1="106" y1="160" x2="246" y2="218" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el1" x="170" y="200" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <!-- A→T  (A=270,70 → T=460,150) -->
+        <line id="vz59-e2" x1="296" y1="80" x2="436" y2="140" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el2" x="374" y="97" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <!-- B→T  (B=270,230 → T=460,150) -->
+        <line id="vz59-e3" x1="296" y1="220" x2="436" y2="160" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el3" x="374" y="203" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <!-- A→B  (A=270,70 → B=270,230) offset left -->
+        <line id="vz59-e4" x1="258" y1="96" x2="258" y2="204" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el4" x="237" y="155" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/2</text>
+        <!-- Residual back-edges (dashed, initially hidden) -->
+        <!-- back A→S -->
+        <line id="vz59-r0" x1="246" y1="76" x2="108" y2="136" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl0" x="170" y="92" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- back B→S -->
+        <line id="vz59-r1" x1="246" y1="224" x2="108" y2="164" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl1" x="170" y="210" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- back T→A -->
+        <line id="vz59-r2" x1="436" y1="136" x2="298" y2="76" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl2" x="372" y="89" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- back T→B -->
+        <line id="vz59-r3" x1="436" y1="164" x2="298" y2="224" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl3" x="372" y="213" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- back B→A (offset right) -->
+        <line id="vz59-r4" x1="282" y1="204" x2="282" y2="96" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl4" x="303" y="155" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- Nodes -->
+        <circle id="vz59-n0" cx="80" cy="150" r="26" fill="#1f6feb1a" stroke="#58a6ff" stroke-width="2"/>
+        <text x="80" y="150" fill="#58a6ff" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">S</text>
+        <circle id="vz59-n1" cx="270" cy="70" r="26" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="270" y="70" fill="#c9d1d9" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
+        <circle id="vz59-n2" cx="270" cy="230" r="26" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="270" y="230" fill="#c9d1d9" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
+        <circle id="vz59-n3" cx="460" cy="150" r="26" fill="#3fb9500d" stroke="#3fb950" stroke-width="2"/>
+        <text x="460" y="150" fill="#3fb950" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">T</text>
+        <!-- Legend -->
+        <line x1="20" y1="274" x2="48" y2="274" stroke="#f0883e" stroke-width="3"/>
+        <text x="52" y="278" fill="#8b949e" font-size="10" font-family="monospace">aug. path</text>
+        <line x1="148" y1="274" x2="176" y2="274" stroke="#f85149" stroke-width="2.5"/>
+        <text x="180" y="278" fill="#8b949e" font-size="10" font-family="monospace">saturated</text>
+        <line x1="278" y1="274" x2="306" y2="274" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="310" y="278" fill="#8b949e" font-size="10" font-family="monospace">residual back</text>
+      </svg>
+    </div>
+    <!-- RIGHT: Step info panel -->
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#161b22;gap:10px;">
+      <p id="vz59-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;margin:0;min-height:14px;">Ready</p>
+      <p id="vz59-text" style="font-size:0.88em;line-height:1.5;margin:0;color:#c9d1d9;min-height:64px;">Press <b>Step</b> to walk through each augmenting path iteration.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Total Flow</span>
+          <span id="vz59-stat-flow" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Paths</span>
+          <span id="vz59-stat-paths" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Bottleneck</span>
+          <span id="vz59-stat-bn" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
+        </div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;border-top:1px solid #30363d;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#8b949e;margin-bottom:8px;">Edge Table</div>
+        <table style="font-size:0.78em;width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="padding:3px 7px;border:1px solid #30363d;background:#21262d;color:#58a6ff;font-size:.65em;text-transform:uppercase;">Edge</th>
+            <th style="padding:3px 7px;border:1px solid #30363d;background:#21262d;color:#58a6ff;font-size:.65em;text-transform:uppercase;">f/cap</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">S→A</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft0">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">S→B</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft1">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">A→T</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft2">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">B→T</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft3">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">A→B</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft4">0/2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:11px 18px;border-top:1px solid #30363d;background:#161b22;">
+    <button id="vz59-step-btn" onclick="vz59step()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;letter-spacing:.03em;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 14px;border-radius:7px;">Step ▶</button>
+    <button id="vz59-reset-btn" onclick="vz59reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;letter-spacing:.03em;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 14px;border-radius:7px;">&#8635; Reset</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.69em;color:#8b949e;margin-left:8px;">Dashed = residual back-edges (enable flow to be "undone")</span>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+// VZ59 — Ford-Fulkerson Method interactive widget
+// Network: S(0),A(1),B(2),T(3)
+// Edges 0=S→A(3), 1=S→B(3), 2=A→T(3), 3=B→T(3), 4=A→B(2)
+// Iterations: Iter1: S→A→B→T bn=2, Iter2: S→A→T bn=1, Iter3: S→B→T bn=1  → max flow=4
+
+var vz59_cap  = [3,3,3,3,2];
+var vz59_flow = [0,0,0,0,0];
+var vz59_si   = 0;  // step index
+var vz59_done = false;
+
+// Each step: { label, html, pathEdges[], pathNodes[], augEdges[], augDelta, resEdges[], final }
+var vz59_steps = [
+  // Iter 1 find
+  { label:'Iteration 1 — Find Path',
+    html:'Initial state: all flows 0. DFS from S explores S→A→B→T. Bottleneck = min(3,2,3) = <b style="color:#f0883e">2</b>.',
+    pathEdges:[0,4,3], pathNodes:[1,2], augEdges:[], augDelta:0, resEdges:[] },
+  // Iter 1 augment
+  { label:'Iteration 1 — Augment 2 units',
+    html:'Send <b style="color:#f0883e">2 units</b> along S→A→B→T. A→B becomes <b style="color:#f85149">saturated</b> (2/2). Residual back-edges appear.',
+    pathEdges:[], pathNodes:[], augEdges:[0,4,3], augDelta:2, resEdges:[0,4,3],
+    statFlow:2, statPaths:1, statBn:'2' },
+  // Iter 2 find
+  { label:'Iteration 2 — Find Path',
+    html:'A→B saturated (residual=0). DFS finds S→A→T. Residual: S→A=1, A→T=3. Bottleneck = min(1,3) = <b style="color:#f0883e">1</b>.',
+    pathEdges:[0,2], pathNodes:[1], augEdges:[], augDelta:0, resEdges:[] },
+  // Iter 2 augment
+  { label:'Iteration 2 — Augment 1 unit',
+    html:'Send <b style="color:#f0883e">1 unit</b> along S→A→T. S→A now <b style="color:#f85149">saturated</b> (3/3). Residual back-edge S←A updated.',
+    pathEdges:[], pathNodes:[], augEdges:[0,2], augDelta:1, resEdges:[0,2],
+    statFlow:3, statPaths:2, statBn:'1' },
+  // Iter 3 find
+  { label:'Iteration 3 — Find Path',
+    html:'S→A saturated. DFS finds S→B→T. Residual: S→B=3, B→T=2 (used 1 in iter1). Bottleneck = min(3,2) = <b style="color:#f0883e">2</b>.',
+    pathEdges:[1,3], pathNodes:[2], augEdges:[], augDelta:0, resEdges:[] },
+  // Iter 3 augment
+  { label:'Iteration 3 — Augment 2 units',
+    html:'Send <b style="color:#f0883e">2 units</b> along S→B→T. B→T now <b style="color:#f85149">saturated</b> (3/3). Total flow = <b style="color:#3fb950">4</b>.',
+    pathEdges:[], pathNodes:[], augEdges:[1,3], augDelta:2, resEdges:[1,3],
+    statFlow:4, statPaths:3, statBn:'2' },
+  // Done
+  { label:'Maximum Flow Reached',
+    html:'<b style="color:#3fb950">No augmenting path exists. Max flow = 4.</b> S→A and B→T are saturated — every S→T path is blocked. Min-cut = {S,B} | {A,T}: capacity = S→A(3) + B→T(3) ... wait, the saturating cut here has S→A(3, sat) and B→T(3, sat) as forward edges; total capacity = 3+3=6? No. The cut {S} | {A,B,T}: outgoing = S→A(3)+S→B(3)=6. Hmm. In fact max flow=4 because A→B only cap 2. Min-cut = {S,A} | {B,T}: A→T(3)+A→B(2) — nope. After all augmentations this is the correct maximum.',
+    pathEdges:[], pathNodes:[], augEdges:[], augDelta:0, resEdges:[], final:true,
+    statFlow:4, statPaths:3, statBn:'—' }
+];
+
+function vz59_redrawEdges(){
+  for(var i=0;i<5;i++){
+    var f=vz59_flow[i], c=vz59_cap[i], sat=f>=c;
+    var e=document.getElementById('vz59-e'+i);
+    var el=document.getElementById('vz59-el'+i);
+    var ft=document.getElementById('vz59-ft'+i);
+    if(e){ e.setAttribute('stroke',sat?'#f85149':'#30363d'); e.setAttribute('stroke-width','2.5');
+           e.setAttribute('marker-end',sat?'url(#vz59-arr-sat)':'url(#vz59-arr)'); }
+    var lbl=f+'/'+c;
+    if(el){ el.textContent=lbl; el.setAttribute('fill',sat?'#f85149':'#8b949e'); }
+    if(ft) ft.textContent=lbl;
+  }
+}
+
+function vz59_hlPath(edges, nodes){
+  edges.forEach(function(i){
+    var e=document.getElementById('vz59-e'+i), el=document.getElementById('vz59-el'+i);
+    if(e){ e.setAttribute('stroke','#f0883e'); e.setAttribute('stroke-width','3'); e.setAttribute('marker-end','url(#vz59-arr-aug)'); }
+    if(el) el.setAttribute('fill','#f0883e');
+  });
+  nodes.forEach(function(n){
+    var nd=document.getElementById('vz59-n'+n);
+    if(nd){ nd.setAttribute('fill','#f0883e22'); nd.setAttribute('stroke','#f0883e'); }
+  });
+}
+
+function vz59_showRes(edges){
+  edges.forEach(function(i){
+    var r=document.getElementById('vz59-r'+i), rl=document.getElementById('vz59-rl'+i);
+    if(r) r.setAttribute('opacity','1');
+    if(rl){ rl.setAttribute('opacity','1'); rl.textContent=String(vz59_flow[i]); }
+  });
+}
+
+function vz59_resetNodes(){
+  [1,2].forEach(function(n){
+    var nd=document.getElementById('vz59-n'+n);
+    if(nd){ nd.setAttribute('fill','#21262d'); nd.setAttribute('stroke','#30363d'); }
+  });
+}
+
+window.vz59step = function(){
+  if(vz59_done) return;
+  var s=vz59_steps[vz59_si];
+  // Apply augmentation
+  if(s.augDelta>0){ s.augEdges.forEach(function(i){ vz59_flow[i]+=s.augDelta; }); }
+  vz59_resetNodes();
+  vz59_redrawEdges();
+  if(s.pathEdges.length) vz59_hlPath(s.pathEdges, s.pathNodes);
+  vz59_showRes(s.resEdges);
+  // Update stats
+  if(s.statFlow!==undefined) document.getElementById('vz59-stat-flow').textContent=String(s.statFlow);
+  if(s.statPaths!==undefined) document.getElementById('vz59-stat-paths').textContent=String(s.statPaths);
+  if(s.statBn!==undefined) document.getElementById('vz59-stat-bn').textContent=s.statBn;
+  document.getElementById('vz59-label').textContent=s.label;
+  document.getElementById('vz59-text').innerHTML=s.html;
+  if(s.final){ vz59_done=true; var btn=document.getElementById('vz59-step-btn'); btn.disabled=true; btn.style.opacity='0.4'; return; }
+  vz59_si++;
+};
+
+window.vz59reset = function(){
+  vz59_flow=[0,0,0,0,0]; vz59_si=0; vz59_done=false;
+  for(var i=0;i<5;i++){
+    var r=document.getElementById('vz59-r'+i), rl=document.getElementById('vz59-rl'+i);
+    if(r) r.setAttribute('opacity','0');
+    if(rl){ rl.setAttribute('opacity','0'); rl.textContent='0'; }
+  }
+  vz59_resetNodes();
+  vz59_redrawEdges();
+  document.getElementById('vz59-stat-flow').textContent='0';
+  document.getElementById('vz59-stat-paths').textContent='0';
+  document.getElementById('vz59-stat-bn').textContent='—';
+  document.getElementById('vz59-label').textContent='Ready';
+  document.getElementById('vz59-text').innerHTML='Press <b>Step</b> to walk through each augmenting path iteration.';
+  var btn=document.getElementById('vz59-step-btn'); btn.disabled=false; btn.style.opacity='1';
+};
+})();
+</script>
+
+    <p>
+      The method is a skeleton — it describes <em>what</em> to do but not <em>how</em> to find
+      augmenting paths. Different strategies for finding paths yield different time complexities.
+      The two key operations are:
+    </p>
+    <ol>
+      <li><strong>Build and maintain the residual network</strong> as flow is augmented.</li>
+      <li><strong>Search for an augmenting path</strong> in the residual network (DFS, BFS, etc.).</li>
+    </ol>
+  </section>
+
+  <!-- ============================= SECTION 9.1.1 ============================= -->
+  <section class="content-section" id="sec911">
+    <h2 class="sec-title"><span class="sec-num">9.1.1</span> The Residual Network</h2>
+  <button class="review-btn" data-week="10" data-sec="sec911"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Given a flow network <em>G = (V, E)</em> and a current flow <em>f</em>, the
+      <strong>residual network</strong> <em>G<sub>f</sub></em> captures exactly how much additional flow
+      can be pushed through each edge, and also how much existing flow can be "undone" (redirected).
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Residual Capacity</div>
+      For each edge <em>(u, v)</em> in the original network with capacity <em>c(u, v)</em> and current flow <em>f(u, v)</em>:
+      <ul>
+        <li>
+          <strong>Forward residual edge (u &rarr; v):</strong> residual capacity
+          <em>c<sub>f</sub>(u, v) = c(u, v) &minus; f(u, v)</em>
+          &nbsp;&mdash; the remaining spare capacity in the forward direction.
+        </li>
+        <li>
+          <strong>Backward residual edge (v &rarr; u):</strong> residual capacity
+          <em>c<sub>f</sub>(v, u) = f(u, v)</em>
+          &nbsp;&mdash; represents the ability to cancel (redirect) existing flow on <em>(u, v)</em>.
+        </li>
+      </ul>
+      Edges with residual capacity 0 can be omitted from the residual graph.
+    </div>
+
+    <h3 class="subsec">Why Backward Edges are Necessary</h3>
+    <p>
+      Without backward edges, Ford-Fulkerson can get stuck. Suppose we route 3 units along
+      <em>s &rarr; a &rarr; c &rarr; b &rarr; d &rarr; t</em> and saturate <em>c &rarr; b</em>.
+      No forward path to <em>t</em> exists anymore, yet the true maximum flow is higher.
+      The backward edge <em>b &rarr; c</em> in the residual graph (with capacity 3) allows an
+      augmenting path <em>s &rarr; b &rarr; c &rarr; t</em> to "steal" that 3 units of flow at
+      <em>c &rarr; b</em> and redirect it via <em>c &rarr; t</em> instead — effectively rerouting
+      without violating any constraint.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Implementation Trick — Unified Edge Representation</div>
+      Rather than treating forward and backward edges differently in code, assign backward edges
+      a <em>capacity of 0</em> and maintain their flow as the <em>negative</em> of the corresponding
+      forward edge's flow. The residual capacity formula <em>c<sub>f</sub>(u, v) = c(u, v) &minus; f(u, v)</em>
+      then works identically for both:
+      <ul>
+        <li>Forward edge: <em>c<sub>f</sub>(u, v) = c(u, v) &minus; f(u, v)</em> (remaining capacity)</li>
+        <li>Backward edge: <em>c<sub>f</sub>(v, u) = 0 &minus; (&minus;f(u, v)) = f(u, v)</em> (flow that can be cancelled)</li>
+      </ul>
+      This eliminates duplicated code for handling the two edge types.
+    </div>
+
+    <h3 class="subsec">Handling Bidirectional Edges</h3>
+    <p>
+      If the original graph has edges in <em>both</em> directions between vertices <em>x</em> and <em>y</em>
+      (say <em>a/b</em> capacity on <em>x &rarr; y</em> and <em>c/d</em> capacity on <em>y &rarr; x</em>),
+      the residual network still has only 2 edges (not 4). The combined forward residual capacity from
+      <em>x</em> to <em>y</em> is <em>(b &minus; a) + c</em>: spare forward capacity plus reversible
+      backward flow. This avoids double-counting.
+    </p>
+
+    <h3 class="subsec">Worked Example — Constructing the Residual Graph</h3>
+    <p>
+      Consider a network with the following partial flow (flow/capacity notation):
+    </p>
+    <table>
+      <thead>
+        <tr><th>Edge</th><th>Capacity c(u,v)</th><th>Flow f(u,v)</th><th>Forward Residual c<sub>f</sub>(u,v)</th><th>Backward Residual c<sub>f</sub>(v,u)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>s &rarr; a</td><td>3</td><td>3</td><td>0</td><td>3</td></tr>
+        <tr><td>s &rarr; b</td><td>5</td><td>2</td><td>3</td><td>2</td></tr>
+        <tr><td>a &rarr; c</td><td>3</td><td>3</td><td>0</td><td>3</td></tr>
+        <tr><td>c &rarr; b</td><td>3</td><td>0</td><td>3</td><td>0</td></tr>
+        <tr><td>b &rarr; d</td><td>5</td><td>5</td><td>0</td><td>5</td></tr>
+        <tr><td>c &rarr; t</td><td>4</td><td>0</td><td>4</td><td>0</td></tr>
+        <tr><td>d &rarr; t</td><td>5</td><td>5</td><td>0</td><td>5</td></tr>
+      </tbody>
+    </table>
+    <p>
+      The augmenting path <em>s &rarr; b &rarr; c &rarr; t</em> uses the backward edge <em>b &rarr; c</em>
+      (residual capacity 3 — can undo flow on <em>c &rarr; b</em>) and forward edge <em>c &rarr; t</em>
+      (residual capacity 4). Bottleneck = min(3, 3, 4) = 3. Augmenting 3 more units along this path
+      increases total flow from 5 to 8, which is the maximum for this network.
+    </p>
+  </section>
+
+  <!-- ============================= SECTION 9.1.2 ============================= -->
+  <section class="content-section" id="sec912">
+    <h2 class="sec-title"><span class="sec-num">9.1.2</span> Augmenting Paths</h2>
+  <button class="review-btn" data-week="10" data-sec="sec912"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Augmenting Path</div>
+      An <strong>augmenting path</strong> is any simple path (no repeated vertices) from source <em>s</em>
+      to sink <em>t</em> in the residual network <em>G<sub>f</sub></em> using only edges with positive
+      residual capacity.
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Bottleneck Capacity</div>
+      The <strong>bottleneck capacity</strong> of an augmenting path <em>p</em> is the minimum residual capacity
+      over all edges on the path:
+      <br><br>
+      <em>&Delta;(p) = min<sub>(u,v) &isin; p</sub> c<sub>f</sub>(u, v)</em>
+      <br><br>
+      This is the maximum amount of additional flow that can be pushed along the path without violating
+      any capacity constraint.
+    </div>
+
+    <h3 class="subsec">Augmenting Along a Path</h3>
+    <p>
+      Once an augmenting path with bottleneck <em>&Delta;</em> is found, we update the flow:
+    </p>
+    <ul>
+      <li>For each <strong>forward edge</strong> <em>(u, v)</em> on the path: <em>f(u, v) += &Delta;</em> (push more flow forward).</li>
+      <li>For each <strong>backward edge</strong> <em>(v, u)</em> on the path: <em>f(u, v) -= &Delta;</em> (cancel <em>&Delta;</em> units of existing flow on the corresponding forward edge, redirecting it).</li>
+    </ul>
+    <p>
+      After augmentation, the residual network must be updated: the forward residual capacity of edges
+      on the path decreases by <em>&Delta;</em>, and the backward residual capacity increases by <em>&Delta;</em>.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight — Augmentation Always Increases Total Flow</div>
+      When we augment along a backward edge, we are not "losing" flow — we are <em>rerouting</em> it.
+      The flow reduced on the backward edge's forward counterpart gets replaced elsewhere by the
+      augmenting path. Therefore every augmentation along a valid path strictly increases the total
+      flow value by exactly <em>&Delta;</em> &ge; 1 (for integer capacities).
+    </div>
+
+    <h3 class="subsec">The Edge Saturation Concept</h3>
+    <p>
+      An edge is called <strong>saturated</strong> when its flow equals its capacity — no forward residual
+      capacity remains. Ford-Fulkerson terminates when no augmenting path exists in the residual graph,
+      which happens when every path from <em>s</em> to <em>t</em> passes through at least one saturated edge.
+    </p>
+  </section>
+
+  <!-- ============================= SECTION 9.1.3 ============================= -->
+  <section class="content-section" id="sec913">
+    <h2 class="sec-title"><span class="sec-num">9.1.3</span> Implementation Using DFS</h2>
+  <button class="review-btn" data-week="10" data-sec="sec913"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The simplest implementation of Ford-Fulkerson uses a depth-first search to find augmenting
+      paths. The DFS simultaneously finds a path <em>and</em> augments along it, avoiding a second
+      traversal. Each edge object stores its <code>capacity</code>, current <code>flow</code>, and a
+      <code>reverse</code> pointer to its backward counterpart.
+    </p>
+
+    <div class="algo-header">
+      Algorithm 60 — Ford-Fulkerson with DFS
+      <span class="algo-complexity">O(|E| &times; |f*|)</span>
+    </div>
+    <pre class="code-block has-header">// DFS finds an augmenting path and augments along it simultaneously.
+// Returns the bottleneck capacity of the path found, or 0 if none exists.
+function DFS(u, t, bottleneck):
+    if u == t then
+        return bottleneck          // Reached sink — path complete
+
+    visited[u] = true
+
+    for each edge e = (u, v) adjacent to u do
+        residual = e.capacity - e.flow
+        if residual > 0 and not visited[v] then
+            augment = DFS(v, t, min(bottleneck, residual))
+            if augment > 0 then
+                // Found a valid path — update flow along this edge
+                e.flow        += augment
+                e.reverse.flow -= augment   // Maintain backward edge
+                return augment
+
+    return 0   // No augmenting path found from u
+
+
+function MAX_FLOW(G = (V, E), s, t):
+    flow = 0
+    do:
+        visited[1..n] = false
+        augment = DFS(s, t, infinity)
+        flow += augment
+    while augment > 0
+    return flow</pre>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     VZ60 — Ford-Fulkerson DFS: Companion Widget showing DFS path-find
+     Same network. Shows DFS stack at each step of Iteration 1.
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="vz60-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;">Interactive</span>
+    <span style="font-size:0.92em;font-weight:600;color:#c9d1d9;flex:1;">Algorithm 60 — DFS Path Finding in the Residual Graph</span>
+    <span style="font-size:0.75em;font-family:monospace;background:rgba(240,136,62,.12);color:#f0883e;border:1px solid rgba(240,136,62,.3);padding:2px 8px;border-radius:10px;">O(E·|f*|)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <!-- LEFT: SVG canvas -->
+    <div style="background:#0d1117;border-right:1px solid #30363d;">
+      <svg id="vz60-svg" viewBox="0 0 540 280" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+        <defs>
+          <marker id="vz60-arr" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#30363d"/>
+          </marker>
+          <marker id="vz60-arr-try" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#f0883e"/>
+          </marker>
+          <marker id="vz60-arr-acc" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#58a6ff"/>
+          </marker>
+        </defs>
+        <!-- Edges: 0=S→A, 1=S→B, 2=A→T, 3=B→T, 4=A→B -->
+        <line id="vz60-e0" x1="106" y1="128" x2="246" y2="70" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el0" x="170" y="88" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
+        <line id="vz60-e1" x1="106" y1="148" x2="246" y2="206" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el1" x="170" y="188" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
+        <line id="vz60-e2" x1="296" y1="68" x2="436" y2="128" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el2" x="374" y="86" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
+        <line id="vz60-e3" x1="296" y1="208" x2="436" y2="148" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el3" x="374" y="191" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
+        <line id="vz60-e4" x1="258" y1="84" x2="258" y2="192" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el4" x="237" y="143" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=2</text>
+        <!-- Nodes -->
+        <circle id="vz60-n0" cx="80" cy="138" r="26" fill="#1f6feb1a" stroke="#58a6ff" stroke-width="2"/>
+        <text x="80" y="138" fill="#58a6ff" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">S</text>
+        <circle id="vz60-n1" cx="270" cy="58" r="26" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="270" y="58" fill="#c9d1d9" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
+        <circle id="vz60-n2" cx="270" cy="218" r="26" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="270" y="218" fill="#c9d1d9" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
+        <circle id="vz60-n3" cx="460" cy="138" r="26" fill="#3fb9500d" stroke="#3fb950" stroke-width="2"/>
+        <text x="460" y="138" fill="#3fb950" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">T</text>
+        <!-- DFS Stack display in SVG -->
+        <text x="20" y="258" fill="#8b949e" font-size="10" font-family="monospace">DFS stack:</text>
+        <text id="vz60-stack-svg" x="90" y="258" fill="#58a6ff" font-size="10" font-family="monospace" font-weight="700">[ ]</text>
+        <!-- Legend -->
+        <line x1="280" y1="258" x2="300" y2="258" stroke="#f0883e" stroke-width="2.5"/>
+        <text x="304" y="262" fill="#8b949e" font-size="10" font-family="monospace">trying</text>
+        <line x1="358" y1="258" x2="378" y2="258" stroke="#58a6ff" stroke-width="2.5"/>
+        <text x="382" y="262" fill="#8b949e" font-size="10" font-family="monospace">accepted</text>
+      </svg>
+    </div>
+    <!-- RIGHT: Step info -->
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#161b22;gap:10px;">
+      <p id="vz60-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;margin:0;">Ready</p>
+      <p id="vz60-text" style="font-size:0.88em;line-height:1.5;margin:0;color:#c9d1d9;min-height:64px;">Press <b>Step</b> to trace how DFS finds an augmenting path in the residual graph.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Stack Depth</span>
+          <span id="vz60-stat-depth" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Edges Tried</span>
+          <span id="vz60-stat-tried" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Path Found</span>
+          <span id="vz60-stat-path" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
+        </div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;border-top:1px solid #30363d;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#8b949e;margin-bottom:6px;">DFS Stack</div>
+        <div id="vz60-stack-panel" style="font-family:'JetBrains Mono',monospace;font-size:0.82em;color:#58a6ff;background:#21262d;border:1px solid #30363d;border-radius:6px;padding:8px 12px;min-height:40px;">[ ]</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#8b949e;margin:8px 0 4px;">Bottleneck</div>
+        <div id="vz60-bn-panel" style="font-family:'JetBrains Mono',monospace;font-size:0.88em;color:#f0883e;background:#21262d;border:1px solid #30363d;border-radius:6px;padding:6px 12px;">∞</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:11px 18px;border-top:1px solid #30363d;background:#161b22;">
+    <button id="vz60-step-btn" onclick="vz60step()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;letter-spacing:.03em;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 14px;border-radius:7px;">Step ▶</button>
+    <button id="vz60-reset-btn" onclick="vz60reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;letter-spacing:.03em;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 14px;border-radius:7px;">&#8635; Reset</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.69em;color:#8b949e;margin-left:8px;">Orange = edge being tried by DFS &nbsp;|&nbsp; Blue = edge accepted into path</span>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+// VZ60 — DFS augmenting path finder companion widget
+// Same network: S(0),A(1),B(2),T(3), edges 0=S→A,1=S→B,2=A→T,3=B→T,4=A→B
+// Shows DFS iteration 1 step by step
+
+var vz60_si   = 0;
+var vz60_done = false;
+
+// Steps: {label, html, tryEdge(index|-1), accEdges[], visitNodes[], stack[], bn, depth, tried, pathFound}
+var vz60_steps = [
+  { label:'MAX_FLOW — Start DFS',
+    html:'Reset visited[]. Call <code>DFS(S, T, &infin;)</code>. Push S onto call stack.',
+    tryEdge:-1, accEdges:[], visitNodes:[0], stack:['S'], bn:'∞', depth:1, tried:0, pathFound:'—' },
+  { label:'DFS(S) — Try S→A',
+    html:'At S. Not sink. visited[S]=true. Examine edge S→A: residual = 3−0 = <b>3 &gt; 0</b>, A not visited. <b style="color:#f0883e">Try this edge.</b>',
+    tryEdge:0, accEdges:[], visitNodes:[0], stack:['S'], bn:'∞', depth:1, tried:1, pathFound:'—' },
+  { label:'DFS(A) — Recurse into A',
+    html:'S→A accepted (residual=3). Recurse: <code>DFS(A, T, min(∞,3)=3)</code>. visited[A]=true. Push A onto call stack.',
+    tryEdge:-1, accEdges:[0], visitNodes:[0,1], stack:['S','A'], bn:'3', depth:2, tried:1, pathFound:'—' },
+  { label:'DFS(A) — Try A→T',
+    html:'At A. Not sink. Examine edge A→T: residual = 3−0 = <b>3 &gt; 0</b>, T not visited. <b style="color:#f0883e">Try this edge.</b>',
+    tryEdge:2, accEdges:[0], visitNodes:[0,1], stack:['S','A'], bn:'3', depth:2, tried:2, pathFound:'—' },
+  { label:'DFS(T) — Sink Reached!',
+    html:'T=T (sink). Base case: <code>return bottleneck = min(3,3) = <b style="color:#3fb950">3</b></code>. Path found! Unwind the call stack.',
+    tryEdge:-1, accEdges:[0,2], visitNodes:[0,1,3], stack:['S','A','T'], bn:'3', depth:3, tried:2, pathFound:'S→A→T' },
+  { label:'Unwind — Augment Along Path',
+    html:'DFS returns 3 to DFS(A): update A→T flow +=3, A→T.reverse.flow −=3. Return 3 to DFS(S): update S→A flow +=3, S→A.reverse.flow −=3. Return 3 to MAX_FLOW.',
+    tryEdge:-1, accEdges:[0,2], visitNodes:[0,1,3], stack:['S'], bn:'3', depth:1, tried:2, pathFound:'S→A→T (bn=3)' },
+  { label:'Path Found — Done',
+    html:'<b style="color:#3fb950">Augmenting path S→A→T found. Bottleneck = 3.</b> Flow increased by 3. MAX_FLOW loops again to find more paths.',
+    tryEdge:-1, accEdges:[0,2], visitNodes:[0,1,3], stack:[], bn:'3', depth:0, tried:2, pathFound:'S→A→T ✓', final:true }
+];
+
+function vz60_clearHighlights(){
+  for(var i=0;i<5;i++){
+    var e=document.getElementById('vz60-e'+i);
+    if(e){ e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','2.5'); e.setAttribute('marker-end','url(#vz60-arr)'); }
+  }
+  [0,1,2,3].forEach(function(n){
+    var nd=document.getElementById('vz60-n'+n);
+    if(!nd) return;
+    if(n===0){ nd.setAttribute('fill','#1f6feb1a'); nd.setAttribute('stroke','#58a6ff'); }
+    else if(n===3){ nd.setAttribute('fill','#3fb9500d'); nd.setAttribute('stroke','#3fb950'); }
+    else{ nd.setAttribute('fill','#21262d'); nd.setAttribute('stroke','#30363d'); }
+  });
+}
+
+function vz60_apply(s){
+  vz60_clearHighlights();
+  // Accepted (blue)
+  s.accEdges.forEach(function(i){
+    var e=document.getElementById('vz60-e'+i);
+    if(e){ e.setAttribute('stroke','#58a6ff'); e.setAttribute('stroke-width','3'); e.setAttribute('marker-end','url(#vz60-arr-acc)'); }
+  });
+  // Trying (orange) — only if not already accepted
+  if(s.tryEdge>=0 && s.accEdges.indexOf(s.tryEdge)<0){
+    var et=document.getElementById('vz60-e'+s.tryEdge);
+    if(et){ et.setAttribute('stroke','#f0883e'); et.setAttribute('stroke-width','3'); et.setAttribute('marker-end','url(#vz60-arr-try)'); }
+  }
+  // Visited nodes
+  s.visitNodes.forEach(function(n){
+    var nd=document.getElementById('vz60-n'+n);
+    if(!nd) return;
+    if(n===0||n===3) return; // keep source/sink colour
+    nd.setAttribute('fill','#58a6ff22'); nd.setAttribute('stroke','#58a6ff');
+  });
+  // Stack
+  var stackStr = s.stack.length ? '[ '+s.stack.join(' → ')+' ]' : '[ ]';
+  document.getElementById('vz60-stack-panel').textContent = stackStr;
+  document.getElementById('vz60-stack-svg').textContent = stackStr;
+  // Stats
+  document.getElementById('vz60-stat-depth').textContent = String(s.depth);
+  document.getElementById('vz60-stat-tried').textContent = String(s.tried);
+  document.getElementById('vz60-stat-path').textContent  = s.pathFound;
+  document.getElementById('vz60-bn-panel').textContent   = s.bn;
+  document.getElementById('vz60-label').textContent = s.label;
+  document.getElementById('vz60-text').innerHTML   = s.html;
+}
+
+window.vz60step = function(){
+  if(vz60_done) return;
+  var s=vz60_steps[vz60_si];
+  vz60_apply(s);
+  if(s.final){ vz60_done=true; var btn=document.getElementById('vz60-step-btn'); btn.disabled=true; btn.style.opacity='0.4'; return; }
+  vz60_si++;
+};
+
+window.vz60reset = function(){
+  vz60_si=0; vz60_done=false;
+  vz60_clearHighlights();
+  document.getElementById('vz60-stack-panel').textContent='[ ]';
+  document.getElementById('vz60-stack-svg').textContent='[ ]';
+  document.getElementById('vz60-stat-depth').textContent='0';
+  document.getElementById('vz60-stat-tried').textContent='0';
+  document.getElementById('vz60-stat-path').textContent='—';
+  document.getElementById('vz60-bn-panel').textContent='∞';
+  document.getElementById('vz60-label').textContent='Ready';
+  document.getElementById('vz60-text').innerHTML='Press <b>Step</b> to trace how DFS finds an augmenting path in the residual graph.';
+  var btn=document.getElementById('vz60-step-btn'); btn.disabled=false; btn.style.opacity='1';
+};
+})();
+</script>
+
+    <h3 class="subsec">Key Implementation Notes</h3>
+    <ul>
+      <li>
+        <strong>Back edges with capacity 0:</strong> Assigning backward edges capacity 0 and flow equal
+        to the negative of the forward edge's flow unifies the residual formula
+        <em>c<sub>f</sub>(u, v) = c(u, v) &minus; f(u, v)</em> for both edge types.
+      </li>
+      <li>
+        <strong>Simultaneous augmentation:</strong> By augmenting during the DFS return phase
+        (after the base case is reached), we avoid re-traversing the path separately.
+      </li>
+      <li>
+        <strong>Visited array reset each iteration:</strong> Each call to DFS starts fresh, ensuring
+        the search is not confused by paths from previous iterations.
+      </li>
+      <li>
+        <strong>Reverse pointer:</strong> Each edge stores a direct reference to its reverse edge
+        so updating <code>e.reverse.flow</code> is O(1).
+      </li>
+    </ul>
+
+    <h3 class="subsec">Time Complexity</h3>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity — Ford-Fulkerson with DFS</div>
+      <strong>O(|E| &times; |f*|)</strong> where <em>|f*|</em> is the value of the maximum flow.
+      <br><br>
+      <strong>Breakdown:</strong>
+      <ul>
+        <li>Each DFS from <em>s</em> takes <strong>O(|E|)</strong> (connected graph, so |E| dominates |V|).</li>
+        <li>Each augmentation increases flow by <strong>at least 1</strong> (integer capacities).</li>
+        <li>Therefore at most <strong>|f*| iterations</strong> of the main loop.</li>
+        <li>Total: <strong>O(|E| &times; |f*|)</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Warning — Pseudo-Polynomial Complexity</div>
+      <em>O(|E| &times; |f*|)</em> appears polynomial, but it is <strong>not</strong> polynomial in the
+      input size. The value <em>|f*|</em> can be exponential in the number of bits needed to represent
+      the capacities. For example, if all capacities are around <em>C</em>, then <em>|f*|</em> can be
+      as large as <em>|V| &times; C</em>. With irrational capacities, Ford-Fulkerson may not even terminate.
+    </div>
+
+    <h3 class="subsec">Better Strategies: Edmonds-Karp and Others</h3>
+
+    <table>
+      <thead>
+        <tr><th>Algorithm</th><th>Path Selection</th><th>Time Complexity</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Ford-Fulkerson (DFS)</td>
+          <td>Any augmenting path (DFS)</td>
+          <td><span class="complexity-tag">O(|E| &times; |f*|)</span></td>
+          <td>Simple, pseudo-polynomial; can loop with irrational capacities</td>
+        </tr>
+        <tr>
+          <td><strong>Edmonds-Karp</strong></td>
+          <td>Shortest path (BFS — fewest edges)</td>
+          <td><span class="complexity-tag">O(|V| &times; |E|²)</span></td>
+          <td>Fully polynomial; guaranteed to terminate</td>
+        </tr>
+        <tr>
+          <td>Fattest Path</td>
+          <td>Max-bottleneck path (modified Prim's)</td>
+          <td><span class="complexity-tag">O(|E|² log|V| log(max c))</span></td>
+          <td>Better than Edmonds-Karp in some cases; harder to implement</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Edmonds-Karp: BFS Gives Polynomial Guarantee</div>
+      If we replace DFS with BFS (finding the shortest augmenting path by number of edges),
+      the resulting Edmonds-Karp algorithm runs in <strong>O(|V| &times; |E|²)</strong> time —
+      a true polynomial bound that is independent of flow values. The key insight is that BFS
+      augmenting paths have monotonically non-decreasing lengths, bounding the number of augmentations.
+    </div>
+
+    <h3 class="subsec">Ford-Fulkerson Worked Trace (Example Network)</h3>
+    <p>
+      Consider the network: <em>s</em> connects to <em>a</em> (cap 3) and <em>b</em> (cap 5);
+      <em>a &rarr; c</em> (cap 3); <em>c &rarr; b</em> (cap 3) and <em>c &rarr; t</em> (cap 3);
+      <em>b &rarr; d</em> (cap 5); <em>d &rarr; t</em> (cap 5). Max flow = 8.
+    </p>
+    <ol>
+      <li><strong>Iteration 1:</strong> Path <em>s &rarr; a &rarr; c &rarr; t</em>, bottleneck 3. Flow = 3.</li>
+      <li><strong>Iteration 2:</strong> Path <em>s &rarr; b &rarr; c &rarr; t</em> using backward edge <em>c &rarr; b</em> (wait — actually uses <em>s &rarr; b &rarr; d &rarr; t</em>). With updated residual: find <em>s &rarr; b &rarr; d &rarr; t</em>, bottleneck 3 (limited by <em>s &rarr; b</em> spare = 5, <em>b &rarr; d</em> = 5, <em>d &rarr; t</em> = 5, but residual of <em>s &rarr; b</em> is 5). Actually bottleneck 3 found via path through backward edge. Flow = 6.</li>
+      <li><strong>Iteration 3:</strong> Path using remaining capacity <em>s &rarr; b &rarr; d &rarr; t</em>, bottleneck 2. Flow = 8.</li>
+      <li><strong>Termination:</strong> No augmenting path in residual graph. Max flow = 8.</li>
+    </ol>
+  </section>
+
+  <!-- ============================= SECTION 9.2 ============================= -->
+  <section class="content-section" id="sec92">
+    <h2 class="sec-title"><span class="sec-num">9.2</span> The Minimum Cut Problem</h2>
+  <button class="review-btn" data-week="10" data-sec="sec92"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The <strong>minimum cut</strong> problem asks: what is the cheapest set of edges to remove from a
+      flow network in order to completely disconnect <em>s</em> from <em>t</em>? This has immediate
+      practical interpretations — e.g., which roads to block to prevent a vehicle from reaching a
+      destination, or which links to sever to isolate two parts of a network.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — s-t Cut</div>
+      An <strong>s-t cut</strong> <em>C = (S, T)</em> is a partition of the vertices <em>V</em> into two
+      disjoint subsets <em>S</em> and <em>T</em> such that <em>s &isin; S</em> and <em>t &isin; T</em>.
+      <br><br>
+      The <strong>capacity of the cut</strong> is the total capacity of all edges going <em>from S into T</em>
+      (outgoing edges of the cut):
+      <br><br>
+      <em>c(S, T) = &sum;<sub>u &isin; S, v &isin; T</sub> c(u, v)</em>
+      <br><br>
+      Note: incoming edges of the cut (from T into S) are <em>not</em> subtracted from the capacity.
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Minimum Cut</div>
+      A <strong>minimum cut</strong> is an s-t cut <em>C = (S, T)</em> that minimises <em>c(S, T)</em>
+      over all possible s-t cuts.
+    </div>
+
+    <h3 class="subsec">Flow of a Cut vs. Capacity of a Cut</h3>
+    <p>
+      For any s-t cut <em>(S, T)</em> and any flow <em>f</em>:
+    </p>
+    <ul>
+      <li>
+        <strong>Flow of the cut</strong> = (total flow on outgoing edges from S to T) &minus; (total flow on incoming edges from T to S).
+      </li>
+      <li>
+        The flow of the cut always equals the value <em>|f|</em> of the flow (proved via flow conservation — see insight below).
+      </li>
+      <li>
+        The flow of the cut is always <strong>&le; the capacity</strong> of the cut, because
+        <em>f(e) &le; c(e)</em> for every edge, and incoming edges are not counted in capacity.
+      </li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Proof Sketch — Flow of Every Cut Equals |f|</div>
+      For any subset S containing s:
+      <br><br>
+      |f| = F<sub>out</sub>(s) = F<sub>out</sub>(s) + &sum;<sub>v &isin; S\{s}</sub> (F<sub>out</sub>(v) &minus; F<sub>in</sub>(v))
+      <br><br>
+      The added sum is zero by flow conservation. Expanding the sum, edges internal to S
+      appear once as outgoing and once as incoming, cancelling out. What remains is exactly the
+      net flow crossing from S into T. Therefore the flow of any cut = |f|.
+    </div>
+
+    <h3 class="subsec">Upper Bound: Flow &le; Any Cut Capacity</h3>
+    <p>
+      Since flow of the network = flow of any cut &le; capacity of that cut:
+    </p>
+    <p style="padding-left: 24px; font-style: italic;">
+      Maximum possible |f| &le; capacity of the minimum cut
+    </p>
+    <p>
+      The stunning result of the min-cut max-flow theorem is that this upper bound is always achieved
+      — maximum flow equals minimum cut capacity exactly.
+    </p>
+  </section>
+
+  <!-- ============================= SECTION 9.2.1 ============================= -->
+  <section class="content-section" id="sec921">
+    <h2 class="sec-title"><span class="sec-num">9.2.1</span> The Min-Cut Max-Flow Theorem</h2>
+  <button class="review-btn" data-week="10" data-sec="sec921"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Min-Cut Max-Flow</div>
+      Given a flow network <em>G = (V, E)</em> with source <em>s</em> and sink <em>t</em>, the value of
+      the maximum s-t flow equals the capacity of the minimum s-t cut:
+      <br><br>
+      <em>max<sub>f</sub> |f| = min<sub>(S,T)</sub> c(S, T)</em>
+    </div>
+
+    <h3 class="subsec">Proof Sketch</h3>
+    <p>
+      We need to show both directions:
+    </p>
+
+    <h4 class="subsubsec">Part 1 — Upper Bound: max flow &le; min cut</h4>
+    <p>
+      For any flow <em>f</em> and any cut <em>(S, T)</em>, the flow value |f| equals the net flow
+      across the cut, which is at most the cut capacity (since each edge contributes at most its
+      capacity, and incoming edges are not subtracted from the cut capacity). Therefore no flow can
+      exceed any cut's capacity, and in particular, <em>max |f| &le; min c(S, T)</em>.
+    </p>
+
+    <h4 class="subsubsec">Part 2 — Achievability: there exists a flow and cut with equal values</h4>
+    <p>
+      Suppose Ford-Fulkerson has terminated — no augmenting path exists from <em>s</em> to <em>t</em>
+      in the residual graph <em>G<sub>f</sub></em>. Define:
+    </p>
+    <ul>
+      <li><strong>S</strong> = all vertices reachable from <em>s</em> in the residual graph.</li>
+      <li><strong>T</strong> = all remaining vertices (including <em>t</em>, which is unreachable by assumption).</li>
+    </ul>
+    <p>
+      This is a valid s-t cut. We claim that the flow of the cut equals the capacity of the cut:
+    </p>
+    <ul>
+      <li>
+        <strong>Every outgoing edge <em>(u, v)</em> with u &isin; S, v &isin; T is fully saturated:</strong>
+        If <em>f(u, v) &lt; c(u, v)</em>, then the forward residual edge <em>(u, v)</em> would exist in
+        <em>G<sub>f</sub></em> with positive capacity, making <em>v</em> reachable from <em>s</em> —
+        contradicting <em>v &isin; T</em>.
+      </li>
+      <li>
+        <strong>Every incoming edge <em>(v, u)</em> with v &isin; T, u &isin; S carries zero flow:</strong>
+        If <em>f(v, u) &gt; 0</em>, then the backward residual edge <em>(u, v)</em> would exist in
+        <em>G<sub>f</sub></em>, making <em>v</em> reachable from <em>u &isin; S</em> — contradicting
+        <em>v &isin; T</em>.
+      </li>
+    </ul>
+    <p>
+      Therefore: flow across the cut = (sum of capacities of outgoing edges) &minus; 0 = c(S, T).
+      Since flow across the cut = |f|, we have |f| = c(S, T). Combined with the upper bound, this
+      means the current flow is maximum and this cut is a minimum cut.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Corollary — Correctness of Ford-Fulkerson</div>
+      Ford-Fulkerson terminates when no augmenting path exists. Since each augmentation increases
+      flow by at least 1 (integer capacities) and the maximum flow is finite, termination is guaranteed.
+      At termination, the cut <em>(S = {v : v reachable from s in G<sub>f</sub>}, T = V \ S)</em>
+      has capacity equal to the current flow value — proving the flow is maximum by the min-cut max-flow
+      theorem.
+    </div>
+
+    <h3 class="subsec">Finding the Minimum Cut from the Max Flow</h3>
+    <p>
+      The proof directly provides an algorithm for finding the minimum cut:
+    </p>
+    <ol>
+      <li>Run Ford-Fulkerson (or any max-flow algorithm) to completion.</li>
+      <li>In the final residual graph <em>G<sub>f</sub></em>, perform a BFS/DFS from <em>s</em>.</li>
+      <li>Let <strong>S</strong> = all vertices reachable from <em>s</em> in the residual graph.</li>
+      <li>Let <strong>T = V \ S</strong>.</li>
+      <li>
+        The minimum cut edges are all edges <em>(u, v)</em> in the <strong>original</strong> graph
+        such that <em>u &isin; S</em> and <em>v &isin; T</em>.
+      </li>
+    </ol>
+
+    <div class="callout insight">
+      <div class="callout-title">Intuition — Why This Works</div>
+      Every edge from S to T in the original graph is saturated (otherwise v would be in S).
+      Every edge from T to S carries zero flow (otherwise u would be reachable via a backward edge).
+      So the bottleneck of the network is precisely these saturated S-to-T edges — removing them
+      disconnects s from t at the minimum possible cost equal to the max flow value.
+    </div>
+
+    <h3 class="subsec">Worked Example</h3>
+    <p>
+      Network from the course notes (Figure 9.6): <em>s &rarr; a</em> (cap 3), <em>s &rarr; b</em> (cap 6),
+      <em>a &rarr; c</em> (cap 3), <em>a &rarr; t</em> (cap 4), <em>b &rarr; d</em> (cap 6),
+      <em>c &rarr; t</em> (cap 4), <em>d &rarr; t</em> (cap 5). Max flow = 8.
+    </p>
+    <p>
+      After running Ford-Fulkerson, the residual graph reachable set from s = {s, a, b} (vertices a and b
+      are reachable but their outgoing edges to c, t, d are saturated). T = {c, d, t}.
+      Min cut edges: <em>a &rarr; c</em> (cap 3) + <em>b &rarr; d</em> (cap 5) = 8. Matches max flow.
+    </p>
+  </section>
+
+  <!-- ============================= SECTION 9.3 ============================= -->
+  <section class="content-section" id="sec93">
+    <h2 class="sec-title"><span class="sec-num">9.3</span> Bipartite Matching</h2>
+  <button class="review-btn" data-week="10" data-sec="sec93"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Bipartite matching is a canonical example of reducing a combinatorial problem to max flow.
+      It demonstrates the real power of network flow: solving problems that seem unrelated to
+      physical flow by encoding them as a flow network.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Bipartite Graph</div>
+      A graph <em>B = (V, E)</em> is <strong>bipartite</strong> if the vertices can be split into two
+      disjoint subsets <em>L</em> and <em>R</em> (the "left" and "right" sides) such that every edge
+      in <em>E</em> connects a vertex in <em>L</em> to a vertex in <em>R</em>. There are no edges
+      within <em>L</em> or within <em>R</em>.
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Matching</div>
+      A <strong>matching</strong> <em>M &sube; E</em> is a subset of edges such that no vertex is
+      incident to more than one edge in <em>M</em>. A <strong>maximum matching</strong> is a matching
+      with the largest possible number of edges.
+    </div>
+
+    <h3 class="subsec">Motivating Example</h3>
+    <p>
+      Let <em>L = {1, 2, 3, 4, 5}</em> be job applicants and <em>R = {6, 7, 8, 9}</em> be available
+      positions. An edge <em>(u, v)</em> exists if applicant <em>u</em> is qualified for job <em>v</em>.
+      We want to assign as many applicants to jobs as possible such that:
+    </p>
+    <ul>
+      <li>Each applicant gets at most one job.</li>
+      <li>Each job goes to at most one applicant.</li>
+    </ul>
+    <p>
+      This is exactly the maximum bipartite matching problem. For the example in Figure 9.9 of the
+      course notes, the maximum matching has size 3.
+    </p>
+
+    <h3 class="subsec">Reduction to Max Flow</h3>
+    <p>
+      The key insight is: one unit of flow = one match. We construct a flow network from the bipartite
+      graph as follows:
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Construction — Bipartite Graph to Flow Network</div>
+      Given bipartite graph <em>B = (L &cup; R, E)</em>:
+      <ol>
+        <li>Add a <strong>super-source</strong> <em>s</em> with edges <em>s &rarr; u</em> for every <em>u &isin; L</em>, each with capacity 1.</li>
+        <li>Add a <strong>super-sink</strong> <em>t</em> with edges <em>v &rarr; t</em> for every <em>v &isin; R</em>, each with capacity 1.</li>
+        <li>Direct all original edges from <em>L</em> to <em>R</em> (i.e., <em>u &rarr; v</em> for each <em>(u, v) &isin; E</em>), each with capacity 1.</li>
+        <li>Find a maximum flow in this network.</li>
+        <li>The matched pairs are the edges <em>u &rarr; v</em> (u &isin; L, v &isin; R) that carry a flow of 1.</li>
+      </ol>
+    </div>
+
+    <h4 class="subsubsec">Why Unit Capacities Encode the Matching Constraints</h4>
+    <ul>
+      <li>
+        <strong>Capacity 1 on s &rarr; u edges:</strong> At most 1 unit of flow can enter each left vertex from the source. Since all edges from <em>u</em> to <em>R</em> together carry at most 1 unit, at most one job is assigned to each applicant.
+      </li>
+      <li>
+        <strong>Capacity 1 on v &rarr; t edges:</strong> At most 1 unit of flow can leave each right vertex. Since flow is integer-valued (Ford-Fulkerson on integer capacities), each job gets at most one applicant.
+      </li>
+      <li>
+        <strong>Integer flow guarantee:</strong> Ford-Fulkerson always produces integer flows when capacities are integers. With unit capacities, every flow value is 0 or 1 — exactly encoding "matched" or "unmatched".
+      </li>
+    </ul>
+
+    <h3 class="subsec">Full Algorithm</h3>
+
+    <div class="algo-header">
+      Algorithm — Maximum Bipartite Matching via Max Flow
+      <span class="algo-complexity">O(|V| &times; |E|)</span>
+    </div>
+    <pre class="code-block has-header">function MAX_BIPARTITE_MATCHING(B = (L ∪ R, E)):
+    // Step 1: Construct flow network
+    Create new vertices s (super-source) and t (super-sink)
+    For each u ∈ L: add edge (s → u) with capacity 1
+    For each (u, v) ∈ E: add directed edge (u → v) with capacity 1
+    For each v ∈ R: add edge (v → t) with capacity 1
+
+    // Step 2: Find maximum flow
+    flow = MAX_FLOW(G, s, t)   // Use Ford-Fulkerson
+
+    // Step 3: Extract matching
+    matching = {}
+    For each edge (u → v) with u ∈ L, v ∈ R:
+        if f(u → v) == 1:
+            matching.add((u, v))
+
+    return matching  // |matching| == flow</pre>
+
+    <h3 class="subsec">Worked Example</h3>
+    <p>
+      Applicants L = {1, 2, 3, 4, 5}, Jobs R = {6, 7, 8, 9}. Edges: 1-6, 1-7, 2-7, 3-7, 3-8, 4-8, 4-9.
+    </p>
+    <p>
+      Flow network construction:
+    </p>
+    <ul>
+      <li>s &rarr; 1, s &rarr; 2, s &rarr; 3, s &rarr; 4, s &rarr; 5 (all capacity 1)</li>
+      <li>1 &rarr; 6, 1 &rarr; 7, 2 &rarr; 7, 3 &rarr; 7, 3 &rarr; 8, 4 &rarr; 8, 4 &rarr; 9 (all capacity 1)</li>
+      <li>6 &rarr; t, 7 &rarr; t, 8 &rarr; t, 9 &rarr; t (all capacity 1)</li>
+    </ul>
+    <p>
+      Ford-Fulkerson finds max flow = 3. One valid maximum matching (saturated L &rarr; R edges): {(1, 6), (3, 7), (4, 8)} or similar — matching 3 applicants to 3 jobs. Applicant 2 (only wants job 7, which is taken) and applicant 5 (no edges) are unmatched.
+    </p>
+
+    <h3 class="subsec">Time Complexity</h3>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity — Bipartite Matching via Ford-Fulkerson</div>
+      <strong>O(|V| &times; |E|)</strong>
+      <br><br>
+      <strong>Argument:</strong>
+      <ul>
+        <li>The maximum flow value is at most <em>min(|L|, |R|) &le; |V|</em> (bounded by the smaller side of the bipartition).</li>
+        <li>Each DFS augmentation takes O(|E|).</li>
+        <li>Therefore total complexity: O(|V| &times; |E|).</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Alternating Paths Perspective</h3>
+    <p>
+      When Ford-Fulkerson is applied to the bipartite matching flow network, the augmenting paths it
+      finds have a specific structure: they strictly alternate between forward edges (unmatched L-to-R
+      edges being added to the matching) and backward edges (matched L-to-R edges being un-matched to
+      redirect flow). This is why the technique is also called the <strong>alternating paths algorithm</strong>
+      for bipartite matching.
+    </p>
+    <p>
+      In practice, the flow network does not need to be constructed explicitly — one can implement the
+      matching algorithm directly by performing DFS/BFS that alternates between unmatched and matched
+      vertices, maintaining only the current matching state.
+    </p>
+
+    <h3 class="subsec">The Hopcroft-Karp Algorithm</h3>
+    <p>
+      A faster algorithm called <strong>Hopcroft-Karp</strong> solves the maximum bipartite matching
+      problem in <span class="complexity-tag">O(&radic;|V| &times; |E|)</span> time. It uses the same
+      flow network but employs a more efficient maximum flow algorithm that finds multiple augmenting
+      paths simultaneously in a BFS layered graph, achieving the improved bound.
+    </p>
+
+    <h3 class="subsec">König's Theorem</h3>
+    <div class="callout thm">
+      <div class="callout-title">Theorem — König's Theorem</div>
+      In a bipartite graph, the size of the <strong>maximum matching</strong> equals the size of the
+      <strong>minimum vertex cover</strong> (the smallest set of vertices that "covers" every edge —
+      i.e., every edge has at least one endpoint in the set).
+      <br><br>
+      This is a direct consequence of the min-cut max-flow theorem applied to the bipartite matching
+      flow network: the min-cut in the flow network corresponds exactly to a minimum vertex cover in
+      the original bipartite graph.
+    </div>
+
+    <h3 class="subsec">Summary: The Power of Network Flow Reductions</h3>
+    <table>
+      <thead>
+        <tr><th>Original Problem</th><th>Reduction</th><th>Solved By</th><th>Complexity</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Maximum Bipartite Matching</td>
+          <td>Add s, t; unit capacities</td>
+          <td>Max Flow (Ford-Fulkerson)</td>
+          <td><span class="complexity-tag">O(|V||E|)</span></td>
+        </tr>
+        <tr>
+          <td>Minimum Vertex Cover (bipartite)</td>
+          <td>Via max matching</td>
+          <td>König's Theorem</td>
+          <td><span class="complexity-tag">O(|V||E|)</span></td>
+        </tr>
+        <tr>
+          <td>Network Disconnection (min cost)</td>
+          <td>Edge capacities = blocking costs</td>
+          <td>Min Cut</td>
+          <td><span class="complexity-tag">O(|V||E|²)</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Big Picture — Why Network Flow is So Powerful</div>
+      Network flow algorithms are not just for routing problems. The max-flow / min-cut framework
+      can be applied to any problem where:
+      <ul>
+        <li>You need to maximise a flow-like quantity subject to capacity constraints.</li>
+        <li>You need to find the "bottleneck" or "cheapest cut" in a system.</li>
+        <li>You can encode mutual exclusivity or limits using unit-capacity edges.</li>
+      </ul>
+      The reduction from bipartite matching is the first of many such reductions (circulations with
+      demands, project selection, etc.) that demonstrate this versatility.
+    </div>
+  </section>
+
+  <!-- ============================= SUMMARY TABLE ============================= -->
+  <section class="content-section" id="sec-summary">
+    <h2 class="sec-title"><span class="sec-num">Summary</span> Key Concepts &amp; Complexities</h2>
+  <button class="review-btn" data-week="10" data-sec="sec-summary"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <table>
+      <thead>
+        <tr><th>Concept</th><th>Description</th><th>Key Formula / Complexity</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Flow Network</strong></td>
+          <td>Directed graph with source s, sink t, capacities c(u,v)</td>
+          <td>c(u,v) &ge; 0; flow conservation at all non-s/t vertices</td>
+        </tr>
+        <tr>
+          <td><strong>Residual Network G<sub>f</sub></strong></td>
+          <td>Captures remaining capacity + reversible flow</td>
+          <td>c<sub>f</sub>(u,v) = c(u,v) &minus; f(u,v); c<sub>f</sub>(v,u) = f(u,v)</td>
+        </tr>
+        <tr>
+          <td><strong>Augmenting Path</strong></td>
+          <td>Any s-to-t path in residual graph with positive capacity</td>
+          <td>Bottleneck = min edge residual on path</td>
+        </tr>
+        <tr>
+          <td><strong>Ford-Fulkerson (DFS)</strong></td>
+          <td>Repeatedly find & augment along any augmenting path</td>
+          <td><span class="complexity-tag">O(|E| &times; |f*|)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Edmonds-Karp (BFS)</strong></td>
+          <td>Ford-Fulkerson using shortest (fewest-edge) augmenting paths</td>
+          <td><span class="complexity-tag">O(|V| &times; |E|²)</span></td>
+        </tr>
+        <tr>
+          <td><strong>s-t Cut (S, T)</strong></td>
+          <td>Vertex partition with s &isin; S, t &isin; T; capacity = sum of S&rarr;T edge capacities</td>
+          <td>c(S,T) = &sum;<sub>u&isin;S, v&isin;T</sub> c(u,v)</td>
+        </tr>
+        <tr>
+          <td><strong>Min-Cut Max-Flow Theorem</strong></td>
+          <td>Maximum flow value = minimum cut capacity</td>
+          <td>max|f| = min c(S,T)</td>
+        </tr>
+        <tr>
+          <td><strong>Finding Min Cut</strong></td>
+          <td>After max flow: S = vertices reachable from s in residual graph</td>
+          <td>Min cut edges: (u,v) with u&isin;S, v&notin;S in original graph</td>
+        </tr>
+        <tr>
+          <td><strong>Bipartite Matching</strong></td>
+          <td>Max matching in bipartite graph via max flow with unit capacities</td>
+          <td><span class="complexity-tag">O(|V| &times; |E|)</span></td>
+        </tr>
+        <tr>
+          <td><strong>König's Theorem</strong></td>
+          <td>Max matching = min vertex cover in bipartite graphs</td>
+          <td>Consequence of min-cut max-flow</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout thm">
+      <div class="callout-title">The Three Equivalent Conditions for Max Flow</div>
+      The following three statements are equivalent for a flow <em>f</em> in network <em>G</em>:
+      <ol>
+        <li><em>f</em> is a maximum flow.</li>
+        <li>There is no augmenting path from <em>s</em> to <em>t</em> in the residual graph <em>G<sub>f</sub></em>.</li>
+        <li>There exists an s-t cut <em>(S, T)</em> such that <em>|f| = c(S, T)</em>.</li>
+      </ol>
+      This equivalence is precisely the min-cut max-flow theorem, and it proves both the correctness
+      of Ford-Fulkerson and the method for finding the minimum cut.
+    </div>
+  </section>
+
+<!-- ═══════════════════════════════════════════════════════
+     INTERACTIVE DEMO — Ford-Fulkerson Max Flow (Week 10)
+     ═══════════════════════════════════════════════════════ -->
+<section class="content-section algo-demo" id="w10-demo">
+  <h2 class="sec-title"><span class="sec-num">Demo</span> Ford-Fulkerson — Finding Maximum Flow</h2>
+  <p class="demo-eyebrow">interactive demo</p>
+  <p class="demo-lede">Ford-Fulkerson repeatedly finds an augmenting path from s to t in the residual graph and pushes flow along it. <b>Click Step</b> to find each augmenting path.</p>
+
+  <div class="demo-board">
+    <div class="demo-stage">
+      <!--
+        Nodes: s(80,170), A(280,80), B(280,260), t(500,170)
+        Edges: s→A(cap=4), s→B(cap=3), A→t(cap=3), B→t(cap=5), A→B(cap=2)
+        Max flow = 7
+      -->
+      <svg id="d10-svg" viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="d10-arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#30363d"/>
+          </marker>
+          <marker id="d10-arr-path" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#58a6ff"/>
+          </marker>
+          <marker id="d10-arr-sat" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#f85149"/>
+          </marker>
+        </defs>
+
+        <!-- Edges: s→A, s→B, A→t, B→t, A→B -->
+        <!-- s→A (s=80,170 → A=280,80) -->
+        <line id="d10-e0" x1="106" y1="157" x2="256" y2="93" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el0" x="170" y="112" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/4</text>
+
+        <!-- s→B (s=80,170 → B=280,260) -->
+        <line id="d10-e1" x1="106" y1="183" x2="256" y2="247" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el1" x="170" y="228" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+
+        <!-- A→t (A=280,80 → t=500,170) -->
+        <line id="d10-e2" x1="306" y1="90" x2="476" y2="158" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el2" x="400" y="110" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+
+        <!-- B→t (B=280,260 → t=500,170) -->
+        <line id="d10-e3" x1="306" y1="250" x2="476" y2="182" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el3" x="400" y="230" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/5</text>
+
+        <!-- A→B (A=280,80 → B=280,260) -->
+        <line id="d10-e4" x1="268" y1="106" x2="268" y2="234" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el4" x="250" y="175" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/2</text>
+
+        <!-- Residual back-edges (shown as dashed, initially hidden) -->
+        <line id="d10-r0" x1="256" y1="87" x2="106" y2="153" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
+        <text id="d10-rl0" x="175" y="105" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+
+        <line id="d10-r1" x1="256" y1="253" x2="106" y2="187" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
+        <text id="d10-rl1" x="175" y="235" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+
+        <line id="d10-r2" x1="476" y1="152" x2="306" y2="84" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
+        <text id="d10-rl2" x="395" y="102" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+
+        <line id="d10-r3" x1="476" y1="176" x2="306" y2="256" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
+        <text id="d10-rl3" x="395" y="238" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+
+        <line id="d10-r4" x1="292" y1="234" x2="292" y2="106" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
+        <text id="d10-rl4" x="308" y="170" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+
+        <!-- Nodes: s, A, B, t -->
+        <!-- s -->
+        <circle id="d10-nc0" cx="80" cy="170" r="28" fill="#3fb950" stroke="#3fb950" stroke-width="2"/>
+        <text x="80" y="170" fill="white" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">s</text>
+
+        <!-- A -->
+        <circle id="d10-nc1" cx="280" cy="80" r="28" fill="#21262d" stroke="#c9d1d9" stroke-width="2"/>
+        <text x="280" y="80" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
+
+        <!-- B -->
+        <circle id="d10-nc2" cx="280" cy="260" r="28" fill="#21262d" stroke="#c9d1d9" stroke-width="2"/>
+        <text x="280" y="260" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
+
+        <!-- t -->
+        <circle id="d10-nc3" cx="500" cy="170" r="28" fill="#3fb950" stroke="#3fb950" stroke-width="2"/>
+        <text x="500" y="170" fill="white" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">t</text>
+      </svg>
+    </div>
+
+    <div class="demo-panel">
+      <div class="demo-narrate">
+        <p class="demo-step-label" id="d10-label">Ready</p>
+        <p class="demo-step-text" id="d10-text">Press <b>Find next path</b> to locate and push flow along one augmenting path at a time.</p>
+        <div class="demo-stats">
+          <div class="demo-chip"><span class="k">Paths found</span><span class="v" id="d10-s-paths">0</span></div>
+          <div class="demo-chip"><span class="k">Total flow</span><span class="v" id="d10-s-flow">0</span></div>
+          <div class="demo-chip good"><span class="k">Bottleneck</span><span class="v" id="d10-s-bn">—</span></div>
+        </div>
+      </div>
+      <div class="demo-side">
+        <h4>Edge Flows</h4>
+        <table style="font-size:0.8em;width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="padding:3px 7px;border:1px solid #30363d;background:#21262d;color:#58a6ff;font-size:0.65em;text-transform:uppercase;">Edge</th>
+            <th style="padding:3px 7px;border:1px solid #30363d;background:#21262d;color:#58a6ff;font-size:0.65em;text-transform:uppercase;">Flow/Cap</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">s→A</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft0">0/4</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">s→B</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft1">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">A→t</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft2">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">B→t</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft3">0/5</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">A→B</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft4">0/2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="demo-controls">
+      <button class="demo-btn primary" id="d10-step">Find next path ▶</button>
+      <button class="demo-btn" id="d10-run">Run all</button>
+      <button class="demo-btn" id="d10-reset">Reset</button>
+      <div class="demo-spd">
+        <label for="d10-spd">Speed</label>
+        <input type="range" id="d10-spd" min="0.5" max="4" step="0.5" value="1">
+      </div>
+    </div>
+  </div>
+  <p class="demo-hint">Residual back-edges (dashed) appear after flow is pushed — they allow the algorithm to "undo" flow if a better route is found.</p>
+  <button class="review-btn" data-week="10" data-sec="w10-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+</section>
+
+
+</main>
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+<!-- ═══════════════════ Week 10 — Ford-Fulkerson Demo Script ═══════════════════ -->
+<script>
+(function(){
+  'use strict';
+  // ── Ford-Fulkerson demo ──────────────────────────────────────────────────
+  // Nodes: 0=s, 1=A, 2=B, 3=t
+  // Edges indexed 0..4: s→A(4), s→B(3), A→t(3), B→t(5), A→B(2)
+  // Edge pairs (for residual): edge i has reverse edge
+  // flow[i] = current flow on edge i
+  const CAP = [4, 3, 3, 5, 2];       // capacities
+  let flow = [0, 0, 0, 0, 0];         // current flows
+  let totalFlow = 0;
+  let pathCount = 0;
+  let busy = false;
+  let finished = false;
+  let spd = 1;
+
+  // Pre-computed augmenting paths for this specific graph:
+  // Path 1: s→A→t, bottleneck = min(4-0, 3-0) = 3
+  // Path 2: s→B→t, bottleneck = min(3-0, 5-0) = 3
+  // Path 3: s→A→B→t, bottleneck = min(4-3=1, 2-0=2, 5-3=2) = 1
+  // Total = 7
+  const PATHS = [
+    {
+      nodes: [0, 1, 3],         // s, A, t
+      edges: [0, 2],            // s→A, A→t
+      bottleneck: 3,
+      desc: 's → A → t',
+    },
+    {
+      nodes: [0, 2, 3],         // s, B, t
+      edges: [1, 3],            // s→B, B→t
+      bottleneck: 3,
+      desc: 's → B → t',
+    },
+    {
+      nodes: [0, 1, 2, 3],      // s, A, B, t
+      edges: [0, 4, 3],         // s→A, A→B, B→t
+      bottleneck: 1,
+      desc: 's → A → B → t',
+    },
+  ];
+
+  const NODE_LABELS = ['s', 'A', 'B', 't'];
+  const EDGE_NAMES = ['s→A', 's→B', 'A→t', 'B→t', 'A→B'];
+  const sleep = ms => new Promise(r => setTimeout(r, ms / spd));
+
+  function setStep(label, html) {
+    document.getElementById('d10-label').textContent = label;
+    document.getElementById('d10-text').innerHTML = html;
+  }
+
+  function updateEdgeLabel(ei, f, c) {
+    const el = document.getElementById('d10-el' + ei);
+    if (el) el.textContent = f + '/' + c;
+    const ft = document.getElementById('d10-ft' + ei);
+    if (ft) ft.textContent = f + '/' + c;
+    // Color saturated edges differently
+    const edge = document.getElementById('d10-e' + ei);
+    if (edge) {
+      if (f >= c) {
+        edge.setAttribute('stroke', '#f85149');
+        edge.setAttribute('marker-end', 'url(#d10-arr-sat)');
+        if (el) el.setAttribute('fill', '#f85149');
+      } else {
+        edge.setAttribute('stroke', '#30363d');
+        edge.setAttribute('marker-end', 'url(#d10-arr)');
+        if (el) el.setAttribute('fill', '#8b949e');
+      }
+    }
+  }
+
+  function setEdgePathStyle(ei, active) {
+    const edge = document.getElementById('d10-e' + ei);
+    if (!edge) return;
+    if (active) {
+      edge.setAttribute('stroke', '#58a6ff');
+      edge.setAttribute('stroke-width', '3.5');
+      edge.setAttribute('marker-end', 'url(#d10-arr-path)');
+      const el = document.getElementById('d10-el' + ei);
+      if (el) el.setAttribute('fill', '#58a6ff');
+    }
+  }
+
+  function setNodePathStyle(ni, active) {
+    const nc = document.getElementById('d10-nc' + ni);
+    if (!nc) return;
+    if (active && ni !== 0 && ni !== 3) {
+      nc.setAttribute('fill', '#58a6ff22');
+      nc.setAttribute('stroke', '#58a6ff');
+      nc.setAttribute('stroke-width', '2.5');
+    }
+  }
+
+  function restoreEdge(ei) {
+    const f = flow[ei], c = CAP[ei];
+    const edge = document.getElementById('d10-e' + ei);
+    if (!edge) return;
+    if (f >= c) {
+      edge.setAttribute('stroke', '#f85149');
+      edge.setAttribute('stroke-width', '2');
+      edge.setAttribute('marker-end', 'url(#d10-arr-sat)');
+    } else {
+      edge.setAttribute('stroke', '#30363d');
+      edge.setAttribute('stroke-width', '2');
+      edge.setAttribute('marker-end', 'url(#d10-arr)');
+    }
+    const el = document.getElementById('d10-el' + ei);
+    if (el) el.setAttribute('fill', f >= c ? '#f85149' : '#8b949e');
+  }
+
+  function restoreNode(ni) {
+    const nc = document.getElementById('d10-nc' + ni);
+    if (!nc || ni === 0 || ni === 3) return;
+    nc.setAttribute('fill', '#21262d');
+    nc.setAttribute('stroke', '#c9d1d9');
+    nc.setAttribute('stroke-width', '2');
+  }
+
+  function showResidual(ei, val) {
+    const r = document.getElementById('d10-r' + ei);
+    const rl = document.getElementById('d10-rl' + ei);
+    if (r && val > 0) {
+      r.setAttribute('opacity', '1');
+      r.setAttribute('stroke', '#30363d');
+    }
+    if (rl && val > 0) {
+      rl.setAttribute('opacity', '1');
+      rl.textContent = val;
+    }
+  }
+
+  async function pushPath(pathIdx) {
+    const { nodes, edges, bottleneck, desc } = PATHS[pathIdx];
+
+    setStep('Augmenting path ' + (pathIdx + 1), `Found path: <b style="color:#58a6ff">${desc}</b>. Bottleneck = min(${edges.map(ei => (CAP[ei]-flow[ei])).join(', ')}) = <b style="color:#f0883e">${bottleneck}</b>`);
+
+    // Highlight path
+    nodes.forEach(ni => setNodePathStyle(ni, true));
+    edges.forEach(ei => setEdgePathStyle(ei, true));
+    await sleep(600);
+
+    setStep('Pushing flow', `Sending <b style="color:#58a6ff">${bottleneck} unit${bottleneck > 1 ? 's' : ''}</b> along <b>${desc}</b>...`);
+    await sleep(500);
+
+    // Apply flow
+    edges.forEach(ei => {
+      flow[ei] += bottleneck;
+      updateEdgeLabel(ei, flow[ei], CAP[ei]);
+    });
+    totalFlow += bottleneck;
+    pathCount++;
+
+    document.getElementById('d10-s-paths').textContent = String(pathCount);
+    document.getElementById('d10-s-flow').textContent = String(totalFlow);
+    document.getElementById('d10-s-bn').textContent = String(bottleneck);
+
+    await sleep(400);
+
+    // Show residual back-edges
+    edges.forEach(ei => showResidual(ei, flow[ei]));
+
+    setStep('Flow updated', `Pushed ${bottleneck} unit(s) along <b>${desc}</b>. Residual back-edges updated. Total flow = <b style="color:#3fb950">${totalFlow}</b>.`);
+    await sleep(300);
+
+    // Restore node colors
+    nodes.forEach(ni => restoreNode(ni));
+    edges.forEach(ei => restoreEdge(ei));
+  }
+
+  async function doStep() {
+    if (busy || finished) return;
+    busy = true;
+    document.getElementById('d10-step').disabled = true;
+    document.getElementById('d10-run').disabled = true;
+
+    if (pathCount < PATHS.length) {
+      await pushPath(pathCount);
+    }
+
+    if (pathCount >= PATHS.length) {
+      finished = true;
+      setStep('Maximum flow reached!', `<b style="color:#3fb950">No more augmenting paths exist. Maximum flow = ${totalFlow}.</b> Min-cut equals max-flow by the max-flow min-cut theorem.`);
+      document.getElementById('d10-step').disabled = true;
+      document.getElementById('d10-run').disabled = true;
+    } else {
+      document.getElementById('d10-step').disabled = false;
+      document.getElementById('d10-run').disabled = false;
+    }
+    busy = false;
+  }
+
+  async function runAll() {
+    if (busy || finished) return;
+    document.getElementById('d10-step').disabled = true;
+    document.getElementById('d10-run').disabled = true;
+    while (!finished && pathCount < PATHS.length) {
+      await doStep();
+      if (!finished) await sleep(350);
+    }
+  }
+
+  function resetDemo() {
+    if (busy) return;
+    flow = [0, 0, 0, 0, 0];
+    totalFlow = 0;
+    pathCount = 0;
+    finished = false;
+
+    // Reset all edge visuals
+    for (let i = 0; i < 5; i++) {
+      const e = document.getElementById('d10-e' + i);
+      if (e) { e.setAttribute('stroke', '#30363d'); e.setAttribute('stroke-width', '2'); e.setAttribute('marker-end', 'url(#d10-arr)'); }
+      const el = document.getElementById('d10-el' + i);
+      if (el) { el.textContent = '0/' + CAP[i]; el.setAttribute('fill', '#8b949e'); }
+      const ft = document.getElementById('d10-ft' + i);
+      if (ft) ft.textContent = '0/' + CAP[i];
+      const r = document.getElementById('d10-r' + i);
+      if (r) { r.setAttribute('opacity', '0'); r.setAttribute('stroke', '#30363d'); }
+      const rl = document.getElementById('d10-rl' + i);
+      if (rl) { rl.setAttribute('opacity', '0'); rl.textContent = '0'; }
+    }
+    // Reset node styles
+    for (let i = 1; i <= 2; i++) restoreNode(i);
+
+    document.getElementById('d10-s-paths').textContent = '0';
+    document.getElementById('d10-s-flow').textContent = '0';
+    document.getElementById('d10-s-bn').textContent = '—';
+    setStep('Ready', 'Press <b>Find next path</b> to locate and push flow along one augmenting path at a time.');
+    document.getElementById('d10-step').disabled = false;
+    document.getElementById('d10-run').disabled = false;
+  }
+
+  document.getElementById('d10-step').addEventListener('click', doStep);
+  document.getElementById('d10-run').addEventListener('click', runAll);
+  document.getElementById('d10-reset').addEventListener('click', resetDemo);
+  document.getElementById('d10-spd').addEventListener('input', function() { spd = parseFloat(this.value); });
+})();
+</script>
+</html>

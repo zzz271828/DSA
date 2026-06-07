@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 2 – FIT2004</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+      --text: #c9d1d9; --text-muted: #8b949e;
+      --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+      --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+    nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+    nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+    nav ul { list-style: none; }
+    nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; transition: all 0.15s; }
+    nav ul li a:hover { color: var(--text); background: var(--bg3); }
+    nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+    nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+    main { flex: 1; max-width: 860px; padding: 48px 56px; }
+    .week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+    .week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+    .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+    section.content-section { margin-bottom: 56px; }
+    h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+    h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+    h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+    p { margin-bottom: 14px; color: var(--text); }
+    .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+    .callout.def { background: #1f6feb0d; border-color: var(--blue); }
+    .callout.thm { background: #3fb9500d; border-color: var(--green); }
+    .callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+    .callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+    .callout.warn { background: #f851490d; border-color: var(--red); }
+    .callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .callout.def .callout-title { color: var(--blue); }
+    .callout.thm .callout-title { color: var(--green); }
+    .callout.cplx .callout-title { color: var(--orange); }
+    .callout.insight .callout-title { color: var(--purple); }
+    .callout.warn .callout-title { color: var(--red); }
+    pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+    .algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+    .algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+    pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+    th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    td { padding: 10px 16px; border: 1px solid var(--border); }
+    tr:nth-child(even) td { background: var(--bg2); }
+    code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+    ul, ol { padding-left: 24px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+    .complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    @media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+  
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html" class="current"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#program-verification" class="sub">Program Verification</a></li>
+    <li><a href="#basic-sorting" class="sub">Basic Sorting Algorithms</a></li>
+    <li><a href="#heapsort" class="sub">Heapsort</a></li>
+    <li><a href="#lower-bounds" class="sub">Lower Bounds for Sorting</a></li>
+    <li><a href="#integer-sorting" class="sub">Integer Sorting</a></li>
+    <li><a href="#comparison-table" class="sub">Algorithm Comparison</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main>
+
+  <!-- Header -->
+  <div class="week-header">
+    <div class="week-badge">Week 2</div>
+    <h1>Proofs of Correctness &amp; Sorting Algorithms</h1>
+    <p class="subtitle">Lectures 2 &amp; 3 &mdash; Program Verification, Basic Sorting, Heapsort, Lower Bounds, Integer Sorting</p>
+    <div class="topics">
+      <span>Loop Invariants</span>
+      <span>Binary Search</span>
+      <span>Selection Sort</span>
+      <span>Insertion Sort</span>
+      <span>Heapsort</span>
+      <span>Decision Trees</span>
+      <span>&#937;(n log n) Lower Bound</span>
+      <span>Counting Sort</span>
+      <span>Radix Sort</span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SECTION 1: PROGRAM VERIFICATION
+       ============================================================ -->
+  <section class="content-section" id="program-verification">
+    <h2 class="sec-title">
+      Program Verification
+      <span class="sec-num">§ 1.1</span>
+    </h2>
+  <button class="review-btn" data-week="2" data-sec="program-verification"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Program verification hinges on two main principles. First, we must prove that our algorithm,
+      <em>if it terminates</em>, always produces the correct result (partial correctness).
+      Second, we must prove that it does indeed always terminate (total correctness = partial correctness + termination).
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition &mdash; Loop Invariant</div>
+      A <strong>loop invariant</strong> is a statement about program variables that is true before the loop starts,
+      remains true after every iteration of the loop, and at termination implies the correctness of the algorithm.
+      It is a powerful tool for proving algorithm correctness formally.
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight &mdash; Why Not Just Test?</div>
+      Testing can detect incorrect outputs for specific inputs, but it <em>cannot</em> guarantee correctness
+      for all inputs (there are infinitely many). Logic-based proofs via loop invariants give us that guarantee.
+    </div>
+
+    <h3 class="subsec">Three Steps of a Loop Invariant Proof</h3>
+
+    <p>To prove correctness via a loop invariant, three things must be shown:</p>
+    <ol>
+      <li><strong>Initialisation:</strong> The invariant holds before the loop begins (i.e., before the first iteration).</li>
+      <li><strong>Maintenance:</strong> If the invariant holds at the start of an iteration, it still holds at the start of the next iteration (the loop body preserves the invariant).</li>
+      <li><strong>Termination:</strong> When the loop terminates, the invariant (combined with the termination condition) implies the desired result &mdash; this is where correctness is established.</li>
+    </ol>
+
+    <h3 class="subsec">Motivating Example: Finding the Minimum</h3>
+
+    <p>Before tackling binary search, consider a simple find-minimum algorithm:</p>
+
+    <div class="algo-header">
+      Find Minimum
+      <span class="algo-complexity">O(n)</span>
+    </div>
+    <pre class="code-block has-header">function FIND_MIN(array[1..n])
+    min = array[1]
+    index = 2
+    // LI: min equals the minimum value in array[1 .. index-1]
+    while index &lt;= n do
+        if array[index] &lt; min then
+            min = array[index]
+        index = index + 1
+    return min</pre>
+
+    <p><strong>Invariant:</strong> <code>min</code> equals the minimum value of <code>array[1..index-1]</code>.</p>
+    <ul>
+      <li><strong>Initialisation:</strong> Before the loop, <code>index = 2</code>, so <code>array[1..index-1] = array[1..1]</code>. <code>min = array[1]</code> is trivially the minimum of a single element. &#10003;</li>
+      <li><strong>Maintenance:</strong> Assume the LI holds when <code>index = k</code>: <code>min</code> is the minimum of <code>array[1..k-1]</code>. After the iteration, we check <code>array[k]</code> and update <code>min</code> if smaller, then increment <code>index</code> to <code>k+1</code>. So <code>min</code> is now the minimum of <code>array[1..k]</code>. &#10003;</li>
+      <li><strong>Termination:</strong> Loop terminates when <code>index = n+1</code>. The invariant then says <code>min</code> is the minimum of <code>array[1..n]</code> &mdash; exactly what we want. &#10003;</li>
+    </ul>
+
+    <h3 class="subsec">Binary Search &mdash; Key Example</h3>
+
+    <p>
+      Binary search is easy to get wrong &mdash; subtle off-by-one errors are common.
+      The loop invariant approach gives us a systematic method to both design and verify the algorithm.
+    </p>
+
+    <div class="algo-header">
+      Binary Search (Course Notes Version)
+      <span class="algo-complexity">O(log n)</span>
+    </div>
+    <pre class="code-block has-header">function BINARY_SEARCH(array[1..n], key)
+    lo = 1
+    hi = n + 1
+    while lo &lt; hi - 1 do
+        mid = floor((lo + hi) / 2)
+        if key &gt;= array[mid] then
+            lo = mid
+        else
+            hi = mid
+    if array[lo] == key then
+        return lo          // key located at array[lo]
+    else
+        return null        // key not found</pre>
+
+    <div class="callout def">
+      <div class="callout-title">Loop Invariant &mdash; Binary Search</div>
+      If <code>key</code> is in <code>array</code>, then at each iteration:
+      <ol style="margin-top:8px">
+        <li><code>array[lo] &le; key</code></li>
+        <li>If <code>hi &ne; n+1</code>, then <code>array[hi] &gt; key</code></li>
+      </ol>
+      <p style="margin-top:8px">Combined with the sortedness of the array, this implies that <code>key</code> (if it exists) lies within the range <code>array[lo..hi-1]</code>.</p>
+      <p><strong>Active subarray interpretation:</strong> <code>lo</code> is inclusive, <code>hi</code> is exclusive. The loop continues while the active subarray has more than one element (<code>lo &lt; hi - 1</code>).</p>
+    </div>
+
+    <h4 class="subsubsec">Proving Correctness: Case 1 &mdash; Key is in the Array</h4>
+    <ul>
+      <li><strong>Initialisation:</strong> <code>lo = 1</code>, <code>hi = n+1</code>. Since the array is sorted, <code>array[1]</code> is the minimum, so <code>array[lo] &le; key</code>. Part 2 is vacuously true since <code>hi = n+1</code>. &#10003;</li>
+      <li>
+        <strong>Maintenance:</strong> At each step we compute <code>mid = floor((lo+hi)/2)</code> and compare <code>array[mid]</code> to <code>key</code>.
+        <ul>
+          <li>If <code>key &ge; array[mid]</code>: set <code>lo = mid</code>. Now <code>array[lo] &le; key</code> still holds. &#10003;</li>
+          <li>If <code>key &lt; array[mid]</code>: set <code>hi = mid</code>. Now <code>array[hi] &gt; key</code> still holds. &#10003;</li>
+        </ul>
+      </li>
+      <li><strong>Termination:</strong> Loop exits when <code>lo &ge; hi - 1</code>. Combined with the invariant, this means <code>lo = hi - 1</code>, and the only candidate is <code>array[lo]</code>. If <code>array[lo] = key</code>, return <code>lo</code>; otherwise the key is absent. &#10003;</li>
+    </ul>
+
+    <h4 class="subsubsec">Proving Correctness: Case 2 &mdash; Key is NOT in the Array</h4>
+    <p>
+      Since <code>key</code> is not present, regardless of the termination value of <code>lo</code>,
+      <code>array[lo] &ne; key</code>, and the algorithm correctly returns <code>null</code>. &#10003;
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Design from Invariant</div>
+      The invariant drives every design decision:
+      <ul>
+        <li>Why <code>hi = n+1</code> initially? So the invariant holds vacuously.</li>
+        <li>Why <code>lo &lt; hi - 1</code> as the loop condition? The loop should continue as long as the active range has more than one element; it terminates when exactly one element remains.</li>
+        <li>Why <code>lo = mid</code> (inclusive) vs <code>hi = mid</code> (exclusive)? Because <code>lo</code> stores a valid lower bound candidate, while <code>hi</code> is the first excluded element.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Arguing Termination</h3>
+
+    <p>
+      We need to prove the algorithm terminates in finite time.
+      The key theorem is that whenever <code>lo &lt; hi - 1</code>, we have <code>lo &lt; mid &lt; hi</code>.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem &mdash; Finiteness of Binary Search</div>
+      If <code>lo &lt; hi - 1</code>, then <code>lo &lt; mid &lt; hi</code>, where <code>mid = floor((lo + hi) / 2)</code>.
+      <p style="margin-top:8px"><strong>Proof sketch:</strong> Since <code>mid = floor((lo + hi)/2)</code>, we have <code>(lo+hi)/2 - 1 &lt; mid &le; (lo+hi)/2</code>. Because <code>lo &lt; hi - 1</code> implies <code>lo &le; hi - 2</code>, algebraic manipulation yields <code>lo &lt; mid &lt; hi</code>.</p>
+      <p>Consequence: every iteration, either <code>lo</code> strictly increases or <code>hi</code> strictly decreases. The interval <code>[lo..hi)</code> is finite, so the loop must terminate.</p>
+    </div>
+
+    <h3 class="subsec">Partial Correctness vs. Total Correctness</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition</div>
+      <ul>
+        <li><strong>Partial correctness:</strong> If the algorithm terminates, it produces the correct answer. Proved by loop invariant (Initialisation + Maintenance + Termination steps).</li>
+        <li><strong>Total correctness:</strong> Partial correctness <em>plus</em> the algorithm always terminates. Requires a separate termination argument (e.g., a decreasing function bounded below).</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Strong vs. Weak Loop Invariants</h3>
+
+    <p>
+      A <strong>stronger</strong> invariant captures more information about the state. Selection sort uses a stronger invariant
+      (sorted prefix <em>and</em> sorted prefix &le; unsorted suffix), while insertion sort uses a weaker invariant
+      (sorted prefix only). The invariant must be strong enough to prove the algorithm correct at termination.
+    </p>
+
+    <div class="callout warn">
+      <div class="callout-title">Common Pitfall &mdash; Invariant Too Weak</div>
+      If you use the weak invariant "arr[1..i-1] is sorted" for selection sort, you cannot prove maintenance:
+      after swapping in the minimum of arr[i..n], the sorted prefix could be disrupted if the newly selected
+      minimum is smaller than some element already in the prefix. The stronger invariant
+      "arr[1..i-1] is sorted AND arr[1..i-1] &le; arr[i..n]" is required.
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 2: BASIC SORTING ALGORITHMS
+       ============================================================ -->
+  <section class="content-section" id="basic-sorting">
+    <h2 class="sec-title">
+      Analysis of Basic Sorting Algorithms
+      <span class="sec-num">§ 1.5</span>
+    </h2>
+  <button class="review-btn" data-week="2" data-sec="basic-sorting"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <!-- SELECTION SORT -->
+    <h3 class="subsec">Selection Sort</h3>
+
+    <p>
+      Selection sort divides the array into a sorted prefix and an unsorted suffix. At each iteration,
+      it finds the minimum of the unsorted suffix and swaps it into position at the boundary.
+    </p>
+
+    <div class="algo-header">
+      Algorithm 2 &mdash; Selection Sort
+      <span class="algo-complexity">O(n²) all cases</span>
+    </div>
+    <pre class="code-block has-header">function SELECTION_SORT(array[1..n])
+    for i = 1 to n do
+        min = i
+        for j = i+1 to n do
+            if array[j] &lt; array[min] then
+                min = j
+        swap(array[i], array[min])</pre>
+
+    <div class="callout def">
+      <div class="callout-title">Loop Invariant &mdash; Selection Sort</div>
+      For any value of <code>i</code> in the main loop, at the beginning of the iteration:
+      <ol>
+        <li><code>array[1..i-1]</code> is sorted.</li>
+        <li>For any <code>x</code> in <code>array[1..i-1]</code> and <code>y</code> in <code>array[i..n]</code>, <code>x &le; y</code>.</li>
+      </ol>
+      This is a <strong>stronger</strong> invariant than insertion sort's. Both parts together are needed to prove correctness.
+    </div>
+
+    <h4 class="subsubsec">Correctness Proof</h4>
+    <ul>
+      <li><strong>Initialisation:</strong> When <code>i = 1</code>, <code>array[1..0]</code> is empty &mdash; both invariants hold trivially. &#10003;</li>
+      <li><strong>Maintenance:</strong> We find the minimum <code>array[min]</code> of <code>array[i..n]</code>. Since invariant 2 already ensures elements in the sorted prefix are &le; all of <code>array[i..n]</code>, swapping <code>array[i]</code> and <code>array[min]</code> maintains the sorted order of the extended prefix. The new minimum also satisfies invariant 2. &#10003;</li>
+      <li><strong>Termination:</strong> When <code>i = n</code>, the invariant implies <code>array[1..n]</code> is sorted. &#10003;</li>
+    </ul>
+
+    <h4 class="subsubsec">Complexity Analysis</h4>
+
+    <p>
+      Selection sort always performs a complete scan of the unsorted portion on each iteration,
+      regardless of the input's initial order. The number of comparisons is:
+    </p>
+    <p style="text-align:center; font-family: monospace; margin: 12px 0;">
+      &sum;<sub>i=1</sub><sup>n</sup> (n &minus; i) = (n-1) + (n-2) + &hellip; + 1 + 0 = n(n-1)/2 = O(n&sup2;)
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Case</th><th>Time Complexity</th><th>Auxiliary Space</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Best Case</td><td><span class="complexity-tag">O(n²)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+        <tr><td>Average Case</td><td><span class="complexity-tag">O(n²)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+        <tr><td>Worst Case</td><td><span class="complexity-tag">O(n²)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Property</div>
+      Selection sort performs at most <strong>n-1 swaps</strong> (one per outer loop iteration), which is useful when
+      swapping is expensive. However, it always does O(n²) comparisons with no adaptation to input order.
+      It is <strong>in-place</strong> (O(1) extra space), <strong>not stable</strong> (the swap may move equal elements out of relative order), <strong>not online</strong>, and <strong>non-adaptive</strong>.
+    </div>
+
+    <!-- INSERTION SORT -->
+    <h3 class="subsec">Insertion Sort</h3>
+
+    <p>
+      Insertion sort also maintains a sorted prefix, but uses a weaker invariant than selection sort.
+      At each iteration, it takes the next element from the unsorted portion and inserts it into its
+      correct position in the sorted prefix by shifting elements rightward.
+    </p>
+
+    <div class="algo-header">
+      Algorithm 3 &mdash; Insertion Sort
+      <span class="algo-complexity">O(n) best, O(n²) worst</span>
+    </div>
+    <pre class="code-block has-header">function INSERTION_SORT(array[1..n])
+    for i = 2 to n do
+        key = array[i]
+        j = i - 1
+        while j &gt; 0 and array[j] &gt; key do
+            array[j + 1] = array[j]
+            j = j - 1
+        array[j + 1] = key</pre>
+
+    <div class="callout def">
+      <div class="callout-title">Loop Invariant &mdash; Insertion Sort</div>
+      For any value of <code>i</code> in the main loop, at the beginning of the iteration:
+      <ol>
+        <li><code>array[1..i-1]</code> is sorted.</li>
+      </ol>
+      This is a <strong>weaker</strong> invariant than selection sort. It does not guarantee that
+      all elements in the sorted prefix are &le; all elements in the unsorted suffix &mdash; they may not be.
+    </div>
+
+    <h4 class="subsubsec">Correctness Proof</h4>
+    <ul>
+      <li><strong>Initialisation:</strong> When <code>i = 2</code>, <code>array[1..1]</code> is a single element &mdash; trivially sorted. &#10003;</li>
+      <li><strong>Maintenance:</strong> At iteration <code>i</code>, we extract <code>key = array[i]</code> and shift elements in <code>array[1..i-1]</code> that are greater than <code>key</code> one position right, then place <code>key</code>. Since <code>array[1..i-1]</code> was sorted, after insertion, <code>array[1..i]</code> is sorted. &#10003;</li>
+      <li><strong>Termination:</strong> The inner while loop terminates when either <code>j = 0</code> or <code>array[j] &le; key</code>. When the outer loop completes at <code>i = n</code>, the invariant guarantees <code>array[1..n]</code> is sorted. &#10003;</li>
+    </ul>
+
+    <h4 class="subsubsec">Complexity Analysis</h4>
+
+    <ul>
+      <li><strong>Best case &mdash; already sorted input:</strong> The inner while loop never executes (each element is already &ge; its predecessor). Only the outer loop runs: <span class="complexity-tag">O(n)</span>.</li>
+      <li><strong>Worst case &mdash; reverse-sorted input:</strong> The inner while loop runs <code>i-1</code> times for each <code>i</code>. Total: (1 + 2 + &hellip; + n-1) = O(n²). Same work as selection sort.</li>
+      <li><strong>Average case:</strong> On average, about half the preceding elements need to be shifted. Still <span class="complexity-tag">O(n²)</span>.</li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Why Insertion Sort is Fast for Nearly-Sorted Input</div>
+      The number of operations is proportional to the number of <em>inversions</em> in the array &mdash; pairs
+      <code>(i, j)</code> where <code>i &lt; j</code> but <code>array[i] &gt; array[j]</code>. A nearly-sorted array
+      has very few inversions, so insertion sort runs in nearly O(n) time. This makes it the algorithm of
+      choice for small arrays or arrays that are almost sorted (e.g., as a base case in hybrid sorts like Timsort).
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Case</th><th>Time Complexity</th><th>Auxiliary Space</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Best Case</td><td><span class="complexity-tag">O(n)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+        <tr><td>Average Case</td><td><span class="complexity-tag">O(n²)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+        <tr><td>Worst Case</td><td><span class="complexity-tag">O(n²)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+      </tbody>
+    </table>
+
+    <!-- ALGORITHM PROPERTIES -->
+    <h3 class="subsec">Algorithm Properties</h3>
+
+    <h4 class="subsubsec">In-Place vs. Not In-Place</h4>
+    <div class="callout def">
+      <div class="callout-title">Definition &mdash; In-Place</div>
+      An algorithm is <strong>in-place</strong> if it uses only O(1) auxiliary memory (i.e., constant extra space beyond the input).
+      Both selection sort and insertion sort are in-place. Merge sort is <em>not</em> in-place (requires O(n) extra space).
+    </div>
+
+    <h4 class="subsubsec">Stable vs. Unstable</h4>
+    <div class="callout def">
+      <div class="callout-title">Definition &mdash; Stability</div>
+      A sorting algorithm is <strong>stable</strong> if it preserves the relative ordering of elements that compare as equal.
+      <p style="margin-top:8px"><strong>Example:</strong> Sort students by mark. If Bill and Maria both scored 75, and Bill appears before Maria in the input, a stable sort guarantees Bill appears before Maria in the output as well.</p>
+      <p><strong>Insertion sort</strong> is stable &mdash; elements are shifted, not swapped past equal elements.</p>
+      <p><strong>Selection sort</strong> is <em>not</em> stable &mdash; the distant swap can change the relative order of equal elements.</p>
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Why Stability Matters</div>
+      Stability enables multi-key sorting by composition:
+      <ol>
+        <li>Sort by the secondary criterion first.</li>
+        <li>Then stable-sort by the primary criterion.</li>
+      </ol>
+      The stable sort in step 2 preserves the secondary ordering for equal primary-key elements.
+      This is also critical for Radix Sort, where each digit pass must be stable to preserve
+      the ordering established by earlier (less-significant) digit passes.
+    </div>
+
+    <h4 class="subsubsec">Comparison-Based vs. Non-Comparison-Based</h4>
+    <div class="callout def">
+      <div class="callout-title">Definition</div>
+      A <strong>comparison-based</strong> sort determines element order exclusively through pairwise comparisons
+      (&lt;, &gt;, &le;, &ge;, =, &ne;). Examples: Selection Sort, Insertion Sort, Merge Sort, Heapsort, Quicksort.
+      <strong>Non-comparison</strong> sorts exploit the structure of keys (e.g., integers in a range).
+      Examples: Counting Sort, Radix Sort, Bucket Sort.
+    </div>
+
+    <h4 class="subsubsec">Adaptive vs. Non-Adaptive</h4>
+    <div class="callout def">
+      <div class="callout-title">Definition</div>
+      An <strong>adaptive</strong> algorithm takes advantage of existing order in the input.
+      Insertion sort is adaptive (runs in O(n) on sorted input). Selection sort is non-adaptive (always O(n²)).
+    </div>
+
+    <h4 class="subsubsec">Online vs. Offline</h4>
+    <div class="callout def">
+      <div class="callout-title">Definition</div>
+      An <strong>online</strong> algorithm can process input sequentially without knowing the entire input in advance.
+      <strong>Insertion sort is online</strong>: new elements can be inserted into an already-sorted prefix at any time.
+      <strong>Selection sort is offline</strong>: adding new elements forces a restart because the algorithm scans the entire unsorted portion.
+    </div>
+
+    <h4 class="subsubsec">Comparison Cost Note</h4>
+    <p>
+      We typically assume comparing two numbers takes O(1) (machine-word-sized integers fit in a register).
+      However, for strings, comparison is O(L) where L is the length of the shorter string &mdash; this becomes
+      significant for genome sequences or long strings. The unit of analysis for comparison-based sorting
+      is often the <em>number of comparisons</em>, which abstracts away the per-comparison cost.
+    </p>
+  </section>
+
+  <!-- ============================================================
+       SECTION 3: HEAPSORT
+       ============================================================ -->
+  <section class="content-section" id="heapsort">
+    <h2 class="sec-title">
+      Heapsort (Revision)
+      <span class="sec-num">§ 3.1</span>
+    </h2>
+  <button class="review-btn" data-week="2" data-sec="heapsort"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">The Binary Heap Data Structure</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition &mdash; Binary Max-Heap</div>
+      A <strong>binary max-heap</strong> is:
+      <ul>
+        <li>A <strong>complete binary tree</strong>: all levels are fully filled except possibly the last, which is filled from left to right.</li>
+        <li>Satisfies the <strong>max-heap property</strong>: every node is &ge; its children, so the maximum element is always at the root.</li>
+      </ul>
+    </div>
+
+    <h4 class="subsubsec">Array Representation</h4>
+    <p>
+      A complete binary tree can be stored compactly as a flat array <code>array[1..n]</code>:
+    </p>
+    <ul>
+      <li>Root is at <code>array[1]</code>.</li>
+      <li>Children of node at index <code>i</code> are at indices <code>2i</code> and <code>2i+1</code>.</li>
+      <li>Parent of node at index <code>i</code> is at index <code>floor(i/2)</code>.</li>
+      <li>The height of a heap with <code>n</code> nodes is <strong>O(log n)</strong>, since the tree is complete.</li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Insight &mdash; Height is O(log n)</div>
+      Because the tree is complete, the height is exactly <code>floor(log&#8322;(n))</code>. This means all
+      operations that traverse from a node to the root (RISE) or from the root to a leaf (FALL)
+      take O(log n) time.
+    </div>
+
+    <h3 class="subsec">Heap Operations</h3>
+
+    <h4 class="subsubsec">RISE &mdash; Bubble Up</h4>
+    <p>Used when a newly inserted or increased element may violate the heap property with its parent. Move it up until the property is restored.</p>
+
+    <div class="algo-header">
+      Algorithm &mdash; RISE (max-heap)
+      <span class="algo-complexity">O(log n)</span>
+    </div>
+    <pre class="code-block has-header">function RISE(array[1..n], i)
+    parent = floor(i / 2)
+    while parent &gt;= 1 do
+        if array[parent] &lt; array[i] then
+            swap(array[parent], array[i])
+            i = parent
+            parent = floor(i / 2)
+        else
+            break</pre>
+
+    <h4 class="subsubsec">FALL &mdash; Bubble Down (Sift Down)</h4>
+    <p>Used when the root is removed or an element is decreased. Move it down by swapping with the larger child until the property is restored.</p>
+
+    <div class="algo-header">
+      Algorithm &mdash; FALL (max-heap)
+      <span class="algo-complexity">O(log n)</span>
+    </div>
+    <pre class="code-block has-header">function FALL(array[1..n], i)
+    child = 2 * i
+    while child &lt;= n do
+        // Pick the larger child
+        if child &lt; n and array[child + 1] &gt; array[child] then
+            child = child + 1
+        if array[i] &lt; array[child] then
+            swap(array[i], array[child])
+            i = child
+            child = 2 * i
+        else
+            break</pre>
+
+    <h4 class="subsubsec">INSERT</h4>
+    <p>Append new element to the end, then RISE it to restore the heap property.</p>
+
+    <div class="algo-header">
+      Algorithm &mdash; INSERT
+      <span class="algo-complexity">O(log n)</span>
+    </div>
+    <pre class="code-block has-header">function INSERT(array[1..n], x)
+    array.append(x)
+    n += 1
+    RISE(array[1..n], n)</pre>
+
+    <h4 class="subsubsec">EXTRACT_MAX (Delete Max)</h4>
+    <p>Swap root with last element, remove last element, then FALL the new root to restore the heap property.</p>
+
+    <div class="algo-header">
+      Algorithm &mdash; EXTRACT_MAX
+      <span class="algo-complexity">O(log n)</span>
+    </div>
+    <pre class="code-block has-header">function EXTRACT_MAX(array[1..n])
+    swap(array[1], array[n])
+    n = n - 1
+    FALL(array[1..n], 1)
+    return array.pop_back()    // returns the original maximum</pre>
+
+    <h3 class="subsec">HEAPIFY &mdash; Building a Heap in O(n)</h3>
+
+    <div class="algo-header">
+      Algorithm &mdash; HEAPIFY
+      <span class="algo-complexity">O(n)</span>
+    </div>
+    <pre class="code-block has-header">function HEAPIFY(array[1..n])
+    for i = floor(n / 2) downto 1 do
+        FALL(array[1..n], i)</pre>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem &mdash; HEAPIFY Runs in O(n), Not O(n log n)</div>
+      <p>
+        A naive analysis says HEAPIFY calls FALL (O(log n)) a total of n/2 times = O(n log n). But this is loose.
+      </p>
+      <p style="margin-top:8px">
+        The key insight is that nodes near the bottom of the tree need very little work: a node at height <code>h</code>
+        requires at most <code>h</code> swaps. There are approximately <code>n/2<sup>h+1</sup></code> nodes at height <code>h</code>.
+        The total work is:
+      </p>
+      <p style="text-align:center; font-family: monospace; margin: 10px 0;">
+        &sum;<sub>h=0</sub><sup>log n</sup> (n / 2<sup>h+1</sup>) &times; h = O(n) &sum;<sub>h=0</sub><sup>&infin;</sup> h/2<sup>h</sup> = O(n)
+      </p>
+      <p>
+        because the geometric series &sum;h/2<sup>h</sup> converges to a constant (= 2).
+        So HEAPIFY takes <strong>O(n)</strong> time, not O(n log n).
+      </p>
+    </div>
+
+    <h3 class="subsec">Heapsort Algorithm</h3>
+
+    <p>
+      Heapsort uses the heap data structure to sort in two phases: (1) heapify the array, (2) repeatedly extract
+      the maximum and place it at the back of the array.
+    </p>
+
+    <div class="algo-header">
+      Algorithm 9 &mdash; Heapsort
+      <span class="algo-complexity">O(n log n) worst-case</span>
+    </div>
+    <pre class="code-block has-header">function HEAPSORT(array[1..n])
+    HEAPIFY(array[1..n])             // O(n) -- build max-heap in-place
+    for i = n downto 1 do
+        array[i] = EXTRACT_MAX(array[1..i])
+        // After iteration i: array[i..n] is sorted and contains the i largest elements</pre>
+
+    <h4 class="subsubsec">How It Works</h4>
+    <ol>
+      <li>Call HEAPIFY to turn the array into a max-heap in O(n) time.</li>
+      <li>For i = n down to 1: call EXTRACT_MAX on the heap of size i, which gives the current maximum. Place it at position <code>array[i]</code>. After this step, <code>array[i..n]</code> is sorted.</li>
+      <li>After all n iterations, <code>array[1..n]</code> is sorted in ascending order.</li>
+    </ol>
+
+    <h4 class="subsubsec">Complexity</h4>
+    <ul>
+      <li>HEAPIFY: <strong>O(n)</strong></li>
+      <li>n calls to EXTRACT_MAX, each taking <strong>O(log n)</strong>: total O(n log n)</li>
+      <li>Overall: <strong>O(n log n)</strong></li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Special Case &mdash; O(n) When All Elements Are Equal</div>
+      If all elements are identical, each EXTRACT_MAX takes O(1) because no swaps are needed to restore the heap
+      property after removing the root. Heapsort then runs in O(n) best case.
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Case</th><th>Time Complexity</th><th>Auxiliary Space</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Best Case</td><td><span class="complexity-tag">O(n)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+        <tr><td>Average Case</td><td><span class="complexity-tag">O(n log n)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+        <tr><td>Worst Case</td><td><span class="complexity-tag">O(n log n)</span></td><td><span class="complexity-tag">O(1)</span></td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="subsubsec">Properties of Heapsort</h4>
+    <ul>
+      <li><strong>In-place:</strong> Yes. HEAPIFY is done in-place, and each EXTRACT_MAX places the element back in the array. O(1) auxiliary space.</li>
+      <li><strong>Stable:</strong> No. Swaps during HEAPIFY and EXTRACT_MAX can move equal elements out of their original relative order.</li>
+      <li><strong>Online:</strong> No. HEAPIFY requires the entire input to be known upfront.</li>
+      <li><strong>Adaptive:</strong> No (for the most part). Heapsort always runs in O(n log n) regardless of input order.</li>
+      <li><strong>Comparison-based:</strong> Yes. Subject to the O(n log n) lower bound.</li>
+    </ul>
+  </section>
+
+  <!-- ============================================================
+       SECTION 4: LOWER BOUNDS
+       ============================================================ -->
+  <section class="content-section" id="lower-bounds">
+    <h2 class="sec-title">
+      Complexity Lower Bounds for Sorting
+      <span class="sec-num">§ 3.3</span>
+    </h2>
+  <button class="review-btn" data-week="2" data-sec="lower-bounds"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Algorithms like mergesort, heapsort, and quicksort run in O(n log n). A natural question:
+      <em>can we do better than O(n log n)?</em> For comparison-based algorithms, the answer is <strong>no</strong>.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem &mdash; Lower Bound for Comparison-Based Sorting</div>
+      Any comparison-based sorting algorithm requires <strong>&Omega;(n log n)</strong> comparisons in the worst case.
+      No comparison-based algorithm can sort faster than O(n log n) in the worst case.
+    </div>
+
+    <h3 class="subsec">The Decision Tree Model</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition &mdash; Decision Tree</div>
+      A <strong>decision tree</strong> is a binary tree that models the execution of a comparison-based sorting algorithm on inputs of size n.
+      <ul>
+        <li>Each <strong>internal node</strong> represents a comparison of two elements.</li>
+        <li>Each <strong>branch</strong> (left/right) represents the outcome of that comparison.</li>
+        <li>Each <strong>leaf node</strong> represents a specific fully-sorted permutation of the input &mdash; the algorithm knows the complete sorted order when it reaches a leaf.</li>
+        <li>The <strong>worst-case number of comparisons</strong> equals the depth of the deepest leaf, i.e., the <strong>height</strong> of the tree.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Proof of the Lower Bound</h3>
+
+    <p>
+      The proof connects the structure of the decision tree to the factorial number of possible sorted orders.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Proof Sketch (not examinable in S1 2026)</div>
+      <ol>
+        <li>There are <strong>n!</strong> possible permutations of n elements. Each must correspond to a distinct leaf in the decision tree (the algorithm must be able to distinguish all possible orderings).</li>
+        <li>A binary tree of height <code>h</code> has at most <code>2<sup>h</sup></code> leaves.</li>
+        <li>Therefore: <code>n! &le; 2<sup>h</sup></code>, which gives <code>h &ge; log&#8322;(n!)</code>.</li>
+        <li>
+          We lower-bound <code>log&#8322;(n!)</code>:
+          <pre style="background:var(--bg3); padding:10px 16px; border-radius:6px; font-family:monospace; font-size:0.85em; margin:10px 0; border-left:3px solid var(--green);">log&#8322;(n!) = log&#8322;(1) + log&#8322;(2) + ... + log&#8322;(n)
+
+Considering only the second half of terms (from n/2 to n):
+&ge; log&#8322;(n/2) + log&#8322;(n/2 + 1) + ... + log&#8322;(n)
+&ge; (n/2) &times; log&#8322;(n/2)
+= (n/2) &times; (log&#8322;(n) - 1)
+= &Omega;(n log n)</pre>
+        </li>
+        <li>Hence the height of the tree is at least <code>h = &Omega;(n log n)</code>, establishing the lower bound.</li>
+      </ol>
+    </div>
+
+    <h3 class="subsec">Stirling's Approximation (for context)</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Stirling's Approximation</div>
+      <p>For large n:</p>
+      <p style="text-align:center; font-family:monospace; margin:8px 0;">n! &asymp; &radic;(2&pi;n) &times; (n/e)<sup>n</sup></p>
+      <p>Taking logarithms:</p>
+      <p style="text-align:center; font-family:monospace; margin:8px 0;">log&#8322;(n!) = n log&#8322;(n) &minus; n log&#8322;(e) + (1/2) log&#8322;(2&pi;n) = &Theta;(n log n)</p>
+      <p>This confirms that <code>log&#8322;(n!) = &Omega;(n log n)</code>, completing the lower bound proof.</p>
+    </div>
+
+    <h3 class="subsec">Interpretation and Implications</h3>
+
+    <div class="callout insight">
+      <div class="callout-title">What This Means</div>
+      <ul>
+        <li>Merge sort, heapsort, and quicksort (average case) are <strong>optimal</strong> among comparison-based algorithms.</li>
+        <li>The lower bound applies to <em>all</em> comparison-based algorithms &mdash; known and unknown.</li>
+        <li>To beat O(n log n), we must use information beyond comparisons &mdash; i.e., exploit the structure of keys (as counting sort and radix sort do).</li>
+        <li>The lower bound is for <strong>worst-case</strong>. Some algorithms (like insertion sort) can achieve O(n) on nearly-sorted input, but their worst case is still &ge; &Omega;(n log n).</li>
+      </ul>
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Definition &mdash; Lower Bound Complexity</div>
+      The <strong>lower bound complexity</strong> of a problem is the lowest possible worst-case complexity
+      that any algorithm (known or unknown) can achieve to solve the problem.
+      A lower bound is important because it gives a theoretical limit on what is achievable.
+      <ul style="margin-top:8px">
+        <li>Finding the minimum of n elements: &Omega;(n) (must inspect every element).</li>
+        <li>Comparison-based sorting of n elements: &Omega;(n log n).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 5: INTEGER SORTING
+       ============================================================ -->
+  <section class="content-section" id="integer-sorting">
+    <h2 class="sec-title">
+      Sorting Integers Fast
+      <span class="sec-num">§ 3.4</span>
+    </h2>
+  <button class="review-btn" data-week="2" data-sec="integer-sorting"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The &Omega;(n log n) lower bound applies only to algorithms that use comparisons as their only
+      operation on elements. If the keys have additional structure &mdash; specifically, if they are
+      integers in a known bounded range &mdash; we can exploit that structure to sort faster.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Idea</div>
+      Instead of asking "is A &lt; B?", we can ask "what bucket does A belong to?". By counting occurrences
+      and using positional arithmetic, we can place elements directly without comparisons.
+    </div>
+
+    <!-- COUNTING SORT -->
+    <h3 class="subsec">Counting Sort</h3>
+
+    <p>
+      Suppose we want to sort an array whose elements are integers in the range <code>0</code> to <code>u-1</code>.
+      Counting sort counts how many times each value occurs, then places each element into its correct position.
+    </p>
+
+    <h4 class="subsubsec">Intuition: Sorting 0s and 1s</h4>
+    <p>
+      As a simple example: to sort an array of only 0s and 1s, just count the number of 0s (say <code>c</code>)
+      and write <code>c</code> zeros followed by <code>n-c</code> ones. This is O(n) &mdash; no comparisons needed.
+      Counting sort generalises this idea to any integer range.
+    </p>
+
+    <h4 class="subsubsec">Stable Counting Sort Algorithm</h4>
+    <p>
+      The naive approach (write out count[v] copies of v) loses satellite data and is unstable.
+      The stable version uses a <code>position</code> array (prefix sums) to place each element at its exact output index.
+    </p>
+
+    <div class="algo-header">
+      Algorithm 19 &mdash; Stable Counting Sort
+      <span class="algo-complexity">O(n + u)</span>
+    </div>
+    <pre class="code-block has-header">function COUNTING_SORT(array[1..n], u)
+    // Phase 1: Count occurrences
+    counter[0..u-1] = [0, 0, ...]
+    for i = 1 to n do
+        counter[array[i]] += 1
+
+    // Phase 2: Compute starting positions (prefix sums)
+    position[0..u-1] = [1, 0, ...]        // position[0] = 1 (1-indexed)
+    for v = 1 to u-1 do
+        position[v] = position[v-1] + counter[v-1]
+
+    // Phase 3: Place elements into output (preserves stability)
+    temp[1..n] = [0, 0, ...]
+    for i = 1 to n do
+        temp[position[array[i]]] = array[i]
+        position[array[i]] += 1           // increment for next occurrence
+
+    swap(array, temp)                      // copy result back</pre>
+
+<!-- ── vz19: Counting Sort Interactive Widget ── -->
+<div id="vz19-card" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#21262d;border-bottom:1px solid #30363d;">
+    <span style="font-weight:700;color:#c9d1d9;font-size:0.95em;">Algorithm 19 &middot; Counting Sort</span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.78em;color:#f0883e;background:#f0883e18;border:1px solid #f0883e44;padding:2px 9px;border-radius:10px;">O(n + k)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.6fr 1fr;">
+    <div style="background:#0d1117;border-right:1px solid #30363d;">
+      <svg id="vz19-svg" viewBox="0 0 560 280" style="display:block;width:100%;height:auto;"></svg>
+    </div>
+    <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;background:#161b22;">
+      <div id="vz19-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#f0883e;min-height:14px;">READY</div>
+      <div id="vz19-narrate" style="font-size:0.85em;line-height:1.5;color:#c9d1d9;min-height:64px;">Click <strong>Next</strong> to start the walkthrough.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:58px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Phase</span>
+          <span id="vz19-chip-phase" style="font-size:1.2em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:48px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">n</span>
+          <span id="vz19-chip-n" style="font-size:1.2em;font-weight:700;line-height:1;color:#c9d1d9;">6</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:48px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">k</span>
+          <span id="vz19-chip-k" style="font-size:1.2em;font-weight:700;line-height:1;color:#c9d1d9;">6</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz19step(-1)" id="vz19-prev" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;transition:background .1s;" disabled>&#9664; Prev</button>
+        <button onclick="vz19step(1)" id="vz19-next" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;transition:background .1s;">Next &#9654;</button>
+        <button onclick="vz19reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#8b949e;padding:7px 13px;border-radius:7px;transition:background .1s;">Reset</button>
+        <span id="vz19-ctr" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.7em;color:#8b949e;align-self:center;">0 / 11</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('vz19-svg');
+  // ── layout constants ──
+  var INPUT=[3,1,4,1,5,2]; // n=6, k=6 (values 0..5)
+  var K=6, N=6;
+  var BOX_W=48, BOX_H=36, GAP=6;
+  var INPUT_Y=28, COUNT_Y=110, OUTPUT_Y=200;
+  var START_X=32;
+
+  function mk(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var a in attrs) el.setAttribute(a,attrs[a]);
+    return el;
+  }
+  function lbl(x,y,text,color,size){
+    var t=mk('text',{x:x,y:y,'text-anchor':'middle',fill:color||'#8b949e','font-size':size||'11','font-family':'JetBrains Mono,monospace'});
+    t.textContent=text; return t;
+  }
+  function box(x,y,w,h,fill,stroke){
+    return mk('rect',{x:x,y:y,width:w,height:h,fill:fill||'#21262d',stroke:stroke||'#30363d','stroke-width':'1.5',rx:'4'});
+  }
+
+  // state
+  var cur=-1;
+  var TOTAL_STEPS=11;
+
+  // current visual state arrays (mutated per step)
+  var countArr=[0,0,0,0,0,0]; // c[0..5]
+  var outputArr=[-1,-1,-1,-1,-1,-1]; // -1 = empty
+  var inputHL=-1; // highlighted input index
+  var countHL=-1; // highlighted count index
+  var outputHL=-1; // highlighted output index
+  var donePhase=0; // 0=none,1=count,2=prefix,3=build
+
+  // prefix-sum state (phase 2 intermediate)
+  var prefixStep=-1; // 0..5 = which c[v] just computed
+
+  // phase3: place index
+  var p3idx=-1; // which input index we just placed (right to left: 5..0)
+
+  function render(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    // ── Section labels ──
+    svg.appendChild(lbl(START_X-4,INPUT_Y-10,'Input','#8b949e','10'));
+    svg.appendChild(lbl(START_X-4,COUNT_Y-10,'Count c[]','#8b949e','10'));
+    svg.appendChild(lbl(START_X-4,OUTPUT_Y-10,'Output','#8b949e','10'));
+
+    var totalW=(BOX_W+GAP)*N - GAP;
+    var inputStartX=(560-totalW)/2;
+
+    // ── Input array ──
+    for(var i=0;i<N;i++){
+      var bx=inputStartX+i*(BOX_W+GAP);
+      var by=INPUT_Y;
+      var isHL=(inputHL===i);
+      var fill=isHL?'#f0883e22':'#21262d';
+      var stroke=isHL?'#f0883e':'#30363d';
+      svg.appendChild(box(bx,by,BOX_W,BOX_H,fill,stroke));
+      // index label below
+      svg.appendChild(lbl(bx+BOX_W/2,by+BOX_H+14,'['+i+']','#8b949e','10'));
+      // value
+      var vc=isHL?'#f0883e':'#c9d1d9';
+      svg.appendChild(lbl(bx+BOX_W/2,by+BOX_H/2+5,''+INPUT[i],vc,'15'));
+    }
+
+    // ── Count array ──
+    var countStartX=inputStartX;
+    for(var j=0;j<K;j++){
+      var cx=countStartX+j*(BOX_W+GAP);
+      var cy=COUNT_Y;
+      var isHLC=(countHL===j);
+      var cfill=isHLC?'#58a6ff22':'#21262d';
+      var cstroke=isHLC?'#58a6ff':'#30363d';
+      // after phase 2 done, color based on prefix sum completeness
+      if(donePhase>=2){
+        cfill='#bc8cff18'; cstroke='#bc8cff55';
+        if(isHLC){cfill='#bc8cff33';cstroke='#bc8cff';}
+      }
+      svg.appendChild(box(cx,cy,BOX_W,BOX_H,cfill,cstroke));
+      svg.appendChild(lbl(cx+BOX_W/2,cy+BOX_H+14,'c['+j+']','#8b949e','10'));
+      var cv=(countArr[j]>=0)?''+countArr[j]:'';
+      var cc=donePhase>=2?'#bc8cff':'#58a6ff';
+      if(isHLC) cc=donePhase>=2?'#bc8cff':'#58a6ff';
+      svg.appendChild(lbl(cx+BOX_W/2,cy+BOX_H/2+5,cv,cc,'14'));
+    }
+
+    // ── Output array ──
+    var outStartX=inputStartX;
+    for(var k=0;k<N;k++){
+      var ox=outStartX+k*(BOX_W+GAP);
+      var oy=OUTPUT_Y;
+      var isHLO=(outputHL===k);
+      var oEmpty=(outputArr[k]<0);
+      var isDone=(donePhase===3 && !oEmpty);
+      var ofill='#21262d';
+      var ostroke='#30363d';
+      if(isDone && donePhase===3 && outputArr[k]>=0) {ofill='#3fb95018';ostroke='#3fb950';}
+      if(isHLO){ofill='#3fb95033';ostroke='#3fb950';}
+      svg.appendChild(box(ox,oy,BOX_W,BOX_H,ofill,ostroke));
+      svg.appendChild(lbl(ox+BOX_W/2,oy+BOX_H+14,'['+k+']','#8b949e','10'));
+      if(!oEmpty){
+        var oc=isHLO?'#3fb950':(donePhase===3?'#3fb950':'#c9d1d9');
+        svg.appendChild(lbl(ox+BOX_W/2,oy+BOX_H/2+5,''+outputArr[k],oc,'15'));
+      }
+    }
+
+    // done label
+    if(donePhase===3){
+      var dlt=mk('text',{x:280,y:260,'text-anchor':'middle',fill:'#3fb950','font-size':'11','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      dlt.textContent='Sorted!  O(n+k) time & space'; svg.appendChild(dlt);
+    }
+  }
+
+  // Step definitions
+  // Each step sets the visual state then calls render()
+  var steps=[
+    // 0: Initial
+    function(){
+      countArr=[0,0,0,0,0,0]; outputArr=[-1,-1,-1,-1,-1,-1];
+      inputHL=-1; countHL=-1; outputHL=-1; donePhase=0;
+      document.getElementById('vz19-label').textContent='INITIAL';
+      document.getElementById('vz19-narrate').innerHTML='Counting Sort on [3,1,4,1,5,2]. <code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">n=6</code> elements, values in range [0,k-1] where <code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">k=6</code>. Three arrays: input, count, output.';
+      document.getElementById('vz19-chip-phase').textContent='—';
+    },
+    // 1: Count a[0]=3
+    function(){
+      countArr=[0,0,0,1,0,0]; inputHL=0; countHL=3; donePhase=1;
+      document.getElementById('vz19-label').textContent='PHASE 1 — COUNT';
+      document.getElementById('vz19-narrate').innerHTML='Scan input: <code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">a[0]=3</code>. Increment c[3]. Count array: [0,0,0,<b style="color:#58a6ff">1</b>,0,0].';
+      document.getElementById('vz19-chip-phase').textContent='1-Count';
+    },
+    // 2: Count a[1]=1
+    function(){
+      countArr=[0,1,0,1,0,0]; inputHL=1; countHL=1;
+      document.getElementById('vz19-label').textContent='PHASE 1 — COUNT';
+      document.getElementById('vz19-narrate').innerHTML='<code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">a[1]=1</code>. Increment c[1]. Count: [0,<b style="color:#58a6ff">1</b>,0,1,0,0].';
+    },
+    // 3: Count a[2]=4
+    function(){
+      countArr=[0,1,0,1,1,0]; inputHL=2; countHL=4;
+      document.getElementById('vz19-label').textContent='PHASE 1 — COUNT';
+      document.getElementById('vz19-narrate').innerHTML='<code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">a[2]=4</code>. Increment c[4]. Count: [0,1,0,1,<b style="color:#58a6ff">1</b>,0].';
+    },
+    // 4: Count a[3]=1
+    function(){
+      countArr=[0,2,0,1,1,0]; inputHL=3; countHL=1;
+      document.getElementById('vz19-label').textContent='PHASE 1 — COUNT';
+      document.getElementById('vz19-narrate').innerHTML='<code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">a[3]=1</code>. Increment c[1] again. Count: [0,<b style="color:#58a6ff">2</b>,0,1,1,0].';
+    },
+    // 5: Count a[4]=5
+    function(){
+      countArr=[0,2,0,1,1,1]; inputHL=4; countHL=5;
+      document.getElementById('vz19-label').textContent='PHASE 1 — COUNT';
+      document.getElementById('vz19-narrate').innerHTML='<code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">a[4]=5</code>. Increment c[5]. Count: [0,2,0,1,1,<b style="color:#58a6ff">1</b>].';
+    },
+    // 6: Count a[5]=2  — phase 1 complete
+    function(){
+      countArr=[0,2,1,1,1,1]; inputHL=5; countHL=2;
+      document.getElementById('vz19-label').textContent='PHASE 1 — COMPLETE';
+      document.getElementById('vz19-narrate').innerHTML='<code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">a[5]=2</code>. Increment c[2]. Final count: [0,<b style="color:#58a6ff">2</b>,1,1,1,1]. <em>c[v] = frequency of v in input.</em>';
+    },
+    // 7: Prefix sum phase
+    function(){
+      countArr=[0,2,3,4,5,6]; inputHL=-1; countHL=-1; donePhase=2;
+      document.getElementById('vz19-label').textContent='PHASE 2 — PREFIX SUMS';
+      document.getElementById('vz19-chip-phase').textContent='2-Prefix';
+      document.getElementById('vz19-narrate').innerHTML='Convert counts to prefix sums: c[v] now = number of elements ≤ v = starting output position for v.<br>c[0]=0, c[1]=0+2=<b style="color:#bc8cff">2</b>, c[2]=2+1=<b style="color:#bc8cff">3</b>, c[3]=3+1=<b style="color:#bc8cff">4</b>, c[4]=4+1=<b style="color:#bc8cff">5</b>, c[5]=5+1=<b style="color:#bc8cff">6</b>.';
+    },
+    // 8: Place a[5]=2  (right-to-left)
+    function(){
+      outputArr=[-1,-1,2,-1,-1,-1]; countArr=[0,2,2,4,5,6]; inputHL=5; countHL=2; outputHL=2; donePhase=2;
+      document.getElementById('vz19-label').textContent='PHASE 3 — BUILD OUTPUT';
+      document.getElementById('vz19-chip-phase').textContent='3-Build';
+      document.getElementById('vz19-narrate').innerHTML='Scan <em>right-to-left</em> for stability. <code style="background:#21262d;padding:1px 5px;border-radius:4px;font-size:.83em;color:#f0883e">a[5]=2</code>: place at output[c[2]−1] = output[2]. Decrement c[2] to 2.';
+    },
+    // 9: Place a[4]=5, a[3]=1, a[2]=4, a[1]=1, a[0]=3
+    function(){
+      // After all placements: output = [1,1,2,3,4,5]
+      outputArr=[1,1,2,3,4,5]; countArr=[0,0,2,3,4,5]; inputHL=-1; countHL=-1; outputHL=-1; donePhase=2;
+      document.getElementById('vz19-label').textContent='PHASE 3 — PLACING';
+      document.getElementById('vz19-narrate').innerHTML='Continue right-to-left: a[4]=5→output[5], a[3]=1→output[1], a[2]=4→output[4], a[1]=1→output[0], a[0]=3→output[3]. Output array filled!';
+    },
+    // 10: Done
+    function(){
+      outputArr=[1,1,2,3,4,5]; countArr=[0,2,3,4,5,6]; inputHL=-1; countHL=-1; outputHL=-1; donePhase=3;
+      document.getElementById('vz19-label').textContent='DONE ✓';
+      document.getElementById('vz19-chip-phase').textContent='Complete';
+      document.getElementById('vz19-narrate').innerHTML='Counting Sort complete. Output: [1,1,2,3,4,5]. <strong style="color:#3fb950">O(n+k) time, O(n+k) space.</strong> Stable sort — equal elements preserve input order.';
+    }
+  ];
+
+  function go(idx){
+    cur=idx;
+    steps[cur]();
+    render();
+    document.getElementById('vz19-prev').disabled=(cur<=0);
+    document.getElementById('vz19-next').disabled=(cur>=steps.length-1);
+    document.getElementById('vz19-ctr').textContent=(cur+1)+' / '+steps.length;
+  }
+
+  window.vz19step=function(d){
+    var next=cur+d;
+    if(next<0)next=0;
+    if(next>=steps.length)next=steps.length-1;
+    go(next);
+  };
+  window.vz19reset=function(){
+    cur=-1;
+    countArr=[0,0,0,0,0,0]; outputArr=[-1,-1,-1,-1,-1,-1];
+    inputHL=-1; countHL=-1; outputHL=-1; donePhase=0;
+    document.getElementById('vz19-label').textContent='READY';
+    document.getElementById('vz19-narrate').innerHTML='Click <strong>Next</strong> to start the walkthrough.';
+    document.getElementById('vz19-chip-phase').textContent='—';
+    document.getElementById('vz19-prev').disabled=true;
+    document.getElementById('vz19-next').disabled=false;
+    document.getElementById('vz19-ctr').textContent='0 / '+steps.length;
+    render();
+  };
+
+  // init
+  render();
+  document.getElementById('vz19-ctr').textContent='0 / '+steps.length;
+})();
+</script>
+
+    <h4 class="subsubsec">Step-by-Step Example</h4>
+    <p>
+      Input with key-value pairs: <code>(3,a) (1,p) (3,c) (7,f) (5,g) (3,b) (7,d) (8,w)</code>
+    </p>
+    <ol>
+      <li><strong>Phase 1 (count):</strong> count[1]=1, count[3]=3, count[5]=1, count[7]=2, count[8]=1</li>
+      <li><strong>Phase 2 (prefix sums):</strong> position[1]=1, position[3]=2, position[5]=5, position[7]=6, position[8]=8</li>
+      <li><strong>Phase 3 (place):</strong> Iterate through input left to right. For <code>(3,a)</code>: place at position[3]=2, then increment position[3] to 3. For <code>(1,p)</code>: place at position[1]=1. Continuing, the output is <code>(1,p) (3,a) (3,c) (3,b) (5,g) (7,f) (7,d) (8,w)</code>.</li>
+    </ol>
+    <p>
+      Notice that the three elements with key 3 appear in the same relative order as in the input &mdash;
+      <code>(3,a)</code>, <code>(3,c)</code>, <code>(3,b)</code> &mdash; confirming stability.
+    </p>
+
+    <h4 class="subsubsec">Complexity of Counting Sort</h4>
+
+    <table>
+      <thead>
+        <tr><th>Case</th><th>Time Complexity</th><th>Auxiliary Space</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Best Case</td><td><span class="complexity-tag">O(n + u)</span></td><td><span class="complexity-tag">O(n + u)</span></td></tr>
+        <tr><td>Average Case</td><td><span class="complexity-tag">O(n + u)</span></td><td><span class="complexity-tag">O(n + u)</span></td></tr>
+        <tr><td>Worst Case</td><td><span class="complexity-tag">O(n + u)</span></td><td><span class="complexity-tag">O(n + u)</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout cplx">
+      <div class="callout-title">When is Counting Sort Linear?</div>
+      <ul>
+        <li>Counting sort is <strong>O(n)</strong> if and only if <code>u = O(n)</code> (the universe size is proportional to the input size).</li>
+        <li>For w-bit integers: universe size <code>u = 2<sup>w</sup></code>. Counting sort is linear iff <code>w = O(log n)</code>.</li>
+        <li><strong>Pitfall:</strong> If n=2 and u=2<sup>63</sup> (e.g., 64-bit integers), counting sort requires O(2<sup>63</sup>) space &mdash; completely impractical.</li>
+      </ul>
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Properties of Counting Sort</div>
+      <ul>
+        <li><strong>Stable:</strong> Yes (stable version). The iteration through input in order, combined with incrementing positions, preserves relative order.</li>
+        <li><strong>In-place:</strong> No. Requires an auxiliary <code>temp</code> array of size n and a <code>counter</code>/<code>position</code> array of size u.</li>
+        <li><strong>Comparison-based:</strong> No. Uses integer value as an index into the counter array.</li>
+      </ul>
+    </div>
+
+    <!-- RADIX SORT -->
+    <h3 class="subsec">Radix Sort</h3>
+
+    <p>
+      Counting sort becomes impractical when the value range is large (e.g., 64-bit integers).
+      Radix sort extends counting sort to handle large integers by sorting digit by digit,
+      using a small base so counting sort stays efficient.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Key Idea &mdash; LSD Radix Sort</div>
+      <strong>Least Significant Digit (LSD) Radix Sort:</strong>
+      <ol>
+        <li>Sort the array by the <strong>least significant digit</strong> (rightmost) using a stable sort.</li>
+        <li>Sort by the second least significant digit, using a stable sort.</li>
+        <li>Continue until the <strong>most significant digit</strong> (leftmost) is sorted.</li>
+      </ol>
+      Stability in each pass is critical: it preserves the ordering established by earlier (less-significant) digits.
+    </div>
+
+    <h4 class="subsubsec">Concrete Example (Base 10)</h4>
+    <p>Sort: <code>7555, 4642, 3512, 1191, 1182, 5412, 1323, 6682, 9523, 6284, 3784, 9356</code></p>
+    <ol>
+      <li><strong>Sort by 4th digit (units):</strong> 1191, 1182, 3512, 5412, 4642, 1323, 6682, 9523, 6284, 3784, 7555, 9356</li>
+      <li><strong>Sort by 3rd digit (tens) &mdash; stable:</strong> preserves relative order within same tens-digit groups</li>
+      <li><strong>Sort by 2nd digit (hundreds) &mdash; stable:</strong> &hellip;</li>
+      <li><strong>Sort by 1st digit (thousands) &mdash; stable:</strong> final sorted order</li>
+    </ol>
+
+    <div class="callout warn">
+      <div class="callout-title">Why Stability is Essential</div>
+      If the per-digit sort is unstable, later passes may scramble the ordering established by earlier passes.
+      For example, after sorting by the units digit, two numbers with the same tens digit must retain their
+      units-digit order. Only a stable sort guarantees this.
+      <p style="margin-top:8px">MSD (most-significant digit first) radix sort processes digits from left to right but requires a more complex implementation (recursive subproblems per bucket), whereas LSD naturally uses the stable counting sort subroutine.</p>
+    </div>
+
+    <div class="algo-header">
+      Algorithm 20 &mdash; LSD Radix Sort
+      <span class="algo-complexity">O(d(n + b))</span>
+    </div>
+    <pre class="code-block has-header">function RADIX_PASS(array[1..n], base, digit)
+    counter[0..base-1] = [0, 0, ...]
+    for i = 1 to n do
+        counter[GET_DIGIT(array[i], base, digit)] += 1
+    position[0..base-1] = [1, 0, ...]
+    for v = 1 to base-1 do
+        position[v] = position[v-1] + counter[v-1]
+    temp[1..n] = [0, 0, ...]
+    for i = 1 to n do
+        d = GET_DIGIT(array[i], base, digit)
+        temp[position[d]] = array[i]
+        position[d] += 1
+    swap(array, temp)
+
+function RADIX_SORT(array[1..n], base, digits)
+    for digit = 1 to digits do       // 1 = least significant
+        RADIX_PASS(array[1..n], base, digit)</pre>
+
+<!-- ── vz20: Radix Sort Interactive Widget ── -->
+<div id="vz20-card" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#21262d;border-bottom:1px solid #30363d;">
+    <span style="font-weight:700;color:#c9d1d9;font-size:0.95em;">Algorithm 20 &middot; Radix Sort</span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.78em;color:#f0883e;background:#f0883e18;border:1px solid #f0883e44;padding:2px 9px;border-radius:10px;">O(d(n + k))</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.6fr 1fr;">
+    <div style="background:#0d1117;border-right:1px solid #30363d;">
+      <svg id="vz20-svg" viewBox="0 0 560 280" style="display:block;width:100%;height:auto;"></svg>
+    </div>
+    <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;background:#161b22;">
+      <div id="vz20-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#f0883e;min-height:14px;">READY</div>
+      <div id="vz20-narrate" style="font-size:0.85em;line-height:1.5;color:#c9d1d9;min-height:80px;">Click <strong>Next</strong> to start the walkthrough.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:58px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Pass</span>
+          <span id="vz20-chip-pass" style="font-size:1.2em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:68px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Digit</span>
+          <span id="vz20-chip-digit" style="font-size:1.2em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:64px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Stable</span>
+          <span id="vz20-chip-stable" style="font-size:1.2em;font-weight:700;line-height:1;color:#3fb950;">Yes ✓</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz20step(-1)" id="vz20-prev" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;transition:background .1s;" disabled>&#9664; Prev</button>
+        <button onclick="vz20step(1)" id="vz20-next" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;transition:background .1s;">Next &#9654;</button>
+        <button onclick="vz20reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#8b949e;padding:7px 13px;border-radius:7px;transition:background .1s;">Reset</button>
+        <span id="vz20-ctr" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.7em;color:#8b949e;align-self:center;">0 / 4</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('vz20-svg');
+
+  // Input: [38, 27, 43, 3, 9, 82, 10]
+  var ORIG=[38,27,43,3,9,82,10];
+  var N=ORIG.length;
+
+  // Pass 1 result (sort by units digit):
+  // units: 38→8, 27→7, 43→3, 3→3, 9→9, 82→2, 10→0
+  // sorted by units: 10(0), 82(2), 43(3), 3(3), 27(7), 38(8), 9(9)
+  var PASS1=[10,82,43,3,27,38,9];
+
+  // Pass 2 result (sort by tens digit):
+  // tens: 10→1, 82→8, 43→4, 3→0, 27→2, 38→3, 9→0
+  // sorted by tens: 3(0),9(0),10(1),27(2),38(3),43(4),82(8)
+  var PASS2=[3,9,10,27,38,43,82];
+
+  function getUnits(x){return x%10;}
+  function getTens(x){return Math.floor(x/10)%10;}
+
+  function mk(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var a in attrs) el.setAttribute(a,attrs[a]);
+    return el;
+  }
+  function txt(x,y,content,color,size,anchor,bold){
+    var t=mk('text',{x:x,y:y,'text-anchor':anchor||'middle',fill:color||'#c9d1d9','font-size':size||'13','font-family':'JetBrains Mono,monospace'});
+    if(bold) t.setAttribute('font-weight','700');
+    t.textContent=content; return t;
+  }
+
+  // Layout: show "before" column on left, arrow in middle, "after" column on right
+  // Each element is a horizontal box
+  var BOX_W=54, BOX_H=28, BOX_GAP=6;
+  var LEFT_X=30, RIGHT_X=340;
+  var ARROW_X=240;
+  var START_Y=28;
+
+  var cur=-1;
+
+  // State: current arrays to render, highlight digit (units=0 or tens=1), done flag
+  var state={
+    leftArr: ORIG.slice(),
+    rightArr: null,
+    highlightDigit: -1,  // -1=none, 0=units, 1=tens
+    done: false,
+    pass: 0
+  };
+
+  function drawArr(arr, startX, startY, highlightDigit, isAfter, colorOverride){
+    for(var i=0;i<arr.length;i++){
+      var by=startY+i*(BOX_H+BOX_GAP);
+      var val=arr[i];
+      var digitVal= highlightDigit===0?getUnits(val): highlightDigit===1?getTens(val):-1;
+      var fill=colorOverride||(isAfter?'#58a6ff18':'#21262d');
+      var stroke=colorOverride?'#3fb950':(isAfter?'#58a6ff':'#30363d');
+      if(state.done){fill='#3fb95018';stroke='#3fb950';}
+
+      svg.appendChild(mk('rect',{x:startX,y:by,width:BOX_W,height:BOX_H,fill:fill,stroke:stroke,'stroke-width':'1.5',rx:'4'}));
+      // number text
+      var nc=state.done?'#3fb950':(isAfter?'#58a6ff':'#c9d1d9');
+      svg.appendChild(txt(startX+BOX_W/2,by+BOX_H/2+5,''+val,nc,'13','middle',true));
+
+      // digit highlight badge
+      if(highlightDigit>=0 && !state.done){
+        var dStr=''+digitVal;
+        var bx=startX+BOX_W+4;
+        svg.appendChild(mk('rect',{x:bx,y:by+4,width:18,height:20,fill:'#f0883e33',stroke:'#f0883e','stroke-width':'1',rx:'3'}));
+        svg.appendChild(txt(bx+9,by+18,dStr,'#f0883e','11','middle',true));
+      }
+    }
+  }
+
+  function render(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var totalH=N*(BOX_H+BOX_GAP)-BOX_GAP;
+
+    // Left column header
+    var leftLabel= state.pass===0?'Input':('After pass '+(state.pass-1>0?state.pass-1:1));
+    if(state.pass===2) leftLabel='After pass 1';
+    svg.appendChild(txt(LEFT_X+BOX_W/2,START_Y-6,leftLabel,'#8b949e','10','middle'));
+
+    // Draw left array
+    drawArr(state.leftArr, LEFT_X, START_Y, state.highlightDigit, false);
+
+    // Digit label below
+    if(state.highlightDigit>=0 && !state.done){
+      var dname=state.highlightDigit===0?'units digit':'tens digit';
+      svg.appendChild(txt(LEFT_X+BOX_W/2+14,START_Y+totalH+20,dname,'#f0883e','10','middle'));
+    }
+
+    // Arrow
+    if(state.rightArr){
+      // draw arrow
+      var ay=START_Y+totalH/2;
+      svg.appendChild(mk('line',{x1:ARROW_X-10,y1:ay,x2:ARROW_X+34,y2:ay,stroke:'#30363d','stroke-width':'2','marker-end':'url(#arrowhead)'}));
+      var defs=mk('defs',{});
+      var marker=mk('marker',{id:'arrowhead',markerWidth:'8',markerHeight:'8',refX:'4',refY:'3',orient:'auto'});
+      var poly=mk('polygon',{points:'0 0, 6 3, 0 6',fill:'#58a6ff'});
+      marker.appendChild(poly); defs.appendChild(marker); svg.insertBefore(defs,svg.firstChild);
+
+      var passLbl=state.pass===1?'Pass 1\n(units)':'Pass 2\n(tens)';
+      svg.appendChild(txt(ARROW_X+12,ay-8,'Sort by','#8b949e','9','middle'));
+      svg.appendChild(txt(ARROW_X+12,ay+4,state.pass===1?'units digit':'tens digit','#f0883e','9','middle',true));
+
+      // Right column header
+      svg.appendChild(txt(RIGHT_X+BOX_W/2,START_Y-6,'After pass '+state.pass,'#8b949e','10','middle'));
+      drawArr(state.rightArr, RIGHT_X, START_Y, -1, true);
+    }
+
+    // Done banner
+    if(state.done){
+      svg.appendChild(txt(280,260,'Radix Sort complete!  O(d(n+k))  —  no comparisons needed','#3fb950','11','middle',true));
+    }
+  }
+
+  var steps=[
+    // 0: Initial
+    function(){
+      state={leftArr:ORIG.slice(),rightArr:null,highlightDigit:-1,done:false,pass:0};
+      document.getElementById('vz20-label').textContent='INPUT';
+      document.getElementById('vz20-chip-pass').textContent='—';
+      document.getElementById('vz20-chip-digit').textContent='—';
+      document.getElementById('vz20-narrate').innerHTML='Radix Sort on [38,27,43,3,9,82,10]. Sort by each digit position, <strong>least significant first</strong>. Uses Counting Sort as a stable subroutine — stability is critical!';
+    },
+    // 1: Pass 1 — sort by units digit
+    function(){
+      state={leftArr:ORIG.slice(),rightArr:PASS1.slice(),highlightDigit:0,done:false,pass:1};
+      document.getElementById('vz20-label').textContent='PASS 1 — UNITS DIGIT';
+      document.getElementById('vz20-chip-pass').textContent='1';
+      document.getElementById('vz20-chip-digit').textContent='units (d=0)';
+      document.getElementById('vz20-narrate').innerHTML='<strong>Pass 1</strong>: sort by units digit (d=0). Units: 38→<b style="color:#f0883e">8</b>, 27→<b style="color:#f0883e">7</b>, 43→<b style="color:#f0883e">3</b>, 3→<b style="color:#f0883e">3</b>, 9→<b style="color:#f0883e">9</b>, 82→<b style="color:#f0883e">2</b>, 10→<b style="color:#f0883e">0</b>.<br>Result: [10, 82, 43, 3, 27, 38, 9] — stable counting sort places equal units-digit values in original order.';
+    },
+    // 2: Pass 2 — sort by tens digit
+    function(){
+      state={leftArr:PASS1.slice(),rightArr:PASS2.slice(),highlightDigit:1,done:false,pass:2};
+      document.getElementById('vz20-label').textContent='PASS 2 — TENS DIGIT';
+      document.getElementById('vz20-chip-pass').textContent='2';
+      document.getElementById('vz20-chip-digit').textContent='tens (d=1)';
+      document.getElementById('vz20-narrate').innerHTML='<strong>Pass 2</strong>: sort by tens digit (d=1). Tens: 10→<b style="color:#f0883e">1</b>, 82→<b style="color:#f0883e">8</b>, 43→<b style="color:#f0883e">4</b>, 3→<b style="color:#f0883e">0</b>, 27→<b style="color:#f0883e">2</b>, 38→<b style="color:#f0883e">3</b>, 9→<b style="color:#f0883e">0</b>.<br><em>Stability is key</em> — 3 and 9 both have tens=0, they keep their relative order from pass 1. Result: [3, 9, 10, 27, 38, 43, 82].';
+    },
+    // 3: Done
+    function(){
+      state={leftArr:PASS2.slice(),rightArr:null,highlightDigit:-1,done:true,pass:2};
+      document.getElementById('vz20-label').textContent='DONE ✓';
+      document.getElementById('vz20-chip-pass').textContent='2 ✓';
+      document.getElementById('vz20-chip-digit').textContent='all done';
+      document.getElementById('vz20-narrate').innerHTML='Radix Sort complete! Final: [3, 9, 10, 27, 38, 43, 82]. <strong style="color:#3fb950">O(d(n+k))</strong> where d=2 (digits), n=7 (elements), k=10 (digit range). No comparisons needed — beats O(n log n) for bounded integers!';
+    }
+  ];
+
+  function go(idx){
+    cur=idx;
+    steps[cur]();
+    render();
+    document.getElementById('vz20-prev').disabled=(cur<=0);
+    document.getElementById('vz20-next').disabled=(cur>=steps.length-1);
+    document.getElementById('vz20-ctr').textContent=(cur+1)+' / '+steps.length;
+  }
+
+  window.vz20step=function(d){
+    var next=cur+d;
+    if(next<0) next=0;
+    if(next>=steps.length) next=steps.length-1;
+    go(next);
+  };
+  window.vz20reset=function(){
+    cur=-1;
+    state={leftArr:ORIG.slice(),rightArr:null,highlightDigit:-1,done:false,pass:0};
+    document.getElementById('vz20-label').textContent='READY';
+    document.getElementById('vz20-narrate').innerHTML='Click <strong>Next</strong> to start the walkthrough.';
+    document.getElementById('vz20-chip-pass').textContent='—';
+    document.getElementById('vz20-chip-digit').textContent='—';
+    document.getElementById('vz20-prev').disabled=true;
+    document.getElementById('vz20-next').disabled=false;
+    document.getElementById('vz20-ctr').textContent='0 / '+steps.length;
+    render();
+  };
+
+  render();
+  document.getElementById('vz20-ctr').textContent='0 / '+steps.length;
+})();
+</script>
+
+    <h4 class="subsubsec">Complexity of Radix Sort</h4>
+
+    <p>
+      Suppose we sort <code>n</code> integers each with <code>k</code> digits in base <code>b</code>.
+      Each RADIX_PASS is a counting sort over a universe of size <code>b</code>: O(n + b).
+      There are <code>k</code> passes. Total:
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Case</th><th>Time Complexity</th><th>Auxiliary Space</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>All Cases</td><td><span class="complexity-tag">O(k(n + b))</span></td><td><span class="complexity-tag">O(n + b)</span></td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="subsubsec">Choosing the Optimal Base</h4>
+
+    <p>
+      For w-bit integers, the number of digits in base b is <code>k = w / log(b)</code>, so the total complexity is:
+    </p>
+    <p style="text-align:center; font-family:monospace; margin:12px 0;">
+      O( (w / log(b)) &times; (n + b) )
+    </p>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity Analysis &mdash; Choosing Base b = n</div>
+      <p>Each counting sort pass is O(n) as long as <code>b = O(n)</code>. Setting <code>b = n</code> (base n):</p>
+      <ul>
+        <li>Number of passes: <code>k = w / log(n)</code></li>
+        <li>Cost per pass: <code>O(n + n) = O(n)</code></li>
+        <li>Total: <code>O( (w / log(n)) &times; n )</code></li>
+      </ul>
+      <p style="margin-top:8px">
+        For integers with <code>w = O(log n)</code> bits (max value O(n)): complexity = <code>O(n)</code> &mdash; linear time!
+      </p>
+      <p>
+        More generally, for integers with <code>w = c log(n)</code> bits (max value O(n<sup>c</sup>)): complexity = <code>O(cn) = O(n)</code>.
+        This handles polynomially bounded integers in linear time &mdash; much better than counting sort,
+        which could only handle values up to O(n).
+      </p>
+      <p>Space complexity remains O(n) since <code>b = n</code>.</p>
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Radix Sort vs. Counting Sort Comparison</div>
+      <table style="margin:8px 0">
+        <thead>
+          <tr><th>Algorithm</th><th>Handles integers up to</th><th>Time</th><th>Space</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Counting Sort</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+          <tr><td>Radix Sort (base n)</td><td>O(n<sup>c</sup>) for any constant c</td><td>O(n)</td><td>O(n)</td></tr>
+          <tr><td>Radix Sort (base 10)</td><td>Any</td><td>O(kn)</td><td>O(n)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="subsubsec">Applying Radix Sort to Strings</h4>
+    <p>
+      Strings can be sorted with radix sort by treating characters as digits. The radix (base) is the alphabet
+      size (e.g., 26 for lowercase letters, 256 for ASCII). Use the character's ASCII value as the digit value:
+      e.g., <code>ord('A') = 65</code> in Python.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Properties of Radix Sort</div>
+      <ul>
+        <li><strong>Stable:</strong> Yes (when using stable counting sort as the subroutine).</li>
+        <li><strong>In-place:</strong> No. Uses O(n + b) auxiliary space from counting sort.</li>
+        <li><strong>Comparison-based:</strong> No. Keys are used as array indices.</li>
+        <li><strong>Adaptive:</strong> No. All cases are O(k(n + b)).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 6: COMPARISON TABLE
+       ============================================================ -->
+  <section class="content-section" id="comparison-table">
+    <h2 class="sec-title">
+      Sorting Algorithm Comparison
+      <span class="sec-num">Summary</span>
+    </h2>
+  <button class="review-btn" data-week="2" data-sec="comparison-table"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      A comprehensive comparison of all sorting algorithms covered in this unit.
+      <code>n</code> = number of elements, <code>u</code> = universe size (value range),
+      <code>k</code> = number of digits, <code>b</code> = radix/base, <code>w</code> = bit width.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Best Case</th>
+          <th>Average Case</th>
+          <th>Worst Case</th>
+          <th>Aux. Space</th>
+          <th>Stable?</th>
+          <th>In-Place?</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Selection Sort</strong></td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td><span class="complexity-tag">O(1)</span></td>
+          <td style="color:var(--red)">No</td>
+          <td style="color:var(--green)">Yes</td>
+          <td>Non-adaptive, offline. At most n-1 swaps.</td>
+        </tr>
+        <tr>
+          <td><strong>Insertion Sort</strong></td>
+          <td><span class="complexity-tag">O(n)</span></td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td><span class="complexity-tag">O(1)</span></td>
+          <td style="color:var(--green)">Yes</td>
+          <td style="color:var(--green)">Yes</td>
+          <td>Adaptive, online. Excellent for nearly-sorted input.</td>
+        </tr>
+        <tr>
+          <td><strong>Merge Sort</strong></td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td><span class="complexity-tag">O(n)</span></td>
+          <td style="color:var(--green)">Yes</td>
+          <td style="color:var(--red)">No</td>
+          <td>Divide and conquer. Optimal comparison sort. Not in-place.</td>
+        </tr>
+        <tr>
+          <td><strong>Heapsort</strong></td>
+          <td><span class="complexity-tag">O(n)*</span></td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td><span class="complexity-tag">O(1)</span></td>
+          <td style="color:var(--red)">No</td>
+          <td style="color:var(--green)">Yes</td>
+          <td>*O(n) only when all elements equal. Optimal in-place comparison sort.</td>
+        </tr>
+        <tr>
+          <td><strong>Quicksort</strong></td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td><span class="complexity-tag">O(log n)</span></td>
+          <td style="color:var(--red)">No*</td>
+          <td style="color:var(--green)">Yes</td>
+          <td>*Most implementations unstable. O(n²) worst case (bad pivot). Best in practice.</td>
+        </tr>
+        <tr>
+          <td><strong>Counting Sort</strong></td>
+          <td><span class="complexity-tag">O(n + u)</span></td>
+          <td><span class="complexity-tag">O(n + u)</span></td>
+          <td><span class="complexity-tag">O(n + u)</span></td>
+          <td><span class="complexity-tag">O(n + u)</span></td>
+          <td style="color:var(--green)">Yes*</td>
+          <td style="color:var(--red)">No</td>
+          <td>*Stable version only. Integers in [0, u-1]. Linear when u=O(n).</td>
+        </tr>
+        <tr>
+          <td><strong>Radix Sort</strong></td>
+          <td><span class="complexity-tag">O(k(n+b))</span></td>
+          <td><span class="complexity-tag">O(k(n+b))</span></td>
+          <td><span class="complexity-tag">O(k(n+b))</span></td>
+          <td><span class="complexity-tag">O(n + b)</span></td>
+          <td style="color:var(--green)">Yes</td>
+          <td style="color:var(--red)">No</td>
+          <td>k digits in base b. Linear O(n) for poly-bounded integers with base b=n.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Summary: Which Algorithm to Use?</h3>
+
+    <table>
+      <thead>
+        <tr><th>Situation</th><th>Recommended Algorithm</th><th>Reason</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Small n or nearly-sorted data</td>
+          <td>Insertion Sort</td>
+          <td>O(n) best case, low constant factors, adaptive</td>
+        </tr>
+        <tr>
+          <td>General-purpose, need in-place</td>
+          <td>Heapsort</td>
+          <td>O(n log n) worst case, O(1) space</td>
+        </tr>
+        <tr>
+          <td>General-purpose, need stable</td>
+          <td>Merge Sort</td>
+          <td>O(n log n) stable, but O(n) extra space</td>
+        </tr>
+        <tr>
+          <td>General-purpose, best average performance</td>
+          <td>Quicksort (randomised)</td>
+          <td>O(n log n) average, small constants, in-place</td>
+        </tr>
+        <tr>
+          <td>Integers, small range [0..u-1], u=O(n)</td>
+          <td>Counting Sort</td>
+          <td>O(n) time and space</td>
+        </tr>
+        <tr>
+          <td>Integers, larger range, polynomially bounded</td>
+          <td>Radix Sort (base n)</td>
+          <td>O(n) for integers up to O(n<sup>c</sup>)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">The Fundamental Trade-off</div>
+      <ul>
+        <li>Comparison-based sorts: flexible (work on any comparable data), but limited to &Omega;(n log n) worst case.</li>
+        <li>Non-comparison sorts: faster (O(n) possible), but require integer/structured keys and extra space.</li>
+        <li>In-place vs. stable: in general, achieving both simultaneously is very hard (e.g., stable in-place radix sort exists but is extremely complex).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== INTERACTIVE DEMO: HEAPSORT ===== -->
+  <section class="content-section" id="w2-demo">
+    <h2 class="sec-title"><span class="sec-num">Interactive</span> Heapsort — Build Heap then Extract</h2>
+    <button class="review-btn" data-week="2" data-sec="w2-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+    <div class="algo-demo">
+      <p class="demo-eyebrow">Algorithm Demo</p>
+      <p class="demo-lede">Phase 1: Build a max-heap bottom-up (O(n)). Phase 2: Repeatedly extract the maximum. <b>Click Step</b> to advance.</p>
+      <div class="demo-board" id="d2-board">
+        <div class="demo-stage">
+          <svg id="d2-svg" viewBox="0 0 800 320" style="display:block;width:100%;height:auto;background:#0d1117"></svg>
+        </div>
+        <div class="demo-panel">
+          <div class="demo-narrate">
+            <div class="demo-step-label" id="d2-label">READY</div>
+            <div class="demo-step-text" id="d2-text">Initial array — will build max-heap bottom-up. Click Step.</div>
+            <div class="demo-stats">
+              <div class="demo-chip"><span class="k">Comparisons</span><span class="v" id="d2-cmp">0</span></div>
+              <div class="demo-chip"><span class="k">Swaps</span><span class="v" id="d2-swaps">0</span></div>
+              <div class="demo-chip" id="d2-chip-sorted"><span class="k">Sorted</span><span class="v" id="d2-sorted">0</span></div>
+            </div>
+          </div>
+          <div class="demo-side">
+            <h4>Array State</h4>
+            <div id="d2-side" style="font-family:'JetBrains Mono',monospace;font-size:0.78em;color:var(--text-muted);line-height:1.9">
+              <div>Heap size: <span id="d2-heap-size" style="color:var(--cyan)">7</span></div>
+              <div style="margin-top:6px">Array:</div>
+              <div id="d2-arr-display" style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap"></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-controls">
+          <button class="demo-btn primary" id="d2-step-btn">Step →</button>
+          <button class="demo-btn" id="d2-run-btn">Run ▶</button>
+          <button class="demo-btn" id="d2-reset-btn">Reset</button>
+          <div class="demo-spd"><span>Speed</span><input type="range" id="d2-spd" min="1" max="5" value="3"><span id="d2-spd-lbl">3×</span></div>
+        </div>
+        <div class="demo-hint">Phase 1: buildHeap O(n) · Phase 2: n extractions × O(log n) = O(n log n) total</div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+</main>
+<script id="d2-script">
+(function(){
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.getElementById('d2-svg');
+  const ORIG = [4,2,7,1,6,3,5];
+  const N = ORIG.length;
+  // Tree positions
+  const POS = [
+    [400,55],     // 0
+    [220,145],[580,145],   // 1,2
+    [130,235],[310,235],[490,235],[670,235]  // 3,4,5,6
+  ];
+  const R = 26;
+  let arr, steps, stepIndex, busy, spd;
+  let nodeCircles, nodeTexts, edgeLines, sortedBoxes, sortedTexts;
+
+  function mkEl(tag,attrs){
+    const el = document.createElementNS(NS,tag);
+    for(const [k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+    return el;
+  }
+
+  function buildSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    edgeLines = [];
+    nodeCircles = [];
+    nodeTexts = [];
+    sortedBoxes = [];
+    sortedTexts = [];
+
+    // Draw edges first
+    const edgePairs = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]];
+    for(const [p,c] of edgePairs){
+      const line = mkEl('line',{x1:POS[p][0],y1:POS[p][1],x2:POS[c][0],y2:POS[c][1],stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(line);
+      edgeLines.push({p,c,el:line});
+    }
+
+    // Draw nodes
+    for(let i=0;i<N;i++){
+      const [cx,cy] = POS[i];
+      const circ = mkEl('circle',{cx,cy,r:R,fill:'#21262d',stroke:'#c9d1d9','stroke-width':'2'});
+      const txt = mkEl('text',{cx,cy:''+( cy+5),'text-anchor':'middle',fill:'#c9d1d9','font-size':'15','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      txt.textContent = arr[i];
+      svg.appendChild(circ);
+      svg.appendChild(txt);
+      nodeCircles.push(circ);
+      nodeTexts.push(txt);
+    }
+
+    // Sorted boxes at bottom row (y=295)
+    const bw=34, startX=400-N*bw/2;
+    const sortedLbl = mkEl('text',{x:startX-8,y:300,'text-anchor':'end',fill:'#8b949e','font-size':'11','font-family':'JetBrains Mono,monospace'});
+    sortedLbl.textContent='sorted:';
+    svg.appendChild(sortedLbl);
+    for(let i=0;i<N;i++){
+      const bx = startX+i*bw;
+      const box = mkEl('rect',{x:bx,y:285,width:bw-3,height:24,fill:'#0d1117',stroke:'#30363d','stroke-width':'1',rx:'3'});
+      const btxt = mkEl('text',{x:bx+(bw-3)/2,y:302,'text-anchor':'middle',fill:'#3fb950','font-size':'12','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      btxt.textContent='';
+      svg.appendChild(box);
+      svg.appendChild(btxt);
+      sortedBoxes.push(box);
+      sortedTexts.push(btxt);
+    }
+
+    updateArrDisplay(N);
+  }
+
+  function setNodeStyle(i, style){
+    if(i<0||i>=N) return;
+    const fills = {
+      default:['#21262d','#c9d1d9','2','#c9d1d9'],
+      active:['#f0883e22','#f0883e','2.5','#f0883e'],
+      heap:['#3fb95022','#3fb950','2','#3fb950'],
+      extracted:['#3fb950','#3fb950','2','#fff']
+    };
+    const [f,s,sw,tf] = fills[style]||fills.default;
+    nodeCircles[i].setAttribute('fill',f);
+    nodeCircles[i].setAttribute('stroke',s);
+    nodeCircles[i].setAttribute('stroke-width',sw);
+    nodeTexts[i].setAttribute('fill',tf);
+  }
+
+  function updateNodeText(i){
+    if(i<0||i>=N) return;
+    nodeTexts[i].textContent = arr[i];
+  }
+
+  function updateArrDisplay(heapSize){
+    const container = document.getElementById('d2-arr-display');
+    container.innerHTML='';
+    for(let i=0;i<N;i++){
+      const box = document.createElement('div');
+      box.style.cssText=`width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.8em;font-weight:700;border:1px solid;`;
+      if(i<heapSize){ box.style.borderColor='#3fb950'; box.style.background='#3fb95022'; box.style.color='#3fb950'; }
+      else { box.style.borderColor='#30363d'; box.style.background='#21262d'; box.style.color='#8b949e'; }
+      box.textContent = arr[i];
+      container.appendChild(box);
+    }
+  }
+
+  // Compute all steps
+  function computeSteps(){
+    const a = ORIG.slice();
+    const events = [];
+    let cmps=0, swaps=0, sortedCount=0;
+    const sorted=[];
+
+    events.push({type:'init',arr:a.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+
+    // Phase 1: Build heap
+    const lastInternal = Math.floor(N/2)-1;
+    events.push({type:'phase',phase:1,arr:a.slice(),cmps,swaps,sortedCount,sorted:sorted.slice(),msg:'Phase 1: Build max-heap. Start sifting from last internal node (index '+lastInternal+')'});
+
+    function siftDown(a2,i,size){
+      let cur=i;
+      while(true){
+        const l=2*cur+1, r2=2*cur+2;
+        let largest=cur;
+        events.push({type:'sift_check',node:cur,l,r:r2,size,arr:a2.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+        if(l<size){ cmps++; if(a2[l]>a2[largest]) largest=l; }
+        if(r2<size){ cmps++; if(a2[r2]>a2[largest]) largest=r2; }
+        if(largest!==cur){
+          events.push({type:'swap_nodes',a:cur,b:largest,arr:a2.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+          [a2[cur],a2[largest]]=[a2[largest],a2[cur]];
+          swaps++;
+          events.push({type:'after_swap',node:largest,arr:a2.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+          cur=largest;
+        } else { break; }
+      }
+      events.push({type:'sift_done',node:i,arr:a2.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+    }
+
+    for(let i=lastInternal;i>=0;i--){
+      events.push({type:'sift_start',node:i,arr:a.slice(),cmps,swaps,sortedCount,sorted:sorted.slice(),msg:'Sift down node '+i+' (value '+a[i]+')'});
+      siftDown(a,i,N);
+    }
+    events.push({type:'heap_built',arr:a.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+
+    // Phase 2: Extract max
+    events.push({type:'phase',phase:2,arr:a.slice(),cmps,swaps,sortedCount,sorted:sorted.slice(),msg:'Phase 2: Extract max repeatedly'});
+    for(let size=N;size>1;size--){
+      events.push({type:'extract',root:a[0],lastIdx:size-1,arr:a.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+      sorted.unshift(a[0]);
+      [a[0],a[size-1]]=[a[size-1],a[0]];
+      swaps++;
+      sortedCount++;
+      events.push({type:'after_extract',size:size-1,arr:a.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+      siftDown(a,0,size-1);
+    }
+    sorted.unshift(a[0]);
+    sortedCount++;
+    events.push({type:'done',arr:a.slice(),cmps,swaps,sortedCount,sorted:sorted.slice()});
+    return events;
+  }
+
+  function setStep(label,text){ document.getElementById('d2-label').textContent=label; document.getElementById('d2-text').textContent=text; }
+  function setStats(ev){ document.getElementById('d2-cmp').textContent=ev.cmps; document.getElementById('d2-swaps').textContent=ev.swaps; document.getElementById('d2-sorted').textContent=ev.sortedCount; if(ev.sortedCount===N) document.getElementById('d2-chip-sorted').classList.add('good'); }
+
+  function applyEvent(ev){
+    arr = ev.arr.slice();
+    for(let i=0;i<N;i++){ updateNodeText(i); setNodeStyle(i,'default'); }
+    setStats(ev);
+    document.getElementById('d2-chip-sorted').classList.remove('good');
+    const heapSize = N - ev.sortedCount;
+    document.getElementById('d2-heap-size').textContent = heapSize;
+    updateArrDisplay(heapSize);
+
+    // Update sorted boxes
+    for(let i=0;i<N;i++) sortedTexts[i].textContent='';
+    if(ev.sorted){
+      for(let i=0;i<ev.sorted.length;i++){
+        const boxIdx = N - ev.sorted.length + i;
+        sortedTexts[boxIdx].textContent = ev.sorted[i];
+        sortedBoxes[boxIdx].setAttribute('fill','#3fb95022');
+        sortedBoxes[boxIdx].setAttribute('stroke','#3fb950');
+      }
+    }
+    if(ev.sortedCount===N) document.getElementById('d2-chip-sorted').classList.add('good');
+
+    if(ev.type==='init'){
+      setStep('INITIAL','Initial array [4,2,7,1,6,3,5] — unsorted. Click Step to begin.');
+    } else if(ev.type==='phase'){
+      setStep('PHASE '+ev.phase, ev.msg);
+      if(ev.phase===1){ for(let i=0;i<N;i++) setNodeStyle(i,'default'); }
+    } else if(ev.type==='sift_start'){
+      setNodeStyle(ev.node,'active');
+      setStep('SIFT DOWN', ev.msg);
+    } else if(ev.type==='sift_check'){
+      setNodeStyle(ev.node,'active');
+      if(ev.l<ev.size) setNodeStyle(ev.l,'active');
+      if(ev.r<ev.size) setNodeStyle(ev.r,'active');
+      setStep('COMPARE',`Compare node ${ev.node}(${arr[ev.node]}) with children`);
+    } else if(ev.type==='swap_nodes'){
+      setNodeStyle(ev.a,'active');
+      setNodeStyle(ev.b,'active');
+      setStep('SWAP',`Swap node ${ev.a}(${arr[ev.a]}) ↔ node ${ev.b}(${arr[ev.b]})`);
+    } else if(ev.type==='after_swap'){
+      setNodeStyle(ev.node,'active');
+      setStep('SIFTING',`Continuing sift down from node ${ev.node}`);
+    } else if(ev.type==='sift_done'){
+      setNodeStyle(ev.node,'heap');
+      setStep('DONE',`Node ${ev.node} satisfies heap property`);
+    } else if(ev.type==='heap_built'){
+      for(let i=0;i<N;i++) setNodeStyle(i,'heap');
+      setStep('HEAP BUILT',`Max-heap built! Root ${arr[0]} is the maximum.`);
+    } else if(ev.type==='extract'){
+      setNodeStyle(0,'active');
+      setStep('EXTRACT MAX',`Extract root (max = ${ev.root}), move last element to root`);
+    } else if(ev.type==='after_extract'){
+      const hs = ev.size;
+      for(let i=0;i<hs;i++) setNodeStyle(i,'default');
+      setNodeStyle(0,'active');
+      for(let i=hs;i<N;i++) setNodeStyle(i,'extracted');
+      setStep('SIFT DOWN',`Sift new root down (heap size now ${hs})`);
+    } else if(ev.type==='done'){
+      for(let i=0;i<N;i++) setNodeStyle(i,'extracted');
+      setStep('SORTED!',`Heapsort complete! Array sorted in O(n log n).`);
+      document.getElementById('d2-chip-sorted').classList.add('good');
+    }
+  }
+
+  function init(){
+    arr = ORIG.slice();
+    steps = computeSteps();
+    stepIndex = 0;
+    busy = false;
+    buildSVG();
+    applyEvent(steps[0]);
+    document.getElementById('d2-step-btn').disabled=false;
+    document.getElementById('d2-run-btn').disabled=false;
+  }
+
+  const spdEl=document.getElementById('d2-spd');
+  const spdLbl=document.getElementById('d2-spd-lbl');
+  spdEl.addEventListener('input',()=>{ spd=+spdEl.value; spdLbl.textContent=spd+'×'; });
+  spd=+spdEl.value;
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms/spd));
+
+  document.getElementById('d2-step-btn').addEventListener('click',async()=>{
+    if(busy) return;
+    stepIndex++;
+    if(stepIndex>=steps.length){ stepIndex=steps.length-1; return; }
+    busy=true;
+    applyEvent(steps[stepIndex]);
+    await sleep(80);
+    busy=false;
+  });
+
+  document.getElementById('d2-run-btn').addEventListener('click',async()=>{
+    if(busy) return;
+    busy=true;
+    document.getElementById('d2-step-btn').disabled=true;
+    document.getElementById('d2-run-btn').disabled=true;
+    while(stepIndex<steps.length-1){
+      stepIndex++;
+      applyEvent(steps[stepIndex]);
+      await sleep(500);
+    }
+    document.getElementById('d2-step-btn').disabled=false;
+    document.getElementById('d2-run-btn').disabled=false;
+    busy=false;
+  });
+
+  document.getElementById('d2-reset-btn').addEventListener('click',()=>{ if(busy) return; init(); });
+  init();
+})();
+</script>
+
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+</html>

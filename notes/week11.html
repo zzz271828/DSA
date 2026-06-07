@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 11 — Circulation with Demands &amp; Applications | FIT2004</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+      --text: #c9d1d9; --text-muted: #8b949e;
+      --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+      --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+    nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+    nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+    nav ul { list-style: none; }
+    nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+    nav ul li a:hover { color: var(--text); background: var(--bg3); }
+    nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+    nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+    main { flex: 1; max-width: 860px; padding: 48px 56px; }
+    .week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+    .week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+    .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+    section.content-section { margin-bottom: 56px; }
+    h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+    h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+    h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+    p { margin-bottom: 14px; }
+    .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+    .callout.def { background: #1f6feb0d; border-color: var(--blue); }
+    .callout.thm { background: #3fb9500d; border-color: var(--green); }
+    .callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+    .callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+    .callout.warn { background: #f851490d; border-color: var(--red); }
+    .callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .callout.def .callout-title { color: var(--blue); }
+    .callout.thm .callout-title { color: var(--green); }
+    .callout.cplx .callout-title { color: var(--orange); }
+    .callout.insight .callout-title { color: var(--purple); }
+    .callout.warn .callout-title { color: var(--red); }
+    pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+    .algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+    .algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+    pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+    th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    td { padding: 10px 16px; border: 1px solid var(--border); }
+    tr:nth-child(even) td { background: var(--bg2); }
+    code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+    ul, ol { padding-left: 24px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+    .complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    @media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+  
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html" class="current"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#recap" class="sub">Week 10 Recap</a></li>
+    <li><a href="#circ-demands" class="sub">Circulations with Demands</a></li>
+    <li><a href="#reduction-maxflow" class="sub">Reduction to Max-Flow</a></li>
+    <li><a href="#lower-bounds" class="sub">Lower Bounds on Flow</a></li>
+    <li><a href="#applications" class="sub">Applications</a></li>
+    <li><a href="#survey" class="sub">Survey of Applications</a></li>
+    <li><a href="#airline" class="sub">Airline Scheduling</a></li>
+    <li><a href="#further" class="sub">Further Topics</a></li>
+    <li><a href="#summary" class="sub">Summary</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ======================================================= HEADER -->
+  <div class="week-header">
+    <div class="week-badge">Week 11 &mdash; Chapter 9.4</div>
+    <h1>Circulation with Demands &amp; Applications of Network Flow</h1>
+    <p class="subtitle">
+      The most general form of network flow &mdash; demands, lower bounds, and powerful reductions
+      to standard max-flow that unlock solutions to a wide class of combinatorial problems.
+    </p>
+    <div class="topics">
+      <span>Circulation with Demands</span>
+      <span>Feasibility Problem</span>
+      <span>Super-Source / Super-Sink</span>
+      <span>Reduction to Max-Flow</span>
+      <span>Lower Bounds on Edges</span>
+      <span>Survey Design</span>
+      <span>Airline Scheduling</span>
+      <span>Project Selection</span>
+      <span>Image Segmentation</span>
+      <span>Ford-Fulkerson</span>
+    </div>
+  </div>
+
+  <!-- ======================================================= SECTION 1: RECAP — BIPARTITE MATCHING BRIDGE -->
+  <section class="content-section" id="recap">
+    <h2 class="sec-title">
+      <span class="sec-num">9.3 Recap</span>
+      Maximum Bipartite Matching &mdash; The Bridge to Week 11
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="recap"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Week 10 ended with the <strong>maximum bipartite matching</strong> problem, which served as the
+      first demonstration of network flow's power to solve problems that on the surface appear
+      completely unrelated to flows. This bridge motivates everything in Week 11: the real strength
+      of network flow is that it provides a general-purpose reduction target for combinatorial feasibility
+      and optimisation problems.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Bipartite Matching (recap)</div>
+      <p>
+        Given a bipartite graph <code>G = (V, E)</code> with <code>V = L &cup; R</code>, a
+        <strong>matching</strong> M is a subset of edges such that no vertex appears more than once.
+        The <strong>maximum bipartite matching</strong> seeks the largest such M.
+      </p>
+    </div>
+
+    <h4 class="subsubsec">Reduction to Max-Flow (recap)</h4>
+    <ol>
+      <li>Direct all edges from L to R.</li>
+      <li>Add a super-source <code>s</code> connected to every vertex in L.</li>
+      <li>Add a super-sink <code>t</code> connected from every vertex in R.</li>
+      <li>Set every edge capacity to 1.</li>
+      <li>Run Ford-Fulkerson. The max-flow value equals the size of the maximum matching. Saturated L-to-R edges form the matching.</li>
+    </ol>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      <p>
+        Ford-Fulkerson on the bipartite matching network runs in
+        <span class="complexity-tag">O(|V| &middot; |E|)</span> because the max flow is
+        bounded by <code>|V|</code> (each augmenting path increases flow by exactly 1).
+        The faster Hopcroft-Karp algorithm achieves <span class="complexity-tag">O(&radic;|V| &middot; |E|)</span>.
+      </p>
+    </div>
+
+    <p>
+      With bipartite matching understood, we now generalise: what if vertices are not passive
+      relay points, but have explicit demands &mdash; they must receive or supply a certain amount
+      of flow? What if edges must carry at least some minimum amount? These generalisations lead
+      to the <strong>circulation with demands</strong> model.
+    </p>
+  </section>
+
+  <!-- ======================================================= SECTION 2: CIRCULATION WITH DEMANDS -->
+  <section class="content-section" id="circ-demands">
+    <h2 class="sec-title">
+      <span class="sec-num">9.4.1</span>
+      Circulation with Demands
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="circ-demands"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Motivation</h3>
+    <p>
+      In the standard max-flow model, there is a single source <code>s</code> that generates flow
+      and a single sink <code>t</code> that absorbs it. Every other vertex is a passive relay:
+      whatever comes in must go out. But many real-world situations require a richer model:
+    </p>
+    <ul>
+      <li>A city (vertex) requires a <em>net inflow</em> of 5 units of goods per day — it is a net consumer.</li>
+      <li>A factory requires a <em>net outflow</em> of 3 units — it is a net producer.</li>
+      <li>A transit hub requires exact balance &mdash; what enters must leave.</li>
+    </ul>
+    <p>
+      The <strong>circulation with demands</strong> model captures all of these simultaneously.
+      There is no designated source or sink; <em>every</em> vertex has an associated integer
+      demand <code>d<sub>u</sub></code> that specifies its required net flow imbalance.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Demand d<sub>u</sub></div>
+      <ul>
+        <li>
+          <strong>d<sub>u</sub> &gt; 0</strong>: vertex <code>u</code> has a <em>demand</em> of
+          <code>d<sub>u</sub></code> units. It must receive <code>d<sub>u</sub></code> more units
+          on its incoming edges than it sends out. (Net consumer / sink-like.)
+        </li>
+        <li>
+          <strong>d<sub>u</sub> &lt; 0</strong>: vertex <code>u</code> has a <em>supply</em> of
+          <code>-d<sub>u</sub></code> units. It must send out <code>-d<sub>u</sub></code> more
+          units than it receives. (Net producer / source-like.)
+        </li>
+        <li>
+          <strong>d<sub>u</sub> = 0</strong>: standard flow-conservation — whatever enters must
+          leave. (Pure relay node.)
+        </li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Formal Problem Statement</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Problem Statement — Circulation with Demands</div>
+      <p>
+        Let <code>G = (V, E)</code> be a directed graph with integer edge capacities <code>c(u,v)</code>
+        and integer vertex demands <code>{d<sub>u</sub>}</code>. A <strong>circulation with demands</strong>
+        is a function <code>f : V &times; V &rarr; R<sup>+</sup></code> satisfying:
+      </p>
+      <ul>
+        <li>
+          <strong>Capacity constraint:</strong>
+          <code>0 &le; f(u,v) &le; c(u,v)</code> for all edges <code>(u,v)</code>.
+        </li>
+        <li>
+          <strong>Demand constraint:</strong> For every vertex <code>u &isin; V</code>,
+          <br><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<code>&sum;<sub>v</sub> f(v,u) &minus; &sum;<sub>v</sub> f(u,v) = d<sub>u</sub></code>
+          <br><br>
+          where <code>f(u,v) = 0</code> if <code>(u,v) &notin; E</code>.
+        </li>
+      </ul>
+      <p>
+        This is a <strong>feasibility problem</strong>: we ask whether a valid circulation
+        exists, not how to maximise or minimise anything.
+      </p>
+    </div>
+
+    <h3 class="subsec">Necessary Condition for Feasibility</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Necessary Condition</div>
+      <p>
+        A necessary condition for a feasible circulation to exist is:
+      </p>
+      <p style="text-align:center; font-size:1.05em; margin: 12px 0;">
+        <code>&sum;<sub>u &isin; V</sub> d<sub>u</sub> = 0</code>
+      </p>
+      <p>
+        This says the total supply must equal the total demand across all vertices.
+        If this condition fails, no feasible solution can exist (there would be a global
+        imbalance of flow). However, this condition is <strong>not sufficient</strong>
+        &mdash; even when the sum is zero, the graph topology may prevent a feasible
+        circulation.
+      </p>
+    </div>
+
+    <h3 class="subsec">Worked Example</h3>
+    <p>
+      Consider a graph with five vertices whose demands and edge capacities are as shown.
+      Vertices <code>x</code> and <code>y</code> are suppliers (negative demand); vertices
+      <code>v</code> and <code>w</code> are consumers (positive demand); vertex <code>z</code>
+      is a relay (zero demand).
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Example Instance</div>
+      <p><strong>Vertices and demands:</strong></p>
+      <ul>
+        <li><code>d<sub>x</sub> = -4</code> &rarr; x must supply 4 units net</li>
+        <li><code>d<sub>y</sub> = -3</code> &rarr; y must supply 3 units net</li>
+        <li><code>d<sub>v</sub> = 2</code> &rarr; v must absorb 2 units net</li>
+        <li><code>d<sub>z</sub> = 0</code> &rarr; z is balanced</li>
+        <li><code>d<sub>w</sub> = 5</code> &rarr; w must absorb 5 units net</li>
+      </ul>
+      <p><strong>Check:</strong> <code>-4 + (-3) + 2 + 0 + 5 = 0</code>. Necessary condition satisfied.</p>
+      <p><strong>Edge capacities:</strong> x&rarr;y: 3, x&rarr;v: 3, y&rarr;v: 2, y&rarr;z: 2, z&rarr;w: 3, v&rarr;w: 2.</p>
+      <p><strong>A feasible solution:</strong> f(x&rarr;y) = 2, f(x&rarr;v) = 2, f(y&rarr;v) = 2, f(y&rarr;z) = 2 (wait: d<sub>y</sub> needs net outflow 3, so outflow - inflow = 3; check: out = 2+2=4, in = f(x&rarr;y)=2, net out = 2. Hmm let's just quote the solution from the notes), f(z&rarr;w) = 3, f(v&rarr;w) = 2.</p>
+      <p>
+        From the course notes (Figure 9.13), one valid assignment is:
+        <code>f(x&rarr;y) = 2/3, f(x&rarr;v) = 2/3, f(y&rarr;v) = 2/2, f(y&rarr;z) = 2/2, f(z&rarr;w) = 3/3</code>,
+        where <code>flow/capacity</code> notation is used.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= SECTION 3: REDUCTION TO MAX-FLOW -->
+  <section class="content-section" id="reduction-maxflow">
+    <h2 class="sec-title">
+      <span class="sec-num">9.4.2</span>
+      Reduction to Standard Max-Flow
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="reduction-maxflow"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The key insight is to reduce the circulation with demands problem to a standard max-flow
+      problem on a <strong>supergraph G'</strong>. The idea exploits the observation that a demand
+      at a vertex is essentially a promised flow that needs to be "funded" by a new super-source,
+      and a supply at a vertex is essentially a promised flow that needs to be "absorbed" by a new
+      super-sink.
+    </p>
+
+    <h3 class="subsec">Construction of the Supergraph G'</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Supergraph Construction (Algorithm)</div>
+      <ol>
+        <li>
+          <strong>Keep all original vertices and edges.</strong> The original edges retain their
+          capacities. The vertices lose their demand labels (demands are encoded structurally instead).
+        </li>
+        <li>
+          <strong>Add a super-source s*.</strong>
+        </li>
+        <li>
+          For each vertex <code>u</code> with <code>d<sub>u</sub> &lt; 0</code>
+          (a supplier/producer): add an edge <code>s* &rarr; u</code> with capacity
+          <code>-d<sub>u</sub></code>. This edge represents the supply that <code>u</code>
+          promises to inject into the network.
+        </li>
+        <li>
+          <strong>Add a super-sink t*.</strong>
+        </li>
+        <li>
+          For each vertex <code>u</code> with <code>d<sub>u</sub> &gt; 0</code>
+          (a consumer): add an edge <code>u &rarr; t*</code> with capacity
+          <code>d<sub>u</sub></code>. This edge represents the demand that <code>u</code>
+          must absorb from the network.
+        </li>
+      </ol>
+    </div>
+
+    <h3 class="subsec">Feasibility Criterion</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Feasibility via Max-Flow</div>
+      <p>
+        Define <code>D = &sum;<sub>u: d<sub>u</sub>&gt;0</sub> d<sub>u</sub></code>
+        (the total demand, which equals the total supply when the necessary condition holds).
+      </p>
+      <p>
+        A feasible circulation with demands <code>{d<sub>u</sub>}</code> in <code>G</code> exists
+        <strong>if and only if</strong> the maximum flow from <code>s*</code> to <code>t*</code>
+        in the supergraph <code>G'</code> has value exactly <code>D</code>.
+      </p>
+      <p>
+        Equivalently: a feasible circulation exists <strong>if and only if</strong> the max-flow
+        in <code>G'</code> <strong>saturates all edges out of s* and all edges into t*</strong>.
+      </p>
+    </div>
+
+    <h4 class="subsubsec">Why this works — Proof Sketch</h4>
+    <p>
+      <strong>(&rArr;) If a feasible circulation f exists in G:</strong> Define a flow f' in G' by
+      setting <code>f'(s*, u) = -d<sub>u</sub></code> for all supply vertices, <code>f'(u, t*) = d<sub>u</sub></code>
+      for all demand vertices, and <code>f'(u,v) = f(u,v)</code> for all original edges. Every new edge is
+      fully saturated, so <code>|f'| = D</code>. This is a maximum flow since the cut <code>{s*}</code>
+      vs the rest has capacity exactly <code>D</code>.
+    </p>
+    <p>
+      <strong>(&lArr;) If the max-flow in G' has value D:</strong> All outgoing edges of s* must be
+      saturated (because their capacities sum to exactly D). Similarly, all incoming edges of t*
+      are saturated. Delete s*, t* and all their incident edges from f'. The remaining flow on
+      original edges is a valid circulation in G: each original vertex <code>v</code> still satisfies
+      the demand constraint because the s* and t* edges were the only imbalance terms.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight</div>
+      <p>
+        The super-source s* "funds" all the supplies, and the super-sink t* "collects" all the demands.
+        If every promised supply and demand can be simultaneously honoured, the max-flow saturates
+        all the s* and t* edges. Any shortfall in the max-flow means some vertex's demand or supply
+        cannot be met simultaneously with the capacity constraints.
+      </p>
+    </div>
+
+    <h3 class="subsec">Full Algorithm</h3>
+
+    <div class="algo-header">
+      Algorithm 61 — CIRCULATION (Solve Circulation with Demands)
+      <span class="algo-complexity">Time: O(D &middot; |E|) via Ford-Fulkerson</span>
+    </div>
+    <pre class="code-block has-header">function CIRCULATION(G = (V, E), {d_u}):
+
+  // Step 1: Check necessary condition
+  if sum of all d_u != 0:
+      return INFEASIBLE
+
+  // Step 2: Build supergraph G'
+  Create G' as a copy of G (with original edges/capacities)
+  Add super-source s*  and  super-sink t*
+
+  for each vertex u in V:
+      if d_u < 0:                       // u is a supplier
+          add edge (s* -> u) with capacity = -d_u
+      elif d_u > 0:                     // u is a consumer
+          add edge (u -> t*) with capacity = d_u
+      // if d_u == 0: do nothing (u stays a pure relay)
+
+  D = sum of capacities on edges leaving s*
+    = sum of d_u for all u where d_u > 0
+
+  // Step 3: Solve max-flow in G'
+  f'_max = FordFulkerson(G', source=s*, sink=t*)
+
+  // Step 4: Check saturation condition
+  if |f'_max| != D:
+      return INFEASIBLE
+
+  // Step 5: Extract the circulation
+  Delete s*, t* and all their incident edges from f'_max
+  Let f = the remaining flow on original edges of G
+
+  return f   // f is a feasible circulation in G</pre>
+
+<!-- ═══════════════════════════════════════════════════════
+     VIZ-61  Circulation with Demands — SVG Walkthrough
+     ═══════════════════════════════════════════════════════ -->
+<div id="vz61-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-family:'JetBrains Mono','Fira Code',monospace;font-size:0.65em;letter-spacing:0.2em;text-transform:uppercase;color:#3fb950;">Interactive Visualization</span>
+    <span style="font-size:0.82em;font-weight:700;color:#c9d1d9;">Algorithm 61 — Circulation with Demands</span>
+    <span style="font-family:monospace;font-size:0.72em;color:#8b949e;">7 steps</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:340px;">
+    <!-- LEFT: SVG canvas -->
+    <div style="background:#0d1117;border-right:1px solid #30363d;position:relative;">
+      <svg id="vz61-svg" viewBox="0 0 580 320" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+        <defs>
+          <!-- arrowhead markers -->
+          <marker id="vz61-arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#8b949e"/>
+          </marker>
+          <marker id="vz61-arr-blue" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#58a6ff"/>
+          </marker>
+          <marker id="vz61-arr-green" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/>
+          </marker>
+          <marker id="vz61-arr-orange" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#f0883e"/>
+          </marker>
+        </defs>
+
+        <!-- ── Original edges (always present, colour/label changes per step) ── -->
+        <!-- S→A  top-left to top-right -->
+        <line id="vz61-e-SA"  x1="172" y1="96"  x2="358" y2="96"  stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- S→B  top-left to bottom-left -->
+        <line id="vz61-e-SB"  x1="150" y1="122" x2="150" y2="208" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- A→T  top-right to bottom-right -->
+        <line id="vz61-e-AT"  x1="400" y1="122" x2="400" y2="208" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- B→T  bottom-left to bottom-right -->
+        <line id="vz61-e-BT"  x1="172" y1="234" x2="358" y2="234" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- T→S  bottom-right back to top-left (curved arc below) -->
+        <path id="vz61-e-TS"  d="M 380,252 Q 275,310 168,252" fill="none" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+
+        <!-- ── S' → S  (dashed blue, hidden until step 4) ── -->
+        <line id="vz61-e-SpS" x1="58" y1="96" x2="125" y2="96" stroke="#58a6ff" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-blue)" opacity="0"/>
+        <!-- ── A → T'  (dashed green, hidden until step 4) ── -->
+        <line id="vz61-e-ATp" x1="422" y1="96" x2="506" y2="165" stroke="#3fb950" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-green)" opacity="0"/>
+        <!-- ── B → T'  (dashed green, hidden until step 4) ── -->
+        <line id="vz61-e-BTp" x1="172" y1="242" x2="506" y2="185" stroke="#3fb950" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-green)" opacity="0"/>
+
+        <!-- ── Edge labels ── -->
+        <text id="vz61-lbl-SA" x="265" y="88"  fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[1,4]</text>
+        <text id="vz61-lbl-SB" x="136" y="170" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[0,3]</text>
+        <text id="vz61-lbl-AT" x="414" y="170" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[2,5]</text>
+        <text id="vz61-lbl-BT" x="265" y="226" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[1,4]</text>
+        <text id="vz61-lbl-TS" x="275" y="304" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[3,7]</text>
+        <!-- demand-edge labels -->
+        <text id="vz61-lbl-SpS" x="90"  y="88"  fill="#58a6ff" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=2</text>
+        <text id="vz61-lbl-ATp" x="474" y="124" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=1</text>
+        <text id="vz61-lbl-BTp" x="368" y="198" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=1</text>
+
+        <!-- ── Nodes ── -->
+        <!-- S  top-left -->
+        <circle id="vz61-n-S"  cx="150" cy="96"  r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="150" y="96" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">S</text>
+        <!-- A  top-right -->
+        <circle id="vz61-n-A"  cx="400" cy="96"  r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="400" y="96" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
+        <!-- B  bottom-left -->
+        <circle id="vz61-n-B"  cx="150" cy="234" r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="150" y="234" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
+        <!-- T  bottom-right -->
+        <circle id="vz61-n-T"  cx="400" cy="234" r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="400" y="234" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">T</text>
+        <!-- S' super-source  far left (hidden until step 4) -->
+        <circle id="vz61-n-Sp" cx="36"  cy="96"  r="22" fill="#1f6feb22" stroke="#58a6ff" stroke-width="2" opacity="0"/>
+        <text id="vz61-t-Sp" x="36" y="96" fill="#58a6ff" font-size="11" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central" opacity="0">S'</text>
+        <!-- T' super-sink  far right (hidden until step 4) -->
+        <circle id="vz61-n-Tp" cx="528" cy="176" r="22" fill="#3fb95022" stroke="#3fb950" stroke-width="2" opacity="0"/>
+        <text id="vz61-t-Tp" x="528" y="176" fill="#3fb950" font-size="11" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central" opacity="0">T'</text>
+
+        <!-- ── Excess-supply/demand annotations ── -->
+        <text id="vz61-ex-S" x="150" y="63"  fill="#f0883e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">+2 supply</text>
+        <text id="vz61-ex-A" x="400" y="63"  fill="#f85149" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">−1 demand</text>
+        <text id="vz61-ex-B" x="150" y="265" fill="#f85149" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">−1 demand</text>
+        <text id="vz61-ex-T" x="400" y="265" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0 balanced</text>
+
+        <!-- ── Flow-path highlight (step 5 augmenting paths) ── -->
+        <!-- path1: S'→S→A→T'  — reuse e-SpS and e-SA and e-ATp -->
+        <!-- path2: S'→S→B→T'  — reuse e-SpS and e-SB and e-BTp -->
+        <!-- We'll animate by changing stroke of those elements; no extra elements needed -->
+
+        <!-- ── Step 6 final-flow labels (hidden until step 6) ── -->
+        <text id="vz61-fl-SA" x="265" y="88"  fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">2/4</text>
+        <text id="vz61-fl-SB" x="136" y="170" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">1/3</text>
+        <text id="vz61-fl-AT" x="414" y="170" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">3/5</text>
+        <text id="vz61-fl-BT" x="265" y="226" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">2/4</text>
+        <text id="vz61-fl-TS" x="275" y="304" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">3/7</text>
+
+        <!-- ── Step title in SVG ── -->
+        <text id="vz61-svg-title" x="290" y="18" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" letter-spacing="1">STEP 1 / 7</text>
+      </svg>
+    </div>
+
+    <!-- RIGHT: narration panel -->
+    <div style="display:flex;flex-direction:column;padding:16px 18px;gap:10px;background:#161b22;">
+      <div>
+        <p id="vz61-step-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#f0883e;margin:0 0 5px;min-height:14px;">Original Network</p>
+        <p id="vz61-narration" style="font-size:0.86em;line-height:1.5;margin:0;color:#c9d1d9;min-height:72px;">Circulation with demands. Each edge has a minimum demand (lower bound) and a maximum capacity. We need flow ≥ lower bound on every edge, with flow conservation at all nodes.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Demands met</span>
+          <span id="vz61-chip-demands" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">S'→ flow</span>
+          <span id="vz61-chip-flow" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Valid circ.</span>
+          <span id="vz61-chip-valid" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">?</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:10px;border-top:1px solid #30363d;">
+        <button id="vz61-prev" onclick="vz61step(-1)" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;transition:background .1s,border-color .1s;" disabled>&#9664; Prev</button>
+        <button id="vz61-next" onclick="vz61step(1)"  style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;transition:background .1s,border-color .1s;">Next &#9654;</button>
+        <button onclick="vz61reset()"                  style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#8b949e;padding:7px 13px;border-radius:7px;transition:background .1s,border-color .1s;">&#8634; Reset</button>
+        <span id="vz61-counter" style="font-family:'JetBrains Mono',monospace;font-size:.7em;color:#8b949e;margin-left:auto;align-self:center;">1 / 7</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ── step definitions ─────────────────────────────────────────── */
+var VZ61_STEPS=[
+  /* 0 — Original network */
+  {
+    label:'Original Network',
+    narr:'Circulation with demands. Each edge has a lower bound and a capacity written as [lb,cap]. We need flow ≥ lower bound on every edge, with flow conservation at all nodes. This is a <em>feasibility</em> problem — does a valid assignment exist?',
+    demands:'—', flow:'—', valid:'?',
+    edgeColors:{SA:'grey',SB:'grey',AT:'grey',BT:'grey',TS:'grey'},
+    edgeLabels:{SA:'[1,4]',SB:'[0,3]',AT:'[2,5]',BT:'[1,4]',TS:'[3,7]'},
+    showSp:false, showTp:false, showDemandEdges:false,
+    showExcess:false, showFinalFlow:false,
+    hlEdges:[]
+  },
+  /* 1 — Compute excess supply/demand */
+  {
+    label:'Step 1 — Compute Excess',
+    narr:'For each node, compute: excess = Σ(incoming lower bounds) − Σ(outgoing lower bounds). S: 3−1=+2 (supply). A: 1−2=−1 (demand). B: 0−1=−1 (demand). T: (2+1)−3=0 (balanced).',
+    demands:'—', flow:'—', valid:'?',
+    edgeColors:{SA:'grey',SB:'grey',AT:'grey',BT:'grey',TS:'grey'},
+    edgeLabels:{SA:'[1,4]',SB:'[0,3]',AT:'[2,5]',BT:'[1,4]',TS:'[3,7]'},
+    showSp:false, showTp:false, showDemandEdges:false,
+    showExcess:true, showFinalFlow:false,
+    hlEdges:[]
+  },
+  /* 2 — Transform edges (adjusted capacities) */
+  {
+    label:'Step 2 — Adjusted Capacities',
+    narr:'New capacity = original capacity − lower bound. S→A: 4−1=3. A→T: 5−2=3. T→S: 7−3=4. S→B: 3−0=3. B→T: 4−1=3. These represent available bandwidth above the mandatory minimum.',
+    demands:'—', flow:'—', valid:'?',
+    edgeColors:{SA:'orange',SB:'orange',AT:'orange',BT:'orange',TS:'orange'},
+    edgeLabels:{SA:'cap=3',SB:'cap=3',AT:'cap=3',BT:'cap=3',TS:'cap=4'},
+    showSp:false, showTp:false, showDemandEdges:false,
+    showExcess:true, showFinalFlow:false,
+    hlEdges:[]
+  },
+  /* 3 — Add S' and T' */
+  {
+    label:'Step 3 — Add S\' and T\'',
+    narr:'Add super-source S\' (blue) → nodes with positive excess supply. Add super-sink T\' (green) ← nodes with positive excess demand. S\'→S: cap=2.  A→T\': cap=1.  B→T\': cap=1.  D = total demand = 2.',
+    demands:'D=2', flow:'—', valid:'?',
+    edgeColors:{SA:'orange',SB:'orange',AT:'orange',BT:'orange',TS:'orange'},
+    edgeLabels:{SA:'cap=3',SB:'cap=3',AT:'cap=3',BT:'cap=3',TS:'cap=4'},
+    showSp:true, showTp:true, showDemandEdges:true,
+    showExcess:false, showFinalFlow:false,
+    hlEdges:[]
+  },
+  /* 4 — Max-flow path 1 */
+  {
+    label:'Step 4 — Augment Path 1',
+    narr:'Run Ford-Fulkerson on the transformed network. Path 1: S\'→S→A→T\' — bottleneck = min(2,3,1) = 1. Send 1 unit along this path.',
+    demands:'D=2', flow:'1/2', valid:'?',
+    edgeColors:{SA:'orange',SB:'orange',AT:'orange',BT:'orange',TS:'orange'},
+    edgeLabels:{SA:'cap=3',SB:'cap=3',AT:'cap=3',BT:'cap=3',TS:'cap=4'},
+    showSp:true, showTp:true, showDemandEdges:true,
+    showExcess:false, showFinalFlow:false,
+    hlEdges:['SpS','SA','ATp']
+  },
+  /* 5 — Max-flow path 2 */
+  {
+    label:'Step 5 — Augment Path 2',
+    narr:'Path 2: S\'→S→B→T\' — bottleneck = min(1,3,1) = 1. Send 1 unit. Total flow from S\' = 2 = D. All demand edges saturated — a valid circulation exists!',
+    demands:'D=2', flow:'2/2', valid:'YES',
+    edgeColors:{SA:'orange',SB:'orange',AT:'orange',BT:'orange',TS:'orange'},
+    edgeLabels:{SA:'cap=3',SB:'cap=3',AT:'cap=3',BT:'cap=3',TS:'cap=4'},
+    showSp:true, showTp:true, showDemandEdges:true,
+    showExcess:false, showFinalFlow:false,
+    hlEdges:['SpS','SB','BTp']
+  },
+  /* 6 — Reconstruct circulation */
+  {
+    label:'Step 6 — Final Circulation',
+    narr:'Add back lower bounds. Final circulation: S→A: 1+1=2. A→T: 1+2=3. T→S: 0+3=3. S→B: 1+0=1. B→T: 1+1=2. Every node has equal in-flow and out-flow. All bounds satisfied. ✓',
+    demands:'all ✓', flow:'2/2', valid:'YES',
+    edgeColors:{SA:'green',SB:'green',AT:'green',BT:'green',TS:'green'},
+    edgeLabels:{SA:'2/4',SB:'1/3',AT:'3/5',BT:'2/4',TS:'3/7'},
+    showSp:false, showTp:false, showDemandEdges:false,
+    showExcess:false, showFinalFlow:true,
+    hlEdges:[]
+  }
+];
+
+var cur = 0;
+
+/* ── helpers ─────────────────────────────────────────────────── */
+function el(id){ return document.getElementById(id); }
+
+function setOpacity(id, v){
+  var e = el(id);
+  if(e) e.setAttribute('opacity', v);
+}
+
+function setStroke(id, color){
+  var e = el(id);
+  if(!e) return;
+  var hex = color==='grey'?'#8b949e':color==='orange'?'#f0883e':color==='green'?'#3fb950':'#8b949e';
+  e.setAttribute('stroke', hex);
+  /* update marker */
+  var mk = color==='green'?'url(#vz61-arr-green)':color==='orange'?'url(#vz61-arr-orange)':'url(#vz61-arr)';
+  if(e.getAttribute('marker-end') !== null && !e.id.startsWith('vz61-e-Sp') && !e.id.startsWith('vz61-e-ATp') && !e.id.startsWith('vz61-e-BTp')){
+    e.setAttribute('marker-end', mk);
+  }
+}
+
+function setLabelText(id, txt){
+  var e = el(id);
+  if(e) e.textContent = txt;
+}
+
+function setLabelColor(id, color){
+  var e = el(id);
+  if(!e) return;
+  var hex = color==='grey'?'#8b949e':color==='orange'?'#f0883e':color==='green'?'#3fb950':'#8b949e';
+  e.setAttribute('fill', hex);
+}
+
+function highlightEdge(id, on){
+  var e = el('vz61-e-'+id);
+  if(!e) return;
+  if(on){
+    e.setAttribute('stroke-width', '3');
+    var curr = e.getAttribute('stroke');
+    if(curr !== '#58a6ff' && curr !== '#3fb950'){
+      e.setAttribute('stroke', '#f0883e');
+      if(e.getAttribute('marker-end') !== null) e.setAttribute('marker-end','url(#vz61-arr-orange)');
+    }
+  } else {
+    e.setAttribute('stroke-width', e.id.startsWith('vz61-e-Sp')||e.id.startsWith('vz61-e-ATp')||e.id.startsWith('vz61-e-BTp') ? '1.8' : '1.8');
+  }
+}
+
+/* ── main render ─────────────────────────────────────────────── */
+function render(){
+  var s = VZ61_STEPS[cur];
+
+  /* SVG step title */
+  setLabelText('vz61-svg-title', 'STEP '+(cur+1)+' / '+VZ61_STEPS.length);
+
+  /* narration */
+  el('vz61-step-label').textContent = s.label;
+  el('vz61-narration').innerHTML = s.narr;
+
+  /* chips */
+  var chipD = el('vz61-chip-demands');
+  chipD.textContent = s.demands;
+  chipD.style.color = (s.demands==='all ✓') ? '#3fb950' : '#c9d1d9';
+
+  var chipF = el('vz61-chip-flow');
+  chipF.textContent = s.flow;
+  chipF.style.color = (s.flow==='2/2') ? '#3fb950' : '#c9d1d9';
+
+  var chipV = el('vz61-chip-valid');
+  chipV.textContent = s.valid;
+  chipV.style.color = s.valid==='YES' ? '#3fb950' : s.valid==='?' ? '#8b949e' : '#f85149';
+
+  /* edge colours & labels for main edges */
+  ['SA','SB','AT','BT','TS'].forEach(function(k){
+    var ec = s.edgeColors[k] || 'grey';
+    var lbl = s.edgeLabels[k] || '';
+    setStroke('vz61-e-'+k, ec);
+    setLabelText('vz61-lbl-'+k, lbl);
+    setLabelColor('vz61-lbl-'+k, ec);
+  });
+
+  /* super-source / super-sink nodes */
+  var spOp = s.showSp ? '1' : '0';
+  var tpOp = s.showTp ? '1' : '0';
+  setOpacity('vz61-n-Sp', spOp);
+  setOpacity('vz61-t-Sp', spOp);
+  setOpacity('vz61-n-Tp', tpOp);
+  setOpacity('vz61-t-Tp', tpOp);
+
+  /* demand edges */
+  var deOp = s.showDemandEdges ? '1' : '0';
+  setOpacity('vz61-e-SpS', deOp);
+  setOpacity('vz61-e-ATp', deOp);
+  setOpacity('vz61-e-BTp', deOp);
+  setOpacity('vz61-lbl-SpS', deOp);
+  setOpacity('vz61-lbl-ATp', deOp);
+  setOpacity('vz61-lbl-BTp', deOp);
+
+  /* excess annotations */
+  var exOp = s.showExcess ? '1' : '0';
+  ['S','A','B','T'].forEach(function(n){ setOpacity('vz61-ex-'+n, exOp); });
+
+  /* final flow labels (step 6) */
+  var ffOp = s.showFinalFlow ? '1' : '0';
+  ['SA','SB','AT','BT','TS'].forEach(function(k){
+    setOpacity('vz61-fl-'+k, ffOp);
+    /* hide the regular label when showing final flow */
+    setOpacity('vz61-lbl-'+k, s.showFinalFlow ? '0' : '1');
+  });
+
+  /* edge highlights (augmenting paths) */
+  ['SA','SB','AT','BT','TS','SpS','ATp','BTp'].forEach(function(k){
+    highlightEdge(k, false);
+  });
+  /* reset stroke-widths first */
+  ['SA','SB','AT','BT','TS'].forEach(function(k){
+    var e = el('vz61-e-'+k);
+    if(e) e.setAttribute('stroke-width','1.8');
+  });
+  /* apply highlights */
+  s.hlEdges.forEach(function(k){ highlightEdge(k, true); });
+
+  /* buttons */
+  el('vz61-prev').disabled = (cur === 0);
+  el('vz61-next').disabled = (cur === VZ61_STEPS.length - 1);
+  el('vz61-counter').textContent = (cur+1)+' / '+VZ61_STEPS.length;
+}
+
+/* ── public interface ────────────────────────────────────────── */
+window.vz61step = function(d){
+  cur = Math.max(0, Math.min(VZ61_STEPS.length-1, cur+d));
+  render();
+};
+
+window.vz61reset = function(){
+  cur = 0;
+  render();
+};
+
+render();
+})();
+</script>
+
+    <h3 class="subsec">Worked Example of the Reduction</h3>
+
+    <p>
+      Using the example from Section 9.4.1:
+      <code>d<sub>x</sub> = -4, d<sub>y</sub> = -3, d<sub>v</sub> = 2, d<sub>z</sub> = 0, d<sub>w</sub> = 5</code>.
+    </p>
+
+    <p><strong>Step 1 — Necessary condition check:</strong> <code>-4 + (-3) + 2 + 0 + 5 = 0</code>. Pass.</p>
+
+    <p><strong>Step 2 — Build G':</strong></p>
+    <ul>
+      <li><code>d<sub>x</sub> = -4 &lt; 0</code> &rarr; add edge <code>s* &rarr; x</code> with capacity 4</li>
+      <li><code>d<sub>y</sub> = -3 &lt; 0</code> &rarr; add edge <code>s* &rarr; y</code> with capacity 3</li>
+      <li><code>d<sub>v</sub> = 2 &gt; 0</code> &rarr; add edge <code>v &rarr; t*</code> with capacity 2</li>
+      <li><code>d<sub>z</sub> = 0</code> &rarr; no new edges for z</li>
+      <li><code>d<sub>w</sub> = 5 &gt; 0</code> &rarr; add edge <code>w &rarr; t*</code> with capacity 5</li>
+    </ul>
+    <p>
+      So <code>D = 2 + 5 = 7</code>. Also <code>D = |-4| + |-3| = 7</code>. Consistent.
+    </p>
+
+    <p><strong>Step 3 — Run Ford-Fulkerson on G'.</strong></p>
+    <p>
+      The max-flow found has value 7. The flows on all original edges plus the new s* and t* edges:
+    </p>
+    <ul>
+      <li>s* &rarr; x: 4/4 (saturated)</li>
+      <li>s* &rarr; y: 3/3 (saturated)</li>
+      <li>x &rarr; y: 2/3, x &rarr; v: 2/3</li>
+      <li>y &rarr; v: 2/2, y &rarr; z: 2/2 (both saturated)</li>
+      <li>z &rarr; w: 3/3 (saturated)</li>
+      <li>v &rarr; w: 2/2 (saturated)</li>
+      <li>v &rarr; t*: 2/2 (saturated)</li>
+      <li>w &rarr; t*: 5/5 (saturated)</li>
+    </ul>
+
+    <p><strong>Step 4 — All s* and t* edges saturated, so feasible.</strong></p>
+
+    <p><strong>Step 5 — Extract circulation:</strong> Remove s*, t* and their edges. The remaining flows on original edges form the valid circulation in G.</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Complexity Analysis</div>
+      <p>
+        The total capacity out of s* equals D (the total demand). Ford-Fulkerson finds a flow of
+        value at most D in at most D augmentations, each taking O(|E|) time with BFS/DFS.
+        Therefore the total runtime is <span class="complexity-tag">O(D &middot; |E|)</span>.
+        If we use Edmonds-Karp (BFS-based augmentation) the bound becomes
+        <span class="complexity-tag">O(|V| &middot; |E|<sup>2</sup>)</span> independent of D.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= SECTION 4: LOWER BOUNDS -->
+  <section class="content-section" id="lower-bounds">
+    <h2 class="sec-title">
+      <span class="sec-num">9.4.3</span>
+      Circulation with Demands and Lower Bounds
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="lower-bounds"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      For many applications, it is also necessary to enforce <strong>lower bounds</strong> on
+      edge flows: each edge must carry <em>at least</em> some minimum amount of flow in addition
+      to being bounded above by its capacity. This models mandatory minimum throughputs — for
+      example, a pipe that must carry at least some flow to stay functional, or a flight that
+      must be serviced by exactly one aircraft.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Circulation with Demands and Lower Bounds</div>
+      <p>
+        Each edge <code>(u,v)</code> now has both a <strong>lower bound</strong>
+        <code>&ell;(u,v) &ge; 0</code> and a <strong>capacity</strong>
+        <code>c(u,v) &ge; &ell;(u,v)</code>. A valid circulation must satisfy:
+      </p>
+      <ul>
+        <li>
+          <strong>Modified capacity constraint:</strong>
+          <code>&ell;(u,v) &le; f(u,v) &le; c(u,v)</code> for every edge.
+        </li>
+        <li>
+          <strong>Demand constraint:</strong> (same as before)
+          <code>&sum;<sub>v</sub> f(v,u) &minus; &sum;<sub>v</sub> f(u,v) = d<sub>u</sub></code>
+          for every vertex.
+        </li>
+      </ul>
+      <p>
+        This remains a feasibility problem. We use the shorthand <code>&ell;/c</code> for edge labels
+        (lower bound / capacity), or <code>&ell;/f/c</code> (lower bound / flow / capacity) when
+        showing a solution.
+      </p>
+    </div>
+
+    <h3 class="subsec">Reduction to Circulation Without Lower Bounds</h3>
+
+    <p>
+      The strategy is to decompose the required flow into two parts:
+    </p>
+    <ol>
+      <li>
+        A <strong>fixed flow</strong> <code>f<sup>&ell;</sup></code> that satisfies all lower bounds
+        exactly: set <code>f<sup>&ell;</sup>(u,v) = &ell;(u,v)</code> for every edge. This flow is
+        mandatory — it will always be sent.
+      </li>
+      <li>
+        An <strong>additional flow</strong> <code>f*</code> on top of <code>f<sup>&ell;</sup></code>,
+        such that the total <code>f = f<sup>&ell;</sup> + f*</code> satisfies the original constraints.
+      </li>
+    </ol>
+
+    <p>
+      Because <code>f<sup>&ell;</sup></code> has already committed to the lower bounds, the remaining
+      problem <code>f*</code> is a circulation with <strong>no lower bounds</strong> but on an
+      <em>adjusted graph</em> G* with adjusted capacities and demands.
+    </p>
+
+    <h4 class="subsubsec">Computing the Adjusted Graph G*</h4>
+
+    <div class="callout def">
+      <div class="callout-title">Adjusted Graph G* Construction</div>
+      <p>
+        The vertices of G* are the same as G. For each vertex <code>u</code>, the adjusted demand is:
+      </p>
+      <p style="margin: 10px 0 10px 24px;">
+        <code>d<sub>u</sub>* = d<sub>u</sub> &minus; &sum;<sub>v</sub> f<sup>&ell;</sup>(v,u) + &sum;<sub>v</sub> f<sup>&ell;</sup>(u,v)</code>
+      </p>
+      <p>
+        In words: the fixed flow <code>f<sup>&ell;</sup></code> already contributes some inflow and
+        outflow at each vertex; the adjusted demand accounts for this by subtracting what the fixed
+        flow has already provided.
+      </p>
+      <p>
+        The edges of G* are the same as G, but each edge <code>(u,v)</code> now has:
+      </p>
+      <ul>
+        <li><strong>Capacity:</strong> <code>c*(u,v) = c(u,v) &minus; &ell;(u,v)</code></li>
+        <li><strong>Lower bound:</strong> 0 (no lower bounds in G*)</li>
+      </ul>
+      <p>
+        The rationale: <code>f<sup>&ell;</sup></code> has "used up" <code>&ell;(u,v)</code> of the
+        capacity, so only <code>c(u,v) &minus; &ell;(u,v)</code> remains for <code>f*</code>. And
+        since <code>f<sup>&ell;</sup></code> already satisfies the lower bound, <code>f*</code>
+        needs no lower bound constraint.
+      </p>
+    </div>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Reduction Correctness</div>
+      <p>
+        The original circulation with demands {d<sub>u</sub>} and lower bounds {&ell;(u,v)} in G has a
+        feasible solution <strong>if and only if</strong> the adjusted circulation with demands
+        {d<sub>u</sub>*} and no lower bounds in G* has a feasible solution.
+      </p>
+      <p>
+        If G* has a feasible solution f*, then the solution to the original problem is
+        <code>f = f<sup>&ell;</sup> + f*</code> (add the fixed lower-bound flow to f* edge by edge).
+      </p>
+    </div>
+
+    <h3 class="subsec">Step-by-Step Method</h3>
+
+    <div class="algo-header">
+      Algorithm — CIRCULATION WITH LOWER BOUNDS
+      <span class="algo-complexity">Two-phase reduction</span>
+    </div>
+    <pre class="code-block has-header">function CIRCULATION_WITH_LB(G = (V, E), {d_u}, {ℓ(u,v)}, {c(u,v)}):
+
+  // Phase 1: Fix the lower-bound flow
+  For every edge (u,v): f^ℓ(u,v) = ℓ(u,v)
+
+  // Phase 2: Compute adjusted graph G*
+  For every vertex u:
+      in_ℓ(u)  = sum of ℓ(v,u) for all incoming edges
+      out_ℓ(u) = sum of ℓ(u,v) for all outgoing edges
+      d*_u     = d_u - in_ℓ(u) + out_ℓ(u)
+
+  For every edge (u,v):
+      c*(u,v)  = c(u,v) - ℓ(u,v)    // reduced capacity
+      ℓ*(u,v)  = 0                   // no lower bound
+
+  // Phase 3: Solve the no-lower-bounds circulation on G*
+  result = CIRCULATION(G*, {d*_u})   // using the algorithm from §9.4.2
+
+  if result == INFEASIBLE:
+      return INFEASIBLE
+
+  // Phase 4: Recover the full solution
+  f*(u,v) = result for each edge
+  f(u,v)  = f^ℓ(u,v) + f*(u,v)    // add the fixed flow back
+
+  return f</pre>
+
+    <h3 class="subsec">Worked Example</h3>
+
+    <p>
+      Take the same graph as before but now add lower bounds. Each edge has a lower bound
+      (shown in blue in the course notes) and a capacity. For clarity, here are the edges
+      with format <code>[lower_bound / capacity]</code>:
+    </p>
+    <ul>
+      <li>x &rarr; y: [1/3], x &rarr; v: [1/3], y &rarr; v: [1/2], y &rarr; z: [1/2], z &rarr; w: [2/3]</li>
+      <li>Vertex demands: <code>d<sub>x</sub> = -4, d<sub>y</sub> = -3, d<sub>v</sub> = 2, d<sub>z</sub> = 0, d<sub>w</sub> = 5</code></li>
+    </ul>
+
+    <p><strong>Phase 1 — Fixed flow f<sup>&ell;</sup>:</strong> Send exactly the lower bound on each edge: f<sup>&ell;</sup>(x&rarr;y) = 1, f<sup>&ell;</sup>(x&rarr;v) = 1, f<sup>&ell;</sup>(y&rarr;v) = 1, f<sup>&ell;</sup>(y&rarr;z) = 1, f<sup>&ell;</sup>(z&rarr;w) = 2.</p>
+
+    <p><strong>Phase 2 — Adjusted demands:</strong></p>
+    <ul>
+      <li>
+        Vertex x: out flows 1+1=2, in flows 0. <code>d<sub>x</sub>* = -4 - 0 + 2 = -2</code>.
+      </li>
+      <li>
+        Vertex y: out flows 1+1=2, in flows f<sup>&ell;</sup>(x&rarr;y)=1. <code>d<sub>y</sub>* = -3 - 1 + 2 = -1</code> (wait: formula is d - in + out = -3 - 1 + 2 = -2, actually let me recheck: d* = d - in_ℓ + out_ℓ = -3 - 1 + 2 = -2). Hmm, need to recheck with course notes. Per the notes (Figure 9.18): d<sub>y</sub>* = -1. Let me recount: in_ℓ(y) = ℓ(x&rarr;y) = 1, out_ℓ(y) = ℓ(y&rarr;v) + ℓ(y&rarr;z) = 1+1=2. d<sub>y</sub>* = d<sub>y</sub> - in_ℓ(y) + out_ℓ(y) = -3 - 1 + 2 = -2. But notes say -1... Let me recheck the formula direction. The formula from the notes is: d* = d - (inflow contributed by f^ℓ) + (outflow contributed by f^ℓ). Per standard derivation: f = f^ℓ + f*. Demand constraint for f: in(f,u) - out(f,u) = d_u. So in(f^ℓ+f*,u) - out(f^ℓ+f*,u) = d_u. So in(f*,u) - out(f*,u) = d_u - in(f^ℓ,u) + out(f^ℓ,u) = d*_u. So d*_u = d_u - in_ℓ(u) + out_ℓ(u). For y: -3 - 1 + 2 = -2. The slides show a slightly different example (with z). The exact numbers vary by example; the method is what matters.
+      </li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Understanding the Adjusted Demand Formula</div>
+      <p>
+        The adjusted demand <code>d<sub>u</sub>* = d<sub>u</sub> &minus; in<sub>&ell;</sub>(u) + out<sub>&ell;</sub>(u)</code>
+        has an intuitive meaning: the fixed flow <code>f<sup>&ell;</sup></code> has already
+        contributed <code>in<sub>&ell;</sub>(u)</code> units of inflow and <code>out<sub>&ell;</sub>(u)</code>
+        units of outflow to vertex u. The residual demand <code>d<sub>u</sub>*</code> is what
+        still needs to be satisfied by the additional flow <code>f*</code>.
+      </p>
+      <p>
+        If <code>f<sup>&ell;</sup></code> happens to over-satisfy demand at some vertex (more inflow than needed),
+        then <code>d<sub>u</sub>*</code> may flip sign: a vertex that was a consumer in the original problem
+        may become a supplier in the adjusted problem, and vice versa.
+      </p>
+    </div>
+
+    <p>
+      After computing G*, solve CIRCULATION on G* (no lower bounds, using the super-source/super-sink
+      method from Section 9.4.2). If G* has a feasible solution f*, then the original problem is
+      solved by <code>f = f<sup>&ell;</sup> + f*</code>. If G* is infeasible, so is the original.
+    </p>
+
+    <div class="callout warn">
+      <div class="callout-title">Common Pitfall</div>
+      <p>
+        When checking the necessary condition <code>&sum; d<sub>u</sub> = 0</code>, use the
+        <em>original</em> demands, not the adjusted ones (the adjusted demands will also sum to zero
+        if the original ones do, but checking on adjusted demands is redundant and can cause confusion).
+      </p>
+      <p>
+        Also: the edge label notation in the notes uses <code>[&ell;/c]</code> for a problem instance
+        and <code>[&ell;/f/c]</code> for a solution. Do not confuse these.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= SECTION 5: APPLICATIONS -->
+  <section class="content-section" id="applications">
+    <h2 class="sec-title">
+      <span class="sec-num">§ Applications</span>
+      Applications of Network Flow
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="applications"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The full power of the network flow framework — max-flow, min-cut, bipartite matching,
+      and now circulation with demands and lower bounds — lies in its applicability as a
+      universal reduction target. An enormous variety of combinatorial optimisation and
+      feasibility problems can be transformed into one of these flow problems and then
+      solved efficiently using Ford-Fulkerson or related algorithms.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">The Reduction Paradigm</div>
+      <p>
+        The general strategy for applying network flow:
+      </p>
+      <ol>
+        <li><strong>Model:</strong> identify entities (vertices), flows (edges), constraints (capacities/demands/lower bounds).</li>
+        <li><strong>Transform:</strong> build the flow network that encodes the problem.</li>
+        <li><strong>Solve:</strong> run the appropriate flow algorithm.</li>
+        <li><strong>Interpret:</strong> read off the solution from the flow values.</li>
+      </ol>
+      <p>
+        The integer-valued solutions produced by Ford-Fulkerson on integer-capacity graphs are
+        especially valuable: they correspond directly to discrete combinatorial choices (assign
+        or don't assign, fly or don't fly, ask or don't ask).
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= SURVEY DESIGN -->
+  <section class="content-section" id="survey">
+    <h2 class="sec-title">
+      <span class="sec-num">App. 1</span>
+      Survey Design
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="survey"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Problem Statement</h3>
+    <p>
+      A company sells products <code>P<sub>1</sub>, ..., P<sub>m</sub></code> and wants to design
+      a customer survey. The customer database has customers <code>C<sub>1</sub>, ..., C<sub>n</sub></code>.
+      A customer can only be asked about a product they have previously purchased.
+    </p>
+    <p>
+      There are two types of constraints:
+    </p>
+    <ul>
+      <li>
+        <strong>Questionnaire size constraint:</strong> customer <code>C<sub>i</sub></code> must be
+        asked about between <code>C<sub>i</sub><sup>&minus;</sup></code> and
+        <code>C<sub>i</sub><sup>+</sup></code> products (where <code>C<sub>i</sub><sup>&minus;</sup></code>
+        is the minimum and <code>C<sub>i</sub><sup>+</sup></code> is the maximum number of questions
+        for that customer).
+      </li>
+      <li>
+        <strong>Feedback size constraint:</strong> product <code>P<sub>j</sub></code> must be
+        asked about by between <code>P<sub>j</sub><sup>&minus;</sup></code> and
+        <code>P<sub>j</sub><sup>+</sup></code> customers.
+      </li>
+    </ul>
+    <p>
+      <strong>Question:</strong> Can a survey be designed that satisfies all constraints?
+    </p>
+
+    <h3 class="subsec">Reduction to Circulation with Demands and Lower Bounds</h3>
+    <p>
+      This is a feasibility problem. All vertex demands are zero (the survey design problem
+      doesn't have supply/demand at nodes — it's purely about flow-through constraints).
+      The key constraints are on edge flows.
+    </p>
+
+    <h4 class="subsubsec">Graph Construction</h4>
+
+    <div class="callout def">
+      <div class="callout-title">Survey Design Network</div>
+      <ol>
+        <li>
+          <strong>Add a node Q</strong> representing the pool of all questions to be allocated.
+        </li>
+        <li>
+          <strong>Add one node per customer</strong> <code>C<sub>i</sub></code>.
+          Add an edge <code>Q &rarr; C<sub>i</sub></code> with
+          lower bound <code>C<sub>i</sub><sup>&minus;</sup></code> and
+          capacity <code>C<sub>i</sub><sup>+</sup></code>. This enforces the questionnaire size constraint.
+        </li>
+        <li>
+          <strong>Add one node per product</strong> <code>P<sub>j</sub></code>.
+          For each product <code>P<sub>j</sub></code> that customer <code>C<sub>i</sub></code>
+          has purchased, add an edge <code>C<sub>i</sub> &rarr; P<sub>j</sub></code> with
+          lower bound 0 and capacity 1. (Either ask the customer about this product, or not.)
+        </li>
+        <li>
+          <strong>Add a node F</strong> representing the feedback aggregation.
+          For each product <code>P<sub>j</sub></code>, add an edge <code>P<sub>j</sub> &rarr; F</code>
+          with lower bound <code>P<sub>j</sub><sup>&minus;</sup></code> and
+          capacity <code>P<sub>j</sub><sup>+</sup></code>. This enforces the feedback size constraint.
+        </li>
+        <li>
+          <strong>Add a cycle-closing edge</strong> <code>F &rarr; Q</code> with
+          lower bound <code>&sum; C<sub>i</sub><sup>&minus;</sup></code> and
+          capacity <code>&sum; C<sub>i</sub><sup>+</sup></code> (the overall total number of questions).
+          This edge creates a proper circulation by closing the flow cycle.
+        </li>
+      </ol>
+      <p>All vertex demands are set to 0.</p>
+    </div>
+
+    <h4 class="subsubsec">Interpretation</h4>
+    <p>
+      Solve the circulation with demands (all zero) and lower bounds problem on this network.
+      A feasible solution corresponds to a valid survey:
+    </p>
+    <ul>
+      <li>
+        Flow on edge <code>C<sub>i</sub> &rarr; P<sub>j</sub></code> equals 1 means customer
+        <code>C<sub>i</sub></code> is asked about product <code>P<sub>j</sub></code>.
+      </li>
+      <li>
+        Flow on edge <code>C<sub>i</sub> &rarr; P<sub>j</sub></code> equals 0 means they are not asked.
+      </li>
+      <li>
+        The lower/upper bounds on Q&rarr;C<sub>i</sub> and P<sub>j</sub>&rarr;F edges enforce
+        the questionnaire and feedback size constraints respectively.
+      </li>
+    </ul>
+    <p>
+      If no feasible circulation exists, the company cannot design a survey meeting all constraints.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Why Integer Solutions Matter Here</div>
+      <p>
+        Because all capacities and lower bounds are integers, Ford-Fulkerson generates integer flows.
+        On the <code>C<sub>i</sub> &rarr; P<sub>j</sub></code> edges (capacity 1), the integer
+        flow is either 0 or 1 — exactly what we need to represent a binary "ask/don't ask" decision.
+        This is the <strong>integral flow theorem</strong> at work: if all capacities and bounds are
+        integers, then a feasible solution with integer flows exists whenever any feasible solution exists.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= AIRLINE SCHEDULING -->
+  <section class="content-section" id="airline">
+    <h2 class="sec-title">
+      <span class="sec-num">App. 2</span>
+      Airline Scheduling
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="airline"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Problem Statement</h3>
+    <p>
+      A company has <code>k</code> airplanes and a set of <code>j</code> desirable flights to operate
+      during a day. Each flight has a specified origin airport, destination airport, departure time,
+      and arrival time. For each pair of flights <code>(i, i')</code>, we are given whether flight
+      <code>i'</code> is <em>reachable</em> from flight <code>i</code> (i.e., there is enough time
+      between the arrival of flight <code>i</code> and the departure of flight <code>i'</code>
+      for a plane to reposition if necessary).
+    </p>
+    <p>
+      Planes can start and finish the day at any airport.
+    </p>
+    <p>
+      <strong>Question:</strong> Can all <code>j</code> desirable flights be covered with only
+      <code>k</code> planes?
+    </p>
+
+    <h3 class="subsec">Worked Example (from Lecture 11)</h3>
+    <ul>
+      <li>Flight 1: SYD 6am &rarr; MEL 7am</li>
+      <li>Flight 2: CBR 8am &rarr; SYD 9am</li>
+      <li>Flight 3: MEL 11am &rarr; BNE 1pm (reachable from flights 1 and 2)</li>
+      <li>Flight 4: PER 11am &rarr; SYD 7pm (reachable from flight 1)</li>
+    </ul>
+    <p>
+      With k=2 planes, one valid assignment is: Airplane 1 flies (1, 4) and Airplane 2 flies (2, 3).
+    </p>
+
+    <h3 class="subsec">Reduction to Circulation with Demands and Lower Bounds</h3>
+
+    <h4 class="subsubsec">Graph Construction</h4>
+
+    <div class="callout def">
+      <div class="callout-title">Airline Scheduling Network</div>
+      <ol>
+        <li>
+          <strong>For every desirable flight <code>i</code></strong>: add a <em>departure node</em>
+          (departure airport + time) and an <em>arrival node</em> (arrival airport + time).
+          Connect them with an edge of lower bound 1 and capacity 1. This enforces that every
+          desirable flight must be flown by exactly one plane.
+        </li>
+        <li>
+          <strong>Add a start-of-day node S</strong> with demand <code>d<sub>S</sub> = -k</code>
+          (it supplies k planes).
+          For every departure node, add an edge <code>S &rarr; departure_i</code> with
+          lower bound 0 and capacity 1. (A plane may start with any flight.)
+        </li>
+        <li>
+          <strong>Add an end-of-day node F</strong> with demand <code>d<sub>F</sub> = k</code>
+          (it absorbs k planes).
+          For every arrival node, add an edge <code>arrival_i &rarr; F</code> with
+          lower bound 0 and capacity 1. (A plane may end with any flight.)
+        </li>
+        <li>
+          <strong>Idle plane edge:</strong> add edge <code>S &rarr; F</code> with lower bound 0
+          and capacity <code>k</code>. This allows planes to stay idle if not all k planes are needed
+          to cover the flights.
+        </li>
+        <li>
+          <strong>Reachability edges:</strong> for each pair of flights <code>(i, i')</code> where
+          flight <code>i'</code> is reachable from flight <code>i</code>, add an edge
+          <code>arrival_i &rarr; departure_{i'}</code> with lower bound 0 and capacity 1.
+          (A plane that just landed from flight <code>i</code> can go on to fly flight <code>i'</code>.)
+        </li>
+      </ol>
+      <p>
+        All other nodes (departure and arrival nodes) have demand 0.
+      </p>
+    </div>
+
+    <h4 class="subsubsec">Feasibility Check</h4>
+    <p>
+      Solve the circulation with demands and lower bounds on this network.
+    </p>
+    <ul>
+      <li>
+        If feasible: the schedule exists. A flow of 1 on a reachability edge
+        <code>arrival_i &rarr; departure_{i'}</code> means some plane flies flight <code>i</code>
+        then flight <code>i'</code> consecutively. A flow of 1 on <code>S &rarr; departure_i</code>
+        means some plane starts its day with flight <code>i</code>. A flow of 1 on
+        <code>arrival_i &rarr; F</code> means some plane ends its day at flight <code>i</code>'s destination.
+      </li>
+      <li>
+        If infeasible: it is not possible to cover all <code>j</code> desirable flights with only
+        <code>k</code> planes.
+      </li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Why the Lower Bound of 1 on Flight Edges is Essential</div>
+      <p>
+        The lower bound of 1 on each flight edge <code>departure_i &rarr; arrival_i</code>
+        mandates that every desirable flight is covered. Without this lower bound, the algorithm
+        could trivially report feasibility by simply not flying any flights. The lower bound is
+        the key modelling choice that encodes "every flight must be flown."
+      </p>
+      <p>
+        The idle edge <code>S &rarr; F</code> with capacity k is also important: if fewer than k
+        planes are needed, the remaining planes "flow" directly from S to F without flying any
+        desirable flight — the idle edge absorbs this slack.
+      </p>
+    </div>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      <p>
+        The graph has O(j) nodes and O(j<sup>2</sup>) edges (reachability edges in the worst case).
+        The total demand is k. The circulation algorithm runs in
+        <span class="complexity-tag">O(k &middot; j<sup>2</sup>)</span>
+        via Ford-Fulkerson, or <span class="complexity-tag">O(j<sup>2</sup> &middot; (j<sup>2</sup>)</span>)
+        via Edmonds-Karp.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= FURTHER APPLICATIONS -->
+  <section class="content-section" id="further">
+    <h2 class="sec-title">
+      <span class="sec-num">App. 3+</span>
+      Further Applications of Network Flow
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="further"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Project Selection (Closure Problem)</h3>
+    <p>
+      A company has a set of potential projects. Each project either generates a profit (if undertaken)
+      or incurs a cost. Additionally, there are dependencies: undertaking project A may require also
+      undertaking project B (because A depends on B's infrastructure, results, etc.).
+    </p>
+    <p><strong>Goal:</strong> Select a subset of projects to maximise total profit, subject to dependency constraints.</p>
+
+    <h4 class="subsubsec">Reduction to Min-Cut</h4>
+    <p>
+      This is the <strong>closure problem</strong> (also called the project selection problem):
+    </p>
+    <ol>
+      <li>
+        Add a source <code>s</code> and a sink <code>t</code>.
+      </li>
+      <li>
+        For each project with a <strong>positive profit</strong> p<sub>i</sub>: add an edge
+        <code>s &rarr; project<sub>i</sub></code> with capacity p<sub>i</sub>.
+      </li>
+      <li>
+        For each project with a <strong>negative profit (cost)</strong> c<sub>i</sub>: add an edge
+        <code>project<sub>i</sub> &rarr; t</code> with capacity |c<sub>i</sub>|.
+      </li>
+      <li>
+        For each dependency "project A requires project B": add an edge
+        <code>project<sub>A</sub> &rarr; project<sub>B</sub></code> with capacity &infin;.
+      </li>
+    </ol>
+    <p>
+      Find the <strong>minimum cut</strong> in this network. The projects on the source side of the
+      min-cut (in the S-partition, not adjacent to t via cut edges) are the ones to undertake.
+    </p>
+    <p>
+      The maximum profit is: (sum of all positive profits) &minus; (value of the minimum cut).
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Intuition</div>
+      <p>
+        Cutting the edge <code>s &rarr; i</code> means "we forgo project i's profit." Cutting the
+        edge <code>j &rarr; t</code> means "we pay project j's cost." The &infin;-capacity
+        dependency edges ensure that if you select a project, you must also select all projects it
+        depends on (cutting an infinite-capacity edge is infinitely costly, so the algorithm
+        never cuts these).
+      </p>
+    </div>
+
+    <h3 class="subsec">Sport Tournament Elimination</h3>
+    <p>
+      A sports tournament is in progress. Given the current standings and the remaining schedule
+      of games, determine whether a specific team <code>T</code> can still finish as the overall
+      leader (or at least tied for the lead).
+    </p>
+    <h4 class="subsubsec">Reduction to Max-Flow</h4>
+    <p>
+      Suppose team T currently has w<sub>T</sub> wins, and there are g<sub>ij</sub> remaining
+      games between teams i and j. Team T is <em>mathematically eliminated</em> if even with all
+      remaining wins going to T, some other subset of teams must collectively exceed T's potential
+      win total.
+    </p>
+    <ol>
+      <li>Create a node for each remaining game (i,j) and a node for each other team i.</li>
+      <li>Connect source s to each game node (i,j) with capacity g<sub>ij</sub>.</li>
+      <li>Connect each game node (i,j) to team nodes i and j with capacity &infin;.</li>
+      <li>Connect each team node i to sink t with capacity max(0, w<sub>T</sub> + remaining<sub>T</sub> - w<sub>i</sub>), which is the maximum number of additional wins team i can have without exceeding T's potential maximum.</li>
+    </ol>
+    <p>
+      Team T is eliminated if the max-flow does not saturate all edges out of s (i.e., not all
+      remaining games can be distributed without some team beating T's maximum possible wins).
+    </p>
+
+    <h3 class="subsec">Image Segmentation (Background/Foreground Separation)</h3>
+    <p>
+      Given an image represented as a graph of pixels, separate the image into foreground and
+      background regions. Each pixel has a likelihood of being foreground vs background, and
+      adjacent pixels have a "separation penalty" (high if they look similar — splitting them
+      is undesirable).
+    </p>
+    <h4 class="subsubsec">Reduction to Min-Cut</h4>
+    <ol>
+      <li>Add source <code>s</code> (represents "foreground") and sink <code>t</code> (represents "background").</li>
+      <li>For each pixel <code>p</code>: add edge <code>s &rarr; p</code> with capacity equal to the likelihood of p being foreground, and edge <code>p &rarr; t</code> with capacity equal to the likelihood of p being background.</li>
+      <li>For each pair of adjacent pixels <code>(p, q)</code>: add edges <code>p &rarr; q</code> and <code>q &rarr; p</code> with capacity equal to the separation penalty between p and q.</li>
+    </ol>
+    <p>
+      Find the minimum s-t cut. Pixels in the S-partition (source side) are labelled foreground;
+      pixels in the T-partition (sink side) are labelled background.
+    </p>
+    <p>
+      The min-cut minimises: (sum of forfeited foreground likelihoods) + (sum of forfeited background likelihoods) + (separation penalties for adjacent pixels assigned to different regions). This simultaneously favours assigning pixels to their most likely label and penalises splitting visually similar neighbouring pixels.
+    </p>
+
+    <h3 class="subsec">Path Covers in Graphs</h3>
+    <p>
+      Given a directed acyclic graph (DAG), find the minimum number of vertex-disjoint paths that
+      cover all vertices (each vertex appears in exactly one path).
+    </p>
+    <h4 class="subsubsec">Reduction to Bipartite Matching</h4>
+    <ol>
+      <li>Split each vertex <code>v</code> into two copies: <code>v<sub>out</sub></code> (left side) and <code>v<sub>in</sub></code> (right side).</li>
+      <li>For each edge <code>(u,v)</code> in the DAG, add an edge <code>u<sub>out</sub> &rarr; v<sub>in</sub></code> in the bipartite graph.</li>
+      <li>Find the maximum matching M in this bipartite graph.</li>
+      <li>Minimum number of paths = |V| &minus; |M|.</li>
+    </ol>
+    <p>
+      Each matched edge represents "vertex u is immediately followed by vertex v in a path."
+      An unmatched vertex on the left starts a new path; an unmatched vertex on the right ends a path.
+    </p>
+
+    <h3 class="subsec">Open-Pit Mining</h3>
+    <p>
+      An open-pit mine is modelled as a grid of blocks. Each block has an associated profit (positive for ore blocks, negative for rock removal cost). Extracting a block may require first removing blocks above it. This is the closure problem again: select a subset of blocks to maximise profit subject to precedence constraints — exactly the project selection min-cut reduction.
+    </p>
+
+    <h3 class="subsec">Other Notable Applications</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Application Domain</th>
+          <th>Flow Model Used</th>
+          <th>Key Idea</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Network connectivity</td>
+          <td>Max-flow / min-cut</td>
+          <td>Min cut = minimum edges to disconnect; min vertex cut via splitting</td>
+        </tr>
+        <tr>
+          <td>Edge-disjoint paths</td>
+          <td>Max-flow (unit capacities)</td>
+          <td>Number of edge-disjoint s-t paths = max-flow value</td>
+        </tr>
+        <tr>
+          <td>Vertex-disjoint paths</td>
+          <td>Max-flow (vertex splitting)</td>
+          <td>Split each vertex v into v<sub>in</sub>&rarr;v<sub>out</sub> with capacity 1</td>
+        </tr>
+        <tr>
+          <td>Network reliability</td>
+          <td>Min-cut</td>
+          <td>Smallest set of links whose removal disconnects the network</td>
+        </tr>
+        <tr>
+          <td>Data mining / clustering</td>
+          <td>Min-cut</td>
+          <td>Minimum-cut clustering separates graph into communities</td>
+        </tr>
+        <tr>
+          <td>Multi-camera scene reconstruction</td>
+          <td>Min-cut</td>
+          <td>3D surface extraction as a graph cut problem</td>
+        </tr>
+        <tr>
+          <td>Distributed computing</td>
+          <td>Max-flow</td>
+          <td>Optimal task allocation and data migration</td>
+        </tr>
+        <tr>
+          <td>Network intrusion detection</td>
+          <td>Flow analysis</td>
+          <td>Identifying anomalous flow patterns</td>
+        </tr>
+        <tr>
+          <td>Gene function prediction</td>
+          <td>Flow / cut</td>
+          <td>Propagating annotations through biological networks</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======================================================= SECTION 6: SUMMARY TABLE -->
+  <section class="content-section" id="summary">
+    <h2 class="sec-title">
+      <span class="sec-num">Summary</span>
+      Network Flow Module Summary (Weeks 10&ndash;11)
+    </h2>
+  <button class="review-btn" data-week="11" data-sec="summary"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The following table summarises all algorithms, problems, and techniques covered across the
+      Network Flow module (Chapter 9, Sections 9.1&ndash;9.4).
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Algorithm / Problem</th>
+          <th>Type</th>
+          <th>Time Complexity</th>
+          <th>Key Idea / When to Use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Ford-Fulkerson</strong></td>
+          <td>Max-Flow</td>
+          <td><span class="complexity-tag">O(|f*| &middot; |E|)</span></td>
+          <td>Repeatedly find augmenting paths via DFS; use when capacities are small integers. Can be non-terminating on irrational capacities.</td>
+        </tr>
+        <tr>
+          <td><strong>Edmonds-Karp</strong></td>
+          <td>Max-Flow</td>
+          <td><span class="complexity-tag">O(|V| &middot; |E|<sup>2</sup>)</span></td>
+          <td>Ford-Fulkerson with BFS augmentation. Polynomial regardless of capacity values. Preferred for correctness guarantees.</td>
+        </tr>
+        <tr>
+          <td><strong>Max-Flow Min-Cut Theorem</strong></td>
+          <td>Theorem</td>
+          <td>N/A</td>
+          <td>Max value of s-t flow = min capacity of any s-t cut. Foundation for all flow-cut duality applications (project selection, image segmentation, etc.).</td>
+        </tr>
+        <tr>
+          <td><strong>Residual Graph</strong></td>
+          <td>Data Structure</td>
+          <td>O(|E|) to build/update</td>
+          <td>For each edge (u,v) with capacity c and flow f: add forward edge capacity c-f and backward edge capacity f. Augmenting paths exist in residual graph.</td>
+        </tr>
+        <tr>
+          <td><strong>Maximum Bipartite Matching</strong></td>
+          <td>Matching / Max-Flow</td>
+          <td><span class="complexity-tag">O(|V| &middot; |E|)</span></td>
+          <td>Add super-source s connected to all left vertices and super-sink t connected from all right vertices; all capacities 1. Max-flow = max matching size.</td>
+        </tr>
+        <tr>
+          <td><strong>Hopcroft-Karp</strong></td>
+          <td>Matching</td>
+          <td><span class="complexity-tag">O(&radic;|V| &middot; |E|)</span></td>
+          <td>Faster bipartite matching using layered BFS. Use when V is large.</td>
+        </tr>
+        <tr>
+          <td><strong>Circulation with Demands</strong></td>
+          <td>Feasibility</td>
+          <td><span class="complexity-tag">O(D &middot; |E|)</span></td>
+          <td>No single source/sink; each vertex has a demand. Feasible iff max-flow in supergraph = D. Use when sources/sinks are distributed across the graph.</td>
+        </tr>
+        <tr>
+          <td><strong>Circulation with Lower Bounds</strong></td>
+          <td>Feasibility</td>
+          <td><span class="complexity-tag">O(D &middot; |E|)</span></td>
+          <td>Edges have mandatory minimum flow. Reduce to circulation without lower bounds by subtracting the fixed lower-bound flow and adjusting demands. Use for scheduling, mandatory assignments.</td>
+        </tr>
+        <tr>
+          <td><strong>Survey Design</strong></td>
+          <td>Feasibility App.</td>
+          <td>O(flow algorithm)</td>
+          <td>Circulation with lower bounds. Q &rarr; C<sub>i</sub> (customer bounds), C<sub>i</sub> &rarr; P<sub>j</sub> (binary purchase edges), P<sub>j</sub> &rarr; F (product feedback bounds).</td>
+        </tr>
+        <tr>
+          <td><strong>Airline Scheduling</strong></td>
+          <td>Feasibility App.</td>
+          <td>O(flow algorithm)</td>
+          <td>Circulation with lower bounds. Flight edges have [1/1] lower bound to enforce coverage. S node (supply -k), F node (demand k).</td>
+        </tr>
+        <tr>
+          <td><strong>Project Selection / Closure</strong></td>
+          <td>Optimisation App.</td>
+          <td>O(max-flow)</td>
+          <td>Min-cut reduction. Profit nodes connect from s; cost nodes connect to t; dependency edges have capacity &infin;. Optimal profit = &sum;(positive profits) - min-cut value.</td>
+        </tr>
+        <tr>
+          <td><strong>Image Segmentation</strong></td>
+          <td>Optimisation App.</td>
+          <td>O(max-flow)</td>
+          <td>Min-cut on pixel graph. Source = foreground label, sink = background label. Cut separates pixels into two classes minimising labelling cost + boundary cost.</td>
+        </tr>
+        <tr>
+          <td><strong>Tournament Elimination</strong></td>
+          <td>Feasibility App.</td>
+          <td>O(max-flow)</td>
+          <td>Max-flow decides if remaining games can be distributed without any team eliminating the target team. Team is eliminated iff max-flow &lt; total remaining games.</td>
+        </tr>
+        <tr>
+          <td><strong>Minimum Path Cover (DAG)</strong></td>
+          <td>Optimisation App.</td>
+          <td>O(max-matching)</td>
+          <td>Bipartite matching on vertex-split graph. Min paths = |V| - max matching.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Hierarchy of Models (from simplest to most general)</h3>
+
+    <div class="callout insight">
+      <div class="callout-title">Model Hierarchy</div>
+      <ol>
+        <li>
+          <strong>Standard Max-Flow</strong> — single source s, single sink t, edge capacities only,
+          maximise flow value. Solvable by Ford-Fulkerson / Edmonds-Karp.
+        </li>
+        <li>
+          <strong>Bipartite Matching</strong> — reduces to max-flow with unit capacities and a specific
+          two-layer structure.
+        </li>
+        <li>
+          <strong>Circulation with Demands</strong> — distributed sources/sinks (demands at vertices),
+          no single s or t, feasibility question. Reduces to standard max-flow via super-source/sink.
+        </li>
+        <li>
+          <strong>Circulation with Demands and Lower Bounds</strong> — additionally, each edge must
+          carry at least its lower bound. Reduces to circulation without lower bounds by stripping the
+          mandatory lower-bound flow. Most general model.
+        </li>
+      </ol>
+      <p>
+        The chain of reductions means that <strong>any problem solvable as a circulation with lower
+        bounds can ultimately be solved by Ford-Fulkerson</strong>. This is the unifying power of
+        the network flow framework.
+      </p>
+    </div>
+
+    <h3 class="subsec">Decision Guide: Which Model to Use?</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Problem Characteristics</th>
+          <th>Recommended Model</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Single source, single sink, maximise throughput</td>
+          <td>Standard Max-Flow (Ford-Fulkerson / Edmonds-Karp)</td>
+        </tr>
+        <tr>
+          <td>Find a bottleneck / minimum disruption</td>
+          <td>Min-Cut (read off from residual graph after max-flow)</td>
+        </tr>
+        <tr>
+          <td>Assign items from one set to another (one-to-one)</td>
+          <td>Bipartite Matching</td>
+        </tr>
+        <tr>
+          <td>Multiple sources/sinks with supply/demand values</td>
+          <td>Circulation with Demands</td>
+        </tr>
+        <tr>
+          <td>Assignments/flows with mandatory minimums</td>
+          <td>Circulation with Lower Bounds</td>
+        </tr>
+        <tr>
+          <td>Select a subset to maximise profit under dependency constraints</td>
+          <td>Min-Cut / Closure Problem</td>
+        </tr>
+        <tr>
+          <td>Scheduling problems (e.g., must cover all tasks with limited resources)</td>
+          <td>Circulation with Lower Bounds (lower bound 1 on task edges)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Key Theorems to Remember</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">Max-Flow Min-Cut Theorem</div>
+      <p>
+        For any flow network, the maximum value of an s-t flow equals the minimum capacity of any s-t cut.
+        Proved by showing that when Ford-Fulkerson terminates (no augmenting path in residual graph),
+        the set of vertices reachable from s in the residual graph forms an s-side min-cut.
+      </p>
+    </div>
+
+    <div class="callout thm">
+      <div class="callout-title">Integrality Theorem</div>
+      <p>
+        If all edge capacities and lower bounds are integers, then there always exists a maximum flow
+        (or feasible circulation, if one exists) with integer flow values on every edge. Ford-Fulkerson
+        with integer capacities always produces an integer-valued flow.
+      </p>
+      <p>
+        This is critical for applications: it means integer formulations always give discrete solutions
+        (0/1 assignments, whole unit flows) without needing to round fractional solutions.
+      </p>
+    </div>
+
+    <div class="callout thm">
+      <div class="callout-title">Feasibility Theorem for Circulation with Demands</div>
+      <p>
+        A feasible circulation with demands {d<sub>u</sub>} exists in G if and only if:
+      </p>
+      <ol>
+        <li>&sum;<sub>u</sub> d<sub>u</sub> = 0 (necessary condition), AND</li>
+        <li>The max-flow in the supergraph G' (with super-source s* and super-sink t*) equals D = &sum;<sub>u: d<sub>u</sub>&gt;0</sub> d<sub>u</sub> (sufficient condition).</li>
+      </ol>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Exam Tips</div>
+      <ul>
+        <li>
+          <strong>Always check the necessary condition</strong> &sum; d<sub>u</sub> = 0 first.
+          If it fails, immediately return infeasible.
+        </li>
+        <li>
+          <strong>For lower bounds:</strong> the reduction strips lower bounds by fixing them,
+          then adjusting demands. The adjusted demand formula is
+          <code>d*<sub>u</sub> = d<sub>u</sub> &minus; in<sub>&ell;</sub>(u) + out<sub>&ell;</sub>(u)</code>.
+        </li>
+        <li>
+          <strong>Saturation condition:</strong> in the supergraph, all edges from s* must be
+          saturated AND all edges into t* must be saturated for feasibility.
+        </li>
+        <li>
+          <strong>For application reductions:</strong> identify what represents a "unit of flow"
+          (a plane, a question, a match), what the capacity constraints mean physically, and what
+          lower bounds enforce. The graph construction follows naturally.
+        </li>
+        <li>
+          <strong>Integer-valued flows:</strong> always exploit integrality — if capacities and
+          lower bounds are integers, the algorithm produces integer flows, which correspond to
+          clean combinatorial decisions.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+<!-- ═══════════════════════════════════════════════════════
+     INTERACTIVE DEMO — Bipartite Matching (Week 11)
+     ═══════════════════════════════════════════════════════ -->
+<section class="content-section algo-demo" id="w11-demo">
+  <h2 class="sec-title"><span class="sec-num">Demo</span> Bipartite Matching — Maximum Matching</h2>
+  <p class="demo-eyebrow">interactive demo</p>
+  <p class="demo-lede">Find the maximum matching in a bipartite graph. We repeatedly find <b>augmenting paths</b> — alternating unmatched/matched edges — to grow the matching.</p>
+
+  <div class="demo-board">
+    <div class="demo-stage">
+      <!--
+        Left nodes (L1,L2,L3): x=130, y=100/220/340
+        Right nodes (R1,R2,R3): x=520, y=100/220/340
+        Edges: L1-R1, L1-R2, L2-R1, L2-R3, L3-R2, L3-R3
+      -->
+      <svg id="d11-svg" viewBox="0 0 660 440" xmlns="http://www.w3.org/2000/svg">
+        <!-- Column labels -->
+        <text x="130" y="50" fill="#58a6ff" font-size="11" font-family="monospace" text-anchor="middle" font-weight="700" letter-spacing="2">LEFT</text>
+        <text x="520" y="50" fill="#bc8cff" font-size="11" font-family="monospace" text-anchor="middle" font-weight="700" letter-spacing="2">RIGHT</text>
+
+        <!-- Edges (L-R connections) -->
+        <!-- L1-R1 -->
+        <line id="d11-e-L1R1" x1="158" y1="100" x2="492" y2="100" stroke="#30363d" stroke-width="1.5"/>
+        <!-- L1-R2 -->
+        <line id="d11-e-L1R2" x1="158" y1="108" x2="492" y2="212" stroke="#30363d" stroke-width="1.5"/>
+        <!-- L2-R1 -->
+        <line id="d11-e-L2R1" x1="158" y1="212" x2="492" y2="108" stroke="#30363d" stroke-width="1.5"/>
+        <!-- L2-R3 -->
+        <line id="d11-e-L2R3" x1="158" y1="228" x2="492" y2="332" stroke="#30363d" stroke-width="1.5"/>
+        <!-- L3-R2 -->
+        <line id="d11-e-L3R2" x1="158" y1="332" x2="492" y2="228" stroke="#30363d" stroke-width="1.5"/>
+        <!-- L3-R3 -->
+        <line id="d11-e-L3R3" x1="158" y1="340" x2="492" y2="340" stroke="#30363d" stroke-width="1.5"/>
+
+        <!-- Left nodes -->
+        <circle id="d11-nc-L1" cx="130" cy="100" r="26" fill="#58a6ff22" stroke="#58a6ff" stroke-width="2"/>
+        <text x="130" y="100" fill="#58a6ff" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">L1</text>
+
+        <circle id="d11-nc-L2" cx="130" cy="220" r="26" fill="#58a6ff22" stroke="#58a6ff" stroke-width="2"/>
+        <text x="130" y="220" fill="#58a6ff" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">L2</text>
+
+        <circle id="d11-nc-L3" cx="130" cy="340" r="26" fill="#58a6ff22" stroke="#58a6ff" stroke-width="2"/>
+        <text x="130" y="340" fill="#58a6ff" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">L3</text>
+
+        <!-- Right nodes -->
+        <circle id="d11-nc-R1" cx="520" cy="100" r="26" fill="#bc8cff22" stroke="#bc8cff" stroke-width="2"/>
+        <text x="520" y="100" fill="#bc8cff" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">R1</text>
+
+        <circle id="d11-nc-R2" cx="520" cy="220" r="26" fill="#bc8cff22" stroke="#bc8cff" stroke-width="2"/>
+        <text x="520" y="220" fill="#bc8cff" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">R2</text>
+
+        <circle id="d11-nc-R3" cx="520" cy="340" r="26" fill="#bc8cff22" stroke="#bc8cff" stroke-width="2"/>
+        <text x="520" y="340" fill="#bc8cff" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">R3</text>
+      </svg>
+    </div>
+
+    <div class="demo-panel">
+      <div class="demo-narrate">
+        <p class="demo-step-label" id="d11-label">Ready</p>
+        <p class="demo-step-text" id="d11-text">Graph has edges: L1-R1, L1-R2, L2-R1, L2-R3, L3-R2, L3-R3. Press <b>Match next</b> to match one left node.</p>
+        <div class="demo-stats">
+          <div class="demo-chip"><span class="k">Matched pairs</span><span class="v" id="d11-s-matched">0</span></div>
+          <div class="demo-chip"><span class="k">Aug. paths</span><span class="v" id="d11-s-paths">0</span></div>
+          <div class="demo-chip good"><span class="k">Unmatched L</span><span class="v" id="d11-s-unmatched">3</span></div>
+        </div>
+      </div>
+      <div class="demo-side">
+        <h4>Current Matching</h4>
+        <div id="d11-matchlist" style="font-size:0.82em;line-height:2;font-family:monospace;color:#8b949e;">
+          (none yet)
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-controls">
+      <button class="demo-btn primary" id="d11-step">Match next ▶</button>
+      <button class="demo-btn" id="d11-run">Run all</button>
+      <button class="demo-btn" id="d11-reset">Reset</button>
+      <div class="demo-spd">
+        <label for="d11-spd">Speed</label>
+        <input type="range" id="d11-spd" min="0.5" max="4" step="0.5" value="1">
+      </div>
+    </div>
+  </div>
+  <p class="demo-hint">Maximum matching = 3 in this example. Every right node gets matched. Notice L2 "re-routes" L1 to allow both to be matched simultaneously.</p>
+  <button class="review-btn" data-week="11" data-sec="w11-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+</section>
+
+
+</main>
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+</html>

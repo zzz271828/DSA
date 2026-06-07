@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 8 — Prefix Tries &amp; Suffix Trees | FIT2004</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+      --text: #c9d1d9; --text-muted: #8b949e;
+      --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+      --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+    nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+    nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+    nav ul { list-style: none; }
+    nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+    nav ul li a:hover { color: var(--text); background: var(--bg3); }
+    nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+    nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+    main { flex: 1; max-width: 860px; padding: 48px 56px; }
+    .week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+    .week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+    .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+    section.content-section { margin-bottom: 56px; }
+    h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+    h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+    h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+    p { margin-bottom: 14px; }
+    .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+    .callout.def { background: #1f6feb0d; border-color: var(--blue); }
+    .callout.thm { background: #3fb9500d; border-color: var(--green); }
+    .callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+    .callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+    .callout.warn { background: #f851490d; border-color: var(--red); }
+    .callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .callout.def .callout-title { color: var(--blue); }
+    .callout.thm .callout-title { color: var(--green); }
+    .callout.cplx .callout-title { color: var(--orange); }
+    .callout.insight .callout-title { color: var(--purple); }
+    .callout.warn .callout-title { color: var(--red); }
+    pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+    .algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+    .algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+    pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+    th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    td { padding: 10px 16px; border: 1px solid var(--border); }
+    tr:nth-child(even) td { background: var(--bg2); }
+    code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+    ul, ol { padding-left: 24px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+    .complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    @media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+  
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<!-- ========== SIDEBAR NAV ========== -->
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html" class="current"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#motivation" class="sub">Motivation</a></li>
+    <li><a href="#trie-definition" class="sub">Prefix Trie</a></li>
+    <li><a href="#trie-ops" class="sub">Trie Operations</a></li>
+    <li><a href="#trie-impl" class="sub">Trie Implementation</a></li>
+    <li><a href="#compact-trie" class="sub">Compact Trie</a></li>
+    <li><a href="#trie-complexity" class="sub">Trie Complexity</a></li>
+    <li><a href="#trie-comparison" class="sub">Trie vs Others</a></li>
+    <li><a href="#suffix-tree-intro" class="sub">Suffix Trees</a></li>
+    <li><a href="#suffix-tree-def" class="sub">Suffix Tree Definition</a></li>
+    <li><a href="#suffix-tree-build" class="sub">Building a Suffix Tree</a></li>
+    <li><a href="#suffix-tree-apps" class="sub">Suffix Tree Applications</a></li>
+    <li><a href="#takeaways" class="sub">Key Takeaways</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<!-- ========== MAIN CONTENT ========== -->
+<main>
+
+  <!-- Header -->
+  <div class="week-header">
+    <div class="week-badge">Week 8</div>
+    <h1>Retrieval Data Structures for Strings</h1>
+    <div class="subtitle">Chapter 11 — Retrieval Data Structures for Strings</div>
+    <div class="topics">
+      <span>Prefix Trie / Retrieval Tree</span>
+      <span>Insert &amp; Lookup</span>
+      <span>String Sorting</span>
+      <span>Compact / Patricia Trie</span>
+      <span>Suffix Trie</span>
+      <span>Suffix Tree</span>
+      <span>Ukkonen's Algorithm</span>
+      <span>Pattern Matching</span>
+      <span>Longest Repeated Substring</span>
+      <span>Longest Common Substring</span>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 1: MOTIVATION ===== -->
+  <section class="content-section" id="motivation">
+    <h2 class="sec-title"><span class="sec-num">§11.0</span> Motivation — Why Not BSTs or Hash Tables?</h2>
+  <button class="review-btn" data-week="8" data-sec="motivation"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Suppose you have a large collection of <em>N</em> strings and you want to pre-process them so that future
+      searches are fast. The standard approaches each have drawbacks:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Approach</th>
+          <th>Pre-processing</th>
+          <th>Search</th>
+          <th>Key limitation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sort + Binary Search</td>
+          <td>O(MN log N) merge sort, or O(MN) radix sort</td>
+          <td>O(M log N)</td>
+          <td>Each string comparison costs O(M); logarithmic factor remains</td>
+        </tr>
+        <tr>
+          <td>BST (string keys)</td>
+          <td>O(MN log N)</td>
+          <td>O(M log N)</td>
+          <td>At each BST node you pay O(M) for a full string comparison</td>
+        </tr>
+        <tr>
+          <td>Hash Table</td>
+          <td>O(MN)</td>
+          <td>O(M) expected</td>
+          <td>No prefix queries; no deterministic worst-case; no sorted order</td>
+        </tr>
+        <tr>
+          <td><strong>Prefix Trie</strong></td>
+          <td>O(|&Sigma;| T) array-based</td>
+          <td>O(M)</td>
+          <td>Space can be large; O(|&Sigma;| T) in worst case</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Here <em>M</em> is the length of a single string, <em>N</em> is the number of strings, and <em>T</em> is the total
+      number of characters across all strings. <strong>ReTrieval trees</strong> (tries) are designed to answer
+      different queries efficiently — prefix matching, sorting, autocomplete — in time proportional only to
+      the length of the query string, not to the number of strings stored.
+    </p>
+  </section>
+
+  <!-- ===== SECTION 2: TRIE DEFINITION ===== -->
+  <section class="content-section" id="trie-definition">
+    <h2 class="sec-title"><span class="sec-num">§11.1</span> The Prefix Trie / Retrieval Tree</h2>
+  <button class="review-btn" data-week="8" data-sec="trie-definition"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Prefix Trie</div>
+      A <strong>prefix trie</strong> (retrieval tree) is a rooted, multi-way tree where:
+      <ul style="margin-top:8px;">
+        <li>Each <strong>edge</strong> is labelled with a character from the alphabet &Sigma;.</li>
+        <li>Equivalently, each node (except the root) can carry the label of its incoming edge.</li>
+        <li>The <strong>path from the root to any node</strong> spells out a prefix of some string stored in the trie.</li>
+        <li>The path from the root to an <strong>internal</strong> node spells a common prefix shared by all strings in its subtree.</li>
+        <li>All strings sharing a prefix are stored within the <strong>same subtree</strong> — this is the defining structural property.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Terminal Marker $</h3>
+    <p>
+      Words are distinguished from mere prefixes by appending a special character <code>$</code> (or equivalently,
+      storing a boolean <em>is_terminal</em> flag at a node). Using <code>$</code> ensures that:
+    </p>
+    <ul>
+      <li>A node is a <strong>leaf if and only if</strong> it is the end of a stored word.</li>
+      <li>Searching for an exact word is performed by appending <code>$</code> to the query — any proper prefix will not have a <code>$</code> edge.</li>
+      <li>In code, use the null character <code>'\0'</code> rather than a literal <code>$</code>, since <code>$</code> might legitimately appear in strings.</li>
+    </ul>
+
+    <h3 class="subsec">Example Trie</h3>
+    <p>The trie below stores: <code>baby</code>, <code>bad</code>, <code>bank</code>, <code>banks</code>, <code>box</code>, <code>dog</code>, <code>dogs</code>.</p>
+
+    <pre class="code-block">
+         [root]
+          /    \
+         b      d
+        / \      \
+       a   o      o
+      /|\   \      \
+     b  d  n  x     g
+     |  |  |  |    / \
+     y  $  k  $   $   s
+     |     |          |
+     $     $          $
+          (banks)
+           s
+           |
+           $</pre>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight — Reading a Trie</div>
+      Follow the edges from the root, reading one character per edge. When you reach a node that has a <code>$</code>
+      child (or an <em>is_terminal</em> flag set), you have spelled out a complete stored word. You can also stop
+      partway through to retrieve all words sharing that prefix (prefix matching).
+    </div>
+  </section>
+
+  <!-- ===== SECTION 3: OPERATIONS ===== -->
+  <section class="content-section" id="trie-ops">
+    <h2 class="sec-title"><span class="sec-num">§11.1</span> Operations on a Prefix Trie</h2>
+  <button class="review-btn" data-week="8" data-sec="trie-ops"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <!-- Insert -->
+    <h3 class="subsec" id="insert-op">Insert</h3>
+    <p>
+      Walk down the trie following the characters of the input string one by one. If the next child does not
+      exist, create it. After processing all characters, mark the current node as terminal (or follow a
+      <code>$</code> edge).
+    </p>
+    <div class="algo-header">
+      Algorithm 62 — Prefix Trie: Insert
+      <span class="algo-complexity">Time: O(|s|)</span>
+    </div>
+    <pre class="code-block has-header">
+function INSERT(S[1..n]):
+    node = root
+    for each character c in S[1..n]:
+        if node has an edge for character c:
+            node = node.get_child(c)
+        else:
+            node = node.create_child(c)
+    // At this point node represents the word S.
+    // Mark terminal (create a '$' child or set node.is_terminal = True)</pre>
+
+<!-- ── VZ62: Prefix Trie Insertion widget ── -->
+<div id="vz62-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;text-transform:uppercase;letter-spacing:.2em;color:#f0883e;">Algorithm 62</span>
+    <span style="font-weight:600;color:#c9d1d9;flex:1;">Prefix Trie Insertion — Interactive</span>
+    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Insert: app, apple, apt, bat</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <div style="background:#0d1117;overflow:hidden;">
+      <svg id="vz62-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+        <defs>
+          <marker id="vz62-ah" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#30363d"/>
+          </marker>
+        </defs>
+        <!-- Edges: drawn first so nodes render on top -->
+        <!-- root(260,28) -> a(130,90) edge label 'a' -->
+        <line id="vz62-e-root-a" x1="260" y1="46" x2="130" y2="72" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-root-a" x="188" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">a</text>
+        <!-- root(260,28) -> b(390,90) edge label 'b' -->
+        <line id="vz62-e-root-b" x1="260" y1="46" x2="390" y2="72" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-root-b" x="330" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">b</text>
+        <!-- a(130,90) -> ap(130,158) edge label 'p' -->
+        <line id="vz62-e-a-ap" x1="130" y1="108" x2="130" y2="140" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-a-ap" x="116" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">p</text>
+        <!-- ap(130,158) -> app(78,226) edge label 'p' -->
+        <line id="vz62-e-ap-app" x1="118" y1="174" x2="90" y2="208" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-ap-app" x="97" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">p</text>
+        <!-- ap(130,158) -> apt(182,226) edge label 't' -->
+        <line id="vz62-e-ap-apt" x1="142" y1="174" x2="170" y2="208" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-ap-apt" x="163" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">t</text>
+        <!-- app(78,226) -> apple-l(52,268) edge label 'l' -->
+        <line id="vz62-e-app-l" x1="70" y1="244" x2="52" y2="252" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-app-l" x="54" y="248" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">l</text>
+        <!-- apple-l(52,268) -> apple-e(28,282) edge label 'e' -->
+        <line id="vz62-e-l-e" x1="46" y1="262" x2="30" y2="272" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-l-e" x="31" y="263" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">e</text>
+        <!-- b(390,90) -> ba(390,158) edge label 'a' -->
+        <line id="vz62-e-b-ba" x1="390" y1="108" x2="390" y2="140" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-b-ba" x="376" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">a</text>
+        <!-- ba(390,158) -> bat(390,226) edge label 't' -->
+        <line id="vz62-e-ba-bat" x1="390" y1="174" x2="390" y2="208" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-ba-bat" x="376" y="195" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">t</text>
+
+        <!-- Nodes -->
+        <circle id="vz62-n-root" cx="260" cy="28" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="260" y="28" font-size="9" font-family="monospace" fill="#c9d1d9" text-anchor="middle" dominant-baseline="central" font-weight="700">root</text>
+
+        <circle id="vz62-n-a" cx="130" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-a" x="130" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">a</text>
+
+        <circle id="vz62-n-ap" cx="130" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-ap" x="130" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">p</text>
+
+        <circle id="vz62-n-app" cx="78" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="vz62-neow-app" cx="78" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="vz62-nt-app" x="78" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">p</text>
+
+        <circle id="vz62-n-l" cx="44" cy="266" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-l" x="44" y="266" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">l</text>
+
+        <circle id="vz62-n-e" cx="22" cy="282" r="14" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="vz62-neow-e" cx="22" cy="282" r="18" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="vz62-nt-e" x="22" y="282" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">e</text>
+
+        <circle id="vz62-n-apt" cx="182" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="vz62-neow-apt" cx="182" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="vz62-nt-apt" x="182" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">t</text>
+
+        <circle id="vz62-n-b" cx="390" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-b" x="390" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">b</text>
+
+        <circle id="vz62-n-ba" cx="390" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-ba" x="390" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">a</text>
+
+        <circle id="vz62-n-bat" cx="390" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="vz62-neow-bat" cx="390" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="vz62-nt-bat" x="390" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">t</text>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
+      <div>
+        <div id="vz62-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 12</div>
+        <div id="vz62-narration" style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;">Press <b>Next</b> to begin inserting words into the trie.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.56em;letter-spacing:.13em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Words in</span>
+          <span id="vz62-s-words" style="font-size:1.25em;font-weight:700;color:#c9d1d9;">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.56em;letter-spacing:.13em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Nodes</span>
+          <span id="vz62-s-nodes" style="font-size:1.25em;font-weight:700;color:#c9d1d9;">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.56em;letter-spacing:.13em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Reused</span>
+          <span id="vz62-s-reused" style="font-size:1.25em;font-weight:700;color:#3fb950;">0</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;flex-wrap:wrap;">
+        <button onclick="vz62step(-1)" id="vz62-prev" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#161b22;color:#c9d1d9;padding:7px 13px;border-radius:7px;" disabled>&#9664; Prev</button>
+        <button onclick="vz62step(1)" id="vz62-next" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz62reset()" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#161b22;color:#8b949e;padding:7px 13px;border-radius:7px;">&#8635; Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  // Node/edge ids and step data for Algorithm 62
+  var VZ62_STEPS = [
+    // Step 1: Empty trie
+    { label:'Step 1 / 12', narration:'Start with empty trie. About to insert <b style="color:#58a6ff">\"app\"</b>.', words:0, nodes:0, reused:0,
+      show:[], active:[], green:[], eow:[], edgeShow:[], edgeActive:[], edgeGreen:[] },
+    // Step 2: Insert 'app' - 'a'
+    { label:'Step 2 / 12', narration:'Insert <b>\"app\"</b> — char <b style="color:#f0883e">\'a\'</b>: no child \'a\' from root → <b style="color:#f0883e">create new node</b>.', words:0, nodes:1, reused:0,
+      show:['a'], active:['a'], green:[], eow:[], edgeShow:['root-a'], edgeActive:['root-a'], edgeGreen:[] },
+    // Step 3: Insert 'app' - first 'p'
+    { label:'Step 3 / 12', narration:'Insert <b>\"app\"</b> — char <b style="color:#f0883e">\'p\'</b>: no child \'p\' from \'a\' → <b style="color:#f0883e">create new node</b>.', words:0, nodes:2, reused:0,
+      show:['a','ap'], active:['ap'], green:['a'], eow:[], edgeShow:['root-a','a-ap'], edgeActive:['a-ap'], edgeGreen:['root-a'] },
+    // Step 4: Insert 'app' - second 'p' (end of word)
+    { label:'Step 4 / 12', narration:'Insert <b>\"app\"</b> — second <b style="color:#f0883e">\'p\'</b>: create node, end of word → <b style="color:#3fb950">mark * (double circle)</b>.', words:1, nodes:3, reused:0,
+      show:['a','ap','app'], active:['app'], green:['a','ap'], eow:['app'], edgeShow:['root-a','a-ap','ap-app'], edgeActive:['ap-app'], edgeGreen:['root-a','a-ap'] },
+    // Step 5: Insert 'apple' - follow existing a,p,p
+    { label:'Step 5 / 12', narration:'Insert <b>\"apple\"</b> — follow existing <b style="color:#3fb950">\'a\'→\'p\'→\'p\'</b>. Nodes reused, none created.', words:1, nodes:3, reused:3,
+      show:['a','ap','app'], active:['a','ap','app'], green:[], eow:['app'], edgeShow:['root-a','a-ap','ap-app'], edgeActive:['root-a','a-ap','ap-app'], edgeGreen:[] },
+    // Step 6: Insert 'apple' - 'l'
+    { label:'Step 6 / 12', narration:'Insert <b>\"apple\"</b> — char <b style="color:#f0883e">\'l\'</b>: no \'l\' child → <b style="color:#f0883e">create new node</b>.', words:1, nodes:4, reused:3,
+      show:['a','ap','app','l'], active:['l'], green:['a','ap','app'], eow:['app'], edgeShow:['root-a','a-ap','ap-app','app-l'], edgeActive:['app-l'], edgeGreen:['root-a','a-ap','ap-app'] },
+    // Step 7: Insert 'apple' - 'e' (end of word)
+    { label:'Step 7 / 12', narration:'Insert <b>\"apple\"</b> — char <b style="color:#f0883e">\'e\'</b>: create node, end → <b style="color:#3fb950">mark *</b>. <b>\"apple\"</b> inserted.', words:2, nodes:5, reused:3,
+      show:['a','ap','app','l','e'], active:['e'], green:['a','ap','app','l'], eow:['app','e'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e'], edgeActive:['l-e'], edgeGreen:['root-a','a-ap','ap-app','app-l'] },
+    // Step 8: Insert 'apt' - follow existing a, p
+    { label:'Step 8 / 12', narration:'Insert <b>\"apt\"</b> — follow existing <b style="color:#3fb950">\'a\'→\'p\'</b>. Now check for \'t\'.', words:2, nodes:5, reused:5,
+      show:['a','ap','app','l','e'], active:['a','ap'], green:[], eow:['app','e'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e'], edgeActive:['root-a','a-ap'], edgeGreen:[] },
+    // Step 9: Insert 'apt' - 't' (end of word)
+    { label:'Step 9 / 12', narration:'Insert <b>\"apt\"</b> — <b style="color:#f0883e">\'t\'</b> is new → create node, <b style="color:#3fb950">mark *</b>. <b>\"apt\"</b> inserted.', words:3, nodes:6, reused:5,
+      show:['a','ap','app','l','e','apt'], active:['apt'], green:['a','ap'], eow:['app','e','apt'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e','ap-apt'], edgeActive:['ap-apt'], edgeGreen:['root-a','a-ap'] },
+    // Step 10: Insert 'bat' - 'b'
+    { label:'Step 10 / 12', narration:'New word <b>\"bat\"</b>. No \'b\' child from root → <b style="color:#f0883e">create \'b\'</b>.', words:3, nodes:7, reused:5,
+      show:['a','ap','app','l','e','apt','b'], active:['b'], green:['a','ap','app','l','e','apt'], eow:['app','e','apt'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b'], edgeActive:['root-b'], edgeGreen:['root-a','a-ap','ap-app','app-l','l-e','ap-apt'] },
+    // Step 11: Insert 'bat' - 'a', 't'
+    { label:'Step 11 / 12', narration:'Insert <b>\"bat\"</b> — create <b style="color:#f0883e">\'a\'</b> then <b style="color:#f0883e">\'t\'</b> (end *). <b>\"bat\"</b> inserted.', words:4, nodes:9, reused:5,
+      show:['a','ap','app','l','e','apt','b','ba','bat'], active:['ba','bat'], green:['a','ap','app','l','e','apt','b'], eow:['app','e','apt','bat'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'], edgeActive:['b-ba','ba-bat'], edgeGreen:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b'] },
+    // Step 12: Final
+    { label:'Step 12 / 12', narration:'<b style="color:#3fb950">Trie complete.</b> 4 words, 9 nodes. Shared prefixes saved 5 node-creations. Prefix search O(m) where m = word length.', words:4, nodes:9, reused:5,
+      show:['a','ap','app','l','e','apt','b','ba','bat'], active:[], green:['a','ap','app','l','e','apt','b','ba','bat'], eow:['app','e','apt','bat'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'], edgeActive:[], edgeGreen:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'] }
+  ];
+
+  var vz62cur = -1;
+
+  function vz62applyStep(s) {
+    // All SVG nodes
+    var allNodes = ['a','ap','app','l','e','apt','b','ba','bat'];
+    var allEdges = ['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'];
+
+    allNodes.forEach(function(id) {
+      var c = document.getElementById('vz62-n-'+id);
+      var t = document.getElementById('vz62-nt-'+id);
+      var eow = document.getElementById('vz62-neow-'+id);
+      if (!c) return;
+      var shown = s.show.indexOf(id) >= 0;
+      var active = s.active.indexOf(id) >= 0;
+      var green = s.green.indexOf(id) >= 0;
+      var isEow = s.eow.indexOf(id) >= 0;
+      c.setAttribute('opacity', shown ? '1' : '0');
+      if (t) t.setAttribute('opacity', shown ? '1' : '0');
+      if (eow) eow.setAttribute('opacity', isEow ? '1' : '0');
+      if (shown) {
+        if (active) {
+          c.setAttribute('fill','#1f6feb1a'); c.setAttribute('stroke','#58a6ff'); c.setAttribute('stroke-width','2.5');
+          if (t) t.setAttribute('fill','#58a6ff');
+        } else if (green) {
+          c.setAttribute('fill','#3fb9500d'); c.setAttribute('stroke','#3fb950'); c.setAttribute('stroke-width','2');
+          if (t) t.setAttribute('fill','#3fb950');
+        } else {
+          c.setAttribute('fill','#21262d'); c.setAttribute('stroke','#30363d'); c.setAttribute('stroke-width','2');
+          if (t) t.setAttribute('fill','#8b949e');
+        }
+      }
+    });
+
+    allEdges.forEach(function(id) {
+      var e = document.getElementById('vz62-e-'+id);
+      var el = document.getElementById('vz62-el-'+id);
+      if (!e) return;
+      var shown = s.edgeShow.indexOf(id) >= 0;
+      var active = s.edgeActive.indexOf(id) >= 0;
+      var green = s.edgeGreen.indexOf(id) >= 0;
+      e.setAttribute('opacity', shown ? '1' : '0');
+      if (el) el.setAttribute('opacity', shown ? '1' : '0');
+      if (shown) {
+        if (active) { e.setAttribute('stroke','#58a6ff'); e.setAttribute('stroke-width','2.5'); }
+        else if (green) { e.setAttribute('stroke','#3fb950'); e.setAttribute('stroke-width','1.8'); }
+        else { e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
+      }
+    });
+
+    document.getElementById('vz62-step-label').textContent = s.label;
+    document.getElementById('vz62-narration').innerHTML = s.narration;
+    document.getElementById('vz62-s-words').textContent = s.words;
+    document.getElementById('vz62-s-nodes').textContent = s.nodes;
+    document.getElementById('vz62-s-reused').textContent = s.reused;
+    document.getElementById('vz62-prev').disabled = vz62cur <= 0;
+    document.getElementById('vz62-next').disabled = vz62cur >= VZ62_STEPS.length - 1;
+  }
+
+  window.vz62step = function(d) {
+    vz62cur = Math.max(0, Math.min(VZ62_STEPS.length - 1, vz62cur + d));
+    vz62applyStep(VZ62_STEPS[vz62cur]);
+  };
+  window.vz62reset = function() {
+    vz62cur = -1;
+    var allNodes = ['a','ap','app','l','e','apt','b','ba','bat'];
+    var allEdges = ['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'];
+    allNodes.forEach(function(id) {
+      var c = document.getElementById('vz62-n-'+id);
+      var t = document.getElementById('vz62-nt-'+id);
+      var eow = document.getElementById('vz62-neow-'+id);
+      if (c) { c.setAttribute('opacity','0'); c.setAttribute('fill','#21262d'); c.setAttribute('stroke','#30363d'); c.setAttribute('stroke-width','2'); }
+      if (t) t.setAttribute('opacity','0');
+      if (eow) eow.setAttribute('opacity','0');
+    });
+    allEdges.forEach(function(id) {
+      var e = document.getElementById('vz62-e-'+id);
+      var el = document.getElementById('vz62-el-'+id);
+      if (e) { e.setAttribute('opacity','0'); e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
+      if (el) el.setAttribute('opacity','0');
+    });
+    document.getElementById('vz62-step-label').textContent = 'Step 0 / 12';
+    document.getElementById('vz62-narration').innerHTML = 'Press <b>Next</b> to begin inserting words into the trie.';
+    document.getElementById('vz62-s-words').textContent = '0';
+    document.getElementById('vz62-s-nodes').textContent = '0';
+    document.getElementById('vz62-s-reused').textContent = '0';
+    document.getElementById('vz62-prev').disabled = true;
+    document.getElementById('vz62-next').disabled = false;
+  };
+})();
+</script>
+
+    <!-- Lookup -->
+    <h3 class="subsec" id="lookup-op">Lookup (Exact Search)</h3>
+    <p>
+      Walk the trie following each character of the query string (including a final <code>$</code> if using
+      terminator characters). If at any step the required child does not exist, the string is not stored.
+      If we successfully consume all characters, the string is found.
+    </p>
+    <div class="algo-header">
+      Algorithm 63 — Prefix Trie: Lookup
+      <span class="algo-complexity">Time: O(|s|)</span>
+    </div>
+    <pre class="code-block has-header">
+function LOOKUP(S[1..n]):
+    // Returns True if the trie contains a word having S as a prefix.
+    // For exact match, append '$' to S before calling.
+    node = root
+    for each character c in S[1..n]:
+        if node has an edge for character c:
+            node = node.get_child(c)
+        else:
+            return False
+    return True</pre>
+
+<!-- ── VZ63: Prefix Trie Lookup widget ── -->
+<div id="vz63-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;text-transform:uppercase;letter-spacing:.2em;color:#f0883e;">Algorithm 63</span>
+    <span style="font-weight:600;color:#c9d1d9;flex:1;">Prefix Trie Lookup — Interactive</span>
+    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Lookup: "apple" (success), "apr" (fail)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <div style="background:#0d1117;overflow:hidden;">
+      <svg id="vz63-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+        <!-- Static pre-built trie: app, apple, apt, bat -->
+        <!-- Edges -->
+        <line id="vz63-e-root-a" x1="260" y1="46" x2="130" y2="72" stroke="#30363d" stroke-width="1.8"/>
+        <text x="188" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
+        <line id="vz63-e-root-b" x1="260" y1="46" x2="390" y2="72" stroke="#30363d" stroke-width="1.8"/>
+        <text x="330" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">b</text>
+        <line id="vz63-e-a-ap" x1="130" y1="108" x2="130" y2="140" stroke="#30363d" stroke-width="1.8"/>
+        <text x="116" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">p</text>
+        <line id="vz63-e-ap-app" x1="118" y1="174" x2="90" y2="208" stroke="#30363d" stroke-width="1.8"/>
+        <text x="97" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">p</text>
+        <line id="vz63-e-ap-apt" x1="142" y1="174" x2="170" y2="208" stroke="#30363d" stroke-width="1.8"/>
+        <text x="163" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">t</text>
+        <line id="vz63-e-app-l" x1="70" y1="244" x2="52" y2="252" stroke="#30363d" stroke-width="1.8"/>
+        <text x="54" y="248" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">l</text>
+        <line id="vz63-e-l-e" x1="46" y1="262" x2="30" y2="272" stroke="#30363d" stroke-width="1.8"/>
+        <text x="31" y="263" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">e</text>
+        <line id="vz63-e-b-ba" x1="390" y1="108" x2="390" y2="140" stroke="#30363d" stroke-width="1.8"/>
+        <text x="376" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
+        <line id="vz63-e-ba-bat" x1="390" y1="174" x2="390" y2="208" stroke="#30363d" stroke-width="1.8"/>
+        <text x="376" y="195" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">t</text>
+
+        <!-- Nodes (always visible — pre-built trie) -->
+        <circle id="vz63-n-root" cx="260" cy="28" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="260" y="28" font-size="9" font-family="monospace" fill="#c9d1d9" text-anchor="middle" dominant-baseline="central" font-weight="700">root</text>
+
+        <circle id="vz63-n-a" cx="130" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="130" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
+
+        <circle id="vz63-n-ap" cx="130" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="130" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">p</text>
+
+        <circle id="vz63-n-app" cx="78" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="78" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="78" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">p</text>
+
+        <circle id="vz63-n-l" cx="44" cy="266" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="44" y="266" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">l</text>
+
+        <circle id="vz63-n-e" cx="22" cy="282" r="14" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="22" cy="282" r="18" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="22" y="282" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">e</text>
+
+        <circle id="vz63-n-apt" cx="182" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="182" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="182" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">t</text>
+
+        <circle id="vz63-n-b" cx="390" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="390" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">b</text>
+
+        <circle id="vz63-n-ba" cx="390" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="390" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
+
+        <circle id="vz63-n-bat" cx="390" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="390" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="390" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">t</text>
+
+        <!-- Result badge -->
+        <text id="vz63-result" x="420" y="40" font-size="16" font-family="monospace" font-weight="700" text-anchor="middle" opacity="0">?</text>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
+      <div>
+        <div id="vz63-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 9</div>
+        <div id="vz63-narration" style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;">Press <b>Next</b> to begin the lookup walkthroughs.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.56em;letter-spacing:.13em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Matched</span>
+          <span id="vz63-s-matched" style="font-size:1.25em;font-weight:700;color:#c9d1d9;">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:92px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.56em;letter-spacing:.13em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Result</span>
+          <span id="vz63-s-result" style="font-size:1.1em;font-weight:700;color:#8b949e;">—</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;flex-wrap:wrap;">
+        <button onclick="vz63step(-1)" id="vz63-prev" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#161b22;color:#c9d1d9;padding:7px 13px;border-radius:7px;" disabled>&#9664; Prev</button>
+        <button onclick="vz63step(1)" id="vz63-next" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz63reset()" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#161b22;color:#8b949e;padding:7px 13px;border-radius:7px;">&#8635; Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  // All nodes in the trie for highlighting
+  var ALL_NODES_63 = ['root','a','ap','app','l','e','apt','b','ba','bat'];
+  var ALL_EDGES_63 = ['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'];
+
+  // Steps: nodes/edges to highlight green (found), red (fail), active (current)
+  // result: null | 'SUCCESS ✓' | 'FAIL ✗'
+  var VZ63_STEPS = [
+    // --- Lookup "apple" ---
+    { label:'Step 1 / 9', narration:'Lookup <b style="color:#58a6ff">\"apple\"</b>. Start at root.', matched:0, result:'—', resultColor:'#8b949e',
+      active:['root'], found:[], failed:[], edgeActive:[], edgeFound:[] },
+    { label:'Step 2 / 9', narration:'Follow <b style="color:#3fb950">\'a\'</b>: found child → move to it.', matched:1, result:'—', resultColor:'#8b949e',
+      active:['a'], found:['root'], failed:[], edgeActive:['root-a'], edgeFound:[] },
+    { label:'Step 3 / 9', narration:'Follow <b style="color:#3fb950">\'p\'</b>: found child → move.', matched:2, result:'—', resultColor:'#8b949e',
+      active:['ap'], found:['root','a'], failed:[], edgeActive:['a-ap'], edgeFound:['root-a'] },
+    { label:'Step 4 / 9', narration:'Follow <b style="color:#3fb950">\'p\'</b>: found child → move. Note: this node is <b>end-of-word</b> for \"app\".', matched:3, result:'—', resultColor:'#8b949e',
+      active:['app'], found:['root','a','ap'], failed:[], edgeActive:['ap-app'], edgeFound:['root-a','a-ap'] },
+    { label:'Step 5 / 9', narration:'Follow <b style="color:#3fb950">\'l\'</b>: found child → move.', matched:4, result:'—', resultColor:'#8b949e',
+      active:['l'], found:['root','a','ap','app'], failed:[], edgeActive:['app-l'], edgeFound:['root-a','a-ap','ap-app'] },
+    { label:'Step 6 / 9', narration:'Follow <b style="color:#3fb950">\'e\'</b>: found and <b style="color:#3fb950">marked end-of-word</b>. <b style="color:#3fb950">\"apple\" EXISTS in trie. ✓</b>', matched:5, result:'SUCCESS ✓', resultColor:'#3fb950',
+      active:[], found:['root','a','ap','app','l','e'], failed:[], edgeActive:[], edgeFound:['root-a','a-ap','ap-app','app-l','l-e'] },
+    // --- Lookup "apr" ---
+    { label:'Step 7 / 9', narration:'Now lookup <b style="color:#58a6ff">\"apr\"</b>. Reset to root.', matched:0, result:'—', resultColor:'#8b949e',
+      active:['root'], found:[], failed:[], edgeActive:[], edgeFound:[] },
+    { label:'Step 8 / 9', narration:'Follow <b style="color:#3fb950">\'a\'</b>, <b style="color:#3fb950">\'p\'</b>: both found.', matched:2, result:'—', resultColor:'#8b949e',
+      active:['ap'], found:['root','a'], failed:[], edgeActive:['a-ap'], edgeFound:['root-a'] },
+    { label:'Step 9 / 9', narration:'Follow <b style="color:#f85149">\'r\'</b>: <b>NO \'r\' child</b> from \'p\' node. <b style="color:#f85149">\"apr\" NOT in trie. ✗</b>', matched:2, result:'FAIL ✗', resultColor:'#f85149',
+      active:[], found:['root','a'], failed:['ap'], edgeActive:[], edgeFound:['root-a'] }
+  ];
+
+  var vz63cur = -1;
+
+  function vz63apply(s) {
+    ALL_NODES_63.forEach(function(id) {
+      var c = document.getElementById('vz63-n-'+id);
+      if (!c) return;
+      var active = s.active.indexOf(id) >= 0;
+      var found = s.found.indexOf(id) >= 0;
+      var failed = s.failed.indexOf(id) >= 0;
+      if (active) {
+        c.setAttribute('fill','#1f6feb1a'); c.setAttribute('stroke','#58a6ff'); c.setAttribute('stroke-width','2.5');
+      } else if (found) {
+        c.setAttribute('fill','#3fb9500d'); c.setAttribute('stroke','#3fb950'); c.setAttribute('stroke-width','2');
+      } else if (failed) {
+        c.setAttribute('fill','#f851490d'); c.setAttribute('stroke','#f85149'); c.setAttribute('stroke-width','2.5');
+      } else {
+        c.setAttribute('fill','#21262d'); c.setAttribute('stroke','#30363d'); c.setAttribute('stroke-width','2');
+      }
+    });
+    ALL_EDGES_63.forEach(function(id) {
+      var e = document.getElementById('vz63-e-'+id);
+      if (!e) return;
+      var active = s.edgeActive.indexOf(id) >= 0;
+      var found = s.edgeFound.indexOf(id) >= 0;
+      if (active) { e.setAttribute('stroke','#58a6ff'); e.setAttribute('stroke-width','2.5'); }
+      else if (found) { e.setAttribute('stroke','#3fb950'); e.setAttribute('stroke-width','1.8'); }
+      else { e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
+    });
+    document.getElementById('vz63-step-label').textContent = s.label;
+    document.getElementById('vz63-narration').innerHTML = s.narration;
+    document.getElementById('vz63-s-matched').textContent = s.matched;
+    var sr = document.getElementById('vz63-s-result');
+    sr.textContent = s.result; sr.style.color = s.resultColor;
+    var rb = document.getElementById('vz63-result');
+    if (s.result === 'SUCCESS ✓') { rb.textContent = '✓'; rb.setAttribute('fill','#3fb950'); rb.setAttribute('opacity','1'); }
+    else if (s.result === 'FAIL ✗') { rb.textContent = '✗'; rb.setAttribute('fill','#f85149'); rb.setAttribute('opacity','1'); }
+    else { rb.setAttribute('opacity','0'); }
+    document.getElementById('vz63-prev').disabled = vz63cur <= 0;
+    document.getElementById('vz63-next').disabled = vz63cur >= VZ63_STEPS.length - 1;
+  }
+
+  window.vz63step = function(d) {
+    vz63cur = Math.max(0, Math.min(VZ63_STEPS.length - 1, vz63cur + d));
+    vz63apply(VZ63_STEPS[vz63cur]);
+  };
+  window.vz63reset = function() {
+    vz63cur = -1;
+    ALL_NODES_63.forEach(function(id) {
+      var c = document.getElementById('vz63-n-'+id);
+      if (c) { c.setAttribute('fill','#21262d'); c.setAttribute('stroke','#30363d'); c.setAttribute('stroke-width','2'); }
+    });
+    ALL_EDGES_63.forEach(function(id) {
+      var e = document.getElementById('vz63-e-'+id);
+      if (e) { e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
+    });
+    document.getElementById('vz63-result').setAttribute('opacity','0');
+    document.getElementById('vz63-step-label').textContent = 'Step 0 / 9';
+    document.getElementById('vz63-narration').innerHTML = 'Press <b>Next</b> to begin the lookup walkthroughs.';
+    document.getElementById('vz63-s-matched').textContent = '0';
+    var sr = document.getElementById('vz63-s-result'); sr.textContent = '—'; sr.style.color = '#8b949e';
+    document.getElementById('vz63-prev').disabled = true;
+    document.getElementById('vz63-next').disabled = false;
+  };
+})();
+</script>
+
+    <div class="callout insight">
+      <div class="callout-title">Insight — Prefix vs Exact Match</div>
+      <code>LOOKUP("ban")</code> returns <strong>True</strong> if any stored word starts with "ban" (e.g. "bank", "banks").
+      To check whether "ban" is itself stored, use <code>LOOKUP("ban$")</code> — this returns True only if the
+      terminator edge exists at the node reached after "ban".
+    </div>
+
+    <!-- Prefix Matching -->
+    <h3 class="subsec" id="prefix-match-op">Prefix Matching (Autocomplete)</h3>
+    <p>
+      Walk to the node corresponding to the prefix (same as <code>LOOKUP</code>), then traverse the entire
+      subtree rooted there and collect every path that ends with <code>$</code>. This returns all stored words
+      that begin with the given prefix.
+    </p>
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      O(|prefix| + U) where U is the total number of characters in all returned strings (output-sensitive).
+    </div>
+
+    <!-- String Sorting -->
+    <h3 class="subsec" id="sort-op">String Sorting via Trie</h3>
+    <p>
+      Insert all strings into the trie (appending <code>$</code> to each), then perform a <strong>depth-first
+      traversal</strong> visiting children in alphabetical order. Each time a node with a terminal marker is
+      reached, output the current accumulated string. This is equivalent to a Most Significant Digit (MSD)
+      radix sort.
+    </p>
+    <div class="algo-header">
+      Algorithm 64 — Prefix Trie: String Sorting
+      <span class="algo-complexity">Time: O(|&Sigma;| T) array-based</span>
+    </div>
+    <pre class="code-block has-header">
+function SORT_STRINGS(strings[1..n]):
+    for each string s in strings[1..n]:
+        INSERT(s + '$')
+    TRAVERSE(root, "")
+
+function TRAVERSE(node, cur_string):
+    if cur_string ends with '$':
+        print(cur_string)        // omit the '$' if desired
+    else:
+        for each child character c of node in alphabetical order:
+            cur_string.append(c)
+            TRAVERSE(node.get_child(c), cur_string)
+            cur_string.pop_back()  // backtrack</pre>
+
+<!-- ── VZ64: String Sorting with Trie widget ── -->
+<div id="vz64-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;text-transform:uppercase;letter-spacing:.2em;color:#f0883e;">Algorithm 64</span>
+    <span style="font-weight:600;color:#c9d1d9;flex:1;">String Sorting via Trie DFS — Interactive</span>
+    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Input: [bat, app, apt, apple]</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
+    <div style="background:#0d1117;overflow:hidden;">
+      <svg id="vz64-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+        <!-- Static pre-built trie (same structure) -->
+        <line id="vz64-e-root-a" x1="260" y1="46" x2="130" y2="72" stroke="#30363d" stroke-width="1.8"/>
+        <text x="188" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
+        <line id="vz64-e-root-b" x1="260" y1="46" x2="390" y2="72" stroke="#30363d" stroke-width="1.8"/>
+        <text x="330" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">b</text>
+        <line id="vz64-e-a-ap" x1="130" y1="108" x2="130" y2="140" stroke="#30363d" stroke-width="1.8"/>
+        <text x="116" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">p</text>
+        <line id="vz64-e-ap-app" x1="118" y1="174" x2="90" y2="208" stroke="#30363d" stroke-width="1.8"/>
+        <text x="97" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">p</text>
+        <line id="vz64-e-ap-apt" x1="142" y1="174" x2="170" y2="208" stroke="#30363d" stroke-width="1.8"/>
+        <text x="163" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">t</text>
+        <line id="vz64-e-app-l" x1="70" y1="244" x2="52" y2="252" stroke="#30363d" stroke-width="1.8"/>
+        <text x="54" y="248" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">l</text>
+        <line id="vz64-e-l-e" x1="46" y1="262" x2="30" y2="272" stroke="#30363d" stroke-width="1.8"/>
+        <text x="31" y="263" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">e</text>
+        <line id="vz64-e-b-ba" x1="390" y1="108" x2="390" y2="140" stroke="#30363d" stroke-width="1.8"/>
+        <text x="376" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
+        <line id="vz64-e-ba-bat" x1="390" y1="174" x2="390" y2="208" stroke="#30363d" stroke-width="1.8"/>
+        <text x="376" y="195" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">t</text>
+
+        <!-- Nodes -->
+        <circle id="vz64-n-root" cx="260" cy="28" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="260" y="28" font-size="9" font-family="monospace" fill="#c9d1d9" text-anchor="middle" dominant-baseline="central" font-weight="700">root</text>
+
+        <circle id="vz64-n-a" cx="130" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="130" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
+
+        <circle id="vz64-n-ap" cx="130" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="130" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">p</text>
+
+        <circle id="vz64-n-app" cx="78" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="78" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="78" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">p</text>
+
+        <circle id="vz64-n-l" cx="44" cy="266" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="44" y="266" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">l</text>
+
+        <circle id="vz64-n-e" cx="22" cy="282" r="14" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="22" cy="282" r="18" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="22" y="282" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">e</text>
+
+        <circle id="vz64-n-apt" cx="182" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="182" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="182" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">t</text>
+
+        <circle id="vz64-n-b" cx="390" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="390" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">b</text>
+
+        <circle id="vz64-n-ba" cx="390" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="390" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
+
+        <circle id="vz64-n-bat" cx="390" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="390" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="390" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">t</text>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
+      <div>
+        <div id="vz64-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 7</div>
+        <div id="vz64-narration" style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:56px;">Press <b>Next</b> to walk the DFS and sort the strings.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.56em;letter-spacing:.13em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Output</span>
+          <span id="vz64-s-output" style="font-size:1.25em;font-weight:700;color:#3fb950;">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.56em;letter-spacing:.13em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Visited</span>
+          <span id="vz64-s-visited" style="font-size:1.25em;font-weight:700;color:#c9d1d9;">0</span>
+        </div>
+      </div>
+      <div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 12px;min-height:64px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.13em;text-transform:uppercase;color:#8b949e;margin-bottom:4px;">Sorted output</div>
+        <div id="vz64-output-list" style="font-family:'JetBrains Mono',monospace;font-size:.85em;color:#3fb950;line-height:1.7;">(none yet)</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;flex-wrap:wrap;">
+        <button onclick="vz64step(-1)" id="vz64-prev" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#161b22;color:#c9d1d9;padding:7px 13px;border-radius:7px;" disabled>&#9664; Prev</button>
+        <button onclick="vz64step(1)" id="vz64-next" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz64reset()" style="font-family:'JetBrains Mono',monospace;font-size:.76em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#161b22;color:#8b949e;padding:7px 13px;border-radius:7px;">&#8635; Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var ALL_NODES_64 = ['root','a','ap','app','l','e','apt','b','ba','bat'];
+  var ALL_EDGES_64 = ['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'];
+
+  var VZ64_STEPS = [
+    { label:'Step 1 / 7', narration:'Trie contains: app, apple, apt, bat. DFS in lexicographic order will yield sorted output.', output:[], outputCount:0, visited:0,
+      active:['root'], dfsPath:[], edgeActive:[] },
+    { label:'Step 2 / 7', narration:'Enter <b style="color:#bc8cff">\'a\'</b> subtree first (a &lt; b lexicographically).', output:[], outputCount:0, visited:2,
+      active:['a'], dfsPath:['root'], edgeActive:['root-a'] },
+    { label:'Step 3 / 7', narration:'DFS: root→a→p→p — reached <b>end-of-word</b> for <b style="color:#3fb950">\"app\"</b>. Add to output!', output:['app'], outputCount:1, visited:4,
+      active:['app'], dfsPath:['root','a','ap'], edgeActive:['ap-app'] },
+    { label:'Step 4 / 7', narration:'Continue DFS in \'p\'→\'l\'→\'e\' — end-of-word for <b style="color:#3fb950">\"apple\"</b>. Add to output!', output:['app','apple'], outputCount:2, visited:6,
+      active:['e'], dfsPath:['root','a','ap','app','l'], edgeActive:['l-e'] },
+    { label:'Step 5 / 7', narration:'DFS backtracks to \'p\' (ap node), finds \'t\' branch → end-of-word for <b style="color:#3fb950">\"apt\"</b>. Output!', output:['app','apple','apt'], outputCount:3, visited:7,
+      active:['apt'], dfsPath:['root','a','ap'], edgeActive:['ap-apt'] },
+    { label:'Step 6 / 7', narration:'Backtrack to root, enter <b style="color:#bc8cff">\'b\'</b> subtree. b→a→t — end-of-word for <b style="color:#3fb950">\"bat\"</b>. Output!', output:['app','apple','apt','bat'], outputCount:4, visited:9,
+      active:['bat'], dfsPath:['root','b','ba'], edgeActive:['ba-bat'] },
+    { label:'Step 7 / 7', narration:'<b style="color:#3fb950">Sort complete!</b> Output: [app, apple, apt, bat]. O(total characters) — no comparisons needed!', output:['app','apple','apt','bat'], outputCount:4, visited:9,
+      active:[], dfsPath:['root','a','ap','app','l','e','apt','b','ba','bat'], edgeActive:[] }
+  ];
+
+  var vz64cur = -1;
+
+  function vz64apply(s) {
+    ALL_NODES_64.forEach(function(id) {
+      var c = document.getElementById('vz64-n-'+id);
+      if (!c) return;
+      var isActive = s.active.indexOf(id) >= 0;
+      var inPath = s.dfsPath.indexOf(id) >= 0;
+      if (isActive) {
+        c.setAttribute('fill','#bc8cff1a'); c.setAttribute('stroke','#bc8cff'); c.setAttribute('stroke-width','2.5');
+      } else if (inPath) {
+        c.setAttribute('fill','#3fb9500d'); c.setAttribute('stroke','#3fb950'); c.setAttribute('stroke-width','2');
+      } else {
+        c.setAttribute('fill','#21262d'); c.setAttribute('stroke','#30363d'); c.setAttribute('stroke-width','2');
+      }
+    });
+    ALL_EDGES_64.forEach(function(id) {
+      var e = document.getElementById('vz64-e-'+id);
+      if (!e) return;
+      var isActive = s.edgeActive.indexOf(id) >= 0;
+      if (isActive) { e.setAttribute('stroke','#bc8cff'); e.setAttribute('stroke-width','2.5'); }
+      else { e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
+    });
+    document.getElementById('vz64-step-label').textContent = s.label;
+    document.getElementById('vz64-narration').innerHTML = s.narration;
+    document.getElementById('vz64-s-output').textContent = s.outputCount;
+    document.getElementById('vz64-s-visited').textContent = s.visited;
+    var ol = document.getElementById('vz64-output-list');
+    ol.innerHTML = s.output.length ? s.output.map(function(w){ return w; }).join(', ') : '(none yet)';
+    document.getElementById('vz64-prev').disabled = vz64cur <= 0;
+    document.getElementById('vz64-next').disabled = vz64cur >= VZ64_STEPS.length - 1;
+  }
+
+  window.vz64step = function(d) {
+    vz64cur = Math.max(0, Math.min(VZ64_STEPS.length - 1, vz64cur + d));
+    vz64apply(VZ64_STEPS[vz64cur]);
+  };
+  window.vz64reset = function() {
+    vz64cur = -1;
+    ALL_NODES_64.forEach(function(id) {
+      var c = document.getElementById('vz64-n-'+id);
+      if (c) { c.setAttribute('fill','#21262d'); c.setAttribute('stroke','#30363d'); c.setAttribute('stroke-width','2'); }
+    });
+    ALL_EDGES_64.forEach(function(id) {
+      var e = document.getElementById('vz64-e-'+id);
+      if (e) { e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
+    });
+    document.getElementById('vz64-step-label').textContent = 'Step 0 / 7';
+    document.getElementById('vz64-narration').innerHTML = 'Press <b>Next</b> to walk the DFS and sort the strings.';
+    document.getElementById('vz64-s-output').textContent = '0';
+    document.getElementById('vz64-s-visited').textContent = '0';
+    document.getElementById('vz64-output-list').innerHTML = '(none yet)';
+    document.getElementById('vz64-prev').disabled = true;
+    document.getElementById('vz64-next').disabled = false;
+  };
+})();
+</script>
+
+    <p>
+      Comparison with general-purpose sorting: sorting <em>n</em> strings of total length <em>T</em> using merge sort
+      costs O(T log n) because each string comparison is O(T/n). The trie-based approach costs O(|&Sigma;| T) for
+      array-based nodes, or O(T log |&Sigma;|) with BST-based child storage — better when |&Sigma;| is constant or
+      small.
+    </p>
+  </section>
+
+  <!-- ===== SECTION 4: IMPLEMENTATION ===== -->
+  <section class="content-section" id="trie-impl">
+    <h2 class="sec-title"><span class="sec-num">§11.1</span> Implementation Strategies for Child Pointers</h2>
+  <button class="review-btn" data-week="8" data-sec="trie-impl"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The central design decision in a trie implementation is how each node stores references to its children.
+      Let <em>n</em> be the length of a query, <em>T</em> be the total length of all stored strings, and
+      |&Sigma;| be the alphabet size.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Strategy</th>
+          <th>Space per node</th>
+          <th>Total space</th>
+          <th>Lookup time</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Array of size |&Sigma;|</strong></td>
+          <td>O(|&Sigma;|)</td>
+          <td>O(|&Sigma;| T)</td>
+          <td>O(n) — O(1) per character</td>
+          <td>Fastest; wastes space when nodes are sparse. Supports alphabetically nearest-key queries.</td>
+        </tr>
+        <tr>
+          <td><strong>Balanced BST of children</strong></td>
+          <td>O(degree)</td>
+          <td>O(T)</td>
+          <td>O(n log |&Sigma;|) — O(log |&Sigma;|) per character</td>
+          <td>Minimal space; supports nearest-key queries; slower than array.</td>
+        </tr>
+        <tr>
+          <td><strong>Hash Table of children</strong></td>
+          <td>O(degree)</td>
+          <td>O(T)</td>
+          <td>O(n) expected — O(1) expected per character</td>
+          <td>Optimal speed &amp; space; but no deterministic worst-case, no nearest-key support.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Insight — Choosing an Implementation</div>
+      For <strong>constant-sized alphabets</strong> (DNA: |&Sigma;|=4, English: |&Sigma;|=26) the array-based approach
+      is typically preferred because the constant factor is small and O(1) child lookup is both fast and
+      deterministic. For <strong>large or variable alphabets</strong> (e.g. Unicode), a hash table or BST is more
+      space-efficient.
+    </div>
+
+    <h4 class="subsubsec">Properties of Any Trie</h4>
+    <ul>
+      <li>Maximum depth = length of the longest stored string.</li>
+      <li>Insert, Delete, Lookup time = O(length of string), regardless of how many strings are stored.</li>
+      <li>Deeper nodes tend to have fewer children — so the array-based approach wastes the most space near leaves.</li>
+    </ul>
+  </section>
+
+  <!-- ===== SECTION 5: COMPACT TRIE ===== -->
+  <section class="content-section" id="compact-trie">
+    <h2 class="sec-title"><span class="sec-num">§11.1</span> Compact (Patricia / Radix) Trie</h2>
+  <button class="review-btn" data-week="8" data-sec="compact-trie"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      A standard trie may contain long <strong>non-branching paths</strong> — chains where every internal node has
+      exactly one child. These waste both time and space. The solution is to <strong>collapse</strong> such chains
+      into a single edge whose label is the concatenated substring.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Compact / Compressed Trie</div>
+      A <strong>compact trie</strong> (also called a <em>Patricia trie</em> or <em>radix trie</em>) is obtained from
+      a standard trie by repeatedly merging every node that has exactly one child with its parent, combining
+      their edge labels into a single string label on the merged edge. Every internal node in the resulting
+      tree has <strong>at least two children</strong>.
+    </div>
+
+    <h3 class="subsec">Example</h3>
+    <p>
+      Consider the words <code>alloy</code>, <code>aloe</code>, <code>allot</code>, <code>all</code> in a standard trie.
+      The path <code>a → l → l</code> is a three-step non-branching chain. In the compact trie it becomes a single
+      edge labelled <code>"all"</code>. The full compact trie for
+      {<code>be</code>, <code>ant</code>, <code>alloy</code>, <code>ate</code>, <code>are</code>, <code>aloe</code>,
+      <code>an</code>, <code>allot</code>, <code>all</code>} collapses many such chains.
+    </p>
+
+    <pre class="code-block">
+Standard fragment:           Compact equivalent:
+root                         root
+ └─ a                         ├─ "be" ──▶ [leaf: be]
+     └─ l                     └─ "a"
+         └─ l                      ├─ "n" ──▶ [an$]
+             └─ o                  │    └─ "t" ──▶ [ant$]
+                 └─ y (leaf)       ├─ "te" ──▶ [ate$]
+                                   ├─ "re" ──▶ [are$]
+                                   └─ "l"
+                                        ├─ "oe" ──▶ [aloe$]
+                                        └─ "l"
+                                             ├─ $ ──▶ [all$]
+                                             ├─ "ot" ──▶ [allot$]
+                                             └─ "oy" ──▶ [alloy$]</pre>
+
+    <div class="callout cplx">
+      <div class="callout-title">Space Improvement</div>
+      A compact trie over <em>n</em> strings has at most <em>n</em> leaves and at most <em>n&minus;1</em> internal nodes,
+      so at most <em>2n&minus;1</em> nodes total — regardless of string lengths. Edge labels are stored as
+      <em>(start, length)</em> index pairs into the original strings, keeping total space O(T).
+    </div>
+  </section>
+
+  <!-- ===== SECTION 6: COMPLEXITY SUMMARY ===== -->
+  <section class="content-section" id="trie-complexity">
+    <h2 class="sec-title"><span class="sec-num">§11.1</span> Complexity Summary — Prefix Tries</h2>
+  <button class="review-btn" data-week="8" data-sec="trie-complexity"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Operation</th>
+          <th>Time (array-based, |&Sigma;| constant)</th>
+          <th>Space</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Build trie (insert all strings)</td>
+          <td><span class="complexity-tag">O(T)</span></td>
+          <td>O(|&Sigma;| T) worst case</td>
+        </tr>
+        <tr>
+          <td>Insert one string of length M</td>
+          <td><span class="complexity-tag">O(M)</span></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Lookup / Exact search</td>
+          <td><span class="complexity-tag">O(M)</span></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Prefix matching (return all matches)</td>
+          <td><span class="complexity-tag">O(M + U)</span> (U = chars in output)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Sort n strings of total length T</td>
+          <td><span class="complexity-tag">O(|&Sigma;| T)</span> array-based; O(T log |&Sigma;|) BST-based</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Compact trie: node count</td>
+          <td>—</td>
+          <td>O(n) nodes (n = number of strings)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Trie Sorting vs Merge Sort</div>
+      Sorting <em>n</em> strings of total length <em>T</em> using merge sort costs O(T log n) because each
+      comparison is O(T/n). The trie-based approach costs O(T) for constant alphabets. Trie sorting therefore
+      wins whenever |&Sigma;| is constant — it is essentially MSD radix sort.
+    </div>
+  </section>
+
+  <!-- ===== SECTION 7: COMPARISON ===== -->
+  <section class="content-section" id="trie-comparison">
+    <h2 class="sec-title"><span class="sec-num">§11.1</span> Trie vs Hash Table vs BST</h2>
+  <button class="review-btn" data-week="8" data-sec="trie-comparison"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Prefix Trie</th>
+          <th>Hash Table</th>
+          <th>BST (string keys)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Exact lookup</td>
+          <td>O(M) — deterministic</td>
+          <td>O(M) expected</td>
+          <td>O(M log N)</td>
+        </tr>
+        <tr>
+          <td>Prefix matching</td>
+          <td>O(M + U)</td>
+          <td>Not supported efficiently</td>
+          <td>O(M log N + U)</td>
+        </tr>
+        <tr>
+          <td>Sorted order iteration</td>
+          <td>Yes — O(T)</td>
+          <td>No</td>
+          <td>Yes — O(T)</td>
+        </tr>
+        <tr>
+          <td>Nearest-key query</td>
+          <td>Yes (array/BST nodes)</td>
+          <td>No</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Space</td>
+          <td>O(|&Sigma;| T) worst case</td>
+          <td>O(T)</td>
+          <td>O(T)</td>
+        </tr>
+        <tr>
+          <td>Worst-case guarantee</td>
+          <td>Yes</td>
+          <td>No (hash collisions)</td>
+          <td>Yes (balanced BST)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 class="subsubsec">Practical Applications of Tries</h4>
+    <ul>
+      <li><strong>Autocomplete / Autocompletion:</strong> Given a typed prefix, list the top-k most frequent completions — trie prefix match then rank by frequency stored at nodes.</li>
+      <li><strong>Spell checking:</strong> Exact lookup for words; nearest-key traversal for suggestions.</li>
+      <li><strong>IP routing (longest prefix match):</strong> Routers store IP prefixes in tries; incoming packet addresses are matched to the longest matching prefix in O(32) = O(1) steps.</li>
+      <li><strong>Lexicographic string sorting:</strong> In-order DFS of trie yields sorted output.</li>
+      <li><strong>Text search / dictionary lookups:</strong> As a replacement for hash tables where prefix queries are needed.</li>
+    </ul>
+  </section>
+
+  <!-- ===== SECTION 8: SUFFIX TREE INTRO ===== -->
+  <section class="content-section" id="suffix-tree-intro">
+    <h2 class="sec-title"><span class="sec-num">§11.2</span> Suffix Trees — Motivation</h2>
+  <button class="review-btn" data-week="8" data-sec="suffix-tree-intro"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Tries are excellent for looking up complete words (or prefixes of words), but what about searching for
+      an arbitrary <strong>substring</strong> of a large text? The key observation is:
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight — Substrings as Prefixes of Suffixes</div>
+      Every substring of a string S[1..n] is a <strong>prefix of some suffix</strong> of S. Therefore, if we
+      build a trie of <em>all suffixes</em> of S, any pattern P can be found by a simple prefix lookup — we
+      just follow P down from the root. If the traversal succeeds, P occurs in S.
+    </div>
+
+    <h3 class="subsec">Problem Statement — Pattern Matching</h3>
+    <div class="callout def">
+      <div class="callout-title">Problem</div>
+      Given a text string T[1..n] and a pattern P[1..m], find all occurrences of P as a substring of T.
+    </div>
+
+    <p>
+      Many algorithms (Knuth-Morris-Pratt, Boyer-Moore) solve this in O(n + m) <em>per query</em>. However,
+      if we wish to keep the <strong>same text</strong> and answer many pattern queries, paying O(n) per query
+      is wasteful — especially when n = 1,000,000 and m = 20. A suffix tree pre-processes T in O(n) (with
+      Ukkonen's algorithm) and then answers each query in O(m).
+    </p>
+
+    <h3 class="subsec">From Suffix Trie to Suffix Tree</h3>
+    <p>
+      A <strong>suffix trie</strong> is a standard (uncompressed) prefix trie built from all suffixes of S.
+      It supports O(m) pattern matching queries but requires <strong>O(n²) space</strong> — a string of length
+      n has n suffixes whose total length is 1 + 2 + ... + n = O(n²). This is impractical.
+    </p>
+    <p>
+      Compressing the suffix trie into a compact trie — called a <strong>suffix tree</strong> — brings space
+      down to O(n) while preserving O(m) query time.
+    </p>
+  </section>
+
+  <!-- ===== SECTION 9: SUFFIX TREE DEFINITION ===== -->
+  <section class="content-section" id="suffix-tree-def">
+    <h2 class="sec-title"><span class="sec-num">§11.2</span> Suffix Tree — Definition &amp; Properties</h2>
+  <button class="review-btn" data-week="8" data-sec="suffix-tree-def"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Suffix Tree</div>
+      A <strong>suffix tree</strong> for string S is a compact (compressed) trie of all suffixes of S (typically
+      with a unique terminator character <code>$</code> appended to S so that no suffix is a prefix of another).
+      Each leaf corresponds to exactly one suffix of S, and the path from the root to that leaf spells out
+      that suffix. Each edge label is a substring of S (stored as an index pair, not explicitly).
+    </div>
+
+    <h3 class="subsec">Structural Properties</h3>
+    <ul>
+      <li>S has <em>n</em> suffixes (where n = |S|, after appending <code>$</code> it has n+1 suffixes), so the suffix tree has exactly <em>n+1</em> leaves.</li>
+      <li>Every <strong>internal node</strong> has at least 2 children (guaranteed by the compression; any node with one child would have been merged with its parent).</li>
+      <li>There are at most <em>n</em> internal nodes (since the tree has n+1 leaves and is full — every internal node has ≥2 children).</li>
+      <li>Total number of nodes: O(n).</li>
+      <li>The <strong>total length of all edge labels</strong> is O(n) — this is the key advantage over the suffix trie.</li>
+      <li>Each edge label is stored as a pair <code>(start, length)</code> or <code>(start, end)</code> pointing into the original string S, so the entire tree uses only O(n) space.</li>
+    </ul>
+
+    <h3 class="subsec">ASCII Diagram — Suffix Tree for "banana$"</h3>
+    <p>
+      String: <code>banana$</code> (indices 1–7). Suffixes: <code>banana$</code>, <code>anana$</code>,
+      <code>nana$</code>, <code>ana$</code>, <code>na$</code>, <code>a$</code>, <code>$</code>.
+    </p>
+
+    <pre class="code-block">
+                       [root]
+          ______________|______________
+         |         |         |        |
+       "banana$" "a"       "na"      "$"
+       (leaf:1)   |         |       (leaf:7)
+               ___|___    __|___
+              |       |  |      |
+           "na$"    "$" "na$" "banana$"
+          (leaf:3) (leaf:6) (leaf:5) (leaf:2)
+                       |
+                    "na$"
+                   (leaf:4)
+
+Simplified (compact) form:
+
+              [root]
+           /   |    |   \
+     "banana$" |   "na"  "$"
+     (suffix 1)|   / \   (suffix 7 = "$")
+               |  /   \
+              "a" "na$" "banana$"
+              / \  (5)    (2)
+            "na$" "$"
+             (3)  (6)
+              |
+           "na$"
+             (4)
+
+Cleaner view:
+
+                    [root]
+         /        /       \       \
+    "banana$"  "a"        "na"     "$"
+      [1]       |          |        [7]
+            ┌───┴───┐   ┌──┴──┐
+          "na$"    "$"  "na$" "banana$"
+           [3]     [6]  [5]    [2]
+            |
+          "na$"
+           [4]
+
+Leaf numbers = starting index of that suffix in "banana$"</pre>
+
+    <div class="callout insight">
+      <div class="callout-title">Reading a Suffix Tree</div>
+      The label at each leaf indicates the <strong>starting position</strong> of that suffix in the original
+      string. To find whether pattern P occurs in S: follow P from the root, one character at a time along
+      edge labels. If you successfully consume all of P, you have found it; the leaves of the current subtree
+      give you all starting positions of P in S.
+    </div>
+
+    <h3 class="subsec">Space Representation</h3>
+    <p>
+      Rather than storing edge labels as actual substrings (which would require O(n²) space total), each
+      edge label is stored as an integer pair <code>[x, y]</code> meaning "the substring of S from index x
+      to index y". For example, in <code>banana$</code>, the edge label <code>"na"</code> is stored as
+      <code>[3, 4]</code>. This reduces total space to O(n).
+    </p>
+
+    <div class="callout cplx">
+      <div class="callout-title">Space Complexity — Suffix Tree</div>
+      <ul>
+        <li>Exactly n+1 leaves.</li>
+        <li>At most n internal nodes.</li>
+        <li>Each node stores two integers (start, end) for its incoming edge label.</li>
+        <li><strong>Total: O(n) space.</strong></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 10: BUILDING ===== -->
+  <section class="content-section" id="suffix-tree-build">
+    <h2 class="sec-title"><span class="sec-num">§11.2.1</span> Building a Suffix Tree</h2>
+  <button class="review-btn" data-week="8" data-sec="suffix-tree-build"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Naive Construction — O(n²)</h3>
+    <p>
+      The simplest approach is:
+    </p>
+    <ol>
+      <li>Build the full (uncompressed) suffix trie by inserting all n suffixes of S into a standard trie. The i-th suffix has length n&minus;i+1, so total insertion cost is 1 + 2 + ... + n = O(n²).</li>
+      <li>Compress the trie by collapsing all non-branching chains into single edges. This traversal also takes O(n²).</li>
+    </ol>
+    <p>
+      Total naive construction time: <span class="complexity-tag">O(n²)</span>. This is simple to implement
+      but impractical for large strings.
+    </p>
+
+    <h3 class="subsec">Ukkonen's Algorithm — O(n) <span style="font-size:0.8em;color:var(--text-muted)">(Not examinable in Semester 1, 2026)</span></h3>
+    <p>
+      Ukkonen (1995) gave an elegant <strong>online, linear-time</strong> algorithm for suffix tree construction.
+      It processes S one character at a time, maintaining the suffix tree for the current prefix of S.
+      Key ideas:
+    </p>
+    <ul>
+      <li>Each new character extends all existing leaf edges by one character — this is done <em>implicitly</em> in O(1) by using an <code>end</code> pointer shared among all leaves.</li>
+      <li>Whenever a new character would cause a suffix to diverge from an existing path, a new internal node and leaf are created by <em>splitting</em> an edge.</li>
+      <li>Suffix links (pointers from an internal node to the internal node representing the same string minus its first character) allow efficient navigation between related nodes.</li>
+    </ul>
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Ukkonen's Algorithm</div>
+      Ukkonen's algorithm constructs a suffix tree for a string of length n in <span class="complexity-tag">O(n)</span>
+      time and space. It is also <em>online</em>: characters can be appended to S incrementally without
+      rebuilding from scratch.
+    </div>
+
+    <h3 class="subsec">Practical Representation</h3>
+    <p>
+      In any implementation, edge labels are stored as <code>(start, end)</code> index pairs into the original
+      string rather than as copied substrings. Leaf edges use a global "current end" variable that is
+      incremented as the string grows, achieving the O(1) implicit extension for all leaves simultaneously.
+    </p>
+
+    <div class="callout cplx">
+      <div class="callout-title">Construction Complexity Comparison</div>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Time</th><th>Space</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Naive (build suffix trie, then compress)</td><td>O(n²)</td><td>O(n²) during build → O(n) final</td></tr>
+          <tr><td>Ukkonen's algorithm</td><td>O(n)</td><td>O(n)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 11: APPLICATIONS ===== -->
+  <section class="content-section" id="suffix-tree-apps">
+    <h2 class="sec-title"><span class="sec-num">§11.2.2</span> Applications of Suffix Trees</h2>
+  <button class="review-btn" data-week="8" data-sec="suffix-tree-apps"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <!-- App 1: Pattern Matching -->
+    <h3 class="subsec">1. Pattern Matching</h3>
+    <div class="callout def">
+      <div class="callout-title">Problem</div>
+      Does pattern P[1..m] occur as a substring of text S[1..n]?
+    </div>
+    <p>
+      <strong>Algorithm:</strong> Start at the root of the suffix tree for S. For each character of P, follow
+      the matching edge (checking characters along each edge label). If at any point no matching edge exists,
+      P does not occur in S. If all of P is consumed, P occurs in S — the current subtree contains the
+      positions of all occurrences.
+    </p>
+    <div class="algo-header">
+      Pattern Matching via Suffix Tree
+      <span class="algo-complexity">Query: O(|P|) &nbsp;|&nbsp; Pre-processing: O(|S|)</span>
+    </div>
+    <pre class="code-block has-header">
+function PATTERN_MATCH(root, S, P[1..m]):
+    node = root
+    p_idx = 1
+    while p_idx <= m:
+        // Find the edge from node whose label starts with P[p_idx]
+        edge = node.get_edge_starting_with(P[p_idx])
+        if edge is None:
+            return NOT_FOUND
+        // Walk along this edge, matching P against the edge label
+        for each character c in edge.label:
+            if p_idx > m:
+                break           // all of P consumed — found!
+            if P[p_idx] != c:
+                return NOT_FOUND
+            p_idx += 1
+        node = edge.target
+    return FOUND   // subtree leaves give all occurrence positions</pre>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      <ul>
+        <li>Pre-processing (build suffix tree): <span class="complexity-tag">O(n)</span> with Ukkonen; <span class="complexity-tag">O(n²)</span> naively.</li>
+        <li>Each query: <span class="complexity-tag">O(m)</span> — optimal, since you must read all of P.</li>
+      </ul>
+      Compare: naive O(nm) per query; KMP O(n+m) per query but O(n) work even for tiny patterns.
+    </div>
+
+    <!-- App 2: Counting Occurrences -->
+    <h3 class="subsec">2. Counting Occurrences</h3>
+    <div class="callout def">
+      <div class="callout-title">Problem</div>
+      How many times does pattern P[1..m] appear in text S[1..n]?
+    </div>
+    <p>
+      After locating the node where the traversal for P terminates (same as pattern matching above), the
+      number of occurrences equals the <strong>number of leaves in the subtree</strong> rooted at that node —
+      since each leaf corresponds to exactly one suffix, and each suffix that starts with P records one
+      occurrence of P.
+    </p>
+    <p>
+      To answer counting queries efficiently, <strong>pre-compute</strong> the number of leaves in every subtree
+      during a single O(n) DFS over the suffix tree. After this O(n) preprocessing, each count query runs
+      in <span class="complexity-tag">O(m)</span>.
+    </p>
+    <div class="callout thm">
+      <div class="callout-title">Summary</div>
+      Pre-process: O(n) DFS to store leaf counts at every node.
+      Query: O(m) to walk P from the root; O(1) to read the leaf count.
+    </div>
+    <p>
+      In the uncompressed suffix trie, the same counting method applies: count the number of leaf nodes (nodes
+      with a <code>$</code> child) in the subtree. If leaf counts are maintained during insertion, each query
+      is O(m) even without the separate preprocessing DFS.
+    </p>
+
+    <!-- App 3: Longest Repeated Substring -->
+    <h3 class="subsec">3. Longest Repeated Substring</h3>
+    <div class="callout def">
+      <div class="callout-title">Problem</div>
+      Given string S[1..n], find the longest substring that appears at least twice in S.
+    </div>
+    <p>
+      <strong>Key insight:</strong> In a suffix tree, every <strong>internal node</strong> corresponds to a
+      substring that is a prefix shared by at least two suffixes — meaning it occurs at least twice in S.
+      Leaf nodes correspond to substrings appearing exactly once. Therefore, the longest repeated substring
+      is the string spelled out by the path from the root to the <strong>deepest internal node</strong>, where
+      depth is measured by <em>string depth</em> (total number of characters on the path from root to that
+      node, summing edge label lengths).
+    </p>
+    <div class="algo-header">
+      Longest Repeated Substring
+      <span class="algo-complexity">Time: O(n) after O(n) tree construction</span>
+    </div>
+    <pre class="code-block has-header">
+function LONGEST_REPEATED_SUBSTRING(suffix_tree):
+    best_node = None
+    best_depth = 0
+    // DFS, tracking current string depth (sum of edge label lengths)
+    for each internal node v in suffix_tree (DFS):
+        depth = string_depth(v)   // total chars from root to v
+        if depth > best_depth:
+            best_depth = depth
+            best_node = v
+    return path_label(best_node)   // the repeated substring</pre>
+
+    <div class="callout insight">
+      <div class="callout-title">Example — "banana$"</div>
+      In the suffix tree for <code>banana$</code>, the deepest internal node has string depth 3,
+      corresponding to the substring <code>"ana"</code>. Indeed, <code>"ana"</code> appears at positions 1 and
+      3 in <code>banana</code>.
+    </div>
+
+    <!-- App 4: Longest Common Substring -->
+    <h3 class="subsec">4. Longest Common Substring of Two Strings</h3>
+    <div class="callout def">
+      <div class="callout-title">Problem</div>
+      Given two strings S[1..n] and T[1..k], find the longest substring common to both.
+    </div>
+    <p>
+      <strong>Algorithm:</strong> Build a <em>generalised suffix tree</em> — a suffix tree containing the
+      suffixes of <em>both</em> strings. To avoid ambiguity, append unique terminators: use <code>S#</code>
+      and <code>T$</code> (where <code>#</code> and <code>$</code> are distinct characters not in the
+      alphabet). Each leaf is tagged as belonging to S or T (or both, if the same suffix happens to exist
+      in both strings).
+    </p>
+    <p>
+      The longest common substring corresponds to the <strong>deepest internal node</strong> that has at
+      least one leaf from S and at least one leaf from T in its subtree. Finding this node requires:
+    </p>
+    <ol>
+      <li>Build the generalised suffix tree of <code>S#T$</code>: O(n + k).</li>
+      <li>Annotate each node with whether its subtree contains leaves from S, leaves from T, or both: O(n + k) DFS.</li>
+      <li>Find the deepest annotated node that has both: O(n + k) DFS.</li>
+    </ol>
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      Total: <span class="complexity-tag">O(n + k)</span> after O(n + k) construction.
+      Compare: naive O(nk·min(n,k)) dynamic programming.
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Extension — Multiple Strings</div>
+      The same idea generalises: given strings S₁, S₂, ..., Sₚ, find the longest substring occurring in
+      at least k of them. Build a generalised suffix tree of all strings, annotate each node with the set
+      of source strings in its subtree, and find the deepest node whose annotation set has size ≥ k.
+    </div>
+
+    <!-- App 5: Sorting -->
+    <h3 class="subsec">5. Lexicographic Sorting of Suffixes</h3>
+    <p>
+      A DFS of the suffix tree, always choosing children in alphabetical order of their edge labels,
+      visits the leaves in <strong>lexicographic order</strong> of the suffixes. The leaf indices encountered
+      form the <strong>suffix array</strong> of S. This is an O(n) extraction of the suffix array from the
+      suffix tree (after O(n) construction).
+    </p>
+
+    <!-- Summary table -->
+    <h3 class="subsec">Applications Summary</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Application</th>
+          <th>Pre-processing</th>
+          <th>Query time</th>
+          <th>Key idea</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Pattern matching (exists?)</td>
+          <td>O(n) build</td>
+          <td><span class="complexity-tag">O(m)</span></td>
+          <td>Walk P from root; fall off = not found</td>
+        </tr>
+        <tr>
+          <td>Count occurrences of P</td>
+          <td>O(n) build + O(n) DFS</td>
+          <td><span class="complexity-tag">O(m)</span></td>
+          <td>Leaf count in subtree where P ends</td>
+        </tr>
+        <tr>
+          <td>Longest repeated substring</td>
+          <td>O(n) build</td>
+          <td><span class="complexity-tag">O(n)</span></td>
+          <td>Deepest internal node (by string depth)</td>
+        </tr>
+        <tr>
+          <td>Longest common substring (2 strings)</td>
+          <td>O(n+k) build</td>
+          <td><span class="complexity-tag">O(n+k)</span></td>
+          <td>Deepest node with leaves from both strings</td>
+        </tr>
+        <tr>
+          <td>Suffix array extraction</td>
+          <td>O(n) build</td>
+          <td><span class="complexity-tag">O(n)</span></td>
+          <td>DFS leaves in alphabetical child order</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== SECTION 12: KEY TAKEAWAYS ===== -->
+  <section class="content-section" id="takeaways">
+    <h2 class="sec-title"><span class="sec-num">§</span> Key Takeaways</h2>
+  <button class="review-btn" data-week="8" data-sec="takeaways"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout thm">
+      <div class="callout-title">Core Messages</div>
+      <ul>
+        <li><strong>Tries</strong> give O(M) insert and lookup for strings of length M — independent of how many strings are stored. This beats BSTs (O(M log N)) and is competitive with hash tables while supporting richer queries.</li>
+        <li><strong>Compact (Patricia) tries</strong> reduce the node count to O(n) for n strings, making the structure space-efficient.</li>
+        <li><strong>Suffix trees</strong> are compact tries over all suffixes of a text — they enable O(m) pattern matching after O(n) preprocessing (with Ukkonen's algorithm), outperforming per-query algorithms like KMP when many queries are issued against the same text.</li>
+        <li>Storing edge labels as <code>(start, end)</code> index pairs is essential to keep suffix tree space at O(n) rather than O(n²).</li>
+        <li>Both tries and suffix trees support <strong>linear-time construction</strong>, though the suffix tree construction algorithm (Ukkonen) is non-trivial.</li>
+      </ul>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Common Pitfalls</div>
+      <ul>
+        <li>Confusing a <strong>suffix trie</strong> (uncompressed, O(n²) space) with a <strong>suffix tree</strong> (compressed, O(n) space). The suffix tree is the one used in practice.</li>
+        <li>Forgetting the terminal character <code>$</code>: without it, some suffix could be a prefix of another, and leaf nodes would not correctly correspond to full suffixes.</li>
+        <li>Confusing <em>string depth</em> (total characters on path from root to node) with <em>node depth</em> (number of edges): the deepest internal node by string depth gives the longest repeated substring, not the deepest by edge count.</li>
+        <li>Storing edge labels as actual substrings rather than index pairs inflates space to O(n²).</li>
+      </ul>
+    </div>
+  </section>
+
+<!-- ═══════════════════════════════════════════════════════
+     INTERACTIVE DEMO — Prefix Trie Insertion (Week 8)
+     ═══════════════════════════════════════════════════════ -->
+<section class="content-section algo-demo" id="w8-demo">
+  <h2 class="sec-title"><span class="sec-num">Demo</span> Prefix Trie — Watch it Grow</h2>
+  <p class="demo-eyebrow">interactive demo</p>
+  <p class="demo-lede">Insert words one by one and watch shared prefixes avoid duplication. Each <b>unique character</b> along a path creates exactly one node.</p>
+
+  <div class="demo-board">
+    <div class="demo-stage">
+      <!-- SVG: Trie for ["cat","car","cab","do","dog"] -->
+      <!-- Layout:
+           root(400,40)
+           c(220,120), d(580,120)
+           a(180,200), o(580,200)
+           t(100,280), r(180,280), b(260,280), g(580,280)
+      -->
+      <svg id="d8-svg" viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg">
+        <!-- Edges (hidden until revealed) -->
+        <!-- root→c -->
+        <line id="d8-edge-root-c" x1="400" y1="58" x2="220" y2="102" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <!-- root→d -->
+        <line id="d8-edge-root-d" x1="400" y1="58" x2="580" y2="102" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <!-- c→a -->
+        <line id="d8-edge-c-a" x1="220" y1="138" x2="180" y2="182" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <!-- d→o -->
+        <line id="d8-edge-d-o" x1="580" y1="138" x2="580" y2="182" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <!-- a→t -->
+        <line id="d8-edge-a-t" x1="172" y1="218" x2="110" y2="262" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <!-- a→r -->
+        <line id="d8-edge-a-r" x1="180" y1="218" x2="180" y2="262" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <!-- a→b -->
+        <line id="d8-edge-a-b" x1="188" y1="218" x2="254" y2="262" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <!-- o→g -->
+        <line id="d8-edge-o-g" x1="580" y1="218" x2="580" y2="262" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+
+        <!-- Nodes (hidden until revealed) -->
+        <!-- root (always visible) -->
+        <circle id="d8-node-root" cx="400" cy="40" r="20" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="400" y="40" fill="#c9d1d9" font-size="11" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700">root</text>
+
+        <!-- c -->
+        <circle id="d8-node-c" cx="220" cy="120" r="20" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="d8-txt-c" x="220" y="120" fill="#8b949e" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">c</text>
+
+        <!-- d -->
+        <circle id="d8-node-d" cx="580" cy="120" r="20" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="d8-txt-d" x="580" y="120" fill="#8b949e" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">d</text>
+
+        <!-- a -->
+        <circle id="d8-node-a" cx="180" cy="200" r="20" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="d8-txt-a" x="180" y="200" fill="#8b949e" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">a</text>
+
+        <!-- o -->
+        <circle id="d8-node-o" cx="580" cy="200" r="20" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="d8-txt-o" x="580" y="200" fill="#8b949e" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">o</text>
+
+        <!-- t (end-of-word) -->
+        <circle id="d8-node-t" cx="110" cy="280" r="20" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="d8-eow-t" cx="110" cy="280" r="24" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="d8-txt-t" x="110" y="280" fill="#8b949e" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">t</text>
+
+        <!-- r (end-of-word) -->
+        <circle id="d8-node-r" cx="180" cy="280" r="20" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="d8-eow-r" cx="180" cy="280" r="24" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="d8-txt-r" x="180" y="280" fill="#8b949e" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">r</text>
+
+        <!-- b (end-of-word) -->
+        <circle id="d8-node-b" cx="260" cy="280" r="20" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="d8-eow-b" cx="260" cy="280" r="24" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="d8-txt-b" x="260" y="280" fill="#8b949e" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">b</text>
+
+        <!-- g (end-of-word) -->
+        <circle id="d8-node-g" cx="580" cy="280" r="20" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="d8-eow-g" cx="580" cy="280" r="24" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="d8-txt-g" x="580" y="280" fill="#8b949e" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">g</text>
+
+        <!-- do node (end-of-word — 'o' is also end of word for "do") -->
+        <circle id="d8-eow-o" cx="580" cy="200" r="24" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+      </svg>
+    </div>
+
+    <div class="demo-panel">
+      <div class="demo-narrate">
+        <p class="demo-step-label" id="d8-label">Ready</p>
+        <p class="demo-step-text" id="d8-text">Press <b>Insert next word</b> to insert words into the trie one by one.</p>
+        <div class="demo-stats">
+          <div class="demo-chip"><span class="k">Words inserted</span><span class="v" id="d8-s-words">0 / 5</span></div>
+          <div class="demo-chip"><span class="k">Nodes created</span><span class="v" id="d8-s-nodes">0</span></div>
+          <div class="demo-chip good"><span class="k">Shared (reused)</span><span class="v" id="d8-s-shared">0</span></div>
+        </div>
+      </div>
+      <div class="demo-side">
+        <h4>Inserted Words</h4>
+        <div id="d8-wordlist" style="font-size:0.82em;line-height:1.9;font-family:monospace;color:#8b949e;">
+          (none yet)
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-controls">
+      <button class="demo-btn primary" id="d8-step">Insert next word ▶</button>
+      <button class="demo-btn" id="d8-run">Insert all</button>
+      <button class="demo-btn" id="d8-reset">Reset</button>
+      <div class="demo-spd">
+        <label for="d8-spd">Speed</label>
+        <input type="range" id="d8-spd" min="0.5" max="4" step="0.5" value="1">
+      </div>
+    </div>
+  </div>
+  <p class="demo-hint">Notice 'car', 'cat', 'cab' all share the prefix 'ca' — only one path for those 2 chars. Shared nodes save space!</p>
+  <button class="review-btn" data-week="8" data-sec="w8-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+</section>
+
+
+</main>
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+<!-- ═══════════════════ Week 8 — Prefix Trie Demo Script ═══════════════════ -->
+<script>
+(function(){
+  'use strict';
+  // ── Trie demo state ──────────────────────────────────────────────────────
+  // Words to insert in order
+  const WORDS = ['cat', 'car', 'cab', 'do', 'dog'];
+
+  // For each word: array of {nodeId, edgeId, isNew, isEow}
+  // nodeId: the SVG node id; edgeId: the SVG edge id leading INTO this node; isNew: true if first visit
+  // Pre-computed insertion steps:
+  // "cat": root(existing) → c(new) → a(new) → t(new,eow)
+  // "car": root(exist) → c(exist) → a(exist) → r(new,eow)
+  // "cab": root(exist) → c(exist) → a(exist) → b(new,eow)
+  // "do":  root(exist) → d(new) → o(new,eow)
+  // "dog": root(exist) → d(exist) → o(exist) → g(new,eow)
+
+  const WORD_STEPS = [
+    // cat
+    [
+      { nodeId:'root',  edgeId:null,           isNew:true,  isEow:false },
+      { nodeId:'c',     edgeId:'root-c',        isNew:true,  isEow:false },
+      { nodeId:'a',     edgeId:'c-a',           isNew:true,  isEow:false },
+      { nodeId:'t',     edgeId:'a-t',           isNew:true,  isEow:true  },
+    ],
+    // car
+    [
+      { nodeId:'root',  edgeId:null,            isNew:false, isEow:false },
+      { nodeId:'c',     edgeId:'root-c',         isNew:false, isEow:false },
+      { nodeId:'a',     edgeId:'c-a',            isNew:false, isEow:false },
+      { nodeId:'r',     edgeId:'a-r',            isNew:true,  isEow:true  },
+    ],
+    // cab
+    [
+      { nodeId:'root',  edgeId:null,            isNew:false, isEow:false },
+      { nodeId:'c',     edgeId:'root-c',         isNew:false, isEow:false },
+      { nodeId:'a',     edgeId:'c-a',            isNew:false, isEow:false },
+      { nodeId:'b',     edgeId:'a-b',            isNew:true,  isEow:true  },
+    ],
+    // do
+    [
+      { nodeId:'root',  edgeId:null,            isNew:false, isEow:false },
+      { nodeId:'d',     edgeId:'root-d',         isNew:true,  isEow:false },
+      { nodeId:'o',     edgeId:'d-o',            isNew:true,  isEow:true  },
+    ],
+    // dog
+    [
+      { nodeId:'root',  edgeId:null,            isNew:false, isEow:false },
+      { nodeId:'d',     edgeId:'root-d',         isNew:false, isEow:false },
+      { nodeId:'o',     edgeId:'d-o',            isNew:false, isEow:false },
+      { nodeId:'g',     edgeId:'o-g',            isNew:true,  isEow:true  },
+    ],
+  ];
+
+  let wordIdx = 0;          // which word we're inserting next
+  let nodesCreated = 0;
+  let sharedNodes = 0;
+  let busy = false;
+  let finished = false;
+  let spd = 1;
+  const insertedWords = [];
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms / spd));
+
+  function setStep(label, html) {
+    document.getElementById('d8-label').textContent = label;
+    document.getElementById('d8-text').innerHTML = html;
+  }
+
+  function showNode(nodeId) {
+    const c = document.getElementById('d8-node-' + nodeId);
+    const txt = document.getElementById('d8-txt-' + nodeId);
+    if (c) c.setAttribute('opacity', '1');
+    if (txt) txt.setAttribute('opacity', '1');
+  }
+
+  function showEdge(edgeId) {
+    if (!edgeId) return;
+    const e = document.getElementById('d8-edge-' + edgeId);
+    if (e) e.setAttribute('opacity', '1');
+  }
+
+  function showEow(nodeId) {
+    const eow = document.getElementById('d8-eow-' + nodeId);
+    if (eow) eow.setAttribute('opacity', '1');
+  }
+
+  function setNodeColor(nodeId, state) {
+    const c = document.getElementById('d8-node-' + nodeId);
+    const txt = document.getElementById('d8-txt-' + nodeId);
+    if (!c) return;
+    switch (state) {
+      case 'traverse':  // existing node, being traversed
+        c.setAttribute('fill', '#58a6ff22');
+        c.setAttribute('stroke', '#58a6ff');
+        c.setAttribute('stroke-width', '2.5');
+        if (txt) txt.setAttribute('fill', '#58a6ff');
+        break;
+      case 'new':       // newly created node
+        c.setAttribute('fill', '#f0883e44');
+        c.setAttribute('stroke', '#f0883e');
+        c.setAttribute('stroke-width', '2.5');
+        if (txt) txt.setAttribute('fill', '#f0883e');
+        break;
+      case 'done':      // finalized node
+        c.setAttribute('fill', '#21262d');
+        c.setAttribute('stroke', '#30363d');
+        c.setAttribute('stroke-width', '2');
+        if (txt) txt.setAttribute('fill', '#8b949e');
+        break;
+    }
+  }
+
+  function setEdgeColor(edgeId, state) {
+    if (!edgeId) return;
+    const e = document.getElementById('d8-edge-' + edgeId);
+    if (!e) return;
+    switch (state) {
+      case 'traverse': e.setAttribute('stroke', '#58a6ff'); e.setAttribute('stroke-width', '2.5'); break;
+      case 'new':      e.setAttribute('stroke', '#f0883e'); e.setAttribute('stroke-width', '2.5'); break;
+      case 'done':     e.setAttribute('stroke', '#30363d'); e.setAttribute('stroke-width', '1.8'); break;
+    }
+  }
+
+  function updateWordList() {
+    const el = document.getElementById('d8-wordlist');
+    if (insertedWords.length === 0) {
+      el.innerHTML = '(none yet)';
+    } else {
+      el.innerHTML = insertedWords.map(w =>
+        `<span style="color:#3fb950">✓</span> <span style="color:#c9d1d9">${w}</span><br>`
+      ).join('');
+    }
+  }
+
+  // ── Insert one full word, step by step ───────────────────────────────────
+  async function insertWord(wi) {
+    const word = WORDS[wi];
+    const steps = WORD_STEPS[wi];
+    let foundChars = [];
+    let newChars = [];
+
+    setStep('Inserting: "' + word + '"', `Starting at root, traversing character by character...`);
+    await sleep(400);
+
+    for (let si = 0; si < steps.length; si++) {
+      const { nodeId, edgeId, isNew, isEow } = steps[si];
+      const ch = nodeId === 'root' ? 'root' : nodeId;
+
+      // Show the node/edge first if newly created
+      if (isNew) {
+        showNode(nodeId);
+        showEdge(edgeId);
+        setNodeColor(nodeId, 'new');
+        if (edgeId) setEdgeColor(edgeId, 'new');
+        nodesCreated++;
+        newChars.push(ch);
+        document.getElementById('d8-s-nodes').textContent = String(nodesCreated);
+        setStep(
+          'Creating node "' + ch + '"',
+          `Character <code>${ch}</code> not found — creating new node. <b style="color:#f0883e">+1 node</b>`
+        );
+      } else {
+        // Existing node — traverse
+        if (nodeId !== 'root') sharedNodes++;
+        setNodeColor(nodeId, 'traverse');
+        if (edgeId) setEdgeColor(edgeId, 'traverse');
+        if (nodeId !== 'root') foundChars.push(ch);
+        document.getElementById('d8-s-shared').textContent = String(sharedNodes);
+        if (nodeId !== 'root') {
+          setStep(
+            'Traversing "' + ch + '"',
+            `Character <code>${ch}</code> already exists — reusing node. <b style="color:#58a6ff">shared!</b>`
+          );
+        }
+      }
+
+      await sleep(500);
+
+      // Mark end-of-word
+      if (isEow) {
+        showEow(nodeId);
+        setStep(
+          'End of word "' + word + '"',
+          `Marking <code>${ch}</code> as end-of-word (green ring). Word <b style="color:#3fb950">"${word}"</b> inserted!`
+        );
+        await sleep(400);
+      }
+
+      // Reset color to done after highlighting
+      setNodeColor(nodeId, 'done');
+      if (edgeId) setEdgeColor(edgeId, 'done');
+    }
+
+    insertedWords.push(word);
+    wordIdx++;
+    document.getElementById('d8-s-words').textContent = wordIdx + ' / 5';
+    updateWordList();
+
+    const sharedList = foundChars.length > 0 ? ` Shared: <b style="color:#58a6ff">${foundChars.join(', ')}</b>.` : '';
+    const newList = newChars.length > 0 ? ` Created: <b style="color:#f0883e">${newChars.join(', ')}</b>.` : '';
+    setStep('"' + word + '" complete', `Inserted <b style="color:#3fb950">"${word}"</b>.${sharedList}${newList}`);
+  }
+
+  async function doStep() {
+    if (busy || finished) return;
+    busy = true;
+    document.getElementById('d8-step').disabled = true;
+    document.getElementById('d8-run').disabled = true;
+
+    if (wordIdx < WORDS.length) {
+      await insertWord(wordIdx);
+    }
+
+    if (wordIdx >= WORDS.length) {
+      finished = true;
+      setStep('All words inserted!', `<b style="color:#3fb950">Trie complete!</b> ${nodesCreated} nodes created, ${sharedNodes} node-traversals shared. The trie stores ${WORDS.length} words with prefix compression.`);
+    } else {
+      document.getElementById('d8-step').disabled = false;
+      document.getElementById('d8-run').disabled = false;
+    }
+    busy = false;
+  }
+
+  async function runAll() {
+    if (busy || finished) return;
+    document.getElementById('d8-step').disabled = true;
+    document.getElementById('d8-run').disabled = true;
+    while (!finished && wordIdx < WORDS.length) {
+      await doStep();
+      if (!finished) await sleep(300);
+    }
+  }
+
+  function resetDemo() {
+    if (busy) return;
+    wordIdx = 0;
+    nodesCreated = 0;
+    sharedNodes = 0;
+    finished = false;
+    insertedWords.length = 0;
+
+    // Hide all nodes/edges except root
+    const nodeIds = ['c','d','a','o','t','r','b','g'];
+    nodeIds.forEach(id => {
+      const c = document.getElementById('d8-node-' + id);
+      const txt = document.getElementById('d8-txt-' + id);
+      const eow = document.getElementById('d8-eow-' + id);
+      if (c) { c.setAttribute('opacity','0'); c.setAttribute('fill','#21262d'); c.setAttribute('stroke','#30363d'); c.setAttribute('stroke-width','2'); }
+      if (txt) { txt.setAttribute('opacity','0'); txt.setAttribute('fill','#8b949e'); }
+      if (eow) eow.setAttribute('opacity','0');
+    });
+    document.getElementById('d8-eow-o').setAttribute('opacity','0');
+
+    const edgeIds = ['root-c','root-d','c-a','d-o','a-t','a-r','a-b','o-g'];
+    edgeIds.forEach(id => {
+      const e = document.getElementById('d8-edge-' + id);
+      if (e) { e.setAttribute('opacity','0'); e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
+    });
+
+    document.getElementById('d8-s-words').textContent = '0 / 5';
+    document.getElementById('d8-s-nodes').textContent = '0';
+    document.getElementById('d8-s-shared').textContent = '0';
+    updateWordList();
+    setStep('Ready', 'Press <b>Insert next word</b> to insert words into the trie one by one.');
+    document.getElementById('d8-step').disabled = false;
+    document.getElementById('d8-run').disabled = false;
+  }
+
+  document.getElementById('d8-step').addEventListener('click', doStep);
+  document.getElementById('d8-run').addEventListener('click', runAll);
+  document.getElementById('d8-reset').addEventListener('click', resetDemo);
+  document.getElementById('d8-spd').addEventListener('input', function() { spd = parseFloat(this.value); });
+})();
+</script>
+</html>

@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 6 — Dynamic Programming | FIT2004</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+  --text: #c9d1d9; --text-muted: #8b949e;
+  --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+  --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+}
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+nav ul { list-style: none; }
+nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+nav ul li a:hover { color: var(--text); background: var(--bg3); }
+nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+main { flex: 1; max-width: 860px; padding: 48px 56px; }
+.week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+.week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+.week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+.topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+section.content-section { margin-bottom: 56px; }
+h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+p { margin-bottom: 14px; }
+.callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+.callout.def { background: #1f6feb0d; border-color: var(--blue); }
+.callout.thm { background: #3fb9500d; border-color: var(--green); }
+.callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+.callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+.callout.warn { background: #f851490d; border-color: var(--red); }
+.callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.callout.def .callout-title { color: var(--blue); }
+.callout.thm .callout-title { color: var(--green); }
+.callout.cplx .callout-title { color: var(--orange); }
+.callout.insight .callout-title { color: var(--purple); }
+.callout.warn .callout-title { color: var(--red); }
+pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+.algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+.algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+td { padding: 10px 16px; border: 1px solid var(--border); }
+tr:nth-child(even) td { background: var(--bg2); }
+code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+ul, ol { padding-left: 24px; margin-bottom: 14px; }
+li { margin-bottom: 7px; }
+.complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+@media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html" class="current"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#s71" class="sub">7.1 Key Elements</a></li>
+    <li><a href="#s72" class="sub">7.2 Top-Down vs Bottom-Up</a></li>
+    <li><a href="#s73" class="sub">7.3 Reconstructing Solutions</a></li>
+    <li><a href="#s74" class="sub">7.4 Unbounded Knapsack</a></li>
+    <li><a href="#s75" class="sub">7.5 0-1 Knapsack</a></li>
+    <li><a href="#s76" class="sub">7.6 Edit Distance</a></li>
+    <li><a href="#s77" class="sub">7.7 Matrix Chain Multiplication</a></li>
+    <li><a href="#s78" class="sub">7.8 Space-Saving</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<main>
+  <!-- ======================================================= -->
+  <!-- HEADER -->
+  <!-- ======================================================= -->
+  <div class="week-header">
+    <div class="week-badge">Week 6</div>
+    <h1>Dynamic Programming</h1>
+    <div class="subtitle">Chapter 7 &mdash; Solving problems by memoising overlapping subproblems</div>
+    <div class="topics">
+      <span>Memoisation</span>
+      <span>Optimal Substructure</span>
+      <span>Coin Change</span>
+      <span>Unbounded Knapsack</span>
+      <span>0-1 Knapsack</span>
+      <span>Edit Distance</span>
+      <span>Matrix Chain</span>
+      <span>Space-Saving Trick</span>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- SECTION 7.1 -->
+  <!-- ======================================================= -->
+  <section class="content-section" id="s71">
+    <h2 class="sec-title"><span class="sec-num">7.1</span> The Key Elements of Dynamic Programming</h2>
+  <button class="review-btn" data-week="6" data-sec="s71"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>Dynamic programming (DP) solves a problem by breaking it into <strong>smaller subproblems</strong> and combining their solutions. Unlike divide-and-conquer, DP applies specifically when the same subproblem is needed <strong>multiple times</strong> — i.e., the subproblems <em>overlap</em>. The core insight is to compute each subproblem only once and store the result for later reuse.</p>
+
+    <div class="callout def">
+      <div class="callout-title">Two Required Properties</div>
+      <ul>
+        <li><strong>Overlapping Subproblems:</strong> The same sub-computation is needed repeatedly (e.g., F(4) appears many times when computing F(6)).</li>
+        <li><strong>Optimal Substructure:</strong> An optimal solution to the original problem can be constructed from optimal solutions to its subproblems.</li>
+      </ul>
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">DP vs Divide &amp; Conquer</div>
+      Both paradigms use optimal substructure. The difference: divide-and-conquer subproblems are <em>independent</em> (Mergesort), while DP subproblems <em>overlap</em> (Fibonacci). DP avoids recomputing overlapping subproblems via memoisation.
+    </div>
+
+    <h3 class="subsec">Motivating Example: Fibonacci Numbers</h3>
+
+    <p>Fibonacci numbers are defined by the recurrence <strong>F(n) = F(n&minus;1) + F(n&minus;2)</strong>, with base cases F(0) = 0, F(1) = 1.</p>
+
+    <h4 class="subsubsec">Approach 1: Naive Recursion — O(2<sup>n</sup>)</h4>
+
+    <p>The direct recursive implementation recomputes the same values exponentially many times. F(n&minus;k) is computed F(k+1) times, so the leaves of the call tree explode. The recurrence T(n) = T(n&minus;1) + T(n&minus;2) + c has the same structure as Fibonacci itself, giving T(n) = O(F(n)) = O(&phi;<sup>n</sup>) where &phi; &approx; 1.618 is the golden ratio.</p>
+
+    <div class="algo-header">
+      Algorithm 42 &mdash; Naive Recursive Fibonacci
+      <span class="algo-complexity">Time: O(2<sup>n</sup>) | Space: O(n) stack</span>
+    </div>
+    <pre class="code-block has-header">function FIBONACCI(n):
+    if n &lt;= 1 then
+        return n
+    else
+        return FIBONACCI(n-1) + FIBONACCI(n-2)</pre>
+
+<div id="vz42-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;">Algorithm 42</span>
+    <span style="font-size:13px;font-weight:600;color:#c9d1d9;flex:1;">Recursive Fibonacci — Call Tree for fib(5)</span>
+    <span style="font-size:11px;font-family:monospace;color:#f85149;background:rgba(248,81,73,.12);border:1px solid rgba(248,81,73,.3);padding:2px 8px;border-radius:10px;">O(2ⁿ)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:12px;overflow:hidden;">
+      <svg id="vz42-svg" viewBox="0 0 500 280" style="width:100%;height:auto;display:block;background:#0d1117;border-radius:6px;"></svg>
+    </div>
+    <div style="padding:16px 18px;background:#21262d;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f0883e;" id="vz42-label">READY</div>
+      <div style="font-size:0.85em;color:#c9d1d9;line-height:1.5;min-height:60px;" id="vz42-narrate">Click Step to expand the recursion tree for fib(5). Red nodes are called multiple times — the key inefficiency.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Total calls</span>
+          <span style="font-size:1.3em;font-weight:700;color:#f85149;" id="vz42-calls">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Unique</span>
+          <span style="font-size:1.3em;font-weight:700;color:#3fb950;" id="vz42-unique">5</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz42step()" id="vz42-stepbtn" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step</button>
+        <button onclick="vz42reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+var steps=[
+  {calls:1,label:"CALL fib(5)",narrate:"fib(5) called. n>1, so it will recurse on fib(4) and fib(3). This is the root of the call tree."},
+  {calls:3,label:"EXPAND fib(5)",narrate:"fib(5) calls fib(4) and fib(3). Two new calls added — the tree begins to grow."},
+  {calls:6,label:"EXPAND fib(4)",narrate:"fib(4) calls fib(3) and fib(2). Notice fib(3) now appears twice in the tree already!"},
+  {calls:9,label:"EXPAND fib(3) [left]",narrate:"Left fib(3) calls fib(2) and fib(1). fib(2) will soon appear multiple times."},
+  {calls:12,label:"EXPAND fib(2) [first]",narrate:"First fib(2) calls fib(1) and fib(0) — base cases, return immediately."},
+  {calls:14,label:"BASE CASES reached",narrate:"fib(1)=1 and fib(0)=0. Total calls so far: 14. Unique subproblems: only 5 (fib 0..4)!"},
+  {calls:15,label:"fib(2) DUPLICATED",narrate:"fib(2) is called again from fib(3) right branch. Highlighted in orange — this is redundant recomputation!"},
+];
+var svg=document.getElementById('vz42-svg');
+var nodeData=[
+  {id:0,x:250,y:28,n:5,color:'#58a6ff',count:1},
+  {id:1,x:140,y:80,n:4,color:'#58a6ff',count:1},
+  {id:2,x:360,y:80,n:3,color:'#f0883e',count:2},
+  {id:3,x:80,y:140,n:3,color:'#f0883e',count:2},
+  {id:4,x:200,y:140,n:2,color:'#f85149',count:3},
+  {id:5,x:300,y:140,n:2,color:'#f85149',count:3},
+  {id:6,x:420,y:140,n:1,color:'#3fb950',count:1},
+  {id:7,x:40,y:200,n:2,color:'#f85149',count:3},
+  {id:8,x:120,y:200,n:1,color:'#3fb950',count:1},
+  {id:9,x:160,y:200,n:1,color:'#3fb950',count:1},
+  {id:10,x:240,y:200,n:0,color:'#3fb950',count:1},
+  {id:11,x:260,y:200,n:1,color:'#3fb950',count:1},
+  {id:12,x:380,y:200,n:0,color:'#3fb950',count:1},
+  {id:13,x:20,y:252,n:1,color:'#3fb950',count:1},
+  {id:14,x:60,y:252,n:0,color:'#3fb950',count:1},
+];
+var edges=[[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7],[3,8],[4,9],[4,10],[5,11],[5,12],[7,13],[7,14]];
+var revealSteps=[1,3,5,7,9,11,15];
+var stepIdx=0;
+function draw(){
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  var ns='http://www.w3.org/2000/svg';
+  var revealed=revealSteps[Math.min(stepIdx,revealSteps.length-1)];
+  edges.forEach(function(e){
+    if(e[0]<revealed&&e[1]<revealed){
+      var n1=nodeData[e[0]],n2=nodeData[e[1]];
+      var line=document.createElementNS(ns,'line');
+      line.setAttribute('x1',n1.x);line.setAttribute('y1',n1.y+14);
+      line.setAttribute('x2',n2.x);line.setAttribute('y2',n2.y-14);
+      line.setAttribute('stroke','#30363d');line.setAttribute('stroke-width','1.5');
+      svg.appendChild(line);
+    }
+  });
+  nodeData.forEach(function(nd,i){
+    if(i>=revealed)return;
+    var isActive=(stepIdx===revealSteps.length-1&&(nd.n===2));
+    var col=isActive?'#f0883e':nd.color;
+    var circle=document.createElementNS(ns,'circle');
+    circle.setAttribute('cx',nd.x);circle.setAttribute('cy',nd.y);circle.setAttribute('r','14');
+    circle.setAttribute('fill',isActive?'#f0883e22':'#0d1117');
+    circle.setAttribute('stroke',col);circle.setAttribute('stroke-width','2');
+    svg.appendChild(circle);
+    var txt=document.createElementNS(ns,'text');
+    txt.setAttribute('x',nd.x);txt.setAttribute('y',nd.y+5);
+    txt.setAttribute('text-anchor','middle');txt.setAttribute('fill',col);
+    txt.setAttribute('font-size','13');txt.setAttribute('font-family','JetBrains Mono,monospace');txt.setAttribute('font-weight','700');
+    txt.textContent='f('+nd.n+')';
+    svg.appendChild(txt);
+  });
+  var s=steps[Math.min(stepIdx,steps.length-1)];
+  document.getElementById('vz42-label').textContent=s.label;
+  document.getElementById('vz42-narrate').textContent=s.narrate;
+  document.getElementById('vz42-calls').textContent=s.calls;
+}
+window.vz42step=function(){
+  if(stepIdx<steps.length-1)stepIdx++;
+  draw();
+  if(stepIdx>=steps.length-1)document.getElementById('vz42-stepbtn').disabled=true;
+};
+window.vz42reset=function(){stepIdx=0;document.getElementById('vz42-stepbtn').disabled=false;draw();};
+draw();
+})();</script>
+
+    <h4 class="subsubsec">Approach 2: Memoised (Top-Down) — O(n)</h4>
+
+    <p>Store each computed value in a <strong>memo table</strong>. On subsequent calls for the same n, return immediately from the table. Since each of the n subproblems is computed at most once, and each computation takes O(1) after the recursive calls, the total time is O(n).</p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Memoisation</div>
+      Memoisation is the process of storing the results of previously computed subproblems so that they can be looked up in O(1) time instead of being recomputed.
+    </div>
+
+    <div class="algo-header">
+      Algorithm 43 &mdash; Memoised Fibonacci (Top-Down)
+      <span class="algo-complexity">Time: O(n) | Space: O(n)</span>
+    </div>
+    <pre class="code-block has-header">function FIBONACCI(n):
+    memo[0..n] = null          // initialise memo table
+
+    return FIBONACCI_MEMO(n)
+
+function FIBONACCI_MEMO(n):
+    if n &lt;= 1 then return n    // base case
+    if memo[n] = null then     // not yet computed
+        memo[n] = FIBONACCI_MEMO(n-1) + FIBONACCI_MEMO(n-2)
+    return memo[n]             // O(1) lookup on subsequent calls</pre>
+
+<div id="vz43-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;">Algorithm 43</span>
+    <span style="font-size:13px;font-weight:600;color:#c9d1d9;flex:1;">Memoised Fibonacci — fib(5) with cache</span>
+    <span style="font-size:11px;font-family:monospace;color:#3fb950;background:rgba(63,185,80,.12);border:1px solid rgba(63,185,80,.3);padding:2px 8px;border-radius:10px;">O(n)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:12px;overflow:hidden;">
+      <svg id="vz43-svg" viewBox="0 0 500 280" style="width:100%;height:auto;display:block;background:#0d1117;border-radius:6px;"></svg>
+    </div>
+    <div style="padding:16px 18px;background:#21262d;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f0883e;" id="vz43-label">READY</div>
+      <div style="font-size:0.85em;color:#c9d1d9;line-height:1.5;min-height:60px;" id="vz43-narrate">Step through memoised fib(5). Blue = first compute (stored). Green = cache hit (instant return). Only 5 unique calls needed.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Cache hits</span>
+          <span style="font-size:1.3em;font-weight:700;color:#3fb950;" id="vz43-hits">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Total calls</span>
+          <span style="font-size:1.3em;font-weight:700;color:#58a6ff;" id="vz43-total">0</span>
+        </div>
+      </div>
+      <div style="font-family:monospace;font-size:0.78em;color:#8b949e;background:#161b22;border-radius:6px;padding:8px 10px;" id="vz43-memo">memo: [null,null,null,null,null,null]</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz43step()" id="vz43-stepbtn" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step</button>
+        <button onclick="vz43reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+var steps=[
+  {hits:0,total:1,active:-1,cached:[],memo:[null,null,null,null,null,null],label:"CALL fib(5)",narrate:"fib(5) called. memo[5]=null, so we must compute it. Recurse on fib(4) and fib(3)."},
+  {hits:0,total:2,active:4,cached:[],memo:[null,null,null,null,null,null],label:"CALL fib(4)",narrate:"fib(4) called. memo[4]=null. Recurse on fib(3) and fib(2)."},
+  {hits:0,total:3,active:3,cached:[],memo:[null,null,null,null,null,null],label:"CALL fib(3)",narrate:"fib(3) called (first time). memo[3]=null. Recurse on fib(2) and fib(1)."},
+  {hits:0,total:4,active:2,cached:[],memo:[null,null,null,null,null,null],label:"CALL fib(2)",narrate:"fib(2) called (first time). memo[2]=null. Recurse on fib(1) and fib(0)."},
+  {hits:0,total:5,active:1,cached:[],memo:[0,1,null,null,null,null],label:"BASE fib(1)=1, fib(0)=0",narrate:"Base cases hit: fib(1)=1, fib(0)=0. No memo needed."},
+  {hits:0,total:5,active:2,cached:[2],memo:[0,1,1,null,null,null],label:"STORE memo[2]=1",narrate:"fib(2)=fib(1)+fib(0)=1. Stored in memo[2]. First computation done."},
+  {hits:0,total:5,active:3,cached:[2,3],memo:[0,1,1,2,null,null],label:"STORE memo[3]=2",narrate:"fib(3)=fib(2)+fib(1)=1+1=2. Stored in memo[3]."},
+  {hits:1,total:6,active:2,cached:[2,3],memo:[0,1,1,2,null,null],label:"CACHE HIT fib(2)",narrate:"fib(4) needs fib(2). memo[2]=1 already! Cache hit — return 1 instantly. No recomputation!"},
+  {hits:1,total:6,active:4,cached:[2,3,4],memo:[0,1,1,2,3,null],label:"STORE memo[4]=3",narrate:"fib(4)=fib(3)+fib(2)=2+1=3. Stored in memo[4]."},
+  {hits:2,total:7,active:3,cached:[2,3,4],memo:[0,1,1,2,3,null],label:"CACHE HIT fib(3)",narrate:"fib(5) needs fib(3). memo[3]=2 already! Another cache hit. Total: 2 cache hits saved recomputation."},
+  {hits:2,total:7,active:5,cached:[2,3,4,5],memo:[0,1,1,2,3,5],label:"STORE memo[5]=5 DONE",narrate:"fib(5)=fib(4)+fib(3)=3+2=5. Stored. Only 7 calls total (vs 15 naive). 2 cache hits eliminated duplicate work!"},
+];
+var nodeData=[
+  {n:5,x:250,y:28},{n:4,x:140,y:88},{n:3,x:360,y:88},
+  {n:3,x:80,y:160},{n:2,x:200,y:160},{n:2,x:300,y:160},{n:1,x:420,y:160},
+  {n:1,x:40,y:232},{n:0,x:120,y:232},{n:1,x:160,y:232},{n:0,x:240,y:232}
+];
+var edges=[[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7],[3,8],[4,9],[4,10]];
+var stepIdx=0;
+var ns='http://www.w3.org/2000/svg';
+function draw(){
+  var svg=document.getElementById('vz43-svg');
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  var s=steps[stepIdx];
+  edges.forEach(function(e){
+    var n1=nodeData[e[0]],n2=nodeData[e[1]];
+    var line=document.createElementNS(ns,'line');
+    line.setAttribute('x1',n1.x);line.setAttribute('y1',n1.y+14);
+    line.setAttribute('x2',n2.x);line.setAttribute('y2',n2.y-14);
+    line.setAttribute('stroke','#30363d');line.setAttribute('stroke-width','1.5');
+    svg.appendChild(line);
+  });
+  nodeData.forEach(function(nd,i){
+    var isCached=s.cached.indexOf(nd.n)>=0;
+    var isActive=s.active===nd.n;
+    var col=isActive?'#f0883e':(isCached?'#3fb950':'#58a6ff');
+    var bg=isActive?'#f0883e22':(isCached?'#3fb9500d':'#0d1117');
+    var circle=document.createElementNS(ns,'circle');
+    circle.setAttribute('cx',nd.x);circle.setAttribute('cy',nd.y);circle.setAttribute('r','14');
+    circle.setAttribute('fill',bg);circle.setAttribute('stroke',col);circle.setAttribute('stroke-width','2');
+    svg.appendChild(circle);
+    var txt=document.createElementNS(ns,'text');
+    txt.setAttribute('x',nd.x);txt.setAttribute('y',nd.y+5);
+    txt.setAttribute('text-anchor','middle');txt.setAttribute('fill',col);
+    txt.setAttribute('font-size','12');txt.setAttribute('font-family','JetBrains Mono,monospace');txt.setAttribute('font-weight','700');
+    txt.textContent='f('+nd.n+')';
+    svg.appendChild(txt);
+  });
+  document.getElementById('vz43-label').textContent=s.label;
+  document.getElementById('vz43-narrate').textContent=s.narrate;
+  document.getElementById('vz43-hits').textContent=s.hits;
+  document.getElementById('vz43-total').textContent=s.total;
+  document.getElementById('vz43-memo').textContent='memo: ['+s.memo.map(function(v){return v===null?'?':v;}).join(',')+']';
+}
+window.vz43step=function(){
+  if(stepIdx<steps.length-1)stepIdx++;
+  draw();
+  if(stepIdx>=steps.length-1)document.getElementById('vz43-stepbtn').disabled=true;
+};
+window.vz43reset=function(){stepIdx=0;document.getElementById('vz43-stepbtn').disabled=false;draw();};
+draw();
+})();</script>
+
+    <h4 class="subsubsec">Approach 3: Bottom-Up (Tabulation) — O(n)</h4>
+
+    <p>Instead of top-down recursion, iteratively fill the table from the smallest subproblems upward. No recursion overhead; we simply compute fib[2], fib[3], ..., fib[n] in order.</p>
+
+    <div class="algo-header">
+      Algorithm 44 &mdash; Bottom-Up Fibonacci
+      <span class="algo-complexity">Time: O(n) | Space: O(n)</span>
+    </div>
+    <pre class="code-block has-header">function FIBONACCI(n):
+    fib[0..n] = 0
+    fib[1] = 1
+    for i = 2 to n do
+        fib[i] = fib[i-1] + fib[i-2]
+    return fib[n]</pre>
+
+<div id="vz44-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;">Algorithm 44</span>
+    <span style="font-size:13px;font-weight:600;color:#c9d1d9;flex:1;">Bottom-Up Fibonacci — 1D array for fib(7)</span>
+    <span style="font-size:11px;font-family:monospace;color:#3fb950;background:rgba(63,185,80,.12);border:1px solid rgba(63,185,80,.3);padding:2px 8px;border-radius:10px;">O(n)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:260px;">
+    <div style="padding:16px 12px;overflow:hidden;">
+      <svg id="vz44-svg" viewBox="0 0 460 180" style="width:100%;height:auto;display:block;background:#0d1117;border-radius:6px;"></svg>
+    </div>
+    <div style="padding:16px 18px;background:#21262d;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f0883e;" id="vz44-label">READY</div>
+      <div style="font-size:0.85em;color:#c9d1d9;line-height:1.5;min-height:60px;" id="vz44-narrate">Click Step to fill dp[0..7] left to right. Each cell uses the two cells immediately to its left.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Cells filled</span>
+          <span style="font-size:1.3em;font-weight:700;color:#3fb950;" id="vz44-filled">2</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">fib(i)</span>
+          <span style="font-size:1.3em;font-weight:700;color:#58a6ff;" id="vz44-val">—</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz44step()" id="vz44-stepbtn" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step</button>
+        <button onclick="vz44reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+var N=7;
+var fibVals=[0,1,1,2,3,5,8,13];
+var steps=[
+  {filled:2,cur:-1,src1:-1,src2:-1,val:null,label:"INIT",narrate:"dp[0]=0, dp[1]=1 (base cases). Remaining cells are 0 (unknown). No recursion — we fill left to right."},
+  {filled:3,cur:2,src1:1,src2:0,val:1,label:"i=2",narrate:"dp[2] = dp[1]+dp[0] = 1+0 = 1. Arrows show the two source cells."},
+  {filled:4,cur:3,src1:2,src2:1,val:2,label:"i=3",narrate:"dp[3] = dp[2]+dp[1] = 1+1 = 2."},
+  {filled:5,cur:4,src1:3,src2:2,val:3,label:"i=4",narrate:"dp[4] = dp[3]+dp[2] = 2+1 = 3."},
+  {filled:6,cur:5,src1:4,src2:3,val:5,label:"i=5",narrate:"dp[5] = dp[4]+dp[3] = 3+2 = 5."},
+  {filled:7,cur:6,src1:5,src2:4,val:8,label:"i=6",narrate:"dp[6] = dp[5]+dp[4] = 5+3 = 8."},
+  {filled:8,cur:7,src1:6,src2:5,val:13,label:"DONE — fib(7)=13",narrate:"dp[7] = dp[6]+dp[5] = 8+5 = 13. All cells filled. O(n) time, O(n) space. Space-saving: keep only last 2 values for O(1) space."},
+];
+var stepIdx=0;
+var ns='http://www.w3.org/2000/svg';
+function draw(){
+  var svg=document.getElementById('vz44-svg');
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  var s=steps[stepIdx];
+  var cellW=50,cellH=44,startX=20,startY=68;
+  for(var i=0;i<=N;i++){
+    var x=startX+i*cellW;
+    var isActive=(i===s.cur);
+    var isSrc=(i===s.src1||i===s.src2);
+    var isDone=(i<s.filled&&i!==s.cur);
+    var col=isActive?'#f0883e':(isSrc?'#58a6ff':(isDone?'#3fb950':'#30363d'));
+    var bg=isActive?'#f0883e22':(isSrc?'#1f6feb22':(isDone?'#3fb9500d':'#21262d'));
+    var rect=document.createElementNS(ns,'rect');
+    rect.setAttribute('x',x+1);rect.setAttribute('y',startY+1);
+    rect.setAttribute('width',cellW-2);rect.setAttribute('height',cellH-2);
+    rect.setAttribute('fill',bg);rect.setAttribute('stroke',col);rect.setAttribute('stroke-width','1.5');rect.setAttribute('rx','4');
+    svg.appendChild(rect);
+    var idx=document.createElementNS(ns,'text');
+    idx.setAttribute('x',x+cellW/2);idx.setAttribute('y',startY-10);
+    idx.setAttribute('text-anchor','middle');idx.setAttribute('fill','#8b949e');idx.setAttribute('font-size','11');idx.setAttribute('font-family','monospace');
+    idx.textContent=i;svg.appendChild(idx);
+    var val=document.createElementNS(ns,'text');
+    val.setAttribute('x',x+cellW/2);val.setAttribute('y',startY+cellH/2+6);
+    val.setAttribute('text-anchor','middle');val.setAttribute('fill',col);val.setAttribute('font-size','15');val.setAttribute('font-family','JetBrains Mono,monospace');val.setAttribute('font-weight','700');
+    val.textContent=(i<s.filled)?fibVals[i]:'?';
+    svg.appendChild(val);
+  }
+  if(s.cur>0&&s.src1>=0&&s.src2>=0){
+    function arrow(fromIdx,toIdx){
+      var fx=startX+fromIdx*cellW+cellW/2,fy=startY+cellH+2;
+      var tx=startX+toIdx*cellW+cellW/2,ty=startY+cellH+2;
+      var ay=startY+cellH+28;
+      var path=document.createElementNS(ns,'path');
+      var d='M '+fx+' '+fy+' L '+fx+' '+ay+' L '+tx+' '+ay+' L '+tx+' '+fy;
+      path.setAttribute('d',d);path.setAttribute('fill','none');path.setAttribute('stroke','#58a6ff');path.setAttribute('stroke-width','1.5');path.setAttribute('marker-end','url(#arr44)');
+      svg.appendChild(path);
+    }
+    var defs=document.createElementNS(ns,'defs');
+    var marker=document.createElementNS(ns,'marker');
+    marker.setAttribute('id','arr44');marker.setAttribute('markerWidth','8');marker.setAttribute('markerHeight','8');
+    marker.setAttribute('refX','4');marker.setAttribute('refY','4');marker.setAttribute('orient','auto');
+    var mp=document.createElementNS(ns,'path');mp.setAttribute('d','M0,0 L8,4 L0,8 Z');mp.setAttribute('fill','#58a6ff');
+    marker.appendChild(mp);defs.appendChild(marker);svg.appendChild(defs);
+    arrow(s.src1,s.cur);arrow(s.src2,s.cur);
+  }
+  var lbl=document.createElementNS(ns,'text');
+  lbl.setAttribute('x',startX);lbl.setAttribute('y',startY-28);
+  lbl.setAttribute('fill','#8b949e');lbl.setAttribute('font-size','11');lbl.setAttribute('font-family','JetBrains Mono,monospace');
+  lbl.textContent='dp[0..7]';svg.appendChild(lbl);
+  document.getElementById('vz44-label').textContent=s.label;
+  document.getElementById('vz44-narrate').textContent=s.narrate;
+  document.getElementById('vz44-filled').textContent=s.filled;
+  document.getElementById('vz44-val').textContent=s.val!==null?s.val:'—';
+}
+window.vz44step=function(){
+  if(stepIdx<steps.length-1)stepIdx++;
+  draw();
+  if(stepIdx>=steps.length-1)document.getElementById('vz44-stepbtn').disabled=true;
+};
+window.vz44reset=function(){stepIdx=0;document.getElementById('vz44-stepbtn').disabled=false;draw();};
+draw();
+})();</script>
+
+    <h3 class="subsec">Optimal Substructure: The Coin Change Problem</h3>
+
+    <p>Given denominations c<sub>1</sub>, c<sub>2</sub>, &hellip;, c<sub>n</sub> and a target value V, find the <strong>minimum number of coins</strong> that sum to exactly V.</p>
+
+    <p><strong>Example:</strong> Coins = {1, 5, 6, 9}. Minimum coins for $13 = 3 (two $6 and one $1). Note that greedy fails here &mdash; greedily picking 9 then 1+1+1+1 gives 5 coins, not the optimal 3.</p>
+
+    <h4 class="subsubsec">Identifying Subproblems</h4>
+
+    <p>Define: <code>MinCoins[v]</code> = the fewest coins required to make exactly $v, for 0 &le; v &le; V.</p>
+
+    <p>This exhibits optimal substructure: if the optimal solution for $V uses a coin of value $x, then the remaining coins must be optimal for $(V &minus; x).</p>
+
+    <h4 class="subsubsec">Recurrence</h4>
+
+    <div class="callout thm">
+      <div class="callout-title">Coin Change Recurrence</div>
+      <pre style="background:transparent;border:none;padding:0;font-family:'JetBrains Mono',monospace;font-size:0.9em;">MinCoins[0]  = 0
+MinCoins[v]  = infinity,            if v &gt; 0 and v &lt; c[i] for all i
+MinCoins[v]  = min over all c[i] &le; v of (1 + MinCoins[v - c[i]])</pre>
+    </div>
+
+    <p>The base case MinCoins[0] = 0 terminates the recursion. The infinity case handles values that cannot be made (when no $1 coin exists).</p>
+
+    <div class="callout insight">
+      <div class="callout-title">Trace: Coins = {9, 6, 5, 1}, V = 12</div>
+      <p>MinCoins[12] = 1 + min(MinCoins[3], MinCoins[6], MinCoins[7], MinCoins[11]) = 1 + min(3, 1, 2, 2) = <strong>2</strong> (two $6 coins)</p>
+    </div>
+
+    <h4 class="subsubsec">DP Strategy (from lectures)</h4>
+
+    <ol>
+      <li><strong>Assume</strong> you already know optimal solutions for all subproblems (smaller values).</li>
+      <li><strong>Observe</strong> how to build a solution to the current problem using those stored solutions (optimal substructure).</li>
+      <li><strong>Iteratively</strong> solve all subproblems from smallest to largest, memoising results.</li>
+    </ol>
+
+    <h4 class="subsubsec">How to Identify DP Problems</h4>
+
+    <ul>
+      <li>The problem asks for an <strong>optimal value</strong> (min/max/count) over a combinatorial space.</li>
+      <li>Brute force involves trying all possibilities (exponential).</li>
+      <li>You can identify a <strong>last choice</strong> that reduces the problem to smaller versions of itself.</li>
+      <li>Those smaller versions recur — the same sub-instance is needed from multiple parent problems.</li>
+    </ul>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- SECTION 7.2 -->
+  <!-- ======================================================= -->
+  <section class="content-section" id="s72">
+    <h2 class="sec-title"><span class="sec-num">7.2</span> Top-Down vs Bottom-Up Dynamic Programming</h2>
+  <button class="review-btn" data-week="6" data-sec="s72"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>Both styles maintain a table of subproblem solutions. They differ in the <strong>order</strong> in which subproblems are solved and in their trade-offs.</p>
+
+    <h3 class="subsec">Top-Down (Memoisation)</h3>
+
+    <p>Write the natural recursive solution, then add a cache check at the start of the function. Subproblems are solved <em>on demand</em> — only those actually needed are ever computed. The recursion implicitly handles the dependency ordering.</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Pros of Top-Down</div>
+      <ul>
+        <li>No need to determine topological ordering of subproblems — recursion handles it automatically.</li>
+        <li>Only computes subproblems that are actually required (can save work if many subproblems are unreachable).</li>
+        <li>More intuitive for programmers comfortable with recursion.</li>
+      </ul>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Cons of Top-Down</div>
+      <ul>
+        <li>Recursion overhead (function call stack). Each call has overhead versus a simple loop iteration.</li>
+        <li>Risk of stack overflow for very large inputs.</li>
+        <li>Cannot use the space-saving trick (see Section 7.8) because subproblem order is unknown.</li>
+      </ul>
+    </div>
+
+    <div class="algo-header">
+      Algorithm 45 &mdash; Top-Down Coin Change
+      <span class="algo-complexity">Time: O(nV) | Space: O(V)</span>
+    </div>
+    <pre class="code-block has-header">// memo[0..V] initialised to null; memo[0] = 0
+
+function COIN_CHANGE_AUX(c[1..n], v):
+    if v = 0 then return 0
+    if memo[v] != null then return memo[v]   // already computed
+    min_coins = infinity
+    for i = 1 to n do
+        if c[i] &lt;= v then
+            min_coins = min(min_coins, 1 + COIN_CHANGE_AUX(c, v - c[i]))
+    memo[v] = min_coins
+    return memo[v]</pre>
+
+<div id="vz45-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;">Algorithm 45</span>
+    <span style="font-size:13px;font-weight:600;color:#c9d1d9;flex:1;">Top-Down Coin Change — coins=[1,3,4], amount=6</span>
+    <span style="font-size:11px;font-family:monospace;color:#bc8cff;background:rgba(188,140,255,.12);border:1px solid rgba(188,140,255,.3);padding:2px 8px;border-radius:10px;">O(nV)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:16px 12px;overflow:hidden;">
+      <div style="font-size:11px;color:#8b949e;font-family:monospace;margin-bottom:8px;">memo[0..6] — null = uncomputed</div>
+      <div id="vz45-cells" style="display:flex;gap:4px;margin-bottom:12px;"></div>
+      <div id="vz45-tree" style="font-family:monospace;font-size:0.78em;color:#8b949e;background:#0d1117;border-radius:6px;padding:10px;min-height:120px;white-space:pre-wrap;line-height:1.7;" id="vz45-calls"></div>
+    </div>
+    <div style="padding:16px 18px;background:#21262d;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f0883e;" id="vz45-label">READY</div>
+      <div style="font-size:0.85em;color:#c9d1d9;line-height:1.5;min-height:60px;" id="vz45-narrate">Top-down: call COIN_CHANGE(6), recurse on sub-amounts. Memo table prevents recomputation.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Amount</span>
+          <span style="font-size:1.3em;font-weight:700;color:#f0883e;" id="vz45-amount">6</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Min coins</span>
+          <span style="font-size:1.3em;font-weight:700;color:#3fb950;" id="vz45-result">—</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz45step()" id="vz45-stepbtn" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step</button>
+        <button onclick="vz45reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+var steps=[
+  {memo:[null,null,null,null,null,null,null],active:6,log:"COIN_CHANGE(6) called.\nmemo[6]=null → must compute.\nTrying coins [1,3,4]...",label:"CALL v=6",narrate:"COIN_CHANGE(6): memo[6]=null. Try all coins≤6: recurse on v-1=5, v-3=3, v-4=2."},
+  {memo:[0,null,null,null,null,null,null],active:1,log:"COIN_CHANGE(1):\nmemo[1]=null → try coin1: 1+CC(0)=1\nmemo[1]=1",label:"COMPUTE v=1",narrate:"CC(1): coin 1 → 1+CC(0)=1. memo[1]=1."},
+  {memo:[0,1,2,null,null,null,null],active:2,log:"COIN_CHANGE(2):\ncoin1: 1+memo[1]=2\nmemo[2]=2",label:"COMPUTE v=2",narrate:"CC(2): only coin 1 fits. 1+memo[1]=2. memo[2]=2."},
+  {memo:[0,1,2,1,null,null,null],active:3,log:"COIN_CHANGE(3):\ncoin1:1+memo[2]=3, coin3:1+memo[0]=1 ← best\nmemo[3]=1",label:"COMPUTE v=3",narrate:"CC(3): coin 3 gives 1+0=1 which beats coin 1's path of 3. memo[3]=1."},
+  {memo:[0,1,2,1,1,null,null],active:4,log:"COIN_CHANGE(4):\ncoin1:1+1=2, coin3:1+1=2, coin4:1+0=1 ← best\nmemo[4]=1",label:"COMPUTE v=4",narrate:"CC(4): coin 4 alone! 1+memo[0]=1. memo[4]=1."},
+  {memo:[0,1,2,1,1,2,null],active:5,log:"COIN_CHANGE(5):\ncoin1:1+1=2, coin3:1+2=3, coin4:1+1=2\nmemo[5]=2",label:"COMPUTE v=5",narrate:"CC(5): coins 1 and 4 both give 2. memo[5]=2."},
+  {memo:[0,1,2,1,1,2,2],active:6,log:"COIN_CHANGE(6):\ncoin1:1+memo[5]=3\ncoin3:1+memo[3]=2 ← best\ncoin4:1+memo[2]=3\nmemo[6]=2",label:"DONE v=6 → 2 coins",narrate:"CC(6): coin 3 gives 1+memo[3]=1+1=2 — best! Answer: 2 coins (3+3=6). memo[6]=2."},
+];
+var stepIdx=0;
+function renderCells(memo,active){
+  var div=document.getElementById('vz45-cells');
+  div.innerHTML='';
+  for(var i=0;i<7;i++){
+    var cell=document.createElement('div');
+    var isActive=active===i;
+    var isDone=memo[i]!==null&&!isActive;
+    cell.style.cssText='display:inline-flex;flex-direction:column;align-items:center;gap:2px;min-width:44px;';
+    var idx=document.createElement('div');
+    idx.style.cssText='font-size:10px;color:#8b949e;font-family:monospace;';idx.textContent='['+i+']';
+    var box=document.createElement('div');
+    var col=isActive?'#f0883e':(isDone?'#3fb950':'#30363d');
+    var bg=isActive?'#f0883e22':(isDone?'#3fb9500d':'#21262d');
+    box.style.cssText='width:40px;height:36px;border:1.5px solid '+col+';border-radius:5px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:14px;font-weight:700;color:'+col+';';
+    box.textContent=memo[i]!==null?memo[i]:'?';
+    cell.appendChild(idx);cell.appendChild(box);div.appendChild(cell);
+  }
+}
+function draw(){
+  var s=steps[stepIdx];
+  renderCells(s.memo,s.active);
+  document.getElementById('vz45-tree').textContent=s.log;
+  document.getElementById('vz45-label').textContent=s.label;
+  document.getElementById('vz45-narrate').textContent=s.narrate;
+  document.getElementById('vz45-amount').textContent=s.active;
+  document.getElementById('vz45-result').textContent=s.memo[6]!==null?s.memo[6]:'—';
+}
+window.vz45step=function(){
+  if(stepIdx<steps.length-1)stepIdx++;
+  draw();
+  if(stepIdx>=steps.length-1)document.getElementById('vz45-stepbtn').disabled=true;
+};
+window.vz45reset=function(){stepIdx=0;document.getElementById('vz45-stepbtn').disabled=false;draw();};
+draw();
+})();</script>
+
+    <h3 class="subsec">Bottom-Up (Tabulation)</h3>
+
+    <p>Fill the DP table iteratively, starting from the base cases and working up to the full problem. The order of iteration must be a valid <strong>reverse topological order</strong> of the subproblem dependency graph — smaller problems before larger ones that depend on them.</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Pros of Bottom-Up</div>
+      <ul>
+        <li>No recursion overhead — iteration is faster in practice.</li>
+        <li>Enables clever optimisations like the <strong>space-saving trick</strong>.</li>
+        <li>Cache behavior is typically better (sequential memory access).</li>
+      </ul>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Cons of Bottom-Up</div>
+      <ul>
+        <li>Must determine the correct iteration order (topological ordering of dependencies).</li>
+        <li>Computes <em>all</em> subproblems even if only a few are needed.</li>
+      </ul>
+    </div>
+
+    <div class="algo-header">
+      Algorithm 46 &mdash; Bottom-Up Coin Change
+      <span class="algo-complexity">Time: O(nV) | Space: O(V)</span>
+    </div>
+    <pre class="code-block has-header">function COIN_CHANGE(c[1..n], V):
+    MinCoins[0..V] = infinity
+    MinCoins[0] = 0                    // base case: 0 coins to make $0
+
+    for v = 1 to V do
+        for i = 1 to n do
+            if c[i] &lt;= v then
+                MinCoins[v] = min(MinCoins[v], 1 + MinCoins[v - c[i]])
+
+    return MinCoins[V]</pre>
+
+<div id="vz46-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;">Algorithm 46</span>
+    <span style="font-size:13px;font-weight:600;color:#c9d1d9;flex:1;">Bottom-Up Coin Change — coins=[1,3,4], amount=6</span>
+    <span style="font-size:11px;font-family:monospace;color:#bc8cff;background:rgba(188,140,255,.12);border:1px solid rgba(188,140,255,.3);padding:2px 8px;border-radius:10px;">O(nV)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:260px;">
+    <div style="padding:16px 12px;overflow:hidden;">
+      <div style="font-size:11px;color:#8b949e;font-family:monospace;margin-bottom:8px;">MinCoins[0..6]</div>
+      <div id="vz46-cells" style="display:flex;gap:4px;margin-bottom:16px;"></div>
+      <div id="vz46-detail" style="font-family:monospace;font-size:0.78em;color:#8b949e;background:#0d1117;border-radius:6px;padding:10px;min-height:100px;white-space:pre-wrap;line-height:1.7;"></div>
+    </div>
+    <div style="padding:16px 18px;background:#21262d;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f0883e;" id="vz46-label">READY</div>
+      <div style="font-size:0.85em;color:#c9d1d9;line-height:1.5;min-height:60px;" id="vz46-narrate">Bottom-up: fill MinCoins[1] to MinCoins[6] in order. Each cell tries all coins and takes the minimum.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Best coin</span>
+          <span style="font-size:1.3em;font-weight:700;color:#f0883e;" id="vz46-coin">—</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Min coins</span>
+          <span style="font-size:1.3em;font-weight:700;color:#3fb950;" id="vz46-result">—</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz46step()" id="vz46-stepbtn" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step</button>
+        <button onclick="vz46reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+var INF=99;
+var steps=[
+  {dp:[0,INF,INF,INF,INF,INF,INF],active:-1,coin:'—',detail:"Init: MinCoins[0]=0, all others=∞\ncoins = [1, 3, 4]",label:"INIT",narrate:"MinCoins[0]=0 (0 coins to make 0). All others =∞. We fill left to right."},
+  {dp:[0,1,INF,INF,INF,INF,INF],active:1,coin:'1',detail:"v=1:\n  coin 1: 1≤1 → min(∞, 1+dp[0])=1 ✓\n  coin 3: 3>1 skip\n  coin 4: 4>1 skip\n→ MinCoins[1]=1",label:"v=1 → 1",narrate:"v=1: only coin 1 fits. 1+MinCoins[0]=1. MinCoins[1]=1."},
+  {dp:[0,1,2,INF,INF,INF,INF],active:2,coin:'1',detail:"v=2:\n  coin 1: 1≤2 → min(∞,1+dp[1])=2 ✓\n  coin 3: 3>2 skip\n  coin 4: 4>2 skip\n→ MinCoins[2]=2",label:"v=2 → 2",narrate:"v=2: only coin 1 fits. 1+1=2. MinCoins[2]=2."},
+  {dp:[0,1,2,1,INF,INF,INF],active:3,coin:'3',detail:"v=3:\n  coin 1: 1+dp[2]=3\n  coin 3: 1+dp[0]=1 ← best!\n  coin 4: 4>3 skip\n→ MinCoins[3]=1",label:"v=3 → 1 (coin 3!)",narrate:"v=3: coin 3 alone! 1+MinCoins[0]=1 beats coin-1 chain of 3. MinCoins[3]=1."},
+  {dp:[0,1,2,1,1,INF,INF],active:4,coin:'4',detail:"v=4:\n  coin 1: 1+dp[3]=2\n  coin 3: 1+dp[1]=2\n  coin 4: 1+dp[0]=1 ← best!\n→ MinCoins[4]=1",label:"v=4 → 1 (coin 4!)",narrate:"v=4: coin 4 alone! 1+MinCoins[0]=1. MinCoins[4]=1."},
+  {dp:[0,1,2,1,1,2,INF],active:5,coin:'1 or 4',detail:"v=5:\n  coin 1: 1+dp[4]=2 ← tied best\n  coin 3: 1+dp[2]=3\n  coin 4: 1+dp[1]=2 ← tied best\n→ MinCoins[5]=2",label:"v=5 → 2",narrate:"v=5: coin 1+coin 4 (total 2) or coin 4+coin 1, both give 2. MinCoins[5]=2."},
+  {dp:[0,1,2,1,1,2,2],active:6,coin:'3',detail:"v=6:\n  coin 1: 1+dp[5]=3\n  coin 3: 1+dp[3]=2 ← best!\n  coin 4: 1+dp[2]=3\n→ MinCoins[6]=2",label:"DONE v=6 → 2 (two 3s)",narrate:"v=6: coin 3 gives 1+MinCoins[3]=1+1=2. Best! Two coins of 3. MinCoins[6]=2."},
+];
+var stepIdx=0;
+function renderCells(dp,active){
+  var div=document.getElementById('vz46-cells');
+  div.innerHTML='';
+  for(var i=0;i<7;i++){
+    var cell=document.createElement('div');
+    var isActive=active===i;
+    var isDone=dp[i]!==99&&!isActive;
+    cell.style.cssText='display:inline-flex;flex-direction:column;align-items:center;gap:2px;min-width:44px;';
+    var idx=document.createElement('div');
+    idx.style.cssText='font-size:10px;color:#8b949e;font-family:monospace;';idx.textContent='['+i+']';
+    var box=document.createElement('div');
+    var col=isActive?'#f0883e':(isDone?'#3fb950':'#30363d');
+    var bg=isActive?'#f0883e22':(isDone?'#3fb9500d':'#21262d');
+    box.style.cssText='width:40px;height:36px;border:1.5px solid '+col+';border-radius:5px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:13px;font-weight:700;color:'+col+';';
+    box.textContent=dp[i]===99?'∞':dp[i];
+    cell.appendChild(idx);cell.appendChild(box);div.appendChild(cell);
+  }
+}
+function draw(){
+  var s=steps[stepIdx];
+  renderCells(s.dp,s.active);
+  document.getElementById('vz46-detail').textContent=s.detail;
+  document.getElementById('vz46-label').textContent=s.label;
+  document.getElementById('vz46-narrate').textContent=s.narrate;
+  document.getElementById('vz46-coin').textContent=s.coin;
+  document.getElementById('vz46-result').textContent=s.dp[6]===99?'—':s.dp[6];
+}
+window.vz46step=function(){
+  if(stepIdx<steps.length-1)stepIdx++;
+  draw();
+  if(stepIdx>=steps.length-1)document.getElementById('vz46-stepbtn').disabled=true;
+};
+window.vz46reset=function(){stepIdx=0;document.getElementById('vz46-stepbtn').disabled=false;draw();};
+draw();
+})();</script>
+
+    <h3 class="subsec">Comparison Summary</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Top-Down</th>
+          <th>Bottom-Up</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Implementation style</td><td>Recursive + cache</td><td>Iterative table</td></tr>
+        <tr><td>Subproblem ordering</td><td>Automatic via recursion</td><td>Must be determined manually</td></tr>
+        <tr><td>Unnecessary subproblems</td><td>Skipped</td><td>All computed</td></tr>
+        <tr><td>Overhead</td><td>Function call stack</td><td>None (loop)</td></tr>
+        <tr><td>Space-saving trick</td><td>Not possible</td><td>Possible</td></tr>
+        <tr><td>Stack overflow risk</td><td>Yes (large n)</td><td>No</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- SECTION 7.3 -->
+  <!-- ======================================================= -->
+  <section class="content-section" id="s73">
+    <h2 class="sec-title"><span class="sec-num">7.3</span> Reconstructing Optimal Solutions</h2>
+  <button class="review-btn" data-week="6" data-sec="s73"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>DP algorithms typically compute an <strong>optimal value</strong> (e.g., minimum coins = 3), but not the actual optimal solution (which coins). Two approaches exist to also reconstruct the solution.</p>
+
+    <h3 class="subsec">Method 1: Backtracking Through the DP Table</h3>
+
+    <p>After computing the full DP table, <strong>backtrack</strong> from the final answer by examining which choices could have led to the stored value. For coin change: start at MinCoins[V], find a coin c<sub>i</sub> such that MinCoins[V &minus; c<sub>i</sub>] + 1 = MinCoins[V], take that coin, subtract from V, and repeat until V = 0.</p>
+
+    <p>Advantage: uses no extra memory (no second table). Slightly more computation during reconstruction (must search for valid coins).</p>
+
+    <div class="algo-header">
+      Algorithm 47 &mdash; Coin Change Solution Reconstruction (Backtracking)
+      <span class="algo-complexity">Time: O(nV) | No extra space</span>
+    </div>
+    <pre class="code-block has-header">function GET_COINS(c[1..n], V, MinCoins[0..V]):
+    if MinCoins[V] = infinity then return error
+    coins = empty list
+
+    while V &gt; 0 do
+        for i = 1 to n do
+            if c[i] &lt;= V and MinCoins[V] = 1 + MinCoins[V - c[i]] then
+                coins.append(c[i])         // c[i] is part of optimal solution
+                V = V - c[i]
+                break                      // found one coin, continue loop
+    return coins</pre>
+
+    <h3 class="subsec">Method 2: Decision Table</h3>
+
+    <p>Maintain a second table <code>OptCoin[0..V]</code> alongside <code>MinCoins[0..V]</code>. Every time a new best is found for a subproblem, record <em>which coin</em> was chosen. Reconstruction then simply follows the decision table — O(V) time with no searching.</p>
+
+    <p>Advantage: reconstruction is faster and simpler. Disadvantage: O(V) extra memory for the decision table.</p>
+
+    <div class="algo-header">
+      Algorithm 48 &mdash; Bottom-Up Coin Change with Decision Table
+      <span class="algo-complexity">Time: O(nV) | Space: O(V) extra</span>
+    </div>
+    <pre class="code-block has-header">function COIN_CHANGE(c[1..n], V):
+    MinCoins[0..V] = infinity
+    OptCoin[0..V] = null
+    MinCoins[0] = 0
+
+    for v = 1 to V do
+        for i = 1 to n do
+            if c[i] &lt;= v then
+                if 1 + MinCoins[v - c[i]] &lt; MinCoins[v] then
+                    MinCoins[v] = 1 + MinCoins[v - c[i]]
+                    OptCoin[v] = c[i]      // record the optimal coin choice
+
+    return MinCoins[V]
+
+function GET_COINS(V, MinCoins, OptCoin):
+    if MinCoins[V] = infinity then return error
+    coins = empty list
+    while V &gt; 0 do
+        coins.append(OptCoin[V])
+        V = V - OptCoin[V]               // follow the decision table
+    return coins</pre>
+
+<div id="vz47-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;">Algorithms 47 &amp; 48</span>
+    <span style="font-size:13px;font-weight:600;color:#c9d1d9;flex:1;">Coin Change Reconstruction — Traceback from dp=[0,1,2,1,1,2,2]</span>
+    <span style="font-size:11px;font-family:monospace;color:#f0883e;background:rgba(240,136,62,.12);border:1px solid rgba(240,136,62,.3);padding:2px 8px;border-radius:10px;">backtrack</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:260px;">
+    <div style="padding:16px 12px;overflow:hidden;">
+      <div style="font-size:11px;color:#8b949e;font-family:monospace;margin-bottom:8px;">MinCoins[0..6] — trace backwards from V=6</div>
+      <div id="vz47-cells" style="display:flex;gap:4px;margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+        <span style="font-size:11px;color:#8b949e;font-family:monospace;">Current V:</span>
+        <span style="font-family:monospace;font-size:1.1em;font-weight:700;color:#f0883e;" id="vz47-curv">6</span>
+        <span style="font-size:11px;color:#8b949e;font-family:monospace;margin-left:16px;">Coins found:</span>
+        <span style="font-family:monospace;font-size:1.1em;font-weight:700;color:#3fb950;" id="vz47-found">[]</span>
+      </div>
+      <div id="vz47-detail" style="font-family:monospace;font-size:0.78em;color:#8b949e;background:#0d1117;border-radius:6px;padding:10px;min-height:90px;white-space:pre-wrap;line-height:1.7;"></div>
+    </div>
+    <div style="padding:16px 18px;background:#21262d;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f0883e;" id="vz47-label">READY</div>
+      <div style="font-size:0.85em;color:#c9d1d9;line-height:1.5;min-height:60px;" id="vz47-narrate">Start at V=6. Find coin c where MinCoins[V] = 1 + MinCoins[V-c]. Take that coin, reduce V, repeat.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Coins used</span>
+          <span style="font-size:1.3em;font-weight:700;color:#3fb950;" id="vz47-ncoins">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Remaining</span>
+          <span style="font-size:1.3em;font-weight:700;color:#f0883e;" id="vz47-rem">6</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz47step()" id="vz47-stepbtn" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step</button>
+        <button onclick="vz47reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+var dp=[0,1,2,1,1,2,2];
+var steps=[
+  {v:6,coins:[],highlight:-1,detail:"Start: V=6, MinCoins=[0,1,2,1,1,2,2]\ncoins=[], searching for optimal coin at V=6...",label:"START V=6",narrate:"Start at V=6. MinCoins[6]=2. We need to find a coin c where MinCoins[6]=1+MinCoins[6-c]."},
+  {v:6,coins:[],highlight:5,detail:"Check coin 1: MinCoins[6]=2, 1+MinCoins[5]=1+2=3 ≠ 2 ✗\nCheck coin 3: MinCoins[6]=2, 1+MinCoins[3]=1+1=2 ✓",label:"FOUND coin=3",narrate:"Coin 3 satisfies the condition: 1+MinCoins[3]=1+1=2=MinCoins[6]. Take coin 3!"},
+  {v:3,coins:[3],highlight:2,detail:"Take coin 3. V = 6-3 = 3. coins=[3]\nNow at V=3. MinCoins[3]=1.\nCheck coin 3: 1+MinCoins[0]=1+0=1 ✓",label:"V=3, coin=3",narrate:"V reduced to 3. coins=[3]. Check: coin 3 satisfies 1+MinCoins[0]=1=MinCoins[3]. Take coin 3 again!"},
+  {v:0,coins:[3,3],highlight:-1,detail:"Take coin 3. V = 3-3 = 0. coins=[3,3]\nV=0: loop exits.\nreturn [3, 3]",label:"DONE — coins=[3,3]",narrate:"V=0, reconstruction complete! Two coins of value 3. Check: 3+3=6 ✓. Total: 2 coins = MinCoins[6]."},
+];
+var stepIdx=0;
+function renderCells(v,highlight){
+  var div=document.getElementById('vz47-cells');
+  div.innerHTML='';
+  for(var i=0;i<7;i++){
+    var cell=document.createElement('div');
+    var isHighlight=(i===highlight);
+    var isActive=(i===v);
+    cell.style.cssText='display:inline-flex;flex-direction:column;align-items:center;gap:2px;min-width:44px;';
+    var idx=document.createElement('div');
+    idx.style.cssText='font-size:10px;color:#8b949e;font-family:monospace;';idx.textContent='['+i+']';
+    var box=document.createElement('div');
+    var col=isActive?'#f0883e':(isHighlight?'#58a6ff':'#3fb950');
+    var bg=isActive?'#f0883e22':(isHighlight?'#1f6feb22':'#3fb9500d');
+    box.style.cssText='width:40px;height:36px;border:1.5px solid '+col+';border-radius:5px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:14px;font-weight:700;color:'+col+';';
+    box.textContent=dp[i];
+    cell.appendChild(idx);cell.appendChild(box);div.appendChild(cell);
+  }
+}
+function draw(){
+  var s=steps[stepIdx];
+  renderCells(s.v,s.highlight);
+  document.getElementById('vz47-detail').textContent=s.detail;
+  document.getElementById('vz47-label').textContent=s.label;
+  document.getElementById('vz47-narrate').textContent=s.narrate;
+  document.getElementById('vz47-curv').textContent=s.v;
+  document.getElementById('vz47-found').textContent='['+s.coins.join(',')+']';
+  document.getElementById('vz47-ncoins').textContent=s.coins.length;
+  document.getElementById('vz47-rem').textContent=s.v;
+}
+window.vz47step=function(){
+  if(stepIdx<steps.length-1)stepIdx++;
+  draw();
+  if(stepIdx>=steps.length-1)document.getElementById('vz47-stepbtn').disabled=true;
+};
+window.vz47reset=function(){stepIdx=0;document.getElementById('vz47-stepbtn').disabled=false;draw();};
+draw();
+})();</script>
+
+    <div class="callout insight">
+      <div class="callout-title">Backtracking for Edit Distance (from lectures)</div>
+      For edit distance, backtracking proceeds from Dist[n][m] to Dist[0][0]:
+      <ul>
+        <li>If letters match and Dist[i][j] = Dist[i-1][j-1]: came from diagonal (no operation).</li>
+        <li>If Dist[i][j] = Dist[i-1][j-1] + 1: substitution (go diagonally).</li>
+        <li>If Dist[i][j] = Dist[i-1][j] + 1: deletion from S1 (go up).</li>
+        <li>If Dist[i][j] = Dist[i][j-1] + 1: insertion into S1 (go left).</li>
+      </ul>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Important Trade-off</div>
+      The space-saving trick (Section 7.8) discards all but the most recent row of the DP table. This means backtracking is impossible if the space-saving trick is applied — you cannot reconstruct the solution without the full table.
+    </div>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- SECTION 7.4 -->
+  <!-- ======================================================= -->
+  <section class="content-section" id="s74">
+    <h2 class="sec-title"><span class="sec-num">7.4</span> The Unbounded Knapsack Problem</h2>
+  <button class="review-btn" data-week="6" data-sec="s74"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Problem Definition</h3>
+
+    <p>Given n item types, each with a weight w<sub>i</sub> and value v<sub>i</sub>, and a backpack of capacity C kg, choose items (each type usable <strong>unlimited times</strong>) to maximise total value without exceeding capacity. There is no requirement to exactly fill the knapsack.</p>
+
+    <p><strong>Example (from lecture):</strong> Items A(9kg,$550), B(5kg,$350), C(6kg,$180), D(1kg,$40), capacity = 12kg. Optimal = $780 (two B's and two D's: 10kg, $780).</p>
+
+    <div class="callout insight">
+      <div class="callout-title">Analogy to Coin Change</div>
+      Unbounded knapsack is structurally identical to coin change: replace "coins" with "items", "amount" with "capacity", "minimum coins" with "maximum value", and "minimise" with "maximise". Both have a 1D DP table indexed by the capacity/amount.
+    </div>
+
+    <h3 class="subsec">Subproblem Definition</h3>
+
+    <p>Define: <code>MaxValue[c]</code> = the maximum value achievable with capacity exactly c kg, for 0 &le; c &le; C.</p>
+
+    <h3 class="subsec">Recurrence</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">Unbounded Knapsack Recurrence</div>
+      <pre style="background:transparent;border:none;padding:0;font-family:'JetBrains Mono',monospace;font-size:0.9em;">MaxValue[0] = 0
+MaxValue[c] = 0,                       if c &lt; w[i] for all i
+MaxValue[c] = max over all w[i] &le; c of (v[i] + MaxValue[c - w[i]])</pre>
+    </div>
+
+    <p>No "infeasible" case needed unlike coin change, since we do not require the knapsack to be completely full — any unused capacity simply contributes 0 value.</p>
+
+    <h3 class="subsec">Implementation</h3>
+
+    <div class="algo-header">
+      Algorithm 49 &mdash; Bottom-Up Unbounded Knapsack
+      <span class="algo-complexity">Time: O(nC) | Space: O(C + n)</span>
+    </div>
+    <pre class="code-block has-header">function UNBOUNDED_KNAPSACK(v[1..n], w[1..n], C):
+    MaxValue[0..C] = 0               // base: 0 value with 0 capacity
+
+    for c = 1 to C do
+        for i = 1 to n do
+            if w[i] &lt;= c then
+                MaxValue[c] = max(MaxValue[c], v[i] + MaxValue[c - w[i]])
+
+    return MaxValue[C]</pre>
+
+<div id="vz49-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;">Algorithm 49</span>
+    <span style="font-size:13px;font-weight:600;color:#c9d1d9;flex:1;">Unbounded Knapsack — items [(w=2,v=6),(w=3,v=10),(w=4,v=12)], W=5</span>
+    <span style="font-size:11px;font-family:monospace;color:#bc8cff;background:rgba(188,140,255,.12);border:1px solid rgba(188,140,255,.3);padding:2px 8px;border-radius:10px;">O(nC)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:260px;">
+    <div style="padding:16px 12px;overflow:hidden;">
+      <div style="font-size:11px;color:#8b949e;font-family:monospace;margin-bottom:8px;">MaxValue[0..5] — 1D array (unbounded: items reusable)</div>
+      <div id="vz49-cells" style="display:flex;gap:4px;margin-bottom:12px;"></div>
+      <div id="vz49-detail" style="font-family:monospace;font-size:0.78em;color:#8b949e;background:#0d1117;border-radius:6px;padding:10px;min-height:110px;white-space:pre-wrap;line-height:1.7;"></div>
+    </div>
+    <div style="padding:16px 18px;background:#21262d;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f0883e;" id="vz49-label">READY</div>
+      <div style="font-size:0.85em;color:#c9d1d9;line-height:1.5;min-height:60px;" id="vz49-narrate">Unbounded knapsack: each item can be used multiple times. Fill MaxValue[1..5], each capacity uses the best item combination.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Capacity</span>
+          <span style="font-size:1.3em;font-weight:700;color:#f0883e;" id="vz49-cap">—</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Max value</span>
+          <span style="font-size:1.3em;font-weight:700;color:#3fb950;" id="vz49-maxv">—</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #30363d;">
+        <button onclick="vz49step()" id="vz49-stepbtn" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Step</button>
+        <button onclick="vz49reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+var items=[[2,6],[3,10],[4,12]];
+var steps=[
+  {dp:[0,0,0,0,0,0],active:-1,cap:'—',detail:"Init: MaxValue[0..5]=0\nItems: A(w=2,v=6), B(w=3,v=10), C(w=4,v=12)\nCapacity W=5",label:"INIT",narrate:"MaxValue[0]=0 (empty knapsack). Items: A(2kg,$6), B(3kg,$10), C(4kg,$12). Fill left to right."},
+  {dp:[0,0,0,0,0,0],active:1,cap:1,detail:"c=1:\n  A: w=2>1 skip\n  B: w=3>1 skip\n  C: w=4>1 skip\nMaxValue[1]=0",label:"c=1 → 0",narrate:"c=1: no item fits (lightest item weighs 2kg). MaxValue[1]=0."},
+  {dp:[0,0,6,0,0,0],active:2,cap:2,detail:"c=2:\n  A: w=2≤2 → max(0, 6+MaxV[0])=6 ✓\n  B: w=3>2 skip\n  C: w=4>2 skip\nMaxValue[2]=6",label:"c=2 → 6",narrate:"c=2: item A (w=2) fits! value=6+MaxValue[0]=6. MaxValue[2]=6."},
+  {dp:[0,0,6,10,0,0],active:3,cap:3,detail:"c=3:\n  A: max(0,6+MaxV[1])=6\n  B: max(6,10+MaxV[0])=10 ← best\n  C: w=4>3 skip\nMaxValue[3]=10",label:"c=3 → 10",narrate:"c=3: item B alone (v=10) beats item A (v=6). MaxValue[3]=10."},
+  {dp:[0,0,6,10,12,0],active:4,cap:4,detail:"c=4:\n  A: 6+MaxV[2]=12\n  B: 10+MaxV[1]=10\n  C: 12+MaxV[0]=12 ← tied\nMaxValue[4]=12",label:"c=4 → 12",narrate:"c=4: item C (v=12) or 2×item A (v=6+6=12) both give 12. MaxValue[4]=12."},
+  {dp:[0,0,6,10,12,16],active:5,cap:5,detail:"c=5:\n  A: 6+MaxV[3]=6+10=16 ← best!\n  B: 10+MaxV[2]=10+6=16 ← tied!\n  C: 12+MaxV[1]=12+0=12\nMaxValue[5]=16",label:"DONE c=5 → 16",narrate:"c=5: item A+item B = w(2+3)=5, v(6+10)=16. Also item B+item A same. MaxValue[5]=16. Optimal!"},
+];
+var stepIdx=0;
+function renderCells(dp,active){
+  var div=document.getElementById('vz49-cells');
+  div.innerHTML='';
+  for(var i=0;i<6;i++){
+    var cell=document.createElement('div');
+    var isActive=active===i;
+    var isDone=i<=active&&i!==active&&i<6;
+    cell.style.cssText='display:inline-flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;';
+    var idx=document.createElement('div');
+    idx.style.cssText='font-size:10px;color:#8b949e;font-family:monospace;';idx.textContent='['+i+']';
+    var box=document.createElement('div');
+    var col=isActive?'#f0883e':(isDone?'#3fb950':'#30363d');
+    var bg=isActive?'#f0883e22':(isDone?'#3fb9500d':'#21262d');
+    box.style.cssText='width:48px;height:36px;border:1.5px solid '+col+';border-radius:5px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:13px;font-weight:700;color:'+col+';';
+    box.textContent=dp[i];
+    cell.appendChild(idx);cell.appendChild(box);div.appendChild(cell);
+  }
+}
+function draw(){
+  var s=steps[stepIdx];
+  renderCells(s.dp,s.active);
+  document.getElementById('vz49-detail').textContent=s.detail;
+  document.getElementById('vz49-label').textContent=s.label;
+  document.getElementById('vz49-narrate').textContent=s.narrate;
+  document.getElementById('vz49-cap').textContent=s.cap;
+  document.getElementById('vz49-maxv').textContent=s.dp[5]>0?s.dp[5]:'—';
+}
+window.vz49step=function(){
+  if(stepIdx<steps.length-1)stepIdx++;
+  draw();
+  if(stepIdx>=steps.length-1)document.getElementById('vz49-stepbtn').disabled=true;
+};
+window.vz49reset=function(){stepIdx=0;document.getElementById('vz49-stepbtn').disabled=false;draw();};
+draw();
+})();</script>
+
+    <h3 class="subsec">Worked Example Trace</h3>
+
+    <p>Items: A(9kg,$550), B(5kg,$350), C(6kg,$180), D(1kg,$40). Filling Memo[1..12]:</p>
+
+    <table>
+      <thead>
+        <tr><th>c</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>MaxValue</strong></td><td>40</td><td>80</td><td>120</td><td>160</td><td>350</td><td>390</td><td>430</td><td>470</td><td>550</td><td>700</td><td>740</td><td>780</td></tr>
+      </tbody>
+    </table>
+
+    <p>For Memo[12]: considering each item: A gives 550+120=670; B gives 350+430=<strong>780</strong>; C gives 180+390=570; D gives 40+740=780. Best = 780 (two B's and two D's). <span class="complexity-tag">O(nC)</span></p>
+
+    <h3 class="subsec">Top-Down Version</h3>
+
+    <div class="algo-header">
+      Top-Down Unbounded Knapsack
+      <span class="algo-complexity">Time: O(nC) | Space: O(C)</span>
+    </div>
+    <pre class="code-block has-header">// Memo[0..C] initialised to -1; Memo[0] = 0
+
+function KNAPSACK(Capacity):
+    if Memo[Capacity] != -1 then return Memo[Capacity]
+    maxValue = 0
+    for i = 1 to N do
+        if Weight[i] &lt;= Capacity then
+            thisValue = Value[i] + KNAPSACK(Capacity - Weight[i])
+            if thisValue &gt; maxValue then
+                maxValue = thisValue
+    Memo[Capacity] = maxValue
+    return Memo[Capacity]</pre>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- SECTION 7.5 -->
+  <!-- ======================================================= -->
+  <section class="content-section" id="s75">
+    <h2 class="sec-title"><span class="sec-num">7.5</span> The 0-1 Knapsack Problem</h2>
+  <button class="review-btn" data-week="6" data-sec="s75"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Problem Definition</h3>
+
+    <p>Same as unbounded knapsack, but each item may be taken <strong>at most once</strong> (0 or 1 of each). The naive approach of trying all 2<sup>n</sup> subsets is exponential. DP provides an O(nC) solution.</p>
+
+    <p><strong>Example (from lecture):</strong> Items A(6kg,$230), B(1kg,$40), C(5kg,$350), D(9kg,$550), capacity = 11kg. Optimal = $590 (B+D = 10kg).</p>
+
+    <h3 class="subsec">Why Unbounded's 1D Table Fails Here</h3>
+
+    <p>In the unbounded case, picking an item reduces capacity but the item remains available. In 0-1, once item i is taken, it must be excluded from the subproblem. Tracking all subsets of used items requires 2<sup>n</sup> states — worse than brute force. The key observation: the <em>order</em> in which items are considered is irrelevant, so we can track only how many of the first i items have been considered.</p>
+
+    <h3 class="subsec">2D Subproblem Definition</h3>
+
+    <p>Define: <code>MaxValue[i][c]</code> = maximum value using items from the set {1, 2, &hellip;, i} with capacity c kg.</p>
+    <ul>
+      <li>Base case: <code>MaxValue[0][c] = 0</code> for all c (no items available).</li>
+    </ul>
+
+    <h3 class="subsec">Recurrence</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">0-1 Knapsack Recurrence</div>
+      <pre style="background:transparent;border:none;padding:0;font-family:'JetBrains Mono',monospace;font-size:0.9em;">MaxValue[i][c] = 0,                              if i = 0
+MaxValue[i][c] = MaxValue[i-1][c],              if w[i] &gt; c   (item too heavy)
+MaxValue[i][c] = max(
+    MaxValue[i-1][c],                            // don't take item i
+    v[i] + MaxValue[i-1][c - w[i]]              // take item i
+)</pre>
+    </div>
+
+    <p>The two choices for item i are: <strong>skip it</strong> (inherit the best from first i&minus;1 items at capacity c), or <strong>take it</strong> (use item i's value plus optimal from first i&minus;1 items at remaining capacity). We take the maximum of these two options.</p>
+
+    <h3 class="subsec">Implementation</h3>
+
+    <div class="algo-header">
+      Algorithm 50 &mdash; Bottom-Up 0-1 Knapsack
+      <span class="algo-complexity">Time: O(nC) | Space: O(nC)</span>
+    </div>
+    <pre class="code-block has-header">function KNAPSACK(w[1..n], v[1..n], C):
+    MaxValue[0..n][0..C] = 0          // base: 0 items = 0 value
+
+    for i = 1 to n do
+        for c = 1 to C do
+            if w[i] &lt;= c then
+                MaxValue[i][c] = max(MaxValue[i-1][c],
+                                     v[i] + MaxValue[i-1][c - w[i]])
+            else
+                MaxValue[i][c] = MaxValue[i-1][c]   // can't take item i
+
+    return MaxValue[n][C]</pre>
+
+<!-- vz50: 0-1 Knapsack DP Table Interactive Widget -->
+<div id="vz50-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="display:flex;align-items:center;padding:10px 18px;background:#21262d;border-bottom:1px solid #30363d;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;letter-spacing:.08em;text-transform:uppercase;">Algorithm 50 · 0-1 Knapsack DP Table</span>
+    <span style="margin-left:auto;font-size:11px;color:#f0883e;font-family:monospace;">O(nC)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:16px;border-right:1px solid #30363d;">
+      <svg id="vz50-svg" viewBox="0 0 500 260" style="width:100%;height:auto;display:block;"></svg>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div id="vz50-lbl" style="font-size:10px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;">Step 1 of 10</div>
+      <div id="vz50-txt" style="font-size:13px;line-height:1.6;color:#c9d1d9;flex:1;min-height:80px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div class="demo-chip" id="vz50-chip-val"><span class="k">Max Value</span><span class="v" id="vz50-val">—</span></div>
+        <div class="demo-chip" id="vz50-chip-step"><span class="k">Step</span><span class="v" id="vz50-stepv">0</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:auto;">
+        <button id="vz50-prev" onclick="vz50step(-1)" disabled style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;opacity:.38;">&#9664; Prev</button>
+        <button id="vz50-next" onclick="vz50step(1)" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz50reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#8b949e;padding:7px 13px;border-radius:7px;">&#8634;</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+  var STEPS=[
+    {label:"Step 1 of 10",text:"Items: (w=2,v=3), (w=3,v=4), (w=4,v=5). Capacity C=5. Initialise row 0 = all zeros (empty knapsack has value 0 for any capacity).",filled:[[0,0,0,0,0,0],[null,null,null,null,null,null],[null,null,null,null,null,null],[null,null,null,null,null,null]],current:null,inputs:[],answer:null},
+    {label:"Step 2 of 10",text:"i=1 (w=2, v=3): c=1 — weight 2 > 1, can't take item 1. MaxValue[1][1] = MaxValue[0][1] = 0.",filled:[[0,0,0,0,0,0],[0,null,null,null,null,null],[null,null,null,null,null,null],[null,null,null,null,null,null]],current:[1,1],inputs:[[0,1]],answer:null},
+    {label:"Step 3 of 10",text:"i=1, c=2: w=2 ≤ 2. max(MaxValue[0][2]=0, v + MaxValue[0][0]=3+0=3) = 3. Take item 1!",filled:[[0,0,0,0,0,0],[0,0,3,null,null,null],[null,null,null,null,null,null],[null,null,null,null,null,null]],current:[1,2],inputs:[[0,2],[0,0]],answer:null},
+    {label:"Step 4 of 10",text:"i=1, c=3,4,5: same logic — can always take item 1 (w=2 ≤ c). Value = 3 in all. Row 1 complete.",filled:[[0,0,0,0,0,0],[0,0,3,3,3,3],[null,null,null,null,null,null],[null,null,null,null,null,null]],current:null,inputs:[],answer:null},
+    {label:"Step 5 of 10",text:"i=2 (w=3, v=4): c=1,2 — weight 3 > c, skip. MaxValue[2][1]=0, MaxValue[2][2]=3 (carry forward).",filled:[[0,0,0,0,0,0],[0,0,3,3,3,3],[0,0,3,null,null,null],[null,null,null,null,null,null]],current:[2,2],inputs:[[1,2]],answer:null},
+    {label:"Step 6 of 10",text:"i=2, c=3: max(MaxValue[1][3]=3, 4 + MaxValue[1][0]=4+0=4) = 4. Take item 2!",filled:[[0,0,0,0,0,0],[0,0,3,3,3,3],[0,0,3,4,null,null],[null,null,null,null,null,null]],current:[2,3],inputs:[[1,3],[1,0]],answer:null},
+    {label:"Step 7 of 10",text:"i=2, c=4: max(MaxValue[1][4]=3, 4 + MaxValue[1][1]=4+0=4) = 4. Take item 2 (item 1 fits at c=4 but v=3 < v2=4).",filled:[[0,0,0,0,0,0],[0,0,3,3,3,3],[0,0,3,4,4,null],[null,null,null,null,null,null]],current:[2,4],inputs:[[1,4],[1,1]],answer:null},
+    {label:"Step 8 of 10",text:"i=2, c=5: max(MaxValue[1][5]=3, 4 + MaxValue[1][2]=4+3=7) = 7! Take both items (item1 w=2 + item2 w=3 = w=5).",filled:[[0,0,0,0,0,0],[0,0,3,3,3,3],[0,0,3,4,4,7],[null,null,null,null,null,null]],current:[2,5],inputs:[[1,5],[1,2]],answer:null},
+    {label:"Step 9 of 10",text:"i=3 (w=4, v=5): c=1..3 too heavy. c=4: max(4, 5+MaxValue[2][0]=5)=5. c=5: max(7, 5+MaxValue[2][1]=5)=7. Row 3 done.",filled:[[0,0,0,0,0,0],[0,0,3,3,3,3],[0,0,3,4,4,7],[0,0,3,4,5,7]],current:[3,5],inputs:[],answer:null},
+    {label:"Step 10 of 10",text:"Answer: MaxValue[3][5] = 7. Optimal: take item 1 (w=2,v=3) + item 2 (w=3,v=4) = total value 7.",filled:[[0,0,0,0,0,0],[0,0,3,3,3,3],[0,0,3,4,4,7],[0,0,3,4,5,7]],current:null,inputs:[],answer:[3,5]}
+  ];
+  var cur=0;
+  var GX=60,GY=32,CW=58,CH=36;
+  var COLS=6,ROWS=4;
+  function render(){
+    var s=STEPS[cur];
+    document.getElementById('vz50-lbl').textContent=s.label;
+    document.getElementById('vz50-txt').textContent=s.text;
+    document.getElementById('vz50-stepv').textContent=cur;
+    document.getElementById('vz50-val').textContent=s.answer?'7':'—';
+    document.getElementById('vz50-prev').disabled=cur===0;
+    document.getElementById('vz50-prev').style.opacity=cur===0?'.38':'1';
+    document.getElementById('vz50-next').disabled=cur===STEPS.length-1;
+    document.getElementById('vz50-next').style.opacity=cur===STEPS.length-1?'.38':'1';
+    var svg=document.getElementById('vz50-svg');
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    function mk(tag,attrs){var el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(var k in attrs)el.setAttribute(k,attrs[k]);return el;}
+    function tx(x,y,t,col,sz,fw){var e=mk('text',{x:x,y:y,'text-anchor':'middle','dominant-baseline':'central',fill:col||'#c9d1d9','font-size':sz||12,'font-family':'JetBrains Mono,Fira Code,Consolas,monospace','font-weight':fw||'normal'});e.textContent=t;return e;}
+    // Row labels
+    var rlbls=['i=0','i=1','i=2','i=3'];
+    for(var r=0;r<ROWS;r++){svg.appendChild(tx(GX-8,GY+r*CH+CH/2,rlbls[r],'#8b949e',10));}
+    // Col labels
+    var clbls=['c=0','c=1','c=2','c=3','c=4','c=5'];
+    for(var c=0;c<COLS;c++){svg.appendChild(tx(GX+c*CW+CW/2,GY-10,clbls[c],'#8b949e',10));}
+    // Item info
+    var items=[['item1','w=2','v=3'],['item2','w=3','v=4'],['item3','w=4','v=5']];
+    for(var ii=0;ii<3;ii++){
+      var iy=GY+(ii+1)*CH+CH/2;
+      svg.appendChild(tx(440,iy-8,items[ii][0],'#8b949e',9));
+      svg.appendChild(tx(440,iy+5,items[ii][1]+' '+items[ii][2],'#f0883e',9));
+    }
+    // Draw cells
+    for(var row=0;row<ROWS;row++){
+      for(var col=0;col<COLS;col++){
+        var cx=GX+col*CW,cy=GY+row*CH;
+        var val=s.filled[row][col];
+        var isCur=s.current&&s.current[0]===row&&s.current[1]===col;
+        var isAns=s.answer&&s.answer[0]===row&&s.answer[1]===col;
+        var isInp=false;
+        for(var ii=0;ii<s.inputs.length;ii++){if(s.inputs[ii][0]===row&&s.inputs[ii][1]===col){isInp=true;break;}}
+        var fill='#0d1117',stroke='#30363d',sw=1;
+        if(val!==null){fill='#161b22';stroke='#30363d';}
+        if(isInp){fill='#3fb9500d';stroke='#3fb950';sw=1.5;}
+        if(isCur){fill='#f0883e1a';stroke='#f0883e';sw=2;}
+        if(isAns){fill='#bc8cff1a';stroke='#bc8cff';sw=2;}
+        var rect=mk('rect',{x:cx+1,y:cy+1,width:CW-2,height:CH-2,fill:fill,stroke:stroke,'stroke-width':sw,rx:3});
+        svg.appendChild(rect);
+        if(val!==null){
+          var tc=isAns?'#bc8cff':isCur?'#f0883e':'#c9d1d9';
+          svg.appendChild(tx(cx+CW/2,cy+CH/2,String(val),tc,13,'600'));
+        }
+      }
+    }
+  }
+  window.vz50step=function(d){cur=Math.max(0,Math.min(STEPS.length-1,cur+d));render();};
+  window.vz50reset=function(){cur=0;render();};
+  render();
+})();</script>
+
+    <h3 class="subsec">Full Worked Table (Lecture Example)</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>i \ c</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>0 (none)</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td><strong>1 (A, 6kg,$230)</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>230</td><td>230</td><td>230</td><td>230</td><td>230</td><td>230</td><td>230</td></tr>
+        <tr><td><strong>2 (B, 1kg,$40)</strong></td><td>40</td><td>40</td><td>40</td><td>40</td><td>40</td><td>230</td><td>270</td><td>270</td><td>270</td><td>270</td><td>270</td><td>270</td></tr>
+        <tr><td><strong>3 (C, 5kg,$350)</strong></td><td>40</td><td>40</td><td>40</td><td>40</td><td>350</td><td>390</td><td>390</td><td>390</td><td>390</td><td>390</td><td>580</td><td>620</td></tr>
+        <tr><td><strong>4 (D, 9kg,$550)</strong></td><td>40</td><td>40</td><td>40</td><td>40</td><td>350</td><td>390</td><td>390</td><td>390</td><td>550</td><td>590</td><td>590</td><td>620</td></tr>
+      </tbody>
+    </table>
+
+    <p>At row 4, col 11: max(580 [skip D], 550+40 [take D with 2kg remaining]) = max(580, 590) = <strong>590</strong>. Optimal items: B+D (total 10kg, $590).</p>
+
+    <h3 class="subsec">Reconstruction: Backtracking the Table</h3>
+
+    <p>Start at MaxValue[n][C]. For each row i from n down to 1:</p>
+    <ul>
+      <li>If MaxValue[i][c] = MaxValue[i&minus;1][c]: item i was <em>not</em> taken. Move to row i&minus;1, same column.</li>
+      <li>Otherwise: item i <em>was</em> taken. Record item i, reduce c by w[i], move to row i&minus;1.</li>
+    </ul>
+
+    <h3 class="subsec">Complexity and the Pseudo-Polynomial Note</h3>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      <strong>Time:</strong> O(nC) — n&times;C subproblems, each O(1) to compute.<br>
+      <strong>Space:</strong> O(nC) — can be reduced to O(C) with space-saving trick (but reconstruction is then lost).<br><br>
+      <strong>Important:</strong> O(nC) is <em>pseudo-polynomial</em>, not truly polynomial. C takes log<sub>2</sub>C bits to represent, so letting B = number of bits, C = 2<sup>B</sup> and the algorithm runs in O(n &sdot; 2<sup>B</sup>) — <em>exponential</em> in input size. The 0-1 knapsack is NP-complete.
+    </div>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- SECTION 7.6 -->
+  <!-- ======================================================= -->
+  <section class="content-section" id="s76">
+    <h2 class="sec-title"><span class="sec-num">7.6</span> The Edit Distance Problem</h2>
+  <button class="review-btn" data-week="6" data-sec="s76"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Problem Definition</h3>
+
+    <p>Given two strings S1 and S2, find the <strong>minimum number of edit operations</strong> to transform S1 into S2. The permitted operations (each costing 1) are:</p>
+    <ol>
+      <li><strong>Insert</strong> a character at any position.</li>
+      <li><strong>Delete</strong> a character from any position.</li>
+      <li><strong>Substitute</strong> (replace) one character with another.</li>
+    </ol>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Edit Distance (Levenshtein Distance)</div>
+      The edit distance between strings S1 and S2 is the minimum number of single-character insert, delete, or substitute operations required to convert S1 into S2.
+    </div>
+
+    <p><strong>Applications:</strong> spell-checking and autocorrect, query suggestion in search engines, DNA/protein sequence alignment in bioinformatics.</p>
+
+    <p><strong>Examples:</strong></p>
+    <ul>
+      <li>"computer" &rarr; "commuter": 1 substitution (p &rarr; m). Edit distance = 1.</li>
+      <li>"sport" &rarr; "sort": 1 deletion. Edit distance = 1.</li>
+      <li>"kitten" &rarr; "sitting": 2 substitutions + 1 insertion = edit distance 3.</li>
+      <li>"SINGS" &rarr; "SHINE": edit distance = 3 (replace S with E, delete G, insert H).</li>
+    </ul>
+
+    <h3 class="subsec">Identifying Optimal Subproblems</h3>
+
+    <p>Consider aligning the last characters of the two strings. Three choices exist for the final column of the alignment:</p>
+    <ul>
+      <li><strong>Align</strong> S1[i] with S2[j]: cost 0 if equal, 1 if substitution.</li>
+      <li><strong>Delete</strong> S1[i] (match S1[i] with a gap): cost 1, reduces to subproblem (i&minus;1, j).</li>
+      <li><strong>Insert</strong> S2[j] (match a gap with S2[j]): cost 1, reduces to subproblem (i, j&minus;1).</li>
+    </ul>
+
+    <p>Subproblem: <code>Dist[i][j]</code> = edit distance between the prefixes S1[1..i] and S2[1..j], for 0 &le; i &le; n, 0 &le; j &le; m.</p>
+
+    <h3 class="subsec">Recurrence</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">Edit Distance Recurrence</div>
+      <pre style="background:transparent;border:none;padding:0;font-family:'JetBrains Mono',monospace;font-size:0.9em;">Dist[0][j] = j          // empty S1: insert all j chars of S2
+Dist[i][0] = i          // empty S2: delete all i chars of S1
+
+If S1[i] = S2[j]:
+    Dist[i][j] = Dist[i-1][j-1]          // characters match, no cost
+
+Else:
+    Dist[i][j] = 1 + min(
+        Dist[i-1][j-1],   // substitute S1[i] for S2[j]
+        Dist[i-1][j],     // delete S1[i]   (go up)
+        Dist[i][j-1]      // insert S2[j]   (go left)
+    )</pre>
+    </div>
+
+    <h3 class="subsec">Implementation</h3>
+
+    <div class="algo-header">
+      Algorithm 51 &mdash; Bottom-Up Edit Distance
+      <span class="algo-complexity">Time: O(nm) | Space: O(nm)</span>
+    </div>
+    <pre class="code-block has-header">function EDIT_DISTANCE(S1[1..n], S2[1..m]):
+    Dist[0..n][0..m] = 0
+    Dist[1..n][0] = 1, 2, ..., n     // base: delete S1 chars
+    Dist[0][1..m] = 1, 2, ..., m     // base: insert S2 chars
+
+    for i = 1 to n do
+        for j = 1 to m do
+            if S1[i] = S2[j] then
+                Dist[i][j] = Dist[i-1][j-1]
+            else
+                Dist[i][j] = 1 + min(Dist[i-1][j-1], Dist[i-1][j], Dist[i][j-1])
+
+    return Dist[n][m]</pre>
+
+<!-- vz51: Edit Distance DP Table Interactive Widget -->
+<div id="vz51-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="display:flex;align-items:center;padding:10px 18px;background:#21262d;border-bottom:1px solid #30363d;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;letter-spacing:.08em;text-transform:uppercase;">Algorithm 51 · Edit Distance (Levenshtein)</span>
+    <span style="margin-left:auto;font-size:11px;color:#f0883e;font-family:monospace;">O(nm)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:16px;border-right:1px solid #30363d;">
+      <svg id="vz51-svg" viewBox="0 0 500 260" style="width:100%;height:auto;display:block;"></svg>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div id="vz51-lbl" style="font-size:10px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;">Step 1 of 11</div>
+      <div id="vz51-txt" style="font-size:13px;line-height:1.6;color:#c9d1d9;flex:1;min-height:80px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div class="demo-chip"><span class="k">Edit Dist</span><span class="v" id="vz51-val">—</span></div>
+        <div class="demo-chip"><span class="k">Step</span><span class="v" id="vz51-stepv">0</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:auto;">
+        <button id="vz51-prev" onclick="vz51step(-1)" disabled style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;opacity:.38;">&#9664; Prev</button>
+        <button id="vz51-next" onclick="vz51step(1)" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz51reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#8b949e;padding:7px 13px;border-radius:7px;">&#8634;</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+  // S1="CAT" (rows), S2="BAT" (cols)
+  // Table: rows 0..3, cols 0..3
+  // Dist[0][j]=j, Dist[i][0]=i
+  // Full table:
+  //      ""  B  A  T
+  // "":   0  1  2  3
+  //  C:   1  1  2  3
+  //  A:   2  2  1  2
+  //  T:   3  3  2  1
+  var N=null;
+  var STEPS=[
+    {label:"Step 1 of 11",text:"S1='CAT', S2='BAT'. Initialise: Dist[0][j]=j (cost to insert j chars), Dist[i][0]=i (cost to delete i chars). Base cases shown in blue.",
+     tbl:[[0,1,2,3],[1,N,N,N],[2,N,N,N],[3,N,N,N]],cur:null,inp:[],match:false,ans:false},
+    {label:"Step 2 of 11",text:"i=1 (C), j=1 (B): S1[1]≠S2[1]. Dist = 1+min(Dist[0][0]=0, Dist[0][1]=1, Dist[1][0]=1) = 1+0 = 1 (substitute).",
+     tbl:[[0,1,2,3],[1,1,N,N],[2,N,N,N],[3,N,N,N]],cur:[1,1],inp:[[0,0],[0,1],[1,0]],match:false,ans:false},
+    {label:"Step 3 of 11",text:"i=1 (C), j=2 (A): S1[1]≠S2[2]. Dist = 1+min(Dist[0][1]=1, Dist[0][2]=2, Dist[1][1]=1) = 1+1 = 2.",
+     tbl:[[0,1,2,3],[1,1,2,N],[2,N,N,N],[3,N,N,N]],cur:[1,2],inp:[[0,1],[0,2],[1,1]],match:false,ans:false},
+    {label:"Step 4 of 11",text:"i=1 (C), j=3 (T): S1[1]≠S2[3]. Dist = 1+min(Dist[0][2]=2, Dist[0][3]=3, Dist[1][2]=2) = 1+2 = 3. Row 1 done.",
+     tbl:[[0,1,2,3],[1,1,2,3],[2,N,N,N],[3,N,N,N]],cur:[1,3],inp:[[0,2],[0,3],[1,2]],match:false,ans:false},
+    {label:"Step 5 of 11",text:"i=2 (A), j=1 (B): S1[2]≠S2[1]. Dist = 1+min(Dist[1][0]=1, Dist[1][1]=1, Dist[2][0]=2) = 1+1 = 2.",
+     tbl:[[0,1,2,3],[1,1,2,3],[2,2,N,N],[3,N,N,N]],cur:[2,1],inp:[[1,0],[1,1],[2,0]],match:false,ans:false},
+    {label:"Step 6 of 11",text:"i=2 (A), j=2 (A): S1[2]=S2[2]='A' — match! Dist = Dist[1][1] = 1 (no edit needed, carry diagonal).",
+     tbl:[[0,1,2,3],[1,1,2,3],[2,2,1,N],[3,N,N,N]],cur:[2,2],inp:[[1,1]],match:true,ans:false},
+    {label:"Step 7 of 11",text:"i=2 (A), j=3 (T): S1[2]≠S2[3]. Dist = 1+min(Dist[1][2]=2, Dist[1][3]=3, Dist[2][2]=1) = 1+1 = 2. Row 2 done.",
+     tbl:[[0,1,2,3],[1,1,2,3],[2,2,1,2],[3,N,N,N]],cur:[2,3],inp:[[1,2],[1,3],[2,2]],match:false,ans:false},
+    {label:"Step 8 of 11",text:"i=3 (T), j=1 (B): S1[3]≠S2[1]. Dist = 1+min(Dist[2][0]=2, Dist[2][1]=2, Dist[3][0]=3) = 1+2 = 3.",
+     tbl:[[0,1,2,3],[1,1,2,3],[2,2,1,2],[3,3,N,N]],cur:[3,1],inp:[[2,0],[2,1],[3,0]],match:false,ans:false},
+    {label:"Step 9 of 11",text:"i=3 (T), j=2 (A): S1[3]≠S2[2]. Dist = 1+min(Dist[2][1]=2, Dist[2][2]=1, Dist[3][1]=3) = 1+1 = 2.",
+     tbl:[[0,1,2,3],[1,1,2,3],[2,2,1,2],[3,3,2,N]],cur:[3,2],inp:[[2,1],[2,2],[3,1]],match:false,ans:false},
+    {label:"Step 10 of 11",text:"i=3 (T), j=3 (T): S1[3]=S2[3]='T' — match! Dist = Dist[2][2] = 1. No edit needed here!",
+     tbl:[[0,1,2,3],[1,1,2,3],[2,2,1,2],[3,3,2,1]],cur:[3,3],inp:[[2,2]],match:true,ans:false},
+    {label:"Step 11 of 11",text:"Edit distance = 1. One substitution: replace 'C' with 'B'. The strings 'CAT' and 'BAT' differ in only one character.",
+     tbl:[[0,1,2,3],[1,1,2,3],[2,2,1,2],[3,3,2,1]],cur:null,inp:[],match:false,ans:true}
+  ];
+  var cur=0;
+  var GX=65,GY=40,CW=88,CH=46;
+  var rowH=['""','C','A','T'];
+  var colH=['""','B','A','T'];
+  function render(){
+    var s=STEPS[cur];
+    document.getElementById('vz51-lbl').textContent=s.label;
+    document.getElementById('vz51-txt').textContent=s.text;
+    document.getElementById('vz51-stepv').textContent=cur;
+    document.getElementById('vz51-val').textContent=s.ans?'1':'—';
+    document.getElementById('vz51-prev').disabled=cur===0;
+    document.getElementById('vz51-prev').style.opacity=cur===0?'.38':'1';
+    document.getElementById('vz51-next').disabled=cur===STEPS.length-1;
+    document.getElementById('vz51-next').style.opacity=cur===STEPS.length-1?'.38':'1';
+    var svg=document.getElementById('vz51-svg');
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    function mk(tag,attrs){var el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(var k in attrs)el.setAttribute(k,attrs[k]);return el;}
+    function tx(x,y,t,col,sz,fw){var e=mk('text',{x:x,y:y,'text-anchor':'middle','dominant-baseline':'central',fill:col||'#c9d1d9','font-size':sz||12,'font-family':'JetBrains Mono,Fira Code,Consolas,monospace','font-weight':fw||'normal'});e.textContent=t;return e;}
+    // Col headers
+    for(var c=0;c<4;c++){svg.appendChild(tx(GX+c*CW+CW/2,GY-14,colH[c],'#8b949e',11,'700'));}
+    // Row headers
+    for(var r=0;r<4;r++){svg.appendChild(tx(GX-20,GY+r*CH+CH/2,rowH[r],'#8b949e',11,'700'));}
+    // String labels
+    svg.appendChild(tx(GX+2*CW,GY-30,'S2: B A T','#58a6ff',10));
+    svg.appendChild(tx(GX-40,GY+2*CH,'S1','#58a6ff',10));
+    // Cells
+    for(var row=0;row<4;row++){
+      for(var col=0;col<4;col++){
+        var cx=GX+col*CW,cy=GY+row*CH;
+        var val=s.tbl[row][col];
+        var isCur=s.cur&&s.cur[0]===row&&s.cur[1]===col;
+        var isAns=s.ans&&row===3&&col===3;
+        var isInp=false;
+        for(var ii=0;ii<s.inp.length;ii++){if(s.inp[ii][0]===row&&s.inp[ii][1]===col){isInp=true;break;}}
+        var isBase=(row===0||col===0)&&!isCur&&!isAns;
+        var fill='#0d1117',stroke='#30363d',sw=1;
+        if(val!==null&&isBase){fill='#1f6feb0d';stroke='#58a6ff40';}
+        else if(val!==null){fill='#161b22';stroke='#30363d';}
+        if(isInp){fill=s.match?'#3fb9500d':'#1f6feb0d';stroke=s.match?'#3fb950':'#58a6ff';sw=1.5;}
+        if(isCur){fill=s.match?'#3fb9500d':'#f0883e1a';stroke=s.match?'#3fb950':'#f0883e';sw=2;}
+        if(isAns){fill='#bc8cff1a';stroke='#bc8cff';sw=2;}
+        svg.appendChild(mk('rect',{x:cx+2,y:cy+2,width:CW-4,height:CH-4,fill:fill,stroke:stroke,'stroke-width':sw,rx:3}));
+        if(val!==null){
+          var tc=isAns?'#bc8cff':isCur&&s.match?'#3fb950':isCur?'#f0883e':'#c9d1d9';
+          svg.appendChild(tx(cx+CW/2,cy+CH/2,String(val),tc,14,'600'));
+        }
+      }
+    }
+  }
+  window.vz51step=function(d){cur=Math.max(0,Math.min(STEPS.length-1,cur+d));render();};
+  window.vz51reset=function(){cur=0;render();};
+  render();
+})();</script>
+
+    <h3 class="subsec">Worked Example: "SINGS" vs "SHINE"</h3>
+
+    <p>S1 = "SINGS" (rows), S2 = "SHINE" (columns). i indexes S1, j indexes S2.</p>
+
+    <table>
+      <thead>
+        <tr><th></th><th>&Phi;</th><th>S</th><th>H</th><th>I</th><th>N</th><th>E</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>&Phi;</strong></td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+        <tr><td><strong>S</strong></td><td>1</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+        <tr><td><strong>I</strong></td><td>2</td><td>1</td><td>1</td><td>1</td><td>2</td><td>3</td></tr>
+        <tr><td><strong>N</strong></td><td>3</td><td>2</td><td>2</td><td>2</td><td>1</td><td>2</td></tr>
+        <tr><td><strong>G</strong></td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>2</td></tr>
+        <tr><td><strong>S</strong></td><td>5</td><td>4</td><td>4</td><td>4</td><td>3</td><td>3</td></tr>
+      </tbody>
+    </table>
+
+    <p>Edit distance = Dist[5][5] = <strong>3</strong>.</p>
+
+    <p>Sequence of operations (from decision array / backtracking): SINGS &rarr; SINGE (replace S[5] with E) &rarr; SINE (delete G at position 4) &rarr; SHINE (insert H at position 2).</p>
+
+    <h3 class="subsec">Optimal Sequence Alignment (Reconstruction)</h3>
+
+    <p>Backtrack from Dist[n][m] to Dist[0][0]. At each cell [i][j]:</p>
+    <ul>
+      <li>If S1[i] = S2[j] and Dist[i][j] = Dist[i&minus;1][j&minus;1]: match (no edit), move diagonally up-left.</li>
+      <li>If Dist[i][j] = Dist[i&minus;1][j&minus;1] + 1: substitution, move diagonally.</li>
+      <li>If Dist[i][j] = Dist[i&minus;1][j] + 1: deletion from S1 (move up).</li>
+      <li>If Dist[i][j] = Dist[i][j&minus;1] + 1: insertion into S1 (move left).</li>
+    </ul>
+    <p>Build the alignment strings in reverse; reverse at the end.</p>
+
+    <div class="algo-header">
+      Algorithm 52 &mdash; Optimal Sequence Alignment
+      <span class="algo-complexity">Time: O(n+m) after table is built</span>
+    </div>
+    <pre class="code-block has-header">function ALIGNMENT(S1[1..n], S2[1..m], Dist[0..n][0..m]):
+    A1 = "", A2 = ""
+    i = n, j = m
+
+    while i + j &gt; 0 do
+        if i = 0 then
+            A1 += "-", A2 += S2[j], j = j - 1
+        else if j = 0 then
+            A1 += S1[i], A2 += "-", i = i - 1
+        else
+            best = min(Dist[i-1][j-1], Dist[i][j-1], Dist[i-1][j])
+            if S1[i] = S2[j] or Dist[i-1][j-1] = best then
+                A1 += S1[i], A2 += S2[j]    // match or substitute
+                i = i - 1, j = j - 1
+            else if Dist[i-1][j] = best then
+                A1 += S1[i], A2 += "-"      // delete from S1
+                i = i - 1
+            else
+                A1 += "-", A2 += S2[j]      // insert into S1
+                j = j - 1
+
+    return reverse(A1), reverse(A2)</pre>
+
+<!-- vz52: Sequence Alignment Backtracking Interactive Widget -->
+<div id="vz52-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="display:flex;align-items:center;padding:10px 18px;background:#21262d;border-bottom:1px solid #30363d;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;letter-spacing:.08em;text-transform:uppercase;">Algorithm 52 · Sequence Alignment Backtrack</span>
+    <span style="margin-left:auto;font-size:11px;color:#f0883e;font-family:monospace;">O(n+m)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:16px;border-right:1px solid #30363d;">
+      <svg id="vz52-svg" viewBox="0 0 500 260" style="width:100%;height:auto;display:block;"></svg>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div id="vz52-lbl" style="font-size:10px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;">Step 1 of 5</div>
+      <div id="vz52-txt" style="font-size:13px;line-height:1.6;color:#c9d1d9;flex:1;min-height:80px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div class="demo-chip"><span class="k">Ops Found</span><span class="v" id="vz52-ops">0</span></div>
+        <div class="demo-chip"><span class="k">Step</span><span class="v" id="vz52-stepv">0</span></div>
+      </div>
+      <div id="vz52-align" style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#c9d1d9;min-height:52px;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 12px;"></div>
+      <div style="display:flex;gap:6px;margin-top:auto;">
+        <button id="vz52-prev" onclick="vz52step(-1)" disabled style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;opacity:.38;">&#9664; Prev</button>
+        <button id="vz52-next" onclick="vz52step(1)" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz52reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#8b949e;padding:7px 13px;border-radius:7px;">&#8634;</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+  // DP table for CAT vs BAT (same as vz51)
+  var TBL=[[0,1,2,3],[1,1,2,3],[2,2,1,2],[3,3,2,1]];
+  var colH=['""','B','A','T'];
+  var rowH=['""','C','A','T'];
+  // Each step: path=cells highlighted as path, cur=active cell, align={s1,s2,op} partial
+  var STEPS=[
+    {label:"Step 1 of 5",text:"DP table complete (from Alg 51: S1='CAT', S2='BAT'). Now backtrack from cell (3,3) to find the optimal alignment. Edit distance = 1.",
+     path:[],cur:[3,3],align:[],ops:0},
+    {label:"Step 2 of 5",text:"(3,3): Dist=1. Check diagonal: Dist[2][2]=1, S1[3]='T'=S2[3]='T' (match, cost=0). 0+1=1 — yes! Move to (2,2). Align T ↔ T.",
+     path:[[3,3]],cur:[2,2],align:[{a:'T',b:'T',op:'='}],ops:0},
+    {label:"Step 3 of 5",text:"(2,2): Dist=1. Check diagonal: Dist[1][1]=1, S1[2]='A'=S2[2]='A' (match, cost=0). 0+1=1 — yes! Move to (1,1). Align A ↔ A.",
+     path:[[3,3],[2,2]],cur:[1,1],align:[{a:'A',b:'A',op:'='},{a:'T',b:'T',op:'='}],ops:0},
+    {label:"Step 4 of 5",text:"(1,1): Dist=1. Check diagonal: Dist[0][0]=0, S1[1]='C'≠S2[1]='B' (substitute, cost=1). 0+1=1 — yes! Move to (0,0). Align C ↔ B (substitute).",
+     path:[[3,3],[2,2],[1,1]],cur:[0,0],align:[{a:'C',b:'B',op:'*'},{a:'A',b:'A',op:'='},{a:'T',b:'T',op:'='}],ops:1},
+    {label:"Step 5 of 5",text:"Backtrack complete! Alignment: CAT / BAT. One substitution (C→B). Edit distance = 1.",
+     path:[[3,3],[2,2],[1,1],[0,0]],cur:null,align:[{a:'C',b:'B',op:'*'},{a:'A',b:'A',op:'='},{a:'T',b:'T',op:'='}],ops:1,done:true}
+  ];
+  var cur=0;
+  var GX=65,GY=40,CW=88,CH=46;
+  function render(){
+    var s=STEPS[cur];
+    document.getElementById('vz52-lbl').textContent=s.label;
+    document.getElementById('vz52-txt').textContent=s.text;
+    document.getElementById('vz52-stepv').textContent=cur;
+    document.getElementById('vz52-ops').textContent=s.ops;
+    document.getElementById('vz52-prev').disabled=cur===0;
+    document.getElementById('vz52-prev').style.opacity=cur===0?'.38':'1';
+    document.getElementById('vz52-next').disabled=cur===STEPS.length-1;
+    document.getElementById('vz52-next').style.opacity=cur===STEPS.length-1?'.38':'1';
+    // Alignment display
+    var ad=document.getElementById('vz52-align');
+    if(s.align.length===0){ad.textContent='(alignment building...)';ad.style.color='#8b949e';}
+    else{
+      var r1='S1: ',r2='S2: ',r3='    ';
+      for(var ii=0;ii<s.align.length;ii++){r1+=s.align[ii].a+' ';r2+=s.align[ii].b+' ';r3+=s.align[ii].op+' ';}
+      ad.innerHTML='<span style="color:#c9d1d9">'+r1+'</span><br><span style="color:#c9d1d9">'+r2+'</span><br><span style="color:#f85149">'+r3+'</span>';
+    }
+    var svg=document.getElementById('vz52-svg');
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    function mk(tag,attrs){var el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(var k in attrs)el.setAttribute(k,attrs[k]);return el;}
+    function tx(x,y,t,col,sz,fw){var e=mk('text',{x:x,y:y,'text-anchor':'middle','dominant-baseline':'central',fill:col||'#c9d1d9','font-size':sz||12,'font-family':'JetBrains Mono,Fira Code,Consolas,monospace','font-weight':fw||'normal'});e.textContent=t;return e;}
+    for(var c=0;c<4;c++){svg.appendChild(tx(GX+c*CW+CW/2,GY-14,colH[c],'#8b949e',11,'700'));}
+    for(var r=0;r<4;r++){svg.appendChild(tx(GX-20,GY+r*CH+CH/2,rowH[r],'#8b949e',11,'700'));}
+    function inPath(row,col){for(var ii=0;ii<s.path.length;ii++){if(s.path[ii][0]===row&&s.path[ii][1]===col)return true;}return false;}
+    for(var row=0;row<4;row++){
+      for(var col=0;col<4;col++){
+        var cx=GX+col*CW,cy=GY+row*CH;
+        var val=TBL[row][col];
+        var isCur=s.cur&&s.cur[0]===row&&s.cur[1]===col;
+        var isPath=inPath(row,col);
+        var isDone=s.done&&row===0&&col===0;
+        var fill='#161b22',stroke='#30363d',sw=1;
+        if(row===0||col===0){fill='#1f6feb0d';stroke='#58a6ff30';}
+        if(isPath){fill='#3fb9500d';stroke='#3fb950';sw=2;}
+        if(isCur){fill='#f0883e1a';stroke='#f0883e';sw=2.5;}
+        if(s.done&&isPath){fill='#bc8cff1a';stroke='#bc8cff';sw=2;}
+        svg.appendChild(mk('rect',{x:cx+2,y:cy+2,width:CW-4,height:CH-4,fill:fill,stroke:stroke,'stroke-width':sw,rx:3}));
+        var tc=s.done&&isPath?'#bc8cff':isCur?'#f0883e':isPath?'#3fb950':'#c9d1d9';
+        svg.appendChild(tx(cx+CW/2,cy+CH/2,String(val),tc,14,'600'));
+      }
+    }
+    // Draw arrows along path
+    if(s.path.length>1){
+      for(var pi=0;pi<s.path.length-1;pi++){
+        var r1=s.path[pi][0],c1=s.path[pi][1];
+        var r2=s.path[pi+1][0],c2=s.path[pi+1][1];
+        var x1=GX+c1*CW+CW/2,y1=GY+r1*CH+CH/2;
+        var x2=GX+c2*CW+CW/2,y2=GY+r2*CH+CH/2;
+        var col2=s.done?'#bc8cff':'#3fb950';
+        var line=mk('line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:col2,'stroke-width':2,'marker-end':'url(#arr52)'});
+        svg.appendChild(line);
+      }
+      // Arrow marker def
+      var defs=mk('defs',{});
+      var marker=mk('marker',{id:'arr52',markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'});
+      var mc=s.done?'#bc8cff':'#3fb950';
+      var poly=mk('polygon',{points:'0 0, 6 3, 0 6',fill:mc});
+      marker.appendChild(poly);defs.appendChild(marker);svg.appendChild(defs);
+    }
+  }
+  window.vz52step=function(d){cur=Math.max(0,Math.min(STEPS.length-1,cur+d));render();};
+  window.vz52reset=function(){cur=0;render();};
+  render();
+})();</script>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      <strong>Time:</strong> O(nm) — nm subproblems, each takes O(1) to compute (look at 3 previous cells).<br>
+      <strong>Space:</strong> O(nm) — can be reduced to O(min(n,m)) with space-saving trick, but reconstruction requires full table.
+    </div>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- SECTION 7.7 -->
+  <!-- ======================================================= -->
+  <section class="content-section" id="s77">
+    <h2 class="sec-title"><span class="sec-num">7.7</span> Matrix Chain Multiplication</h2>
+  <button class="review-btn" data-week="6" data-sec="s77"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Problem Definition</h3>
+
+    <p>Given a sequence of matrices A<sub>1</sub>, A<sub>2</sub>, &hellip;, A<sub>n</sub> with compatible dimensions, find the optimal <strong>parenthesisation</strong> that minimises the total number of scalar multiplications required to compute the product.</p>
+
+    <p>Multiplying an n&times;m matrix with an m&times;o matrix requires <strong>n&times;m&times;o scalar multiplications</strong>. Matrix multiplication is associative, so any parenthesisation gives the same result — but drastically different costs.</p>
+
+    <p><strong>Example:</strong> A (4&times;2), B (2&times;5), C (5&times;3):</p>
+    <ul>
+      <li>(A&times;B)&times;C: (4&times;2&times;5) + (4&times;5&times;3) = 40 + 60 = <strong>100</strong> multiplications</li>
+      <li>A&times;(B&times;C): (2&times;5&times;3) + (4&times;2&times;3) = 30 + 24 = <strong>54</strong> multiplications</li>
+    </ul>
+
+    <p>The number of parenthesisations of n matrices is the (n&minus;1)-th Catalan number, which grows exponentially — brute force is infeasible.</p>
+
+    <h3 class="subsec">Identifying Optimal Subproblems</h3>
+
+    <p>Consider the <em>last</em> multiplication performed. The product A<sub>1</sub>&times;&hellip;&times;A<sub>n</sub> must be split at some point k: (A<sub>1</sub>&times;&hellip;&times;A<sub>k</sub>)&times;(A<sub>k+1</sub>&times;&hellip;&times;A<sub>n</sub>). Both halves must also be multiplied optimally (optimal substructure).</p>
+
+    <p>Subproblem: <code>DP[i][j]</code> = minimum number of scalar multiplications to compute the product A<sub>i</sub>&times;A<sub>i+1</sub>&times;&hellip;&times;A<sub>j</sub>, for 1 &le; i &le; j &le; n.</p>
+
+    <h3 class="subsec">Recurrence</h3>
+
+    <p>Denote the dimensions as follows: matrix A<sub>i</sub> has dimensions c<sub>i&minus;1</sub>&times;c<sub>i</sub> (where c<sub>0</sub> is the number of rows of A<sub>1</sub> and c<sub>i</sub> is the number of columns of A<sub>i</sub>).</p>
+
+    <p>When we split after matrix k, the two sub-results have dimensions c<sub>i&minus;1</sub>&times;c<sub>k</sub> and c<sub>k</sub>&times;c<sub>j</sub>. Their final multiplication costs c<sub>i&minus;1</sub>&times;c<sub>k</sub>&times;c<sub>j</sub>.</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Matrix Multiplication Recurrence</div>
+      <pre style="background:transparent;border:none;padding:0;font-family:'JetBrains Mono',monospace;font-size:0.9em;">DP[i][i] = 0                 // single matrix: no multiplication needed
+
+DP[i][j] = min over all i &le; k &lt; j of:
+    DP[i][k] + DP[k+1][j] + c[i-1] * c[k] * c[j]    // split at k</pre>
+    </div>
+
+    <h3 class="subsec">Bottom-Up Ordering</h3>
+
+    <p>A key insight: we cannot simply iterate in row or column order. Each DP[i][j] depends on all DP[i][k] and DP[k+1][j] where i &le; k &lt; j — i.e., on subproblems involving <em>shorter subsequences</em>. We must iterate by <strong>increasing length</strong> of the subproblem (length = j&minus;i+1).</p>
+
+    <div class="algo-header">
+      Algorithm 53 &mdash; Optimal Matrix Chain Multiplication
+      <span class="algo-complexity">Time: O(n&sup3;) | Space: O(n&sup2;)</span>
+    </div>
+    <pre class="code-block has-header">function MATRIX_ORDER(c[0..n]):
+    // c[i-1] = rows of A_i, c[i] = cols of A_i
+    DP[1..n][1..n] = 0       // base: single matrix costs 0
+
+    for length = 2 to n do                   // increasing subsequence length
+        for i = 1 to n - length + 1 do
+            j = i + length - 1
+            best = infinity
+            for k = i to j - 1 do           // try all split points
+                cost = DP[i][k] + DP[k+1][j] + c[i-1] * c[k] * c[j]
+                best = min(best, cost)
+            DP[i][j] = best
+
+    return DP[1][n]</pre>
+
+<!-- vz53: Matrix Chain Multiplication DP Table Interactive Widget -->
+<div id="vz53-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="display:flex;align-items:center;padding:10px 18px;background:#21262d;border-bottom:1px solid #30363d;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;letter-spacing:.08em;text-transform:uppercase;">Algorithm 53 · Matrix Chain Multiplication</span>
+    <span style="margin-left:auto;font-size:11px;color:#f0883e;font-family:monospace;">O(n³)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <div style="padding:16px;border-right:1px solid #30363d;">
+      <svg id="vz53-svg" viewBox="0 0 500 280" style="width:100%;height:auto;display:block;"></svg>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div id="vz53-lbl" style="font-size:10px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;">Step 1 of 8</div>
+      <div id="vz53-txt" style="font-size:13px;line-height:1.6;color:#c9d1d9;flex:1;min-height:80px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div class="demo-chip"><span class="k">Best Cost</span><span class="v" id="vz53-cost">—</span></div>
+        <div class="demo-chip"><span class="k">Length</span><span class="v" id="vz53-len">—</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:auto;">
+        <button id="vz53-prev" onclick="vz53step(-1)" disabled style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;opacity:.38;">&#9664; Prev</button>
+        <button id="vz53-next" onclick="vz53step(1)" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz53reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#8b949e;padding:7px 13px;border-radius:7px;">&#8634;</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+  // 4 matrices: A1(30x35), A2(35x15), A3(15x5), A4(5x10)
+  // c=[30,35,15,5,10]
+  // DP[i][j] — 1-indexed, upper triangle
+  // DP[1][1]=0,DP[2][2]=0,DP[3][3]=0,DP[4][4]=0
+  // DP[1][2]=15750, DP[2][3]=2625, DP[3][4]=750
+  // DP[1][3]=7875, DP[2][4]=2500
+  // DP[1][4]=9375
+  var N=null,INF=Infinity;
+  // tbl[i][j] indexed 0..3 for matrices 1..4
+  // i=row (matrix i+1), j=col (matrix j+1)
+  var STEPS=[
+    {label:"Step 1 of 8",text:"4 matrices: A₁(30×35), A₂(35×15), A₃(15×5), A₄(5×10). Dimensions c=[30,35,15,5,10]. Initialise diagonal DP[i][i]=0 (a single matrix needs 0 multiplications).",
+     tbl:[[0,N,N,N],[N,0,N,N],[N,N,0,N],[N,N,N,0]],cur:null,hirow:-1,hicol:-1,len:1,cost:null},
+    {label:"Step 2 of 8",text:"Length=2. DP[1][2]: multiply A₁×A₂. Cost = c[0]×c[1]×c[2] = 30×35×15 = 15,750.",
+     tbl:[[0,15750,N,N],[N,0,N,N],[N,N,0,N],[N,N,N,0]],cur:[0,1],hirow:-1,hicol:-1,len:2,cost:null},
+    {label:"Step 3 of 8",text:"DP[2][3]: multiply A₂×A₃. Cost = c[1]×c[2]×c[3] = 35×15×5 = 2,625.",
+     tbl:[[0,15750,N,N],[N,0,2625,N],[N,N,0,N],[N,N,N,0]],cur:[1,2],hirow:-1,hicol:-1,len:2,cost:null},
+    {label:"Step 4 of 8",text:"DP[3][4]: multiply A₃×A₄. Cost = c[2]×c[3]×c[4] = 15×5×10 = 750.",
+     tbl:[[0,15750,N,N],[N,0,2625,N],[N,N,0,750],[N,N,N,0]],cur:[2,3],hirow:-1,hicol:-1,len:2,cost:null},
+    {label:"Step 5 of 8",text:"Length=3. DP[1][3]: try k=1: 0+2625+30×35×5=7,875; k=2: 15750+0+30×15×5=18,000. Min=7,875 at k=1 (split: (A₁)(A₂A₃)).",
+     tbl:[[0,15750,7875,N],[N,0,2625,N],[N,N,0,750],[N,N,N,0]],cur:[0,2],hirow:-1,hicol:-1,len:3,cost:null},
+    {label:"Step 6 of 8",text:"DP[2][4]: try k=2: 0+750+35×5×10=2,500; k=3: 2625+0+35×15×10=7,875. Min=2,500 at k=2 (split: (A₂)(A₃A₄)).",
+     tbl:[[0,15750,7875,N],[N,0,2625,2500],[N,N,0,750],[N,N,N,0]],cur:[1,3],hirow:-1,hicol:-1,len:3,cost:null},
+    {label:"Step 7 of 8",text:"Length=4. DP[1][4]: k=1: 0+2500+30×35×10=13,000; k=2: 15750+750+30×15×10=21,000; k=3: 7875+0+30×5×10=9,375. Min=9,375 at k=3!",
+     tbl:[[0,15750,7875,9375],[N,0,2625,2500],[N,N,0,750],[N,N,N,0]],cur:[0,3],hirow:-1,hicol:-1,len:4,cost:null},
+    {label:"Step 8 of 8",text:"Optimal cost = 9,375. Parenthesization: ((A₁A₂A₃)×A₄). Split at k=3 means we multiply (A₁A₂A₃) first, then multiply by A₄.",
+     tbl:[[0,15750,7875,9375],[N,0,2625,2500],[N,N,0,750],[N,N,N,0]],cur:null,hirow:-1,hicol:-1,len:4,cost:9375,done:true}
+  ];
+  var cur=0;
+  var GX=40,GY=55,CW=90,CH=52;
+  var colH=['A₁','A₂','A₃','A₄'];
+  function fmt(v){if(v===null)return '';if(v===0)return '0';return v>=1000?(v/1000).toFixed(v%1000===0?0:3).replace(/\.?0+$/,'')+'k':String(v);}
+  function render(){
+    var s=STEPS[cur];
+    document.getElementById('vz53-lbl').textContent=s.label;
+    document.getElementById('vz53-txt').textContent=s.text;
+    document.getElementById('vz53-cost').textContent=s.cost?'9,375':'—';
+    document.getElementById('vz53-len').textContent=s.len;
+    document.getElementById('vz53-prev').disabled=cur===0;
+    document.getElementById('vz53-prev').style.opacity=cur===0?'.38':'1';
+    document.getElementById('vz53-next').disabled=cur===STEPS.length-1;
+    document.getElementById('vz53-next').style.opacity=cur===STEPS.length-1?'.38':'1';
+    var svg=document.getElementById('vz53-svg');
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    function mk(tag,attrs){var el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(var k in attrs)el.setAttribute(k,attrs[k]);return el;}
+    function tx(x,y,t,col,sz,fw){var e=mk('text',{x:x,y:y,'text-anchor':'middle','dominant-baseline':'central',fill:col||'#c9d1d9','font-size':sz||12,'font-family':'JetBrains Mono,Fira Code,Consolas,monospace','font-weight':fw||'normal'});e.textContent=t;return e;}
+    // Matrix dimension labels
+    var dims=['30×35','35×15','15×5','5×10'];
+    // Column/row headers
+    for(var ii=0;ii<4;ii++){
+      svg.appendChild(tx(GX+ii*CW+CW/2,GY-28,colH[ii],'#58a6ff',12,'700'));
+      svg.appendChild(tx(GX+ii*CW+CW/2,GY-14,dims[ii],'#8b949e',9));
+    }
+    for(var ii=0;ii<4;ii++){svg.appendChild(tx(GX-14,GY+ii*CH+CH/2,colH[ii],'#58a6ff',12,'700'));}
+    // Cells
+    for(var row=0;row<4;row++){
+      for(var col=0;col<4;col++){
+        var cx=GX+col*CW,cy=GY+row*CH;
+        var val=s.tbl[row][col];
+        var isCur=s.cur&&s.cur[0]===row&&s.cur[1]===col;
+        var isDiag=row===col;
+        var isUpper=col>row;
+        var isAns=s.done&&row===0&&col===3;
+        var fill,stroke,sw=1;
+        if(col<row){fill='#0d1117';stroke='#21262d';}
+        else if(isDiag){fill='#161b22';stroke='#30363d';}
+        else if(val===null){fill='#0d1117';stroke='#30363d';}
+        else{fill='#161b22';stroke='#30363d';}
+        if(isCur){fill='#f0883e1a';stroke='#f0883e';sw=2;}
+        if(isAns){fill='#bc8cff1a';stroke='#bc8cff';sw=2.5;}
+        svg.appendChild(mk('rect',{x:cx+2,y:cy+2,width:CW-4,height:CH-4,fill:fill,stroke:stroke,'stroke-width':sw,rx:3}));
+        if(val!==null&&col>=row){
+          var tc=isAns?'#bc8cff':isCur?'#f0883e':isDiag?'#8b949e':'#c9d1d9';
+          // Show full value for cells that fit, abbreviated otherwise
+          var dispval=val>=10000?(val/1000).toFixed(2)+'k':(val>=1000?(val/1000).toFixed(1)+'k':String(val));
+          svg.appendChild(tx(cx+CW/2,cy+CH/2,dispval,tc,isDiag?11:12,isDiag?'400':'600'));
+        }
+      }
+    }
+    // Legend
+    var ly=GY+4*CH+16;
+    svg.appendChild(mk('rect',{x:GX,y:ly,width:12,height:12,fill:'#f0883e1a',stroke:'#f0883e','stroke-width':1,rx:2}));
+    svg.appendChild(tx(GX+42,ly+6,'Current cell','#8b949e',9));
+    svg.appendChild(mk('rect',{x:GX+90,y:ly,width:12,height:12,fill:'#bc8cff1a',stroke:'#bc8cff','stroke-width':1,rx:2}));
+    svg.appendChild(tx(GX+140,ly+6,'Answer','#8b949e',9));
+  }
+  window.vz53step=function(d){cur=Math.max(0,Math.min(STEPS.length-1,cur+d));render();};
+  window.vz53reset=function(){cur=0;render();};
+  render();
+})();</script>
+
+    <h3 class="subsec">Complexity Analysis</h3>
+
+    <p>There are O(n<sup>2</sup>) subproblems. For each subproblem DP[i][j] of length j&minus;i, we try j&minus;i split points. The total work over all subproblems is:</p>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity</div>
+      Summing (j&minus;i) over all valid (i,j) pairs = O(n<sup>3</sup>/6) = <strong>O(n<sup>3</sup>)</strong> time.<br>
+      O(n<sup>2</sup>) subproblems &rarr; <strong>O(n<sup>2</sup>)</strong> space for the DP table.<br><br>
+      To also reconstruct the optimal split, maintain a second n&times;n table storing the optimal k for each (i,j).
+    </div>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- SECTION 7.8 -->
+  <!-- ======================================================= -->
+  <section class="content-section" id="s78">
+    <h2 class="sec-title"><span class="sec-num">7.8</span> The Space-Saving Trick</h2>
+  <button class="review-btn" data-week="6" data-sec="s78"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Motivation</h3>
+
+    <p>For edit distance and 0-1 knapsack, the DP table has O(nm) or O(nC) entries. For large inputs this is a lot of memory. However, inspecting the recurrences reveals that each row only ever looks at the <strong>immediately preceding row</strong>:</p>
+    <ul>
+      <li><strong>0-1 Knapsack:</strong> Row i only uses row i&minus;1.</li>
+      <li><strong>Edit Distance:</strong> Row i only uses row i&minus;1 (and the current row's left neighbor).</li>
+    </ul>
+    <p>This means we only ever need <strong>two rows</strong> at a time.</p>
+
+    <h3 class="subsec">The Rolling Array Technique</h3>
+
+    <p>Instead of allocating a full 2D table, maintain just two 1D arrays: <code>prev[]</code> (the previous row) and <code>curr[]</code> (the current row being computed). After computing each row, swap them: <code>prev</code> becomes the old <code>curr</code>, and <code>curr</code> is reused for the next row.</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Space-Optimised 0-1 Knapsack</div>
+      <pre style="background:transparent;border:none;padding:0;font-family:'JetBrains Mono',monospace;font-size:0.9em;">function KNAPSACK_SPACE_OPTIMISED(w[1..n], v[1..n], C):
+    prev[0..C] = 0         // row 0: no items
+    for i = 1 to n do
+        curr[0..C] = 0
+        for c = 0 to C do
+            if w[i] &lt;= c then
+                curr[c] = max(prev[c], v[i] + prev[c - w[i]])
+            else
+                curr[c] = prev[c]
+        prev = curr        // discard old prev, current becomes new prev
+    return prev[C]</pre>
+    </div>
+
+    <h3 class="subsec">Space Complexity Reduction</h3>
+
+    <table>
+      <thead>
+        <tr><th>Problem</th><th>Full Table Space</th><th>With Space-Saving</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0-1 Knapsack</td><td>O(nC)</td><td>O(C)</td></tr>
+        <tr><td>Edit Distance</td><td>O(nm)</td><td>O(min(n,m))</td></tr>
+      </tbody>
+    </table>
+
+    <p>For edit distance, always put the shorter string along one axis to minimise memory to O(min(n,m)).</p>
+
+    <h3 class="subsec">The Critical Trade-Off</h3>
+
+    <div class="callout warn">
+      <div class="callout-title">Trade-Off: Space vs Reconstruction</div>
+      When using the space-saving trick, old rows are discarded. There is no way to backtrack through the table to reconstruct the actual optimal solution — only the optimal <em>value</em> can be recovered. If you need to output the actual items taken or the alignment sequence, you must keep the full table (or use a more advanced divide-and-conquer reconstruction technique).
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Why Top-Down Cannot Use This Trick</div>
+      The space-saving trick requires knowing the exact order in which rows are computed, so that the previous row can be discarded at the right time. In top-down DP, subproblems are solved in an order determined by the recursion — which is not known in advance — so it is impossible to safely discard earlier results.
+    </div>
+
+    <h3 class="subsec">Summary of All DP Problems Covered</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Problem</th>
+          <th>Table Dimension</th>
+          <th>Time</th>
+          <th>Space (full)</th>
+          <th>Space (optimised)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Fibonacci</td><td>1D: n</td><td>O(n)</td><td>O(n)</td><td>O(1)</td></tr>
+        <tr><td>Coin Change</td><td>1D: V</td><td>O(nV)</td><td>O(V)</td><td>O(V)</td></tr>
+        <tr><td>Unbounded Knapsack</td><td>1D: C</td><td>O(nC)</td><td>O(C)</td><td>O(C)</td></tr>
+        <tr><td>0-1 Knapsack</td><td>2D: n&times;C</td><td>O(nC)*</td><td>O(nC)</td><td>O(C)</td></tr>
+        <tr><td>Edit Distance</td><td>2D: n&times;m</td><td>O(nm)</td><td>O(nm)</td><td>O(min(n,m))</td></tr>
+        <tr><td>Matrix Chain</td><td>2D: n&times;n</td><td>O(n&sup3;)</td><td>O(n&sup2;)</td><td>N/A</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:0.82em;color:var(--text-muted);">* Pseudo-polynomial; exponential in bit-length of input.</p>
+
+    <div class="callout insight">
+      <div class="callout-title">General DP Problem-Solving Framework</div>
+      <ol>
+        <li><strong>Identify subproblems:</strong> What smaller version of the problem needs to be solved? Define what the memo table stores.</li>
+        <li><strong>Write the recurrence:</strong> Assume all smaller subproblems are solved. Express the current answer in terms of those. Include all choices and take the best.</li>
+        <li><strong>Handle base cases:</strong> What is the answer for the smallest/trivial subproblems?</li>
+        <li><strong>Determine fill order:</strong> Bottom-up requires knowing which subproblems depend on which. Smaller before larger (or by length, row-by-row, etc.).</li>
+        <li><strong>Reconstruct if needed:</strong> Use a decision table or backtrack through the filled DP table.</li>
+        <li><strong>Optimise if needed:</strong> Apply space-saving trick if memory is a concern and reconstruction is not required.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== INTERACTIVE DEMO: EDIT DISTANCE (legacy, kept) ===== -->
+  <section class="content-section" id="w6-demo">
+    <h2 class="sec-title"><span class="sec-num">Interactive</span> Edit Distance — Dynamic Programming Table</h2>
+    <button class="review-btn" data-week="6" data-sec="w6-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+    <div class="algo-demo">
+      <p class="demo-eyebrow">Algorithm Demo</p>
+      <p class="demo-lede">Build the edit distance table cell by cell. Each cell uses dp[i-1][j]+1 (delete), dp[i][j-1]+1 (insert), or dp[i-1][j-1]+[0 or 1] (sub/match). <b>Click Step</b> to fill each cell.</p>
+      <div class="demo-board" id="d6-board">
+        <div class="demo-stage">
+          <svg id="d6-svg" viewBox="0 0 780 340" style="display:block;width:100%;height:auto;background:#0d1117"></svg>
+        </div>
+        <div class="demo-panel">
+          <div class="demo-narrate">
+            <div class="demo-step-label" id="d6-label">READY</div>
+            <div class="demo-step-text" id="d6-text">Strings "ALGO" and "ALGS". Fill the DP table cell by cell. Click Step.</div>
+            <div class="demo-stats">
+              <div class="demo-chip"><span class="k">Cells filled</span><span class="v" id="d6-cells">0</span></div>
+              <div class="demo-chip"><span class="k">Current val</span><span class="v" id="d6-curval">—</span></div>
+              <div class="demo-chip" id="d6-chip-fin"><span class="k">Edit dist</span><span class="v" id="d6-editdist">—</span></div>
+            </div>
+          </div>
+          <div class="demo-side">
+            <h4>Recurrence</h4>
+            <div id="d6-recurrence" style="font-family:'JetBrains Mono',monospace;font-size:0.72em;color:var(--text-muted);line-height:1.9">
+              <div>dp[i][j] = min(</div>
+              <div id="d6-del" style="padding-left:12px">dp[i-1][j]+1 (del)</div>
+              <div id="d6-ins" style="padding-left:12px">dp[i][j-1]+1 (ins)</div>
+              <div id="d6-sub" style="padding-left:12px">dp[i-1][j-1]+? (sub)</div>
+              <div>) = <span id="d6-result" style="color:var(--text)">—</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-controls">
+          <button class="demo-btn primary" id="d6-step-btn">Step →</button>
+          <button class="demo-btn" id="d6-run-btn">Run ▶</button>
+          <button class="demo-btn" id="d6-path-btn">Show Path</button>
+          <button class="demo-btn" id="d6-reset-btn">Reset</button>
+          <div class="demo-spd"><span>Speed</span><input type="range" id="d6-spd" min="1" max="5" value="3"><span id="d6-spd-lbl">3×</span></div>
+        </div>
+        <div class="demo-hint">Final answer is dp[4][4] = edit distance between "ALGO" and "ALGS"</div>
+      </div>
+    </div>
+  </section>
+
+
+
+</main>
+<script id="d6-script">
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.getElementById('d6-svg');
+  const S1='ALGO', S2='ALGS';
+  const R=S1.length+1, C2=S2.length+1; // 5x5
+  const CW=104, CH=52;
+  const OX=120, OY=68; // origin of table top-left cell
+
+  let dp, cellRects, cellTexts, steps, stepIndex, busy, spd;
+  let pathShown=false;
+
+  function mkEl(tag,attrs){
+    const el=document.createElementNS(NS,tag);
+    for(const [k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+    return el;
+  }
+
+  function buildSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    cellRects=[];
+    cellTexts=[];
+    dp=[];
+
+    // Draw axis labels
+    // Col header (S2 chars): ""(empty), A, L, G, S
+    const colHdrs=['','A','L','G','S'];
+    for(let j=0;j<C2;j++){
+      const x=OX+j*CW+CW/2;
+      const lbl=mkEl('text',{x,y:OY-18,'text-anchor':'middle',fill:j===0?'#8b949e':'#79c0ff','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      lbl.textContent=colHdrs[j];
+      svg.appendChild(lbl);
+    }
+    // Separator label
+    const s2lbl=mkEl('text',{x:OX+CW*2.5,y:OY-38,'text-anchor':'middle',fill:'#8b949e','font-size':'11','font-family':'JetBrains Mono,monospace'});
+    s2lbl.textContent='← "'+S2+'"';
+    svg.appendChild(s2lbl);
+
+    // Row headers (S1 chars): ""(empty), A, L, G, O
+    const rowHdrs=['','A','L','G','O'];
+    for(let i=0;i<R;i++){
+      const y=OY+i*CH+CH/2+5;
+      const lbl=mkEl('text',{x:OX-14,y,'text-anchor':'end',fill:i===0?'#8b949e':'#bc8cff','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      lbl.textContent=rowHdrs[i];
+      svg.appendChild(lbl);
+    }
+    const s1lbl=mkEl('text',{x:OX-36,y:OY+CH*2.5,'text-anchor':'middle',fill:'#8b949e','font-size':'11','font-family':'JetBrains Mono,monospace',transform:`rotate(-90,${OX-54},${OY+CH*2.5})`});
+    s1lbl.textContent='"'+S1+'" ↓';
+    svg.appendChild(s1lbl);
+
+    // Draw cells
+    for(let i=0;i<R;i++){
+      dp.push(new Array(C2).fill(null));
+      cellRects.push([]);
+      cellTexts.push([]);
+      for(let j=0;j<C2;j++){
+        const x=OX+j*CW, y=OY+i*CH;
+        const rect=mkEl('rect',{x:x+1,y:y+1,width:CW-2,height:CH-2,fill:'#0d1117',stroke:'#30363d','stroke-width':'1',rx:'3'});
+        const txt=mkEl('text',{x:x+CW/2,y:y+CH/2+6,'text-anchor':'middle',fill:'#30363d','font-size':'16','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+        txt.textContent='?';
+        svg.appendChild(rect);
+        svg.appendChild(txt);
+        cellRects[i].push(rect);
+        cellTexts[i].push(txt);
+      }
+    }
+  }
+
+  function setCellStyle(i,j,style){
+    const s={
+      empty:['#0d1117','#30363d','#30363d'],
+      base:['#21262d','#8b949e','#8b949e'],
+      current:['#f0883e22','#f0883e','#f0883e'],
+      source_del:['#58a6ff22','#58a6ff','#58a6ff'],
+      source_ins:['#bc8cff22','#bc8cff','#bc8cff'],
+      source_sub:['#79c0ff22','#79c0ff','#79c0ff'],
+      done:['#21262d','#30363d','#c9d1d9'],
+      path:['#3fb95022','#3fb950','#3fb950']
+    };
+    const [fill,stroke,txtColor]=s[style]||s.empty;
+    cellRects[i][j].setAttribute('fill',fill);
+    cellRects[i][j].setAttribute('stroke',stroke);
+    cellTexts[i][j].setAttribute('fill',txtColor);
+  }
+
+  function computeSteps(){
+    const events=[];
+    const table=[];
+    for(let i=0;i<R;i++) table.push(new Array(C2).fill(null));
+
+    events.push({type:'init',table:table.map(r=>r.slice())});
+
+    // Fill base cases
+    for(let j=0;j<C2;j++){
+      table[0][j]=j;
+      events.push({type:'base',i:0,j,val:j,table:table.map(r=>r.slice()),cells:countFilled(table)});
+    }
+    for(let i=1;i<R;i++){
+      table[i][0]=i;
+      events.push({type:'base',i,j:0,val:i,table:table.map(r=>r.slice()),cells:countFilled(table)});
+    }
+
+    // Fill interior
+    let cellsFilled=R+C2-1;
+    for(let i=1;i<R;i++){
+      for(let j=1;j<C2;j++){
+        const del=table[i-1][j]+1;
+        const ins=table[i][j-1]+1;
+        const match=S1[i-1]===S2[j-1]?0:1;
+        const sub=table[i-1][j-1]+match;
+        const val=Math.min(del,ins,sub);
+        events.push({type:'compute',i,j,del,ins,sub,match,val,s1c:S1[i-1],s2c:S2[j-1],table:table.map(r=>r.slice()),cells:cellsFilled});
+        table[i][j]=val;
+        cellsFilled++;
+        events.push({type:'fill',i,j,val,table:table.map(r=>r.slice()),cells:cellsFilled});
+      }
+    }
+
+    events.push({type:'done',table:table.map(r=>r.slice()),cells:cellsFilled,editDist:table[R-1][C2-1]});
+    return events;
+  }
+
+  function countFilled(t){ let c=0; for(const r of t) for(const v of r) if(v!==null) c++; return c; }
+
+  function setStep(label,text){ document.getElementById('d6-label').textContent=label; document.getElementById('d6-text').textContent=text; }
+
+  function applyEvent(ev){
+    // Render the table state
+    for(let i=0;i<R;i++) for(let j=0;j<C2;j++){
+      const v=ev.table[i][j];
+      if(v===null){ setCellStyle(i,j,'empty'); cellTexts[i][j].textContent='?'; }
+      else if(i===0||j===0){ setCellStyle(i,j,'base'); cellTexts[i][j].textContent=v; }
+      else { setCellStyle(i,j,'done'); cellTexts[i][j].textContent=v; }
+    }
+    document.getElementById('d6-cells').textContent=ev.cells||0;
+    document.getElementById('d6-del').style.color='var(--text-muted)';
+    document.getElementById('d6-ins').style.color='var(--text-muted)';
+    document.getElementById('d6-sub').style.color='var(--text-muted)';
+    document.getElementById('d6-result').textContent='—';
+    pathShown=false;
+
+    if(ev.type==='init'){
+      setStep('INIT','Table initialized. Row 0 = delete cost, Col 0 = insert cost.');
+      document.getElementById('d6-curval').textContent='—';
+    } else if(ev.type==='base'){
+      setCellStyle(ev.i,ev.j,'current');
+      document.getElementById('d6-curval').textContent=ev.val;
+      setStep('BASE CASE',`dp[${ev.i}][${ev.j}] = ${ev.val} — ${ev.i===0?'delete '+ev.j+' chars from s1':'insert '+ev.i+' chars to match empty'}`);
+    } else if(ev.type==='compute'){
+      setCellStyle(ev.i,ev.j,'current');
+      if(ev.i>0) setCellStyle(ev.i-1,ev.j,'source_del');
+      if(ev.j>0) setCellStyle(ev.i,ev.j-1,'source_ins');
+      if(ev.i>0&&ev.j>0) setCellStyle(ev.i-1,ev.j-1,'source_sub');
+      document.getElementById('d6-del').textContent=`dp[${ev.i-1}][${ev.j}]+1 = ${ev.del} (del)`;
+      document.getElementById('d6-del').style.color=ev.val===ev.del?'var(--blue)':'var(--text-muted)';
+      document.getElementById('d6-ins').textContent=`dp[${ev.i}][${ev.j-1}]+1 = ${ev.ins} (ins)`;
+      document.getElementById('d6-ins').style.color=ev.val===ev.ins?'var(--purple)':'var(--text-muted)';
+      document.getElementById('d6-sub').textContent=`dp[${ev.i-1}][${ev.j-1}]+${ev.match} = ${ev.sub} (${ev.match===0?'match':'sub'})`;
+      document.getElementById('d6-sub').style.color=ev.val===ev.sub?'var(--cyan)':'var(--text-muted)';
+      document.getElementById('d6-result').textContent=ev.val;
+      document.getElementById('d6-curval').textContent=ev.val;
+      setStep('COMPUTE',`dp[${ev.i}][${ev.j}]: s1[${ev.i-1}]='${ev.s1c}' vs s2[${ev.j-1}]='${ev.s2c}' → min(${ev.del},${ev.ins},${ev.sub})=${ev.val}`);
+    } else if(ev.type==='fill'){
+      setCellStyle(ev.i,ev.j,'current');
+      document.getElementById('d6-curval').textContent=ev.val;
+      setStep('FILLED',`dp[${ev.i}][${ev.j}] = ${ev.val}`);
+    } else if(ev.type==='done'){
+      document.getElementById('d6-editdist').textContent=ev.editDist;
+      document.getElementById('d6-chip-fin').classList.add('good');
+      document.getElementById('d6-curval').textContent=ev.editDist;
+      setStep('COMPLETE',`Edit distance("${S1}","${S2}") = dp[${R-1}][${C2-1}] = ${ev.editDist}. Click "Show Path" to trace optimal alignment.`);
+    }
+  }
+
+  function showOptimalPath(){
+    if(!steps||stepIndex<steps.length-1) return;
+    // Backtrack from (R-1,C2-1)
+    const ev=steps[steps.length-1];
+    const t=ev.table;
+    let i=R-1, j=C2-1;
+    const path=[[i,j]];
+    while(i>0||j>0){
+      if(i===0){ j--; }
+      else if(j===0){ i--; }
+      else {
+        const sub=t[i-1][j-1];
+        const del=t[i-1][j];
+        const ins=t[i][j-1];
+        const best=Math.min(sub,del,ins);
+        if(sub===best){ i--; j--; }
+        else if(del===best){ i--; }
+        else { j--; }
+      }
+      path.push([i,j]);
+    }
+    for(const [pi,pj] of path) setCellStyle(pi,pj,'path');
+    pathShown=true;
+    setStep('OPTIMAL PATH','Green cells show the optimal alignment path (backtrack from dp[4][4] to dp[0][0]).');
+  }
+
+  function init(){
+    steps=computeSteps();
+    stepIndex=0;
+    busy=false;
+    pathShown=false;
+    buildSVG();
+    applyEvent(steps[0]);
+    document.getElementById('d6-chip-fin').classList.remove('good');
+    document.getElementById('d6-editdist').textContent='—';
+    document.getElementById('d6-step-btn').disabled=false;
+    document.getElementById('d6-run-btn').disabled=false;
+  }
+
+  const spdEl=document.getElementById('d6-spd');
+  const spdLbl=document.getElementById('d6-spd-lbl');
+  spdEl.addEventListener('input',()=>{ spd=+spdEl.value; spdLbl.textContent=spd+'×'; });
+  spd=+spdEl.value;
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms/spd));
+
+  document.getElementById('d6-step-btn').addEventListener('click',async()=>{
+    if(busy) return;
+    stepIndex++;
+    if(stepIndex>=steps.length){ stepIndex=steps.length-1; return; }
+    busy=true;
+    applyEvent(steps[stepIndex]);
+    await sleep(80);
+    busy=false;
+  });
+
+  document.getElementById('d6-run-btn').addEventListener('click',async()=>{
+    if(busy) return;
+    busy=true;
+    document.getElementById('d6-step-btn').disabled=true;
+    document.getElementById('d6-run-btn').disabled=true;
+    while(stepIndex<steps.length-1){
+      stepIndex++;
+      applyEvent(steps[stepIndex]);
+      await sleep(300);
+    }
+    document.getElementById('d6-step-btn').disabled=false;
+    document.getElementById('d6-run-btn').disabled=false;
+    busy=false;
+  });
+
+  document.getElementById('d6-path-btn').addEventListener('click',()=>{ if(!busy) showOptimalPath(); });
+  document.getElementById('d6-reset-btn').addEventListener('click',()=>{ if(busy) return; init(); });
+  init();
+})();
+</script>
+
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+</html>

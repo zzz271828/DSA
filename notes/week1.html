@@ -1,0 +1,2249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 1 – Complexity & Divide and Conquer | FIT2004</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+      --text: #c9d1d9; --text-muted: #8b949e;
+      --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+      --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+    nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+    nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+    nav ul { list-style: none; }
+    nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; transition: all 0.15s; }
+    nav ul li a:hover { color: var(--text); background: var(--bg3); }
+    nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+    nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+    main { flex: 1; max-width: 860px; padding: 48px 56px; }
+    .week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+    .week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+    .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+    section.content-section { margin-bottom: 56px; }
+    h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+    h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+    h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+    p { margin-bottom: 14px; color: var(--text); }
+    .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+    .callout.def { background: #1f6feb0d; border-color: var(--blue); }
+    .callout.thm { background: #3fb9500d; border-color: var(--green); }
+    .callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+    .callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+    .callout.warn { background: #f851490d; border-color: var(--red); }
+    .callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .callout.def .callout-title { color: var(--blue); }
+    .callout.thm .callout-title { color: var(--green); }
+    .callout.cplx .callout-title { color: var(--orange); }
+    .callout.insight .callout-title { color: var(--purple); }
+    .callout.warn .callout-title { color: var(--red); }
+    pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+    .algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+    .algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+    pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+    th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    td { padding: 10px 16px; border: 1px solid var(--border); }
+    tr:nth-child(even) td { background: var(--bg2); }
+    code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+    ul, ol { padding-left: 24px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+    .complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    @media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+  
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR NAVIGATION ===== -->
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html" class="current"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#complexity-analysis" class="sub">§1.2 Complexity Analysis</a></li>
+    <li><a href="#asymptotic" class="sub">§1.3 Asymptotic Notation</a></li>
+    <li><a href="#measures" class="sub">§1.4 Measures of Complexity</a></li>
+    <li><a href="#correctness" class="sub">§1.1 Program Verification</a></li>
+    <li><a href="#divide-conquer" class="sub">Ch.2 Divide &amp; Conquer</a></li>
+    <li><a href="#karatsuba" class="sub">§2.1 Karatsuba</a></li>
+    <li><a href="#mergesort" class="sub">§2.2 Merge Sort</a></li>
+    <li><a href="#inversions" class="sub">§2.3 Counting Inversions</a></li>
+    <li><a href="#summary" class="sub">Quick Reference</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main>
+
+  <!-- Week Header -->
+  <div class="week-header">
+    <div class="week-badge">Week 1</div>
+    <h1>Introduction, Divide and Conquer, Complexity Analysis &amp; Recurrence Relations</h1>
+    <p class="subtitle">
+      Course Notes: Sections 1.2, 1.3, 1.4 &amp; Chapter 2 &nbsp;|&nbsp; Lectures 1 &amp; 2
+    </p>
+    <div class="topics">
+      <span>Complexity Analysis</span>
+      <span>Recurrence Relations</span>
+      <span>Asymptotic Notation</span>
+      <span>Worst / Average / Best Case</span>
+      <span>Loop Invariants</span>
+      <span>Divide &amp; Conquer</span>
+      <span>Karatsuba Multiplication</span>
+      <span>Merge Sort</span>
+      <span>Counting Inversions</span>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       SECTION 1: COMPLEXITY ANALYSIS
+       =================================================== -->
+  <section class="content-section" id="complexity-analysis">
+    <h2 class="sec-title"><span class="sec-num">§ 1.2</span> Complexity Analysis</h2>
+  <button class="review-btn" data-week="1" data-sec="complexity-analysis"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The <strong>time complexity</strong> of an algorithm is the amount of time it takes to run
+      as a function of the input size. Rather than measuring actual wall-clock time (which depends
+      on hardware), we count the number of <em>basic operations</em> performed. A basic operation
+      is a single, constant-time step: an arithmetic operation, a comparison, an array access, etc.
+    </p>
+
+    <p>
+      The complexity of recursive algorithms is naturally expressed using <strong>recurrence
+      relations</strong>: equations that express <code>T(n)</code> — the cost for input of size
+      <code>n</code> — in terms of the cost for smaller inputs, together with base cases.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Recurrence Relation</div>
+      A recurrence relation is an equation that recursively defines a sequence of values, with
+      one or more base cases given. For example:
+      <br><br>
+      <code>T(n) = T(n/2) + a</code> &nbsp;if <code>n &gt; 1</code>, &nbsp; <code>T(1) = b</code>
+    </div>
+
+    <h3 class="subsec" id="recurrences">Solving Recurrence Relations</h3>
+
+    <p>There are three standard techniques for solving recurrences:</p>
+    <ol>
+      <li><strong>Substitution (unrolling / telescoping)</strong> — expand the recurrence step by step, identify the pattern, then substitute the base case.</li>
+      <li><strong>Verification by induction</strong> — guess the closed form, then prove it by induction.</li>
+      <li><strong>Master Theorem</strong> — a powerful formula for divide-and-conquer recurrences of the form <code>T(n) = aT(n/b) + f(n)</code>.</li>
+    </ol>
+
+    <h4 class="subsubsec">Method 1 – Unrolling (Substitution)</h4>
+    <p>
+      The strategy is to repeatedly expand the recurrence to find the pattern, then reduce the
+      general case to the base case. The example below analyses <code>power1(x, n)</code>, which
+      computes x<sup>n</sup> via repeated multiplication:
+    </p>
+
+    <div class="algo-header">
+      Algorithm: power1(x, n) — linear recursion
+      <span class="algo-complexity">T(n) = O(n)</span>
+    </div>
+<pre class="code-block has-header">
+function power1(x, n):
+    if n = 0 then return 1
+    else if n = 1 then return x
+    else return x * power1(x, n - 1)
+</pre>
+
+    <p><strong>Step-by-step solution:</strong></p>
+    <ul>
+      <li>Base case: <code>T(1) = b</code></li>
+      <li>General recurrence: <code>T(n) = T(n−1) + c</code></li>
+      <li>Expand: <code>T(n) = T(n−2) + 2c = T(n−3) + 3c = ... = T(n−k) + k·c</code></li>
+      <li>Set <code>k = n−1</code> to reach the base case: <code>T(n) = T(1) + (n−1)·c = b + (n−1)·c</code></li>
+      <li>Simplify: <code>T(n) = c·n + (b − c) = <strong>O(n)</strong></code></li>
+    </ul>
+
+    <h4 class="subsubsec">Method 2 – Verification by Induction</h4>
+    <p>
+      To verify the solution <code>T(n) = c·n + b − c</code> for <code>power1</code>:
+    </p>
+    <ul>
+      <li><strong>Base case:</strong> <code>T(1) = c·1 + b − c = b</code> ✓</li>
+      <li><strong>Inductive step:</strong> Assume <code>T(n−1) = c·(n−1) + b − c</code>. Then
+        <code>T(n) = T(n−1) + c = c·(n−1) + b − c + c = c·n + b − c</code> ✓</li>
+    </ul>
+
+    <h4 class="subsubsec">Example – Logarithmic Recurrence</h4>
+    <p>
+      The function <code>power3(x, n)</code> computes x<sup>n</sup> by squaring, reducing the
+      input size by half at each step:
+    </p>
+
+    <div class="algo-header">
+      Algorithm: power3(x, n) — repeated squaring
+      <span class="algo-complexity">T(n) = O(log n)</span>
+    </div>
+<pre class="code-block has-header">
+function power3(x, n):
+    if n = 0 then return 1
+    else if n = 1 then return x
+    y = power3(x * x, floor(n/2))
+    if n is even then return y
+    else return x * y
+</pre>
+
+    <p><strong>Step-by-step solution:</strong></p>
+    <ul>
+      <li>Base case: <code>T(1) = b</code></li>
+      <li>General recurrence: <code>T(n) = T(n/2) + c</code></li>
+      <li>Expand: <code>T(n) = T(n/4) + 2c = T(n/8) + 3c = ... = T(n/2<sup>k</sup>) + k·c</code></li>
+      <li>Set <code>k = log<sub>2</sub>(n)</code> to reach base case: <code>T(n) = b + c·log<sub>2</sub>(n)</code></li>
+      <li>Result: <code>T(n) = <strong>O(log n)</strong></code></li>
+    </ul>
+
+    <h3 class="subsec">Time Complexity of Binary Search</h3>
+    <p>
+      Binary search is a clean example of a <code>T(n) = T(n/2) + c</code> recurrence. At each
+      step, the search space is halved. Starting from <code>n</code>, after <code>x</code>
+      iterations the search space is <code>n/2<sup>x</sup> = 1</code>, giving <code>x = log<sub>2</sub>(n)</code> iterations.
+    </p>
+
+    <div class="algo-header">
+      Algorithm: binary_search(array[1..n], key)
+      <span class="algo-complexity">Time: O(log n) | Aux Space: O(1)</span>
+    </div>
+<pre class="code-block has-header">
+function binary_search(array[1..n], key):
+    lo = 1
+    hi = n + 1
+    while lo &lt; hi - 1:
+        mid = floor((lo + hi) / 2)
+        if key &gt;= array[mid]:
+            lo = mid
+        else:
+            hi = mid
+    if array[lo] == key:
+        return lo
+    else:
+        return null
+</pre>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Time Complexity of Binary Search</div>
+      The recurrence <code>T(n) = T(n/2) + a</code>, <code>T(1) = b</code> has solution
+      <code>T(n) = a·log<sub>2</sub>(n) + b</code>.
+      <br><br>
+      <strong>Proof (by induction):</strong>
+      <ul>
+        <li><em>Base case:</em> <code>T(1) = a·log<sub>2</sub>(1) + b = a·0 + b = b</code> ✓</li>
+        <li><em>Inductive step:</em> Assume <code>T(n/2) = a·log<sub>2</sub>(n/2) + b</code>. Then
+          <code>T(n) = T(n/2) + a = a·log<sub>2</sub>(n/2) + b + a = a·(log<sub>2</sub>(n) − 1) + b + a = a·log<sub>2</sub>(n) + b</code> ✓</li>
+      </ul>
+      Therefore, binary search has time complexity <strong>O(log n)</strong>.
+    </div>
+
+    <h3 class="subsec">Common Recurrence Relations — Reference Table</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Recurrence</th>
+          <th>Closed Form</th>
+          <th>Complexity</th>
+          <th>Example Algorithm</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>T(n) = T(n/2) + c</code></td>
+          <td><code>a·log<sub>2</sub>(n) + b</code></td>
+          <td><span class="complexity-tag">O(log n)</span></td>
+          <td>Binary Search, power3</td>
+        </tr>
+        <tr>
+          <td><code>T(n) = T(n−1) + c</code></td>
+          <td><code>c·n + b</code></td>
+          <td><span class="complexity-tag">O(n)</span></td>
+          <td>Linear Search, power1</td>
+        </tr>
+        <tr>
+          <td><code>T(n) = 2T(n/2) + c·n</code></td>
+          <td><code>a·n·log(n) + b·n</code></td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td>Merge Sort, Counting Inversions</td>
+        </tr>
+        <tr>
+          <td><code>T(n) = T(n−1) + c·n</code></td>
+          <td><code>c·n(n+1)/2 + b</code></td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td>Selection Sort (worst-case Quicksort)</td>
+        </tr>
+        <tr>
+          <td><code>T(n) = 3T(n/2) + c·n</code></td>
+          <td>&mdash;</td>
+          <td><span class="complexity-tag">O(n<sup>log₂3</sup>) ≈ O(n<sup>1.585</sup>)</span></td>
+          <td>Karatsuba's Multiplication</td>
+        </tr>
+        <tr>
+          <td><code>T(n) = 4T(n/2) + c·n</code></td>
+          <td>&mdash;</td>
+          <td><span class="complexity-tag">O(n²)</span></td>
+          <td>Naive split multiplication (no improvement)</td>
+        </tr>
+        <tr>
+          <td><code>T(n) = 2T(n−1) + c</code></td>
+          <td><code>(a+b)·2<sup>n</sup> − a</code></td>
+          <td><span class="complexity-tag">O(2ⁿ)</span></td>
+          <td>Naive recursive Fibonacci</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight — Master Theorem (Divide and Conquer)</div>
+      For recurrences of the form <code>T(n) = a·T(n/b) + f(n)</code>, the solution is
+      determined by the relative growth of <code>f(n)</code> vs. <code>n<sup>log<sub>b</sub>a</sup></code>:
+      <ul>
+        <li>If <code>f(n) = O(n<sup>log<sub>b</sub>a − ε</sup>)</code> for some ε &gt; 0, then <code>T(n) = Θ(n<sup>log<sub>b</sub>a</sup>)</code></li>
+        <li>If <code>f(n) = Θ(n<sup>log<sub>b</sub>a</sup>)</code>, then <code>T(n) = Θ(n<sup>log<sub>b</sub>a</sup> · log n)</code></li>
+        <li>If <code>f(n) = Ω(n<sup>log<sub>b</sub>a + ε</sup>)</code> for some ε &gt; 0, then <code>T(n) = Θ(f(n))</code></li>
+      </ul>
+      <em>Example:</em> Merge sort has <code>a=2, b=2, f(n)=cn</code>. Since <code>n<sup>log<sub>2</sub>2</sup> = n<sup>1</sup> = n = f(n)</code>, we are in case 2, giving <code>T(n) = Θ(n log n)</code>.
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       SECTION 2: ASYMPTOTIC NOTATION
+       =================================================== -->
+  <section class="content-section" id="asymptotic">
+    <h2 class="sec-title"><span class="sec-num">§ 1.3</span> Asymptotic Notation</h2>
+  <button class="review-btn" data-week="1" data-sec="asymptotic"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Following the framework advanced by Turing Award winner Donald Knuth, when analysing
+      the complexity of algorithms we concern ourselves only with the <em>order of magnitude</em>
+      of the running time for large values of <code>n</code>. We express complexities using
+      asymptotic notation, which ignores constant factors and lower-order terms.
+    </p>
+
+    <h3 class="subsec">Big-O Notation (Upper Bound)</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Big-O</div>
+      We say <code>f(n) = O(g(n))</code> as <code>n → ∞</code> if there exist constants
+      <code>c &gt; 0</code> and <code>n<sub>0</sub></code> such that:
+      <br><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;f(n) ≤ c · g(n) &nbsp; for all n ≥ n<sub>0</sub></code>
+      <br><br>
+      Informally: <strong>f grows no faster than g</strong> (up to a constant). Big-O gives an
+      <em>upper bound</em> on the growth rate of a function. Note that bounds can be
+      overestimates: it is correct to say both <code>2n + 1 = O(n)</code> and
+      <code>2n + 1 = O(n³)</code>.
+    </div>
+
+    <h3 class="subsec">Big-Omega Notation (Lower Bound)</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Big-Ω (Omega)</div>
+      We say <code>f(n) = Ω(g(n))</code> as <code>n → ∞</code> if there exist constants
+      <code>c &gt; 0</code> and <code>n<sub>0</sub></code> such that:
+      <br><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;f(n) ≥ c · g(n) &nbsp; for all n ≥ n<sub>0</sub></code>
+      <br><br>
+      Informally: <strong>f grows at least as fast as g</strong>. Big-Ω gives a <em>lower bound</em>
+      on growth. Note: <code>f(n) = Ω(g(n))</code> is equivalent to saying <code>g(n) = O(f(n))</code>.
+      Bounds can be underestimates: <code>n<sup>5</sup> = Ω(n<sup>2</sup>)</code> is valid.
+    </div>
+
+    <h3 class="subsec">Big-Theta Notation (Tight Bound)</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Big-Θ (Theta)</div>
+      We say <code>f(n) = Θ(g(n))</code> as <code>n → ∞</code> if and only if:
+      <br><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;f(n) = O(g(n)) &nbsp; AND &nbsp; f(n) = Ω(g(n))</code>
+      <br><br>
+      Equivalently: there exist constants <code>c<sub>1</sub>, c<sub>2</sub> &gt; 0</code> and
+      <code>n<sub>0</sub></code> such that
+      <code>c<sub>1</sub>·g(n) ≤ f(n) ≤ c<sub>2</sub>·g(n)</code> for all <code>n ≥ n<sub>0</sub></code>.
+      <br><br>
+      Big-Θ gives a <em>tight bound</em> — neither overestimate nor underestimate. For example:
+      <code>n² + 3n + 5 = Θ(n²)</code>, but <code>n² + 3n + 5 ≠ Θ(n³)</code> and
+      <code>n² + 3n + 5 ≠ Θ(n)</code>.
+    </div>
+
+    <h3 class="subsec">Little-o and Little-omega</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Little-o and Little-ω</div>
+      <strong>Little-o:</strong> <code>f(n) = o(g(n))</code> means f grows <em>strictly slower</em>
+      than g. Formally, for every constant <code>c &gt; 0</code>, there exists <code>n<sub>0</sub></code>
+      such that <code>f(n) &lt; c·g(n)</code> for all <code>n ≥ n<sub>0</sub></code>.
+      Equivalently, <code>lim<sub>n→∞</sub> f(n)/g(n) = 0</code>.
+      <br><br>
+      <strong>Little-ω:</strong> <code>f(n) = ω(g(n))</code> means f grows <em>strictly faster</em>
+      than g. Formally, for every constant <code>c &gt; 0</code>, there exists <code>n<sub>0</sub></code>
+      such that <code>f(n) &gt; c·g(n)</code> for all <code>n ≥ n<sub>0</sub></code>.
+      Equivalently, <code>lim<sub>n→∞</sub> f(n)/g(n) = ∞</code>.
+      <br><br>
+      The key difference: Big-O allows <code>f = cg</code> (equal up to constant), little-o does not.
+    </div>
+
+    <h3 class="subsec">Hierarchy of Common Functions</h3>
+    <p>
+      The following ordering of common complexity classes holds (each is asymptotically dominated
+      by everything to its right):
+    </p>
+
+    <div class="callout cplx">
+      <div class="callout-title">Growth Order (slowest to fastest)</div>
+      <code>O(1)</code> &nbsp;&lt;&nbsp;
+      <code>O(log n)</code> &nbsp;&lt;&nbsp;
+      <code>O(√n)</code> &nbsp;&lt;&nbsp;
+      <code>O(n)</code> &nbsp;&lt;&nbsp;
+      <code>O(n log n)</code> &nbsp;&lt;&nbsp;
+      <code>O(n²)</code> &nbsp;&lt;&nbsp;
+      <code>O(n³)</code> &nbsp;&lt;&nbsp;
+      <code>O(2ⁿ)</code> &nbsp;&lt;&nbsp;
+      <code>O(n!)</code>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Complexity Class</th>
+          <th>Name</th>
+          <th>Example</th>
+          <th>n = 1000</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>O(1)</code></td><td>Constant</td><td>Array index lookup</td><td>1</td></tr>
+        <tr><td><code>O(log n)</code></td><td>Logarithmic</td><td>Binary Search</td><td>~10</td></tr>
+        <tr><td><code>O(√n)</code></td><td>Square root</td><td>Trial division</td><td>~32</td></tr>
+        <tr><td><code>O(n)</code></td><td>Linear</td><td>Linear Search, find min</td><td>1,000</td></tr>
+        <tr><td><code>O(n log n)</code></td><td>Linearithmic</td><td>Merge Sort</td><td>~10,000</td></tr>
+        <tr><td><code>O(n²)</code></td><td>Quadratic</td><td>Selection/Insertion Sort</td><td>1,000,000</td></tr>
+        <tr><td><code>O(n³)</code></td><td>Cubic</td><td>Naive matrix multiply</td><td>10<sup>9</sup></td></tr>
+        <tr><td><code>O(2ⁿ)</code></td><td>Exponential</td><td>Naive Fibonacci, subsets</td><td>10<sup>301</sup></td></tr>
+        <tr><td><code>O(n!)</code></td><td>Factorial</td><td>Brute-force TSP</td><td>astronomical</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Rules for Simplifying Asymptotic Expressions</h3>
+    <ul>
+      <li><strong>Drop constants:</strong> <code>O(3n) = O(n)</code>, <code>O(100) = O(1)</code></li>
+      <li><strong>Drop lower-order terms:</strong> <code>O(n² + n + 1) = O(n²)</code></li>
+      <li><strong>Multiplicative constants:</strong> <code>O(c·f(n)) = O(f(n))</code> for any constant <code>c &gt; 0</code></li>
+      <li><strong>Log base doesn't matter:</strong> <code>O(log<sub>2</sub> n) = O(log<sub>10</sub> n) = O(log n)</code> (since logs differ by a constant factor)</li>
+      <li><strong>Polynomial dominates log:</strong> <code>O(n·log n) = o(n²)</code></li>
+      <li><strong>Exponential dominates polynomial:</strong> <code>O(n<sup>k</sup>) = o(2ⁿ)</code> for any constant k</li>
+      <li><strong>Sum rule:</strong> <code>O(f(n)) + O(g(n)) = O(max(f(n), g(n)))</code></li>
+      <li><strong>Product rule:</strong> <code>O(f(n)) · O(g(n)) = O(f(n) · g(n))</code></li>
+    </ul>
+
+    <h3 class="subsec">How to Prove Complexity Bounds</h3>
+    <p>
+      To prove <code>f(n) = O(g(n))</code>, find explicit constants <code>c</code> and
+      <code>n<sub>0</sub></code> and verify the inequality directly.
+    </p>
+    <div class="callout insight">
+      <div class="callout-title">Example — Proving a Big-O Bound</div>
+      Claim: <code>2n² + 3n + 1 = O(n²)</code>
+      <br><br>
+      For <code>n ≥ 1</code>: &nbsp;
+      <code>2n² + 3n + 1 ≤ 2n² + 3n² + n² = 6n²</code>
+      <br>
+      So choose <code>c = 6</code> and <code>n<sub>0</sub> = 1</code>. We have shown
+      <code>2n² + 3n + 1 ≤ 6·n²</code> for all <code>n ≥ 1</code>, hence <code>2n² + 3n + 1 = O(n²)</code>.
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       SECTION 3: MEASURES OF COMPLEXITY
+       =================================================== -->
+  <section class="content-section" id="measures">
+    <h2 class="sec-title"><span class="sec-num">§ 1.4</span> Measures of Complexity</h2>
+  <button class="review-btn" data-week="1" data-sec="measures"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Best, Worst, and Average Case</h3>
+
+    <p>
+      For a given input size <code>n</code>, different inputs may cause the algorithm to take
+      very different amounts of time. Let <code>T<sub>A</sub>(I)</code> denote the running time
+      of algorithm A on input I, and let <code>I(n)</code> denote the set of all valid inputs
+      of size n.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Best, Worst, and Average Case</div>
+      <strong>Best-case complexity:</strong>
+      <code>t<sub>best</sub>(n) = min<sub>I ∈ I(n)</sub> T<sub>A</sub>(I)</code>
+      <br>
+      The fewest possible operations over any valid input of size n.
+      <br><br>
+      <strong>Worst-case complexity:</strong>
+      <code>t<sub>worst</sub>(n) = max<sub>I ∈ I(n)</sub> T<sub>A</sub>(I)</code>
+      <br>
+      The most operations the algorithm could execute on any valid input of size n.
+      <br><br>
+      <strong>Average-case complexity:</strong>
+      <code>t<sub>avg</sub>(n) = E<sub>I ∈ I(n)</sub>[T<sub>A</sub>(I)]</code>
+      <br>
+      The expected number of operations averaged over all valid inputs of size n
+      (assuming uniform distribution). Much harder to compute in general.
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Common Misconception</div>
+      Do <strong>not</strong> confuse "best case" with "small inputs" or "empty input". Best case
+      refers to the most favourable input of a given size <code>n</code>. For example, the best
+      case for searching is when the target is the first element checked — regardless of how large
+      the array is.
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Convention in This Unit</div>
+      In FIT2004, unless otherwise specified, "complexity" means <strong>worst-case time complexity</strong>.
+      We are primarily concerned with worst-case analysis because it gives a guarantee on
+      performance for all inputs.
+    </div>
+
+    <h3 class="subsec">Time Complexity vs Space Complexity</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Space Complexity vs Auxiliary Space Complexity</div>
+      <strong>Space complexity:</strong> The total amount of memory used by an algorithm as a
+      function of the input size. This includes the space for the input itself.
+      <br><br>
+      <strong>Auxiliary space complexity:</strong> The amount of memory used by the algorithm
+      <em>excluding</em> the space for the input. This measures the "extra" memory needed.
+      <br><br>
+      <em>Note: Many textbooks and online resources do not distinguish between the two, using
+      "space complexity" when they mean "auxiliary space complexity". This unit uses both terms
+      precisely.</em>
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — In-Place Algorithm</div>
+      An algorithm is called <strong>in-place</strong> if it has <code>O(1)</code> auxiliary
+      space complexity — it only requires a constant amount of extra memory in addition to the
+      input.
+      <br><br>
+      Some authors use a slightly different definition: an algorithm is in-place if it does not
+      copy the input into any additional data structures, but modifies the input directly to
+      produce the output (never storing more than O(1) elements of the input outside the input).
+      <br><br>
+      <em>Examples:</em> Selection sort and insertion sort are in-place. Merge sort is <strong>not</strong>
+      in-place (the merge step requires O(n) auxiliary space). Binary search is in-place (O(1)
+      auxiliary space).
+    </div>
+
+    <h4 class="subsubsec">Space Complexity Example — Binary Search</h4>
+    <ul>
+      <li><strong>Space complexity:</strong> O(n) — the input array of size n must be stored.</li>
+      <li><strong>Auxiliary space complexity:</strong> O(1) — only a few variables (lo, hi, mid) are needed.</li>
+      <li>Binary search is therefore an <strong>in-place</strong> algorithm.</li>
+    </ul>
+
+    <h4 class="subsubsec">Space Complexity Example — power1(x, n)</h4>
+    <ul>
+      <li><strong>Space complexity:</strong> O(n) — each recursive call occupies stack space, and the recursion depth is n.</li>
+      <li>The iterative version <code>power2(x, n)</code> uses O(1) auxiliary space and is in-place.</li>
+      <li>This illustrates that recursive solutions often have higher space complexity than their iterative counterparts due to the call stack.</li>
+    </ul>
+
+    <h3 class="subsec">Output-Sensitive Complexity</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Output-Sensitive Complexity</div>
+      Output-sensitive complexity is the time complexity expressed as a function of both
+      the input size <em>and</em> the output size. This is relevant when the output size
+      itself can vary significantly.
+      <br><br>
+      <em>Example:</em> Given a sorted array of n unique numbers and two values x and y,
+      find all numbers between x and y. The algorithm runs binary search to find the start
+      (O(log n)), then scans until it exits the range. If there are w numbers in the range,
+      the output-sensitive complexity is <strong>O(w + log n)</strong>. In the worst case,
+      w = n, giving O(n). But for sparse queries, the cost is much lower.
+    </div>
+
+    <h3 class="subsec">Complexity of Randomised Algorithms</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Expected Complexity</div>
+      For a randomised algorithm, the running time <code>T<sub>A</sub>(I)</code> is a probability
+      distribution (not a single value), since it depends on random choices made during execution.
+      <br><br>
+      The <strong>expected (worst-case) time complexity</strong> is:
+      <code>max<sub>I ∈ I(n)</sub> E[T<sub>A</sub>(I)]</code>
+      <br><br>
+      This takes the maximum over all inputs (worst case) while averaging over the algorithm's
+      random choices. It is important <em>not</em> to conflate worst-case behaviour (depends on input)
+      with unlucky random decisions (depends on the random choices made).
+    </div>
+
+    <h3 class="subsec">Lower Bound Complexity</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Lower Bound Complexity</div>
+      The <strong>lower bound complexity</strong> for a problem is the lowest possible complexity
+      that any algorithm (known or unknown) can achieve to solve the problem. Unless otherwise
+      stated, lower bound is for worst-case complexity.
+      <br><br>
+      If an algorithm achieves the lower bound, it is called <strong>optimal</strong>.
+    </div>
+
+    <p>Examples of lower bounds:</p>
+    <ul>
+      <li><strong>Finding minimum in an unsorted array:</strong> Lower bound is Ω(n), since every element must be examined at least once. The linear-scan algorithm achieves O(n), so it is optimal.</li>
+      <li><strong>Comparison-based sorting:</strong> Lower bound is Ω(n log n). Any comparison-based sorting algorithm must make at least Ω(n log n) comparisons in the worst case (proved via a decision tree argument — not examinable). Merge Sort and Heap Sort achieve O(n log n), making them optimal among comparison-based sorts.</li>
+    </ul>
+
+    <h3 class="subsec">Comparison Cost</h3>
+    <p>
+      We typically assume comparisons take O(1) time. However, this is not always true:
+    </p>
+    <ul>
+      <li><strong>String comparison:</strong> Comparing two strings of length L takes O(L) in the worst case — strings are compared character-by-character from left to right until a difference is found. E.g., comparing "Welcome to Faculty of IT" and "Welcome to FIT2004" requires comparing all characters up to the first difference.</li>
+      <li><strong>Number comparison:</strong> For machine-word sized integers (fitting in a register), comparison is O(1). For very large numbers (e.g., in arbitrary-precision arithmetic), comparison would be O(digits).</li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Convention in This Unit</div>
+      <ul>
+        <li>String comparison costs O(c), where c is the number of characters compared.</li>
+        <li>Numerical comparison costs O(1) unless otherwise specified.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       SECTION 4: ALGORITHM CORRECTNESS
+       =================================================== -->
+  <section class="content-section" id="correctness">
+    <h2 class="sec-title"><span class="sec-num">§ 1.1</span> Proving Algorithm Correctness</h2>
+  <button class="review-btn" data-week="1" data-sec="correctness"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Testing detects inputs for which a program gives incorrect output, but cannot test all
+      inputs (there are infinitely many). <strong>Testing cannot guarantee correctness.</strong>
+      Logic can. A correctness proof has two parts:
+    </p>
+    <ol>
+      <li><strong>Termination:</strong> Show that the algorithm always halts in finite time.</li>
+      <li><strong>Correctness at termination:</strong> Show that when it halts, it produces the right answer.</li>
+    </ol>
+
+    <h3 class="subsec">Loop Invariants</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Loop Invariant</div>
+      A <strong>loop invariant</strong> is a statement about the algorithm's state that is true
+      at three critical points:
+      <ol>
+        <li><strong>Initialisation:</strong> True before the loop starts.</li>
+        <li><strong>Maintenance:</strong> If true at the beginning of an iteration, it remains
+            true at the beginning of the next iteration.</li>
+        <li><strong>Termination:</strong> When the loop terminates, the invariant (combined with
+            the reason the loop stopped) gives us the correctness result.</li>
+      </ol>
+    </div>
+
+    <h4 class="subsubsec">Example — Find Minimum (Loop Invariant)</h4>
+
+<pre class="code-block">
+min = array[1]
+index = 2
+// Loop Invariant: min equals the minimum value in array[1 ... index-1]
+while index &lt;= N:
+    if array[index] &lt; min:
+        min = array[index]
+    index = index + 1
+return min
+</pre>
+
+    <ul>
+      <li><strong>Initialisation:</strong> Before the loop, index = 2, and array[1..1] = {array[1]}, whose minimum is min = array[1]. ✓</li>
+      <li><strong>Maintenance:</strong> Assume LI is true at index = k (min = min of array[1..k-1]). After the iteration, we compare array[k] with min and update min if necessary. So min = min of array[1..k], which means LI holds at index = k+1. ✓</li>
+      <li><strong>Termination:</strong> Loop exits when index = N+1. LI gives: min = min of array[1..N]. ✓</li>
+    </ul>
+
+    <h4 class="subsubsec">Example — Selection Sort (Loop Invariant)</h4>
+
+<pre class="code-block">
+// LI: arr[1..i-1] is sorted AND arr[1..i-1] &lt;= arr[i..N]
+for i = 1 to N-1:
+    j = index of minimum element in arr[i..N]
+    swap(arr[i], arr[j])
+// At termination i = N: arr[1..N-1] sorted AND arr[1..N-1] &lt;= arr[N]
+// Therefore arr[1..N] is fully sorted.
+</pre>
+
+    <div class="callout insight">
+      <div class="callout-title">Why Selection Sort Needs Both Invariant Conditions</div>
+      The invariant for selection sort requires two conditions: (1) the sorted prefix is sorted,
+      and (2) everything in the sorted prefix is ≤ everything in the unsorted suffix.
+      <br><br>
+      If only condition (1) were maintained (as in Insertion Sort's invariant), it would break:
+      after swapping the minimum of arr[i..N] into position i, the sorted prefix arr[1..i-1]
+      might receive a value smaller than arr[i-1], violating "is sorted". The stronger invariant
+      (both conditions) is needed.
+    </div>
+
+    <h4 class="subsubsec">Example — Binary Search (Loop Invariant and Termination Proof)</h4>
+
+    <p>For the binary search that finds the rightmost instance of a target:</p>
+    <p><strong>Invariant:</strong> If the target is in the list, its rightmost instance is in L[lo..hi-1].</p>
+
+<pre class="code-block">
+// Invariant: if target is in L, it is in L[lo..hi-1]
+lo = 1
+hi = N + 1
+while lo &lt; hi - 1:
+    mid = floor((lo + hi) / 2)
+    if target &gt;= L[mid]:
+        lo = mid        // target is at or right of mid
+    else:               // target &lt; L[mid]
+        hi = mid        // target is left of mid (L[hi] is excluded)
+if L[lo] == target:
+    return lo
+return False
+</pre>
+
+    <p><strong>Termination proof:</strong></p>
+    <ul>
+      <li>Since <code>lo &lt; hi - 1</code>, we have <code>lo ≤ hi - 2</code>. Therefore <code>mid = floor((lo+hi)/2)</code> satisfies <code>lo &lt; mid &lt; hi</code> (proven rigorously in the course notes using the floor inequality).</li>
+      <li>When we set lo = mid, lo strictly increases by at least 1. When we set hi = mid, hi strictly decreases by at least 1.</li>
+      <li>So every iteration, <code>hi - lo</code> decreases by at least 1. Since this is finite, the loop must terminate.</li>
+    </ul>
+
+    <p><strong>Correctness proof:</strong></p>
+    <ul>
+      <li><em>Init:</em> L[lo..hi-1] = L[1..N] = entire list. If target exists, it's here. ✓</li>
+      <li><em>Maintenance:</em> If target is in L[lo..hi-1] and we check L[mid]:
+        <ul>
+          <li>If target ≥ L[mid]: target could be at mid or to its right, so set lo = mid. ✓</li>
+          <li>If target &lt; L[mid]: target is strictly left of mid, so set hi = mid (hi is exclusive). ✓</li>
+        </ul>
+      </li>
+      <li><em>Termination:</em> lo = hi - 1, so only L[lo] remains. Return lo if found, False otherwise. ✓</li>
+    </ul>
+  </section>
+
+
+  <!-- ===================================================
+       SECTION 5: DIVIDE AND CONQUER PARADIGM
+       =================================================== -->
+  <section class="content-section" id="divide-conquer">
+    <h2 class="sec-title"><span class="sec-num">Ch. 2</span> Divide and Conquer</h2>
+  <button class="review-btn" data-week="1" data-sec="divide-conquer"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The <strong>Divide and Conquer</strong> algorithm design paradigm is one of the most
+      important and powerful techniques in algorithm design. It works by breaking a large problem
+      into smaller, more manageable subproblems, solving those subproblems, and then combining
+      their solutions.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Divide and Conquer Paradigm</div>
+      A divide-and-conquer algorithm works in three steps:
+      <ol>
+        <li><strong>Divide:</strong> Break the problem into smaller subproblems of the same type.</li>
+        <li><strong>Conquer:</strong> Solve the subproblems recursively. At the base case (when the
+            subproblem is small enough), solve directly.</li>
+        <li><strong>Combine:</strong> Merge the solutions of the subproblems to produce the solution
+            to the original problem.</li>
+      </ol>
+      Analysing the time complexity of a D&amp;C algorithm normally involves <strong>solving a
+      recurrence relation</strong>. Normally a polynomial-time solution to the problem is already
+      known, and D&amp;C is used to reduce the time complexity to a lower polynomial.
+    </div>
+
+    <h3 class="subsec">Applications of Divide and Conquer</h3>
+    <ul>
+      <li>Karatsuba's multiplication: O(n<sup>1.585</sup>) — covered in detail below</li>
+      <li>Merge Sort: O(n log n) — covered below</li>
+      <li>Counting Inversions: O(n log n) — covered below</li>
+      <li>Closest pair of points in a plane: O(n log n)</li>
+      <li>Strassen's matrix multiplication: O(n<sup>2.807</sup>) — sub-cubic</li>
+      <li>Fast Fourier Transform (FFT): O(n log n) — extremely influential, used in signal processing, audio, image compression, polynomial multiplication</li>
+    </ul>
+  </section>
+
+
+  <!-- ===================================================
+       SECTION 6: KARATSUBA'S ALGORITHM
+       =================================================== -->
+  <section class="content-section" id="karatsuba">
+    <h2 class="sec-title"><span class="sec-num">§ 2.1</span> Karatsuba's Multiplication Algorithm</h2>
+  <button class="review-btn" data-week="1" data-sec="karatsuba"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">The Problem</h3>
+    <p>
+      <strong>Problem:</strong> Multiply two n-digit numbers x and y, using only addition,
+      subtraction, and multiplication of single-digit numbers as basic operations.
+    </p>
+    <p>
+      The <strong>grade school algorithm</strong> (multiplying using partial products) clearly
+      takes <span class="complexity-tag">O(n²)</span> time: for each of the n digits of y, we
+      multiply it by all n digits of x, producing n partial products, then sum them up.
+    </p>
+
+    <h3 class="subsec">First Improvement Idea — Split into Halves</h3>
+
+    <p>
+      A natural divide-and-conquer approach is to split each number at its midpoint:
+    </p>
+    <ul>
+      <li>Let <code>x<sub>M</sub></code> = the n/2 most significant digits of x</li>
+      <li>Let <code>x<sub>L</sub></code> = the n/2 least significant digits of x</li>
+      <li>Let <code>y<sub>M</sub></code> = the n/2 most significant digits of y</li>
+      <li>Let <code>y<sub>L</sub></code> = the n/2 least significant digits of y</li>
+    </ul>
+
+    <p>Then:</p>
+    <div class="callout def">
+      <div class="callout-title">Mathematical Decomposition</div>
+      <code>x = x<sub>M</sub> · 10<sup>n/2</sup> + x<sub>L</sub></code>
+      <br>
+      <code>y = y<sub>M</sub> · 10<sup>n/2</sup> + y<sub>L</sub></code>
+      <br><br>
+      <code>x · y = x<sub>M</sub>·y<sub>M</sub>·10<sup>n</sup> + (x<sub>M</sub>·y<sub>L</sub> + x<sub>L</sub>·y<sub>M</sub>)·10<sup>n/2</sup> + x<sub>L</sub>·y<sub>L</sub></code>
+      <br><br>
+      Note: multiplications by powers of 10 are trivial left shifts, costing O(n).
+    </div>
+
+    <p>
+      This naive approach requires four recursive calls (computing x<sub>M</sub>·y<sub>M</sub>,
+      x<sub>M</sub>·y<sub>L</sub>, x<sub>L</sub>·y<sub>M</sub>, x<sub>L</sub>·y<sub>L</sub>),
+      giving the recurrence T(n) = 4T(n/2) + c·n. By the Master Theorem (case 1:
+      n<sup>log<sub>2</sub>4</sup> = n² dominates cn), this resolves to <span class="complexity-tag">O(n²)</span> —
+      no improvement!
+    </p>
+
+    <div class="callout warn">
+      <div class="callout-title">Why 4 Recursive Calls Doesn't Help</div>
+      With 4 calls each of size n/2: the work at each level stays approximately constant.
+      At each level we do O(n) combining work and have 4× as many subproblems each of half the
+      size — the total work per level actually grows, yielding O(n²) overall. To improve, we
+      need <strong>at most 3 recursive calls</strong>.
+    </div>
+
+    <h3 class="subsec">Karatsuba's Key Insight — The Gauss Trick</h3>
+
+    <p>
+      For decades, no sub-quadratic multiplication algorithm was known. Russian mathematician
+      Andrey Kolmogorov (20th century giant in probability and complexity theory) even conjectured
+      that sub-quadratic multiplication was impossible. Then Anatoly Karatsuba, a 23-year-old
+      student, heard the conjecture at Kolmogorov's seminar and within one week produced the
+      counter-example.
+    </p>
+
+    <p>
+      The key observation is that we need the term <code>z = x<sub>M</sub>·y<sub>L</sub> + x<sub>L</sub>·y<sub>M</sub></code>.
+      Instead of computing this directly with two multiplications, we use only three multiplications total:
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Karatsuba's Trick</div>
+      Compute only these three products:
+      <ol>
+        <li><code>a = x<sub>M</sub> · y<sub>M</sub></code> &nbsp;&nbsp; (1st recursive call)</li>
+        <li><code>b = x<sub>L</sub> · y<sub>L</sub></code> &nbsp;&nbsp; (2nd recursive call)</li>
+        <li><code>c = (x<sub>M</sub> + x<sub>L</sub>) · (y<sub>M</sub> + y<sub>L</sub>)</code> &nbsp;&nbsp; (3rd recursive call)</li>
+      </ol>
+      <br>
+      Then observe that:
+      <br>
+      <code>(x<sub>M</sub> + x<sub>L</sub>)·(y<sub>M</sub> + y<sub>L</sub>) = x<sub>M</sub>·y<sub>M</sub> + (x<sub>M</sub>·y<sub>L</sub> + x<sub>L</sub>·y<sub>M</sub>) + x<sub>L</sub>·y<sub>L</sub></code>
+      <br>
+      <code>c = a + z + b</code>
+      <br>
+      Therefore: <code><strong>z = c − a − b</strong></code>
+      <br><br>
+      We obtain the missing cross-term z with zero additional multiplications — just two
+      subtractions!
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Historical Origin — Gauss's Method for Complex Numbers</div>
+      This trick traces back to Gauss's method for multiplying complex numbers
+      <code>(a + bi)(c + di)</code> using only 3 real multiplications instead of 4:
+      <br>
+      Compute <code>ac</code>, <code>bd</code>, and <code>(a+b)(c+d)</code>.
+      Then the real part is <code>ac − bd</code> and the imaginary part is
+      <code>(a+b)(c+d) − ac − bd</code>.
+      <br><br>
+      Adapting previous ideas to solve new problems is one of the most valuable skills in
+      algorithm design.
+    </div>
+
+    <h3 class="subsec">Karatsuba's Algorithm — Pseudocode</h3>
+
+    <div class="algo-header">
+      Algorithm: Karatsuba(x, y) — sub-quadratic integer multiplication
+      <span class="algo-complexity">T(n) = O(n^log₂3) ≈ O(n^1.585)</span>
+    </div>
+<pre class="code-block has-header">
+function KARATSUBA(x, y):
+    // x and y are n-digit positive integers
+    if n = 1:
+        compute x * y in one step and return the result
+
+    // Split x and y at the midpoint
+    x_M, x_L = first half, second half of x (each n/2 digits)
+    y_M, y_L = first half, second half of y (each n/2 digits)
+
+    // Three recursive calls (each on n/2-digit numbers)
+    a = KARATSUBA(x_M, y_M)                    // x_M * y_M
+    b = KARATSUBA(x_L, y_L)                    // x_L * y_L
+    u = x_M + x_L                              // grade school addition: O(n)
+    v = y_M + y_L                              // grade school addition: O(n)
+    c = KARATSUBA(u, v)                        // (x_M + x_L) * (y_M + y_L)
+
+    // Combine: z = c - a - b = x_M*y_L + x_L*y_M
+    z = c - a - b                              // grade school subtraction: O(n)
+
+    // Result: a * 10^n  +  z * 10^(n/2)  +  b
+    return a * 10^n + z * 10^(n/2) + b        // left shifts + addition: O(n)
+</pre>
+
+    <h3 class="subsec">Complexity Analysis of Karatsuba's Algorithm</h3>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity — Karatsuba's Algorithm</div>
+      <strong>Recurrence:</strong> <code>T(n) = 3T(n/2) + c·n</code>
+      <br><br>
+      <em>The 3 comes from the three recursive calls; the c·n comes from the grade school
+      addition/subtraction operations and the left-shift combining step, all of which are linear.</em>
+      <br><br>
+      <strong>Solution:</strong> By the Master Theorem (case 1, since
+      n<sup>log<sub>2</sub>3</sup> ≈ n<sup>1.585</sup> dominates cn = n<sup>1</sup>):
+      <br>
+      <code>T(n) = Θ(n<sup>log<sub>2</sub>3</sup>) = <strong>O(n<sup>1.585</sup>)</strong></code>
+      <br><br>
+      where log<sub>2</sub>3 ≈ 1.585.
+      <br><br>
+      <strong>Compared to grade school:</strong> O(n<sup>1.585</sup>) vs O(n²). For n = 1,000,000
+      digits, this is a factor of roughly n<sup>0.415</sup> ≈ 40,000× improvement!
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Practical Significance</div>
+      Karatsuba's algorithm is what Python uses internally to multiply large integers. The
+      difference between n² and n<sup>1.585</sup> is dramatic for large inputs — do not underestimate
+      improvements in the exponent of polynomial algorithms.
+    </div>
+
+    <h3 class="subsec">Why T(n) = 4T(n/2) + cn Gives O(n²)</h3>
+    <p>
+      For comparison, with 4 recursive calls: by the Master Theorem,
+      n<sup>log<sub>2</sub>4</sup> = n² dominates cn, so T(n) = Θ(n²). No improvement over grade school.
+      The key insight is that reducing from 4 to 3 recursive calls changes the base of the
+      exponent from log<sub>2</sub>4 = 2 to log<sub>2</sub>3 ≈ 1.585, a significant improvement.
+    </p>
+  </section>
+
+
+  <!-- ===================================================
+       SECTION 7: MERGE SORT
+       =================================================== -->
+  <section class="content-section" id="mergesort">
+    <h2 class="sec-title"><span class="sec-num">§ 2.2</span> Merge Sort (Revision)</h2>
+  <button class="review-btn" data-week="1" data-sec="mergesort"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Merge sort is a divide-and-conquer sorting algorithm presented by John von Neumann
+      (one of the greatest mathematicians of the 20th century). It was one of the first
+      explicit uses of the D&amp;C paradigm. Python's standard <code>sorted()</code> function
+      uses Timsort — a hybrid algorithm derived from Merge Sort and Insertion Sort.
+    </p>
+
+    <h3 class="subsec">The Three Steps</h3>
+    <ol>
+      <li><strong>Divide:</strong> Split the array in half at the midpoint.</li>
+      <li><strong>Conquer:</strong> Recursively sort each half. Base case: a single element is trivially sorted.</li>
+      <li><strong>Combine:</strong> Merge the two sorted halves into a single sorted array.</li>
+    </ol>
+
+    <h3 class="subsec">The Merge Subroutine</h3>
+    <p>
+      The core of merge sort is the merge routine, which takes two sorted arrays A and B
+      and produces a single sorted output by interleaving them:
+    </p>
+
+    <div class="algo-header">
+      Algorithm: Merge(A[i..n1], B[j..n2]) — merging two sorted arrays
+      <span class="algo-complexity">Time: O(n) | Space: O(n)</span>
+    </div>
+<pre class="code-block has-header">
+function MERGE(A[i..n1], B[j..n2]):
+    result = empty array
+
+    while i &lt;= n1 OR j &lt;= n2:
+        // Take the smaller of the two front elements
+        if j &gt; n2  OR  (i &lt;= n1 AND A[i] &lt;= B[j]):
+            result.append(A[i])   // Take from A
+            i += 1
+        else:
+            result.append(B[j])   // Take from B
+            j += 1
+
+    return result
+</pre>
+
+    <div class="callout insight">
+      <div class="callout-title">Stability of Merge</div>
+      The merge routine is <strong>stable</strong> because we use <code>A[i] ≤ B[j]</code>
+      (not strict less-than). When A[i] equals B[j], we prefer A (the left array), preserving
+      the original relative order of equal elements. Since the merge is stable, the entire
+      merge sort algorithm is also stable.
+    </div>
+
+    <h3 class="subsec">Merge Sort Pseudocode</h3>
+
+    <div class="algo-header">
+      Algorithm: Merge-Sort(array[lo..hi])
+      <span class="algo-complexity">Time: O(n log n) | Aux Space: O(n)</span>
+    </div>
+<pre class="code-block has-header">
+function MERGE_SORT(array[lo..hi]):
+    if hi &gt; lo:                              // More than one element
+        mid = floor((lo + hi) / 2)
+        MERGE_SORT(array[lo..mid])           // Recursively sort left half
+        MERGE_SORT(array[mid+1..hi])         // Recursively sort right half
+        array[lo..hi] = MERGE(array[lo..mid], array[mid+1..hi])  // Combine
+</pre>
+
+    <h3 class="subsec">Correctness of Merge Sort</h3>
+    <p>
+      The correctness of merge sort can be argued by induction on the size of the array:
+    </p>
+    <ul>
+      <li><strong>Base case:</strong> An array of one element (lo = hi) is trivially sorted. No recursion occurs.</li>
+      <li><strong>Inductive hypothesis:</strong> Assume MERGE_SORT correctly sorts any array of size &lt; n.</li>
+      <li><strong>Inductive step:</strong> For an array of size n, we split it into two halves of sizes roughly n/2. By the inductive hypothesis, MERGE_SORT correctly sorts each half. We then merge two sorted arrays — the MERGE routine produces a correctly sorted array from two sorted inputs (this can be proven by its own loop invariant). Therefore MERGE_SORT correctly sorts the full array.</li>
+    </ul>
+
+    <h3 class="subsec">Complexity Analysis of Merge Sort</h3>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity — Merge Sort</div>
+      <strong>Recurrence:</strong> <code>T(n) = 2T(n/2) + c·n</code>
+      <br><br>
+      <em>The 2 comes from two recursive calls; the c·n comes from the MERGE step which
+      processes all n elements linearly.</em>
+      <br><br>
+      <strong>Solution:</strong> By the Master Theorem (case 2, since
+      n<sup>log<sub>2</sub>2</sup> = n<sup>1</sup> = n = Θ(cn)):
+      <br>
+      <code>T(n) = Θ(n log n) = <strong>O(n log n)</strong></code>
+      <br><br>
+      <strong>Intuition:</strong> There are log<sub>2</sub>(n) levels of recursion. At each level,
+      the total work to merge all the subproblems is O(n) (since every element is touched once
+      per level). So total work = O(n) × O(log n) = O(n log n).
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Best Case</th>
+          <th>Average Case</th>
+          <th>Worst Case</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Time</strong></td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+        </tr>
+        <tr>
+          <td><strong>Auxiliary Space</strong></td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+          <td>O(n)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Properties of Merge Sort</h3>
+
+    <ul>
+      <li><strong>Stable:</strong> Yes — the MERGE routine preserves relative order of equal elements.</li>
+      <li><strong>In-place:</strong> No — the MERGE step requires O(n) auxiliary space to store the output array. The merge sort call stack itself also uses O(log n) space for the recursion.</li>
+      <li><strong>Optimal:</strong> Yes, among comparison-based sorting algorithms — it achieves the Ω(n log n) lower bound.</li>
+      <li><strong>Consistent:</strong> Best, average, and worst case are all Θ(n log n) — merge sort has no "bad" inputs like quicksort does.</li>
+    </ul>
+
+    <h4 class="subsubsec">Enhancements of Merge Sort</h4>
+    <ul>
+      <li><strong>Bottom-up merge sort:</strong> Eliminate recursion entirely by iteratively merging subarrays of size 1, 2, 4, 8, ..., n. Still O(n) auxiliary space but avoids call stack overhead. Slightly faster in practice.</li>
+      <li><strong>In-place merge sort:</strong> There exist O(1) auxiliary space variants of merge sort, but they are significantly more complex to implement and typically slower in practice.</li>
+      <li><strong>Timsort:</strong> Python's built-in sort, a hybrid of merge sort and insertion sort. Uses insertion sort for small runs (which are faster in practice due to low overhead) and merge sort to combine them. Also takes advantage of already-sorted runs in the input.</li>
+    </ul>
+
+    <h3 class="subsec">Comparison: Merge Sort vs Selection Sort vs Insertion Sort</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Best</th>
+          <th>Average</th>
+          <th>Worst</th>
+          <th>Stable?</th>
+          <th>In-Place?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Selection Sort</td>
+          <td>O(n²)</td>
+          <td>O(n²)</td>
+          <td>O(n²)</td>
+          <td>No</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Insertion Sort</td>
+          <td>O(n)</td>
+          <td>O(n²)</td>
+          <td>O(n²)</td>
+          <td>Yes</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Heap Sort</td>
+          <td>O(n)</td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+          <td>No</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Merge Sort</td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+          <td>O(n log n)</td>
+          <td>Yes</td>
+          <td>No</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Stable Sorting — Why It Matters</div>
+      A sorting algorithm is <strong>stable</strong> if it maintains the relative ordering of
+      elements with equal keys.
+      <br><br>
+      <em>Example:</em> Sorting students by marks. If two students have the same marks, a stable
+      sort preserves their original (alphabetical) ordering. An unstable sort may reorder them
+      arbitrarily.
+      <br><br>
+      <strong>Multi-key sort technique:</strong> To sort by a primary key and use a secondary key
+      as a tiebreaker, (1) first stable-sort by the secondary key, then (2) stable-sort by the
+      primary key. The stability of step 2 ensures ties in the primary key retain the order
+      established in step 1.
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       SECTION 8: COUNTING INVERSIONS
+       =================================================== -->
+  <section class="content-section" id="inversions">
+    <h2 class="sec-title"><span class="sec-num">§ 2.3</span> Counting Inversions</h2>
+  <button class="review-btn" data-week="1" data-sec="inversions"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Problem Definition and Motivation</h3>
+
+    <p>
+      Counting inversions is a fundamental algorithmic problem with applications in
+      <strong>collaborative filtering</strong> (a technique used by recommender systems to
+      measure how similar two users' preferences are). The more inversions exist between two
+      rankings, the more dissimilar the preferences.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Counting Inversions Problem</div>
+      <strong>Input:</strong> An array A of n distinct integers.
+      <br>
+      <strong>Output:</strong> The number of inversions in A, i.e., the number of pairs of
+      indices (i, j) such that <code>i &lt; j</code> and <code>A[i] &gt; A[j]</code>.
+      <br><br>
+      Informally, an inversion is a pair of elements that are "out of order" relative to the
+      sorted sequence.
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Intuition — Inversions and Similarity</div>
+      If both users rank a set of movies the same way, there are 0 inversions. The more they
+      disagree, the more inversions. A completely reversed ranking of n items has
+      n(n−1)/2 = Θ(n²) inversions — the maximum possible.
+      <br><br>
+      <em>Example:</em> A = [2, 4, 1, 3, 5] has inversions: (2,1), (4,1), (4,3) → 3 inversions.
+    </div>
+
+    <h3 class="subsec">Naive O(n²) Approach</h3>
+    <p>
+      The brute force algorithm simply checks every pair:
+    </p>
+
+    <div class="algo-header">
+      Algorithm: Count-Inversions-Naive — brute force
+      <span class="algo-complexity">Time: O(n²)</span>
+    </div>
+<pre class="code-block has-header">
+function COUNT_INVERSIONS_NAIVE(A[1..n]):
+    count = 0
+    for i = 1 to n:
+        for j = i+1 to n:
+            if A[i] &gt; A[j]:
+                count += 1
+    return count
+</pre>
+
+    <p>
+      Since there may be Θ(n²) inversions in the worst case (a reversed array), a sub-quadratic
+      algorithm cannot look individually at each inversion — it must count multiple inversions
+      in a single step. This is exactly what the divide-and-conquer approach achieves.
+    </p>
+
+    <h3 class="subsec">The Key Idea — Augmented Merge Sort</h3>
+
+    <p>
+      The O(n log n) algorithm is an augmentation of merge sort. The insight is to classify
+      inversions into three types based on where the two indices come from:
+    </p>
+
+    <ul>
+      <li><strong>Left inversions:</strong> Both i and j are in the left half A[lo..mid].</li>
+      <li><strong>Right inversions:</strong> Both i and j are in the right half A[mid+1..hi].</li>
+      <li><strong>Split inversions:</strong> i is in the left half and j is in the right half (i &lt; j by definition since all left indices &lt; all right indices).</li>
+    </ul>
+
+    <p>
+      Left and right inversions are counted recursively. The challenge — and the key insight —
+      is to count <strong>split inversions efficiently during the merge step</strong>.
+    </p>
+
+    <div class="callout thm">
+      <div class="callout-title">Counting Split Inversions During Merge</div>
+      When we merge two sorted halves A[lo..mid] and A[mid+1..hi], at each step we pick the
+      smaller leading element. Suppose we pick element B[j] from the right array (rather than
+      A[i] from the left):
+      <br><br>
+      This means A[i] &gt; B[j]. But since the left array is sorted, it is also true that
+      A[i+1], A[i+2], ..., A[n1] are all &gt; B[j]. Therefore, B[j] forms a split inversion
+      with <strong>all remaining elements in the left array</strong>.
+      <br><br>
+      If there are <code>n1 − i + 1</code> elements remaining in the left array when we pick
+      from the right, we add <code>n1 − i + 1</code> to our split inversion count.
+      <br><br>
+      When we pick from the left array, no split inversions are counted (the left element is
+      already smaller than all remaining right elements).
+    </div>
+
+    <h3 class="subsec">Sort-and-CountInv Algorithm</h3>
+
+    <div class="algo-header">
+      Algorithm: Sort-and-CountInv(array[lo..hi])
+      <span class="algo-complexity">Time: O(n log n) | Aux Space: O(n)</span>
+    </div>
+<pre class="code-block has-header">
+function SORT_AND_COUNT_INV(array[lo..hi]):
+    if lo == hi:
+        return (array[lo], 0)           // Base case: single element, 0 inversions
+    else:
+        mid = floor((lo + hi) / 2)
+
+        // Recursively sort-and-count both halves
+        (array[lo..mid], InvL)   = SORT_AND_COUNT_INV(array[lo..mid])
+        (array[mid+1..hi], InvR) = SORT_AND_COUNT_INV(array[mid+1..hi])
+
+        // Merge and count split inversions
+        (array[lo..hi], InvS) = MERGE_AND_COUNT_SPLIT_INV(
+                                    array[lo..mid], array[mid+1..hi])
+
+        Inv = InvL + InvR + InvS
+        return (array[lo..hi], Inv)
+</pre>
+
+<!-- ── VZ7: Sort-and-CountInv Visual Widget ── -->
+<div id="vz7-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-weight:700;color:#f0883e;font-size:0.88em;">Algorithm 7 &middot; Sort-and-CountInv</span>
+    <span style="font-family:monospace;color:#8b949e;font-size:0.82em;">&#920;(n log n)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <div style="padding:12px;background:#0d1117;">
+      <svg id="vz7-svg" viewBox="0 0 540 260" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div id="vz7-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#58a6ff;min-height:14px;"></div>
+      <div id="vz7-text" style="font-size:0.88em;line-height:1.55;color:#c9d1d9;min-height:72px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Inversions</span>
+          <span id="vz7-inv" style="font-size:1.3em;font-weight:700;line-height:1;color:#3fb950;">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Step</span>
+          <span id="vz7-step" style="font-size:1.3em;font-weight:700;line-height:1;color:#58a6ff;">0/8</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button onclick="vz7step(-1)" id="vz7-prev" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;" disabled>&#9664; Prev</button>
+        <button onclick="vz7step(1)" id="vz7-next" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz7reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">&#8635; Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('vz7-svg');
+  var cur=-1;
+
+  var steps=[
+    {
+      label:'INPUT',
+      text:'Input array [5,4,1,3,2]. An inversion is a pair (i,j) where i<j but a[i]>a[j]. Total inversions = 8.',
+      inv:0,
+      draw:function(){
+        clear();
+        var arr=[5,4,1,3,2];
+        var cols=['#58a6ff','#58a6ff','#58a6ff','#58a6ff','#58a6ff'];
+        drawRow(arr,cols,80,50,'Input',true);
+      }
+    },
+    {
+      label:'SPLIT',
+      text:'Divide into two halves: left=[5,4,1] and right=[3,2]. Recursively count inversions in each half.',
+      inv:0,
+      draw:function(){
+        clear();
+        var left=[5,4,1],right=[3,2];
+        drawRow(left,['#58a6ff','#58a6ff','#58a6ff'],60,50,'Left half',true);
+        drawRow(right,['#bc8cff','#bc8cff'],310,50,'Right half',true);
+        drawDivider(295,20,80);
+        drawLabel(60,165,'Split into halves','#8b949e');
+      }
+    },
+    {
+      label:'LEFT SORTED',
+      text:'Left half [5,4,1] sorted to [1,4,5]. Inversions found in left: 3 (pairs: (5,4),(5,1),(4,1)).',
+      inv:3,
+      draw:function(){
+        clear();
+        var left=[1,4,5],right=[3,2];
+        drawRow(left,['#3fb950','#3fb950','#3fb950'],60,50,'Left sorted',true);
+        drawRow(right,['#bc8cff','#bc8cff'],310,50,'Right half',true);
+        drawDivider(295,20,80);
+        drawLabel(90,165,'3 inversions found in left','#3fb950');
+      }
+    },
+    {
+      label:'RIGHT SORTED',
+      text:'Right half [3,2] sorted to [2,3]. Inversions found in right: 1 (pair: (3,2)). Now count SPLIT inversions in the merge step.',
+      inv:4,
+      draw:function(){
+        clear();
+        var left=[1,4,5],right=[2,3];
+        drawRow(left,['#3fb950','#3fb950','#3fb950'],60,50,'Left sorted',true);
+        drawRow(right,['#3fb950','#3fb950'],310,50,'Right sorted',true);
+        drawDivider(295,20,80);
+        drawLabel(90,165,'Left:3 + Right:1 = 4 inversions so far','#f0883e');
+      }
+    },
+    {
+      label:'MERGE  i=0, j=0',
+      text:'Merge: compare left[0]=1 vs right[0]=2. Left wins → take 1 to output. No split inversions added.',
+      inv:4,
+      draw:function(){
+        clear();
+        var left=[1,4,5],right=[2,3];
+        drawRow(left,['#58a6ff','#21262d','#21262d'],60,50,'Left [1,4,5]',true);
+        drawRow(right,['#58a6ff','#21262d'],310,50,'Right [2,3]',true);
+        drawPointer(87,92,'i=0','#58a6ff');
+        drawPointer(337,92,'j=0','#58a6ff');
+        drawRow([1],['#3fb950'],200,155,'Output',true);
+        drawLabel(130,225,'1 < 2: take left','#3fb950');
+      }
+    },
+    {
+      label:'MERGE  i=1, j=0',
+      text:'Compare left[1]=4 vs right[0]=2. Right wins (2<4). All remaining left elements [4,5] are inversions with 2. Add 2 split inversions.',
+      inv:6,
+      draw:function(){
+        clear();
+        var left=[1,4,5],right=[2,3];
+        drawRow(left,['#3fb950','#f85149','#f85149'],60,50,'Left [1,4,5]',true);
+        drawRow(right,['#58a6ff','#21262d'],310,50,'Right [2,3]',true);
+        drawPointer(147,92,'i=1','#f85149');
+        drawPointer(337,92,'j=0','#58a6ff');
+        drawRow([1,2],['#3fb950','#3fb950'],170,155,'Output',true);
+        drawLabel(100,225,'4 > 2: [4,5] each invert with 2  +2','#f85149');
+      }
+    },
+    {
+      label:'MERGE  i=1, j=1',
+      text:'Compare left[1]=4 vs right[1]=3. Right wins (3<4). Remaining left [4,5] → add 2 more split inversions.',
+      inv:8,
+      draw:function(){
+        clear();
+        var left=[1,4,5],right=[2,3];
+        drawRow(left,['#3fb950','#f85149','#f85149'],60,50,'Left [1,4,5]',true);
+        drawRow(right,['#3fb950','#58a6ff'],310,50,'Right [2,3]',true);
+        drawPointer(147,92,'i=1','#f85149');
+        drawPointer(397,92,'j=1','#58a6ff');
+        drawRow([1,2,3],['#3fb950','#3fb950','#3fb950'],155,155,'Output',true);
+        drawLabel(100,225,'4 > 3: [4,5] each invert with 3  +2','#f85149');
+      }
+    },
+    {
+      label:'DONE',
+      text:'Merge complete. Total inversions = 3 (left) + 1 (right) + 4 (split) = 8. Array is now sorted.',
+      inv:8,
+      draw:function(){
+        clear();
+        drawRow([1,2,3,4,5],['#3fb950','#3fb950','#3fb950','#3fb950','#3fb950'],60,80,'Sorted output',true);
+        drawLabel(130,165,'Total: 3+1+4 = 8 inversions','#3fb950');
+      }
+    }
+  ];
+
+  function mk(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var k in attrs) el.setAttribute(k,attrs[k]);
+    return el;
+  }
+  function clear(){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+
+  function drawRow(arr,cols,x,y,title,showVals){
+    var bw=56,gap=8;
+    if(title){
+      var t=mk('text',{x:x,y:y-8,'font-size':'11','font-family':'JetBrains Mono,monospace',fill:'#8b949e','text-anchor':'start'});
+      t.textContent=title; svg.appendChild(t);
+    }
+    for(var i=0;i<arr.length;i++){
+      var cx=x+i*(bw+gap);
+      var fill=cols[i]==='#58a6ff'?'#1a3a5c':cols[i]==='#bc8cff'?'#2e1f4a':cols[i]==='#3fb950'?'#0e2e18':cols[i]==='#f85149'?'#3a1010':'#21262d';
+      var r=mk('rect',{x:cx,y:y,width:bw,height:36,rx:'5',fill:fill,stroke:cols[i],'stroke-width':'1.5'});
+      svg.appendChild(r);
+      if(showVals){
+        var tv=mk('text',{x:cx+bw/2,y:y+23,'font-size':'15','font-weight':'700','font-family':'JetBrains Mono,monospace',fill:'#c9d1d9','text-anchor':'middle'});
+        tv.textContent=arr[i]; svg.appendChild(tv);
+      }
+    }
+  }
+
+  function drawDivider(x,y1,y2){
+    var line=mk('line',{x1:x,y1:y1,x2:x,y2:y2,stroke:'#30363d','stroke-width':'1.5','stroke-dasharray':'4,3'});
+    svg.appendChild(line);
+  }
+
+  function drawPointer(x,y,label,col){
+    var tri=mk('polygon',{points:(x)+','+(y+6)+' '+(x-6)+','+(y+18)+' '+(x+6)+','+(y+18),fill:col});
+    svg.appendChild(tri);
+    var t=mk('text',{x:x,y:y+32,'font-size':'10','font-family':'JetBrains Mono,monospace',fill:col,'text-anchor':'middle'});
+    t.textContent=label; svg.appendChild(t);
+  }
+
+  function drawLabel(x,y,text,col){
+    var t=mk('text',{x:x,y:y,'font-size':'12','font-family':'JetBrains Mono,monospace',fill:col,'text-anchor':'middle'});
+    t.textContent=text; svg.appendChild(t);
+  }
+
+  function render(){
+    var s=steps[cur];
+    s.draw();
+    document.getElementById('vz7-label').textContent=s.label;
+    document.getElementById('vz7-text').textContent=s.text;
+    document.getElementById('vz7-inv').textContent=s.inv;
+    document.getElementById('vz7-step').textContent=(cur+1)+'/'+steps.length;
+    document.getElementById('vz7-prev').disabled=(cur<=0);
+    document.getElementById('vz7-next').disabled=(cur>=steps.length-1);
+  }
+
+  window.vz7step=function(d){
+    cur=Math.max(0,Math.min(steps.length-1,cur+d));
+    render();
+  };
+  window.vz7reset=function(){
+    cur=0; render();
+  };
+
+  // init
+  cur=0; render();
+})();
+</script>
+
+    <h3 class="subsec">Merge-and-CountSplitInv Algorithm</h3>
+
+    <div class="algo-header">
+      Algorithm: Merge-and-CountSplitInv(A[i..n1], B[j..n2])
+      <span class="algo-complexity">Time: O(n) per call</span>
+    </div>
+<pre class="code-block has-header">
+function MERGE_AND_COUNT_SPLIT_INV(A[i..n1], B[j..n2]):
+    result = empty array
+    splitInversions = 0
+
+    while i &lt;= n1 OR j &lt;= n2:
+        if j &gt; n2  OR  (i &lt;= n1 AND A[i] &lt;= B[j]):
+            // Left element is smaller (or right exhausted): take from A
+            result.append(A[i])
+            i += 1
+            // No split inversions counted here (A[i] &lt;= all remaining B)
+
+        else:
+            // Right element is smaller: take from B
+            result.append(B[j])
+            j += 1
+            // A[i], A[i+1], ..., A[n1] are ALL &gt; B[j-1]
+            // Each of these forms a split inversion with B[j-1]
+            splitInversions += (n1 - i + 1)
+
+    return (result, splitInversions)
+</pre>
+
+<!-- ── VZ8: Merge-and-CountSplitInv Visual Widget ── -->
+<div id="vz8-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-weight:700;color:#f0883e;font-size:0.88em;">Algorithm 8 &middot; Merge-and-CountSplitInv</span>
+    <span style="font-family:monospace;color:#8b949e;font-size:0.82em;">&#920;(n)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <div style="padding:12px;background:#0d1117;">
+      <svg id="vz8-svg" viewBox="0 0 540 260" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div id="vz8-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#58a6ff;min-height:14px;"></div>
+      <div id="vz8-text" style="font-size:0.88em;line-height:1.55;color:#c9d1d9;min-height:72px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:110px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Split Inversions</span>
+          <span id="vz8-inv" style="font-size:1.3em;font-weight:700;line-height:1;color:#3fb950;">0</span>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Step</span>
+          <span id="vz8-step" style="font-size:1.3em;font-weight:700;line-height:1;color:#58a6ff;">0/6</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button onclick="vz8step(-1)" id="vz8-prev" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;" disabled>&#9664; Prev</button>
+        <button onclick="vz8step(1)" id="vz8-next" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;">Next &#9654;</button>
+        <button onclick="vz8reset()" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;">&#8635; Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('vz8-svg');
+  var cur8=-1;
+
+  var steps=[
+    {
+      label:'SETUP',
+      text:'Merge-and-CountSplitInv: two sorted halves. Count pairs (l,r) where l comes from left, r from right, but l>r.',
+      inv:0,
+      draw:function(){
+        clear();
+        drawRowLabeled([1,4,5],['#58a6ff','#58a6ff','#58a6ff'],60,50,'Left [1,4,5]');
+        drawRowLabeled([2,3],['#f0883e','#f0883e'],320,50,'Right [2,3]');
+        drawRowLabeled([],[''],180,170,'Output [ ]');
+        drawPointerUp(87,50,'i=0','#58a6ff');
+        drawPointerUp(347,50,'j=0','#f0883e');
+        drawLabel(270,240,'i=0, j=0  splitInv=0','#8b949e');
+      }
+    },
+    {
+      label:'COMPARE i=0 j=0',
+      text:'1 < 2: left element wins. No inversions — all remaining right elements are ≥ 2 > 1. Take 1 to output.',
+      inv:0,
+      draw:function(){
+        clear();
+        drawRowLabeled([1,4,5],['#3fb950','#58a6ff','#58a6ff'],60,50,'Left [1,4,5]');
+        drawRowLabeled([2,3],['#f0883e','#f0883e'],320,50,'Right [2,3]');
+        drawRowLabeled([1],['#3fb950'],235,170,'Output');
+        drawPointerUp(87,50,'i=0','#3fb950');
+        drawPointerUp(347,50,'j=0','#f0883e');
+        drawLabel(270,240,'1 ≤ 2: take left. splitInv=0','#3fb950');
+      }
+    },
+    {
+      label:'COMPARE i=1 j=0',
+      text:'4 > 2: right element wins. Remaining left from i=1 onward: [4,5] — both > 2. Add 2 split inversions. Take 2 to output.',
+      inv:2,
+      draw:function(){
+        clear();
+        drawRowLabeled([1,4,5],['#3fb950','#f85149','#f85149'],60,50,'Left [1,4,5]');
+        drawRowLabeled([2,3],['#3fb950','#f0883e'],320,50,'Right [2,3]');
+        drawRowLabeled([1,2],['#3fb950','#3fb950'],205,170,'Output');
+        drawPointerUp(147,50,'i=1','#f85149');
+        drawPointerUp(347,50,'j=0','#3fb950');
+        drawLabel(270,240,'4 > 2: [4,5] both invert with 2  ↑2','#f85149');
+      }
+    },
+    {
+      label:'COMPARE i=1 j=1',
+      text:'4 > 3: right element wins. Remaining left elements [4,5] are both > 3. Add 2 more split inversions. Take 3 to output.',
+      inv:4,
+      draw:function(){
+        clear();
+        drawRowLabeled([1,4,5],['#3fb950','#f85149','#f85149'],60,50,'Left [1,4,5]');
+        drawRowLabeled([2,3],['#3fb950','#3fb950'],320,50,'Right [2,3]');
+        drawRowLabeled([1,2,3],['#3fb950','#3fb950','#3fb950'],175,170,'Output');
+        drawPointerUp(147,50,'i=1','#f85149');
+        drawPointerUp(407,50,'j=1','#3fb950');
+        drawLabel(270,240,'4 > 3: [4,5] both invert with 3  ↑2 more','#f85149');
+      }
+    },
+    {
+      label:'DRAIN LEFT',
+      text:'Right half exhausted. Remaining left [4,5] have no more right partners — take them to output.',
+      inv:4,
+      draw:function(){
+        clear();
+        drawRowLabeled([1,4,5],['#3fb950','#58a6ff','#58a6ff'],60,50,'Left [1,4,5]');
+        drawRowLabeled([2,3],['#3fb950','#3fb950'],320,50,'Right (done)');
+        drawRowLabeled([1,2,3,4,5],['#3fb950','#3fb950','#3fb950','#58a6ff','#58a6ff'],115,170,'Output');
+        drawLabel(270,240,'Right exhausted: drain left. splitInv=4','#58a6ff');
+      }
+    },
+    {
+      label:'DONE',
+      text:'Merge-and-CountSplitInv found 4 split inversions. Combined: total = left(3) + right(1) + split(4) = 8 inversions.',
+      inv:4,
+      draw:function(){
+        clear();
+        drawRowLabeled([1,2,3,4,5],['#3fb950','#3fb950','#3fb950','#3fb950','#3fb950'],115,80,'Merged output [1,2,3,4,5]');
+        drawLabel(270,155,'Split inversions found = 4','#3fb950');
+        drawLabel(270,185,'Total = 3 (left) + 1 (right) + 4 (split) = 8','#f0883e');
+      }
+    }
+  ];
+
+  function mk(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var k in attrs) el.setAttribute(k,attrs[k]);
+    return el;
+  }
+  function clear(){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+
+  function colFill(c){
+    if(c==='#58a6ff') return '#1a3a5c';
+    if(c==='#f0883e') return '#3a2010';
+    if(c==='#3fb950') return '#0e2e18';
+    if(c==='#f85149') return '#3a1010';
+    if(c==='#bc8cff') return '#2e1f4a';
+    return '#21262d';
+  }
+
+  function drawRowLabeled(arr,cols,x,y,title){
+    var bw=52,gap=7;
+    if(title){
+      var t=mk('text',{x:x,y:y-8,'font-size':'11','font-family':'JetBrains Mono,monospace',fill:'#8b949e','text-anchor':'start'});
+      t.textContent=title; svg.appendChild(t);
+    }
+    for(var i=0;i<arr.length;i++){
+      var cx=x+i*(bw+gap);
+      var r=mk('rect',{x:cx,y:y,width:bw,height:34,rx:'5',fill:colFill(cols[i]),stroke:cols[i],'stroke-width':'1.5'});
+      svg.appendChild(r);
+      var tv=mk('text',{x:cx+bw/2,y:y+22,'font-size':'15','font-weight':'700','font-family':'JetBrains Mono,monospace',fill:'#c9d1d9','text-anchor':'middle'});
+      tv.textContent=arr[i]; svg.appendChild(tv);
+    }
+  }
+
+  function drawPointerUp(x,y,label,col){
+    var ax=x+26;
+    var tri=mk('polygon',{points:ax+','+(y-8)+' '+(ax-5)+','+(y-20)+' '+(ax+5)+','+(y-20),fill:col});
+    svg.appendChild(tri);
+    var t=mk('text',{x:ax,y:y-24,'font-size':'10','font-family':'JetBrains Mono,monospace',fill:col,'text-anchor':'middle'});
+    t.textContent=label; svg.appendChild(t);
+  }
+
+  function drawLabel(x,y,text,col){
+    var t=mk('text',{x:x,y:y,'font-size':'11.5','font-family':'JetBrains Mono,monospace',fill:col,'text-anchor':'middle'});
+    t.textContent=text; svg.appendChild(t);
+  }
+
+  function render8(){
+    var s=steps[cur8];
+    s.draw();
+    document.getElementById('vz8-label').textContent=s.label;
+    document.getElementById('vz8-text').textContent=s.text;
+    document.getElementById('vz8-inv').textContent=s.inv;
+    document.getElementById('vz8-step').textContent=(cur8+1)+'/'+steps.length;
+    document.getElementById('vz8-prev').disabled=(cur8<=0);
+    document.getElementById('vz8-next').disabled=(cur8>=steps.length-1);
+  }
+
+  window.vz8step=function(d){
+    cur8=Math.max(0,Math.min(steps.length-1,cur8+d));
+    render8();
+  };
+  window.vz8reset=function(){
+    cur8=0; render8();
+  };
+
+  cur8=0; render8();
+})();
+</script>
+
+    <h3 class="subsec">Worked Example</h3>
+
+    <p>Consider A = [6, 5, 4, 3, 2, 1] (maximum inversions — 15 pairs):</p>
+    <ul>
+      <li>Split at mid: left = [6, 5, 4], right = [3, 2, 1]</li>
+      <li>Recursively sort left → [4, 5, 6] with InvL = 3 (pairs: (6,5), (6,4), (5,4))</li>
+      <li>Recursively sort right → [1, 2, 3] with InvR = 3 (pairs: (3,2), (3,1), (2,1))</li>
+      <li>Merge [4,5,6] and [1,2,3]:
+        <ul>
+          <li>Pick 1 from right: 3 left elements remain → InvS += 3</li>
+          <li>Pick 2 from right: 3 left elements remain → InvS += 3</li>
+          <li>Pick 3 from right: 3 left elements remain → InvS += 3</li>
+          <li>Pick 4,5,6 from left: no inversions counted</li>
+          <li>InvS = 9</li>
+        </ul>
+      </li>
+      <li>Total = 3 + 3 + 9 = <strong>15</strong> ✓ (= n(n-1)/2 = 6×5/2 = 15)</li>
+    </ul>
+
+    <h3 class="subsec">Complexity Analysis</h3>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity — Counting Inversions</div>
+      <strong>Recurrence:</strong> Same as merge sort: <code>T(n) = 2T(n/2) + O(n)</code>
+      <br><br>
+      <em>The O(n) combining step counts split inversions in linear time during the merge.</em>
+      <br><br>
+      <strong>Solution:</strong> <code>T(n) = <strong>O(n log n)</strong></code>
+      <br><br>
+      <strong>Space:</strong> O(n) auxiliary space for the merge step.
+      <br><br>
+      This is essentially merge sort with a running counter — the asymptotic complexity is
+      identical to merge sort.
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Why O(n log n) Is Remarkable</div>
+      There are potentially Θ(n²) inversions in the input — a fully reversed array has
+      n(n−1)/2 inversions. Yet we count all of them in O(n log n) time. The key is that
+      during the merge step, we count many inversions at once: when a single right element
+      B[j] is smaller than all k remaining left elements, we add k to the count in O(1) time.
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       SECTION 9: SUMMARY AND QUICK REFERENCE
+       =================================================== -->
+  <section class="content-section" id="summary">
+    <h2 class="sec-title"><span class="sec-num">Summary</span> Week 1 Quick Reference</h2>
+  <button class="review-btn" data-week="1" data-sec="summary"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">Asymptotic Notation Cheat Sheet</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Notation</th>
+          <th>Meaning</th>
+          <th>Type of Bound</th>
+          <th>Formal Condition</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>f = O(g)</code></td>
+          <td>f grows no faster than g</td>
+          <td>Upper bound (can overestimate)</td>
+          <td>∃c, n₀: f(n) ≤ c·g(n) ∀n ≥ n₀</td>
+        </tr>
+        <tr>
+          <td><code>f = Ω(g)</code></td>
+          <td>f grows at least as fast as g</td>
+          <td>Lower bound (can underestimate)</td>
+          <td>∃c, n₀: f(n) ≥ c·g(n) ∀n ≥ n₀</td>
+        </tr>
+        <tr>
+          <td><code>f = Θ(g)</code></td>
+          <td>f and g grow at the same rate</td>
+          <td>Tight bound (exact order)</td>
+          <td>f = O(g) AND f = Ω(g)</td>
+        </tr>
+        <tr>
+          <td><code>f = o(g)</code></td>
+          <td>f grows strictly slower than g</td>
+          <td>Strict upper bound</td>
+          <td>lim f(n)/g(n) = 0</td>
+        </tr>
+        <tr>
+          <td><code>f = ω(g)</code></td>
+          <td>f grows strictly faster than g</td>
+          <td>Strict lower bound</td>
+          <td>lim f(n)/g(n) = ∞</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Key Recurrences Quick Reference</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Recurrence</th>
+          <th>Result</th>
+          <th>Algorithm</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>T(n) = T(n/2) + O(1)</code></td><td><span class="complexity-tag">O(log n)</span></td><td>Binary Search</td></tr>
+        <tr><td><code>T(n) = T(n−1) + O(1)</code></td><td><span class="complexity-tag">O(n)</span></td><td>Linear Search</td></tr>
+        <tr><td><code>T(n) = 2T(n/2) + O(n)</code></td><td><span class="complexity-tag">O(n log n)</span></td><td>Merge Sort, Counting Inversions</td></tr>
+        <tr><td><code>T(n) = 3T(n/2) + O(n)</code></td><td><span class="complexity-tag">O(n^1.585)</span></td><td>Karatsuba's Multiplication</td></tr>
+        <tr><td><code>T(n) = 4T(n/2) + O(n)</code></td><td><span class="complexity-tag">O(n²)</span></td><td>Naive split multiplication</td></tr>
+        <tr><td><code>T(n) = T(n−1) + O(n)</code></td><td><span class="complexity-tag">O(n²)</span></td><td>Selection Sort</td></tr>
+        <tr><td><code>T(n) = 2T(n−1) + O(1)</code></td><td><span class="complexity-tag">O(2ⁿ)</span></td><td>Naive Fibonacci</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Divide and Conquer Algorithms Summary</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Problem</th>
+          <th>Time</th>
+          <th>Key Idea</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Karatsuba</td>
+          <td>n-digit multiplication</td>
+          <td><span class="complexity-tag">O(n^1.585)</span></td>
+          <td>3 recursive calls instead of 4 using Gauss trick: z = c − a − b</td>
+        </tr>
+        <tr>
+          <td>Merge Sort</td>
+          <td>Sorting n elements</td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td>Split in half; merge sorted halves in O(n)</td>
+        </tr>
+        <tr>
+          <td>Counting Inversions</td>
+          <td>Count pairs (i,j) with i&lt;j and A[i]&gt;A[j]</td>
+          <td><span class="complexity-tag">O(n log n)</span></td>
+          <td>Augmented merge sort: count split inversions during merge in O(n)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Algorithm Properties Summary</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Stable?</th>
+          <th>In-Place?</th>
+          <th>Best</th>
+          <th>Worst</th>
+          <th>Aux Space</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Selection Sort</td><td>No</td><td>Yes</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+        <tr><td>Insertion Sort</td><td>Yes</td><td>Yes</td><td>O(n)</td><td>O(n²)</td><td>O(1)</td></tr>
+        <tr><td>Merge Sort</td><td>Yes</td><td>No</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td></tr>
+        <tr><td>Heap Sort</td><td>No</td><td>Yes</td><td>O(n)</td><td>O(n log n)</td><td>O(1)</td></tr>
+        <tr><td>Binary Search</td><td>—</td><td>Yes</td><td>O(1)</td><td>O(log n)</td><td>O(1)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== INTERACTIVE DEMO: MERGE SORT ===== -->
+  <section class="content-section" id="w1-demo">
+    <h2 class="sec-title"><span class="sec-num">Interactive</span> Merge Sort — Divide and Conquer Visualized</h2>
+    <button class="review-btn" data-week="1" data-sec="w1-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+    <div class="algo-demo">
+      <p class="demo-eyebrow">Algorithm Demo</p>
+      <p class="demo-lede">Watch the array split recursively into halves, then merge back in sorted order. <b>Click Step</b> to advance one operation at a time.</p>
+      <div class="demo-board" id="d1-board">
+        <div class="demo-stage">
+          <svg id="d1-svg" viewBox="0 0 800 290" style="display:block;width:100%;height:auto;background:#0d1117"></svg>
+        </div>
+        <div class="demo-panel">
+          <div class="demo-narrate">
+            <div class="demo-step-label" id="d1-label">READY</div>
+            <div class="demo-step-text" id="d1-text">Initial array — unsorted. Click Step to begin.</div>
+            <div class="demo-stats">
+              <div class="demo-chip" id="d1-chip-cmp"><span class="k">Comparisons</span><span class="v" id="d1-cmp">0</span></div>
+              <div class="demo-chip" id="d1-chip-depth"><span class="k">Depth</span><span class="v" id="d1-depth">0</span></div>
+              <div class="demo-chip" id="d1-chip-step"><span class="k">Step</span><span class="v" id="d1-step">0</span></div>
+            </div>
+          </div>
+          <div class="demo-side">
+            <h4>Current Merge</h4>
+            <div id="d1-side" style="font-family:'JetBrains Mono',monospace;font-size:0.78em;color:var(--text-muted);line-height:1.8">
+              <div>Range: <span id="d1-range" style="color:var(--cyan)">—</span></div>
+              <div>Subarray:</div>
+              <div id="d1-subarray" style="color:var(--text);margin-top:4px;word-break:break-all">[ 6, 3, 8, 1, 5, 7, 2, 4 ]</div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-controls">
+          <button class="demo-btn primary" id="d1-step-btn">Step →</button>
+          <button class="demo-btn" id="d1-run-btn">Run ▶</button>
+          <button class="demo-btn" id="d1-reset-btn">Reset</button>
+          <div class="demo-spd"><span>Speed</span><input type="range" id="d1-spd" min="1" max="5" value="3"><span id="d1-spd-lbl">3×</span></div>
+        </div>
+        <div class="demo-hint">Merge Sort: T(n) = 2T(n/2) + O(n) → O(n log n) time</div>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+<script id="d1-script">
+(function(){
+  // ── Merge Sort Demo ──
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.getElementById('d1-svg');
+  const ORIG = [6,3,8,1,5,7,2,4];
+  const N = ORIG.length;
+  const BAR_W = 78, BAR_GAP = 8, BASE_Y = 260, BASE_X = 32;
+  let arr, barEls, labelEls, stepIndex, comparisons, steps, busy, spd;
+
+  function mkEl(tag,attrs){
+    const el = document.createElementNS(NS,tag);
+    for(const [k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+    return el;
+  }
+
+  function buildSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    barEls = []; labelEls = [];
+    for(let i=0;i<N;i++){
+      const x = BASE_X + i*(BAR_W+BAR_GAP);
+      const h = arr[i]*28;
+      const y = BASE_Y - h;
+      const g = mkEl('g',{'transform':`translate(0,0)`});
+      const rect = mkEl('rect',{x,y,width:BAR_W,height:h,fill:'#21262d',stroke:'#30363d','stroke-width':'1.5',rx:'3'});
+      const txt = mkEl('text',{x:x+BAR_W/2,y:BASE_Y+18,'text-anchor':'middle',fill:'#8b949e','font-size':'13','font-family':'JetBrains Mono,monospace'});
+      txt.textContent = arr[i];
+      svg.appendChild(rect);
+      svg.appendChild(txt);
+      barEls.push(rect);
+      labelEls.push(txt);
+    }
+  }
+
+  function setBarStyle(i,style){
+    const fills = {default:['#21262d','#30363d'],orange:['#f0883e22','#f0883e'],blue:['#58a6ff22','#58a6ff'],purple:['#bc8cff22','#bc8cff'],green:['#3fb95022','#3fb950']};
+    const [f,s] = fills[style]||fills.default;
+    barEls[i].setAttribute('fill',f);
+    barEls[i].setAttribute('stroke',s);
+  }
+
+  function updateBarHeight(i){
+    const h = arr[i]*28;
+    const y = BASE_Y - h;
+    barEls[i].setAttribute('y',y);
+    barEls[i].setAttribute('height',h);
+    labelEls[i].textContent = arr[i];
+  }
+
+  // Pre-compute all animation steps
+  function computeSteps(){
+    const a = ORIG.slice();
+    const events = [];
+    let cmps = 0;
+
+    function mergeSort(arr2,lo,hi,depth){
+      if(lo>=hi){
+        events.push({type:'single',lo,hi,depth,arr:arr2.slice()});
+        return;
+      }
+      const mid = Math.floor((lo+hi)/2);
+      events.push({type:'split',lo,hi,mid,depth,arr:arr2.slice()});
+      mergeSort(arr2,lo,mid,depth+1);
+      mergeSort(arr2,mid+1,hi,depth+1);
+      // merge
+      const left=arr2.slice(lo,mid+1), right=arr2.slice(mid+1,hi+1);
+      let i2=0,j=0,k=lo;
+      events.push({type:'merge_start',lo,hi,mid,depth,arr:arr2.slice(),left:left.slice(),right:right.slice()});
+      while(i2<left.length && j<right.length){
+        cmps++;
+        const cmpNow=cmps;
+        if(left[i2]<=right[j]){
+          events.push({type:'place',idx:k,val:left[i2],lo,hi,depth,comparisons:cmpNow,arr:arr2.slice()});
+          arr2[k++]=left[i2++];
+        } else {
+          events.push({type:'place',idx:k,val:right[j],lo,hi,depth,comparisons:cmpNow,arr:arr2.slice()});
+          arr2[k++]=right[j++];
+        }
+      }
+      while(i2<left.length){ arr2[k++]=left[i2++]; }
+      while(j<right.length){ arr2[k++]=right[j++]; }
+      events.push({type:'merge_done',lo,hi,depth,arr:arr2.slice()});
+    }
+    events.push({type:'init',arr:a.slice()});
+    mergeSort(a,0,N-1,0);
+    events.push({type:'done',arr:a.slice()});
+    return events;
+  }
+
+  function setStep(label,text){ document.getElementById('d1-label').textContent=label; document.getElementById('d1-text').textContent=text; }
+  function setStats(cmp,dep,st){ document.getElementById('d1-cmp').textContent=cmp; document.getElementById('d1-depth').textContent=dep; document.getElementById('d1-step').textContent=st; }
+
+  function applyEvent(ev){
+    arr = ev.arr.slice();
+    for(let i=0;i<N;i++) updateBarHeight(i);
+    // reset all to default
+    for(let i=0;i<N;i++) setBarStyle(i,'default');
+    document.getElementById('d1-chip-cmp').classList.remove('good');
+
+    if(ev.type==='init'){
+      setStep('INITIAL','Initial array — unsorted. Click Step to begin divide phase.');
+      document.getElementById('d1-range').textContent='[0..7]';
+      document.getElementById('d1-subarray').textContent='[ '+ORIG.join(', ')+' ]';
+      for(let i=0;i<N;i++) setBarStyle(i,'default');
+      setStats(0,0,0);
+    } else if(ev.type==='split'){
+      for(let i=ev.lo;i<=ev.hi;i++) setBarStyle(i,'orange');
+      setStep('DIVIDE',`Split [${ev.lo}..${ev.hi}] → [${ev.lo}..${ev.mid}] and [${ev.mid+1}..${ev.hi}]`);
+      document.getElementById('d1-range').textContent=`[${ev.lo}..${ev.hi}]`;
+      document.getElementById('d1-subarray').textContent='[ '+ev.arr.slice(ev.lo,ev.hi+1).join(', ')+' ]';
+      setStats(ev.comparisons||0,ev.depth,stepIndex);
+    } else if(ev.type==='single'){
+      setBarStyle(ev.lo,'green');
+      setStep('BASE CASE',`Single element [${ev.lo}]: value ${ev.arr[ev.lo]} — already sorted`);
+      document.getElementById('d1-range').textContent=`[${ev.lo}]`;
+      document.getElementById('d1-subarray').textContent='[ '+ev.arr[ev.lo]+' ]';
+      setStats(ev.comparisons||0,ev.depth,stepIndex);
+    } else if(ev.type==='merge_start'){
+      for(let i=ev.lo;i<=ev.mid;i++) setBarStyle(i,'blue');
+      for(let i=ev.mid+1;i<=ev.hi;i++) setBarStyle(i,'purple');
+      setStep('MERGE',`Merging [${ev.lo}..${ev.mid}] (blue) with [${ev.mid+1}..${ev.hi}] (purple)`);
+      document.getElementById('d1-range').textContent=`[${ev.lo}..${ev.hi}]`;
+      document.getElementById('d1-subarray').textContent='L:[ '+ev.left.join(', ')+' ] R:[ '+ev.right.join(', ')+' ]';
+      setStats(ev.comparisons||0,ev.depth,stepIndex);
+    } else if(ev.type==='place'){
+      for(let i=ev.lo;i<ev.idx;i++) setBarStyle(i,'green');
+      setBarStyle(ev.idx,'orange');
+      for(let i=ev.idx+1;i<=ev.hi;i++) setBarStyle(i,'blue');
+      setStep('COMPARE',`Place ${ev.val} at index ${ev.idx} (comparison #${ev.comparisons})`);
+      document.getElementById('d1-range').textContent=`[${ev.lo}..${ev.hi}]`;
+      document.getElementById('d1-subarray').textContent='[ '+ev.arr.slice(ev.lo,ev.hi+1).join(', ')+' ]';
+      setStats(ev.comparisons,ev.depth,stepIndex);
+    } else if(ev.type==='merge_done'){
+      for(let i=ev.lo;i<=ev.hi;i++) setBarStyle(i,'green');
+      setStep('MERGED',`Subarray [${ev.lo}..${ev.hi}] is now sorted: [ ${ev.arr.slice(ev.lo,ev.hi+1).join(', ')} ]`);
+      document.getElementById('d1-range').textContent=`[${ev.lo}..${ev.hi}]`;
+      document.getElementById('d1-subarray').textContent='[ '+ev.arr.slice(ev.lo,ev.hi+1).join(', ')+' ]';
+      setStats(ev.comparisons||0,ev.depth,stepIndex);
+    } else if(ev.type==='done'){
+      for(let i=0;i<N;i++) setBarStyle(i,'green');
+      setStep('SORTED!',`Array fully sorted! O(n log n) — ~24 comparisons for n=8`);
+      document.getElementById('d1-range').textContent='[0..7]';
+      document.getElementById('d1-subarray').textContent='[ '+ev.arr.join(', ')+' ]';
+      document.getElementById('d1-chip-cmp').classList.add('good');
+      setStats(document.getElementById('d1-cmp').textContent,0,stepIndex);
+    }
+  }
+
+  function init(){
+    arr = ORIG.slice();
+    steps = computeSteps();
+    stepIndex = 0;
+    comparisons = 0;
+    busy = false;
+    buildSVG();
+    applyEvent(steps[0]);
+    document.getElementById('d1-step-btn').disabled = false;
+    document.getElementById('d1-run-btn').disabled = false;
+  }
+
+  const spdEl = document.getElementById('d1-spd');
+  const spdLbl = document.getElementById('d1-spd-lbl');
+  spdEl.addEventListener('input',()=>{ spd=+spdEl.value; spdLbl.textContent=spd+'×'; });
+  spd = +spdEl.value;
+
+  const sleep = ms => new Promise(r=>setTimeout(r, ms/spd));
+
+  document.getElementById('d1-step-btn').addEventListener('click',async()=>{
+    if(busy) return;
+    stepIndex++;
+    if(stepIndex >= steps.length){ stepIndex=steps.length-1; return; }
+    busy=true;
+    applyEvent(steps[stepIndex]);
+    await sleep(80);
+    busy=false;
+  });
+
+  document.getElementById('d1-run-btn').addEventListener('click',async()=>{
+    if(busy) return;
+    busy=true;
+    document.getElementById('d1-step-btn').disabled=true;
+    document.getElementById('d1-run-btn').disabled=true;
+    while(stepIndex < steps.length-1){
+      stepIndex++;
+      applyEvent(steps[stepIndex]);
+      await sleep(600);
+    }
+    document.getElementById('d1-step-btn').disabled=false;
+    document.getElementById('d1-run-btn').disabled=false;
+    busy=false;
+  });
+
+  document.getElementById('d1-reset-btn').addEventListener('click',()=>{ if(busy) return; init(); });
+
+  init();
+})();
+</script>
+
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+</html>

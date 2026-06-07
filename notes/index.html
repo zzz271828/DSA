@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIT2004 — Algorithms & Data Structures</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+      --text: #c9d1d9; --text-muted: #8b949e;
+      --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+      --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+      --yellow: #e3b341;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 60px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, #1f6feb18 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header-inner { max-width: 1100px; margin: 0 auto; }
+    .course-tag {
+      display: inline-block;
+      background: #1f6feb1a;
+      color: var(--blue);
+      border: 1px solid #1f6feb40;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+    header h1 {
+      font-size: 2.8em;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.15;
+    }
+    header h1 span { color: var(--blue); }
+    header .tagline {
+      color: var(--text-muted);
+      font-size: 1.05em;
+      margin-bottom: 28px;
+    }
+    .stats {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .stat-num {
+      font-size: 1.4em;
+      font-weight: 800;
+      color: var(--blue);
+    }
+    .stat-label {
+      font-size: 0.78em;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* ── Main layout ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 60px;
+    }
+
+    /* ── Section heading ── */
+    .section-heading {
+      font-size: 0.72em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Week grid ── */
+    .weeks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+
+    .week-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px 24px;
+      text-decoration: none;
+      color: var(--text);
+      display: block;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      position: relative;
+      overflow: hidden;
+    }
+    .week-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--card-accent, var(--blue));
+      border-radius: 3px 0 0 3px;
+    }
+    .week-card:hover {
+      border-color: var(--card-accent, var(--blue));
+      background: var(--bg3);
+      transform: translateY(-1px);
+    }
+    .week-num {
+      font-size: 0.68em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--card-accent, var(--blue));
+      margin-bottom: 6px;
+    }
+    .week-title {
+      font-size: 1.05em;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .week-desc {
+      font-size: 0.82em;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .week-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .topic-chip {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.72em;
+      color: var(--text-muted);
+    }
+    .week-card:hover .topic-chip {
+      border-color: var(--card-accent, var(--blue))30;
+    }
+
+    /* ── Quick Reference ── */
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 56px;
+    }
+    .ref-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+    }
+    .ref-card h3 {
+      font-size: 0.82em;
+      font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+    .ref-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    .ref-card li {
+      font-size: 0.82em;
+      color: var(--text-muted);
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .ref-card li:last-child { border-bottom: none; }
+    .ref-card li span {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      color: var(--green);
+      font-size: 0.9em;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 60px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8em;
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    @media (max-width: 768px) {
+      header { padding: 32px 20px 28px; }
+      .container { padding: 32px 20px; }
+      header h1 { font-size: 2em; }
+      footer { padding: 20px; }
+    }
+  
+    /* ── Week card progress ring ── */
+    .week-card { position: relative; }
+    .card-ring { position: absolute; top: 14px; right: 14px; }
+    .card-ring-arc { transition: stroke-dashoffset 0.5s ease; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="course-tag">FIT2004 · Monash University</div>
+    <h1>Algorithms &amp; <span>Data Structures</span></h1>
+    <p class="tagline">Comprehensive study notes — 11 weeks of lectures and course material</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">11</div>
+        <div class="stat-label">Weeks<br>Covered</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Algorithm<br>Paradigms</div>
+      </div>
+      <div class="stat">
+        <a href="algorithms.html" style="text-decoration:none;color:inherit;display:block;">
+          <div class="stat-num" style="color:var(--blue);">60+</div>
+          <div class="stat-label">Algorithms<br><span style="color:var(--blue);font-size:0.85em;">↗ Reference Table</span></div>
+        </a>
+      </div>
+      <div class="stat">
+        <div class="stat-num">12</div>
+        <div class="stat-label">Lecture<br>Slides</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ── Algorithm Reference ── -->
+  <a href="algorithms.html" style="display:flex;align-items:center;gap:16px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:10px;padding:18px 24px;text-decoration:none;margin-bottom:32px;transition:background .15s;">
+    <div style="font-size:28px;">📋</div>
+    <div>
+      <div style="font-size:15px;font-weight:600;color:var(--blue);">Algorithm Reference Table</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">All 60+ algorithms in one place — time/space complexities, paradigms, stability, and links to week notes. With live search.</div>
+    </div>
+    <div style="margin-left:auto;color:var(--text-muted);font-size:20px;">→</div>
+  </a>
+
+  <!-- ── All Weeks ── -->
+  <div class="section-heading">All Weeks</div>
+  <div class="weeks-grid">
+
+    <a href="week1.html" class="week-card" style="--card-accent: #58a6ff;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca1"/></svg>
+      
+      <div class="week-num">Week 1 · Sections 1.2–1.4, Ch.2</div>
+      <div class="week-title">Introduction, Divide and Conquer, Complexity Analysis</div>
+      <div class="week-desc">Foundations of algorithm analysis, asymptotic notation, and the divide-and-conquer design paradigm.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Big-O / Θ / Ω</span>
+        <span class="topic-chip">Recurrences</span>
+        <span class="topic-chip">Karatsuba</span>
+        <span class="topic-chip">Merge Sort</span>
+        <span class="topic-chip">Count Inversions</span>
+      </div>
+    </a>
+
+    <a href="week2.html" class="week-card" style="--card-accent: #79c0ff;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca2"/></svg>
+      
+      <div class="week-num">Week 2 · Sections 1.1, 1.5, 3.1, 3.3–3.4</div>
+      <div class="week-title">Proofs of Correctness, Sorting Algorithms</div>
+      <div class="week-desc">Loop invariants for correctness, comparison-based sorting, and integer sorting algorithms.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Loop Invariants</span>
+        <span class="topic-chip">Heapsort</span>
+        <span class="topic-chip">Ω(n log n) bound</span>
+        <span class="topic-chip">Counting Sort</span>
+        <span class="topic-chip">Radix Sort</span>
+      </div>
+    </a>
+
+    <a href="week3.html" class="week-card" style="--card-accent: #bc8cff;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca3"/></svg>
+      
+      <div class="week-num">Week 3 · Section 3.2, Ch.4</div>
+      <div class="week-title">Quicksort, Quickselect, Median of Medians</div>
+      <div class="week-desc">In-place partitioning strategies, randomised quicksort, and deterministic linear-time selection.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Quicksort</span>
+        <span class="topic-chip">Dutch National Flag</span>
+        <span class="topic-chip">Quickselect</span>
+        <span class="topic-chip">Median of Medians</span>
+      </div>
+    </a>
+
+    <a href="week4.html" class="week-card" style="--card-accent: #3fb950;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca4"/></svg>
+      
+      <div class="week-num">Week 4 · Ch.5</div>
+      <div class="week-title">Introduction to Graphs</div>
+      <div class="week-desc">Graph representations, traversal algorithms, shortest paths in unweighted graphs, topological sort, and Union-Find.</div>
+      <div class="week-topics">
+        <span class="topic-chip">DFS / BFS</span>
+        <span class="topic-chip">Adj. Matrix / List</span>
+        <span class="topic-chip">Topological Sort</span>
+        <span class="topic-chip">Union-Find</span>
+      </div>
+    </a>
+
+    <a href="week5.html" class="week-card" style="--card-accent: #f0883e;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca5"/></svg>
+      
+      <div class="week-num">Week 5 · Ch.6</div>
+      <div class="week-title">Greedy Algorithms</div>
+      <div class="week-desc">Greedy design paradigm applied to weighted shortest paths and minimum spanning trees.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Dijkstra's</span>
+        <span class="topic-chip">Prim's MST</span>
+        <span class="topic-chip">Kruskal's MST</span>
+        <span class="topic-chip">Cut Property</span>
+      </div>
+    </a>
+
+    <a href="week6.html" class="week-card" style="--card-accent: #e3b341;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca6"/></svg>
+      
+      <div class="week-num">Week 6 · Ch.7</div>
+      <div class="week-title">Dynamic Programming</div>
+      <div class="week-desc">Memoisation and tabulation for classical optimisation problems with overlapping subproblems.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Knapsack</span>
+        <span class="topic-chip">Edit Distance</span>
+        <span class="topic-chip">Matrix Chain</span>
+        <span class="topic-chip">Coin Change</span>
+        <span class="topic-chip">Space-saving</span>
+      </div>
+    </a>
+
+    <a href="week7.html" class="week-card" style="--card-accent: #f85149;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca7"/></svg>
+      
+      <div class="week-num">Week 7 · Ch.8</div>
+      <div class="week-title">Dynamic Programming Graph Algorithms</div>
+      <div class="week-desc">Dynamic programming applied to graph problems: shortest paths with negative weights and all-pairs problems.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Bellman-Ford</span>
+        <span class="topic-chip">Floyd-Warshall</span>
+        <span class="topic-chip">Transitive Closure</span>
+        <span class="topic-chip">Critical Path</span>
+      </div>
+    </a>
+
+    <a href="week8.html" class="week-card" style="--card-accent: #39d353;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca8"/></svg>
+      
+      <div class="week-num">Week 8 · Ch.11</div>
+      <div class="week-title">Retrieval Data Structures for Strings</div>
+      <div class="week-desc">Retrieval data structures for efficient string storage, lookup, and advanced substring queries.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Prefix Trie</span>
+        <span class="topic-chip">Patricia Trie</span>
+        <span class="topic-chip">Suffix Tree</span>
+        <span class="topic-chip">Pattern Matching</span>
+        <span class="topic-chip">LCS</span>
+      </div>
+    </a>
+
+    <a href="week9.html" class="week-card" style="--card-accent: #58a6ff;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca9"/></svg>
+      
+      <div class="week-num">Week 9 · Ch.10</div>
+      <div class="week-title">Search Trees</div>
+      <div class="week-desc">Balanced BST variants that guarantee O(log n) operations through structural invariants and rotations.</div>
+      <div class="week-topics">
+        <span class="topic-chip">BST</span>
+        <span class="topic-chip">AVL Trees</span>
+        <span class="topic-chip">2-3 Trees</span>
+        <span class="topic-chip">Red-Black Trees</span>
+      </div>
+    </a>
+
+    <a href="week10.html" class="week-card" style="--card-accent: #79c0ff;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca10"/></svg>
+      
+      <div class="week-num">Week 10 · Ch.9 (up to 9.3)</div>
+      <div class="week-title">Network Flow</div>
+      <div class="week-desc">Maximum flow algorithms, the min-cut max-flow theorem, and bipartite matching via flow reduction.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Ford-Fulkerson</span>
+        <span class="topic-chip">Residual Graph</span>
+        <span class="topic-chip">Min-Cut Max-Flow</span>
+        <span class="topic-chip">Bipartite Matching</span>
+      </div>
+    </a>
+
+    <a href="week11.html" class="week-card" style="--card-accent: #bc8cff;">
+      <svg class="card-ring" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/><circle cx="16" cy="16" r="14" fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" transform="rotate(-90 16 16)" class="card-ring-arc" id="ca11"/></svg>
+      
+      <div class="week-num">Week 11 · Ch.9 (9.3 onwards)</div>
+      <div class="week-title">Circulation with Demands, Applications of Network Flow</div>
+      <div class="week-desc">Circulations with demands and lower bounds, and modelling real-world problems as flow networks.</div>
+      <div class="week-topics">
+        <span class="topic-chip">Circulations</span>
+        <span class="topic-chip">Demands &amp; Bounds</span>
+        <span class="topic-chip">Survey Design</span>
+        <span class="topic-chip">Airline Scheduling</span>
+        <span class="topic-chip">Image Segmentation</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ── Quick Complexity Reference ── -->
+  <div class="section-heading">Quick Complexity Reference</div>
+  <div class="ref-grid">
+
+    <div class="ref-card">
+      <h3>Sorting</h3>
+      <ul>
+        <li>Selection Sort <span>O(n²)</span></li>
+        <li>Insertion Sort <span>O(n²) / O(n)*</span></li>
+        <li>Merge Sort <span>O(n log n)</span></li>
+        <li>Heapsort <span>O(n log n)</span></li>
+        <li>Quicksort (avg) <span>O(n log n)</span></li>
+        <li>Counting Sort <span>O(n + k)</span></li>
+        <li>Radix Sort <span>O(d(n + k))</span></li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <h3>Graph Traversal &amp; Paths</h3>
+      <ul>
+        <li>BFS / DFS <span>O(V + E)</span></li>
+        <li>Dijkstra (heap) <span>O((V+E) log V)</span></li>
+        <li>Bellman-Ford <span>O(VE)</span></li>
+        <li>Floyd-Warshall <span>O(V³)</span></li>
+        <li>Topological Sort <span>O(V + E)</span></li>
+        <li>Critical Path <span>O(V + E)</span></li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <h3>Greedy &amp; MST</h3>
+      <ul>
+        <li>Prim's (heap) <span>O((V+E) log V)</span></li>
+        <li>Kruskal's <span>O(E log E)</span></li>
+        <li>Union-Find <span>O(α(n)) ≈ O(1)</span></li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <h3>Selection</h3>
+      <ul>
+        <li>Quickselect (avg) <span>O(n)</span></li>
+        <li>Quickselect (worst) <span>O(n²)</span></li>
+        <li>Median of Medians <span>O(n)</span></li>
+        <li>Find min + max <span>≈1.5n cmps</span></li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <h3>Search Trees</h3>
+      <ul>
+        <li>BST (balanced) <span>O(log n)</span></li>
+        <li>AVL height <span>≤1.44 log n</span></li>
+        <li>RB-Tree height <span>≤2 log n</span></li>
+        <li>2-3 Tree height <span>Θ(log n)</span></li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <h3>String Structures</h3>
+      <ul>
+        <li>Trie insert/lookup <span>O(|s|)</span></li>
+        <li>Suffix tree build <span>O(n)</span></li>
+        <li>Pattern matching <span>O(|P|)</span></li>
+        <li>Longest rep. substr <span>O(n)</span></li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <h3>Dynamic Programming</h3>
+      <ul>
+        <li>Knapsack (0-1) <span>O(nW)</span></li>
+        <li>Edit Distance <span>O(mn)</span></li>
+        <li>Matrix Chain <span>O(n³)</span></li>
+        <li>Coin Change <span>O(n·|coins|)</span></li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <h3>Network Flow</h3>
+      <ul>
+        <li>Ford-Fulkerson <span>O(E·|f*|)</span></li>
+        <li>Edmonds-Karp <span>O(VE²)</span></li>
+        <li>Bipartite Match <span>O(VE)</span></li>
+        <li>Circulation <span>O(VE²)</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- ── Algorithm Paradigms ── -->
+  <div class="section-heading">Algorithm Design Paradigms</div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:14px; margin-bottom:48px;">
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:18px 20px;">
+      <div style="font-size:0.72em;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:8px;">Divide &amp; Conquer</div>
+      <div style="font-size:0.83em;color:var(--text-muted);">Break into subproblems, solve recursively, combine. Key: recurrence relations.</div>
+      <div style="margin-top:10px;font-size:0.78em;color:var(--text-muted);">Karatsuba · Merge Sort · Count Inversions · Quicksort</div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:8px;padding:18px 20px;">
+      <div style="font-size:0.72em;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);margin-bottom:8px;">Greedy</div>
+      <div style="font-size:0.83em;color:var(--text-muted);">Locally optimal choices. Requires: greedy choice property + optimal substructure.</div>
+      <div style="margin-top:10px;font-size:0.78em;color:var(--text-muted);">Dijkstra · Prim's · Kruskal's · Heapsort</div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:8px;padding:18px 20px;">
+      <div style="font-size:0.72em;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--purple);margin-bottom:8px;">Dynamic Programming</div>
+      <div style="font-size:0.83em;color:var(--text-muted);">Cache overlapping subproblem results. Top-down (memo) or bottom-up (table).</div>
+      <div style="margin-top:10px;font-size:0.78em;color:var(--text-muted);">Knapsack · Edit Distance · Floyd-Warshall · Bellman-Ford</div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:8px;padding:18px 20px;">
+      <div style="font-size:0.72em;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);margin-bottom:8px;">Network Flow</div>
+      <div style="font-size:0.83em;color:var(--text-muted);">Model as flow network, reduce to max-flow. Incredibly powerful for combinatorial problems.</div>
+      <div style="margin-top:10px;font-size:0.78em;color:var(--text-muted);">Ford-Fulkerson · Matching · Circulation · Scheduling</div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  FIT2004 — Algorithms &amp; Data Structures · Study notes generated from course notes and lecture slides
+</footer>
+
+<script>
+(function(){
+  var ALL={1:['complexity-analysis','asymptotic','measures','correctness','divide-conquer','karatsuba','mergesort','inversions','summary'],2:['program-verification','basic-sorting','heapsort','lower-bounds','integer-sorting','comparison-table'],3:['quicksort','order-stats'],4:['sec51','sec52','sec53','sec54','sec55','sec56'],5:['greedy-intro','dijkstra','mst','prims','kruskals','comparison','summary'],6:['s71','s72','s73','s74','s75','s76','s77','s78'],7:['sec-8-1','sec-8-2','sec-8-3','sec-8-4','summary'],8:['motivation','trie-definition','trie-ops','trie-impl','compact-trie','trie-complexity','trie-comparison','suffix-tree-intro','suffix-tree-def','suffix-tree-build','suffix-tree-apps','takeaways'],9:['motivation','bst','avl','twothree','rbt','compare','quick-ref'],10:['sec-intro','sec91','sec911','sec912','sec913','sec92','sec921','sec93','sec-summary'],11:['recap','circ-demands','reduction-maxflow','lower-bounds','applications','survey','airline','further','summary']};
+  var C=44;// 2*pi*7
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateCards(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('ca'+w);
+      if(!arc)continue;
+      var p=pct(w),card=arc.closest('.week-card');
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'rgba(255,255,255,0.15)';
+      if(p>0&&card){card.querySelector('.week-pct')&&(card.querySelector('.week-pct').textContent=Math.round(p*100)+'%');}
+    }
+  }
+  updateCards();
+  window.addEventListener('storage',updateCards);
+})();
+</script>
+</body>
+</html>

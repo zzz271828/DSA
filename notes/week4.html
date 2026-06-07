@@ -1,0 +1,2830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 4 – Graphs Basics | FIT2004</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+      --text: #c9d1d9; --text-muted: #8b949e;
+      --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+      --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+    nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+    nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+    nav ul { list-style: none; }
+    nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+    nav ul li a:hover { color: var(--text); background: var(--bg3); }
+    nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+    nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+    main { flex: 1; max-width: 860px; padding: 48px 56px; }
+    .week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+    .week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+    .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+    section.content-section { margin-bottom: 56px; }
+    h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+    h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+    h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+    p { margin-bottom: 14px; }
+    .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+    .callout.def { background: #1f6feb0d; border-color: var(--blue); }
+    .callout.thm { background: #3fb9500d; border-color: var(--green); }
+    .callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+    .callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+    .callout.warn { background: #f851490d; border-color: var(--red); }
+    .callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .callout.def .callout-title { color: var(--blue); }
+    .callout.thm .callout-title { color: var(--green); }
+    .callout.cplx .callout-title { color: var(--orange); }
+    .callout.insight .callout-title { color: var(--purple); }
+    .callout.warn .callout-title { color: var(--red); }
+    pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+    .algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+    .algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+    pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+    th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    td { padding: 10px 16px; border: 1px solid var(--border); }
+    tr:nth-child(even) td { background: var(--bg2); }
+    code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+    ul, ol { padding-left: 24px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+    .complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    @media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+  
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<!-- ========== NAVIGATION ========== -->
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html" class="current"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#sec51" class="sub">5.1 Modelling with Graphs</a></li>
+    <li><a href="#sec52" class="sub">5.2 Representation &amp; Storage</a></li>
+    <li><a href="#sec53" class="sub">5.3 Graph Traversal</a></li>
+    <li><a href="#sec54" class="sub">5.4 Shortest Paths</a></li>
+    <li><a href="#sec55" class="sub">5.5 Topological Sorting</a></li>
+    <li><a href="#sec56" class="sub">5.6 Union-Find</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<!-- ========== MAIN CONTENT ========== -->
+<main>
+
+  <!-- Header -->
+  <div class="week-header">
+    <div class="week-badge">Week 4</div>
+    <h1>Introduction to Graphs</h1>
+    <p class="subtitle">Chapter 5 (Sections 5.1–5.6) &mdash; Lecture 4: Introduction to Graphs</p>
+    <div class="topics">
+      <span>Graph Modelling</span>
+      <span>Adjacency Matrix</span>
+      <span>Adjacency List</span>
+      <span>DFS</span>
+      <span>BFS</span>
+      <span>Shortest Paths</span>
+      <span>Topological Sort</span>
+      <span>Union-Find</span>
+    </div>
+  </div>
+
+  <!-- ============================= SECTION 5.1 ============================= -->
+  <section class="content-section" id="sec51">
+    <h2 class="sec-title"><span class="sec-num">5.1</span> Modelling with Graphs</h2>
+  <button class="review-btn" data-week="4" data-sec="sec51"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      A graph is a way of encoding pairwise relationships among a set of objects. Each object is a
+      <strong>vertex</strong> (or node) and a relationship between two objects is an <strong>edge</strong> (or arc).
+      Graphs appear wherever data can be described as a network of connections.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Formal Definition</div>
+      A graph <strong>G = (V, E)</strong> is defined by a set of vertices <strong>V</strong> and a set of edges <strong>E</strong>,
+      where each edge <em>e = (u, v)</em> connects two vertices u and v.
+      We write |V| (or n) for the number of vertices and |E| (or m) for the number of edges.
+    </div>
+
+    <h3 class="subsec">Graph Varieties</h3>
+
+    <h4 class="subsubsec">Direction</h4>
+    <p>
+      In an <strong>undirected graph</strong>, the edge (u, v) and (v, u) are the same — the relationship is symmetric
+      (e.g. friendship). In a <strong>directed graph</strong> (digraph), the edge (u, v) is different from (v, u) — the
+      relationship has a direction (e.g. a course prerequisite, a one-way street).
+    </p>
+
+    <h4 class="subsubsec">Weights</h4>
+    <p>
+      Edges may be <strong>unweighted</strong> (only presence/absence matters) or <strong>weighted</strong>, carrying a
+      numerical value w(u, v) representing, for example, distance, cost, or bandwidth.
+    </p>
+
+    <h4 class="subsubsec">Simple Graphs vs. Multigraphs</h4>
+    <ul>
+      <li>A <strong>loop</strong> is an edge that connects a vertex to itself.</li>
+      <li>A <strong>multigraph</strong> allows multiple edges between the same pair of vertices.</li>
+      <li>A <strong>simple graph</strong> has no loops and no multiple edges between the same pair. Unless otherwise stated, assume simple graphs in this unit.</li>
+    </ul>
+
+    <h3 class="subsec">Key Terminology</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Term</th>
+          <th>Definition</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Degree</strong></td>
+          <td>Number of edges incident to a vertex. For directed graphs: <em>in-degree</em> (incoming) and <em>out-degree</em> (outgoing).</td>
+        </tr>
+        <tr>
+          <td><strong>Path</strong></td>
+          <td>A sequence of distinct, adjacent vertices. The <em>length</em> of a path is the number of edges (unweighted) or sum of edge weights (weighted).</td>
+        </tr>
+        <tr>
+          <td><strong>Cycle</strong></td>
+          <td>A non-empty path that begins and ends at the same vertex, visiting no edge twice.</td>
+        </tr>
+        <tr>
+          <td><strong>Connected</strong></td>
+          <td>An undirected graph is connected if every pair of vertices has a path between them.</td>
+        </tr>
+        <tr>
+          <td><strong>Reachable</strong></td>
+          <td>Vertex v is reachable from u if there exists a path u &rarr; v.</td>
+        </tr>
+        <tr>
+          <td><strong>Connected component</strong></td>
+          <td>A maximal connected subgraph. Any two vertices are either in the same component or in disjoint components.</td>
+        </tr>
+        <tr>
+          <td><strong>Strongly connected</strong></td>
+          <td>(Directed graphs) Every vertex is mutually reachable from every other. Strongly connected components (SCCs) decompose a digraph.</td>
+        </tr>
+        <tr>
+          <td><strong>Acyclic</strong></td>
+          <td>Contains no cycles.</td>
+        </tr>
+        <tr>
+          <td><strong>Sparse / Dense</strong></td>
+          <td>A graph is sparse if |E| &lt;&lt; |V|<sup>2</sup> and dense if |E| &asymp; |V|<sup>2</sup>.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Special Graph Types</h3>
+
+    <h4 class="subsubsec">Tree</h4>
+    <div class="callout def">
+      <div class="callout-title">Definition — Tree</div>
+      An undirected graph G is a <strong>tree</strong> if it satisfies any (equivalently, all) of:
+      <ul style="margin-top:8px;">
+        <li>G is connected and acyclic.</li>
+        <li>G is connected and has exactly |V| &minus; 1 edges.</li>
+        <li>G is acyclic and has exactly |V| &minus; 1 edges.</li>
+        <li>G is acyclic, but adding any edge creates a cycle.</li>
+        <li>G is connected, but removing any single edge disconnects it.</li>
+      </ul>
+    </div>
+
+    <h4 class="subsubsec">Directed Acyclic Graph (DAG)</h4>
+    <p>
+      A <strong>DAG</strong> is a directed graph with no directed cycles. DAGs naturally model prerequisite or
+      dependency relationships. The two key algorithmic problems on DAGs are
+      <strong>topological sorting</strong> and the <strong>critical path problem</strong>.
+    </p>
+
+    <h4 class="subsubsec">Complete Graph</h4>
+    <p>
+      A complete graph K<sub>n</sub> has an edge between every pair of vertices. It has
+      |V|(|V|&minus;1)/2 edges — the maximum possible for a simple undirected graph.
+    </p>
+
+    <h4 class="subsubsec">Bipartite Graph</h4>
+    <p>
+      A graph is <strong>bipartite</strong> if its vertices can be divided into two disjoint sets U and V such that
+      every edge connects a vertex in U to a vertex in V. A graph is bipartite if and only if it
+      contains no odd-length cycle. Bipartiteness can be tested in O(|V| + |E|) via BFS/DFS
+      (two-colouring).
+    </p>
+
+    <h3 class="subsec">Real-World Modelling Examples</h3>
+    <ul>
+      <li><strong>Road / transport networks:</strong> vertices = locations, edges = roads or routes, weights = distances or travel times. Problem: shortest path.</li>
+      <li><strong>Social networks:</strong> vertices = people, undirected edges = friendship. Problem: connected components (friend groups), diameter (degrees of separation).</li>
+      <li><strong>Course prerequisites:</strong> vertices = courses, directed edges = prerequisite relationships, forming a DAG. Problem: topological ordering (valid study plan), cycle detection (impossible degree).</li>
+      <li><strong>Internet / communication networks:</strong> vertices = routers/ISPs, edges = connections. Problem: minimum spanning tree (cheapest connected infrastructure), shortest path (routing).</li>
+      <li><strong>Information networks:</strong> vertices = webpages, directed edges = hyperlinks. Problem: PageRank, reachability.</li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Edge count bounds</div>
+      <ul style="margin:0;">
+        <li>Minimum edges in a <em>connected</em> undirected graph: <strong>|V| &minus; 1</strong> (a spanning tree)</li>
+        <li>Maximum edges in an undirected simple graph: <strong>|V|(|V|&minus;1)/2 = O(|V|<sup>2</sup>)</strong></li>
+        <li>Maximum edges in a directed simple graph: <strong>|V|(|V|&minus;1) = O(|V|<sup>2</sup>)</strong></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================= SECTION 5.2 ============================= -->
+  <section class="content-section" id="sec52">
+    <h2 class="sec-title"><span class="sec-num">5.2</span> Representation and Storage</h2>
+  <button class="review-btn" data-week="4" data-sec="sec52"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      The choice of graph representation has a direct impact on the time and space complexity of
+      graph algorithms. The primary factor is the <strong>density</strong> of the graph.
+    </p>
+
+    <h3 class="subsec">Adjacency Matrix</h3>
+
+    <p>
+      An adjacency matrix for G = (V, E) is a |V| &times; |V| matrix A where:
+    </p>
+    <ul>
+      <li>For unweighted graphs: A[i][j] = 1 if edge (i, j) exists, else 0.</li>
+      <li>For weighted graphs: A[i][j] = w(i, j) if the edge exists, else 0 or &infin;.</li>
+      <li>For undirected graphs, the matrix is symmetric: A[i][j] = A[j][i].</li>
+    </ul>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity — Adjacency Matrix</div>
+      <ul style="margin:0;">
+        <li><strong>Space:</strong> O(|V|<sup>2</sup>) — fixed regardless of |E|</li>
+        <li><strong>Edge query</strong> (does edge (u,v) exist?): <strong>O(1)</strong></li>
+        <li><strong>Enumerate all neighbours of u:</strong> <strong>O(|V|)</strong> — must scan entire row</li>
+        <li><strong>Best for:</strong> dense graphs (|E| &asymp; |V|<sup>2</sup>), or when O(1) edge lookups are critical</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Adjacency List</h3>
+
+    <p>
+      An adjacency list stores an array of size |V|, where entry i holds a list of all vertices
+      adjacent to vertex i (along with edge weights for weighted graphs). Only existing edges are stored.
+    </p>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity — Adjacency List</div>
+      <ul style="margin:0;">
+        <li><strong>Space:</strong> O(|V| + |E|) — proportional to actual edges</li>
+        <li><strong>Edge query</strong> (does edge (u,v) exist?): <strong>O(deg(u))</strong>, or O(log |V|) with a sorted list / BST</li>
+        <li><strong>Enumerate all neighbours of u:</strong> <strong>O(deg(u))</strong> — output-sensitive</li>
+        <li><strong>Best for:</strong> sparse graphs (|E| &lt;&lt; |V|<sup>2</sup>), most practical graph algorithms</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Edge List</h3>
+    <p>
+      A flat list of all edges (u, v, w). Uses O(|E|) space. Cannot support fast adjacency queries
+      or neighbour enumeration. Used primarily in <strong>Kruskal's MST algorithm</strong>, which needs
+      edges sorted by weight.
+    </p>
+
+    <h3 class="subsec">Comparison Table</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Adjacency Matrix</th>
+          <th>Adjacency List</th>
+          <th>Edge List</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Space</td>
+          <td>O(|V|<sup>2</sup>)</td>
+          <td>O(|V| + |E|)</td>
+          <td>O(|E|)</td>
+        </tr>
+        <tr>
+          <td>Edge query (u,v)?</td>
+          <td>O(1)</td>
+          <td>O(deg(u))</td>
+          <td>O(|E|)</td>
+        </tr>
+        <tr>
+          <td>Enumerate neighbours of u</td>
+          <td>O(|V|)</td>
+          <td>O(deg(u))</td>
+          <td>O(|E|)</td>
+        </tr>
+        <tr>
+          <td>Best for</td>
+          <td>Dense graphs, fast lookups</td>
+          <td>Sparse graphs, traversal</td>
+          <td>Sorting edges (Kruskal's)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Practical Note</div>
+      The vast majority of real-world graphs are sparse. Adjacency lists are the default choice
+      for most graph algorithms (DFS, BFS, Dijkstra, Bellman-Ford, topological sort). Adjacency
+      matrices shine when |V| is small and you need instant edge lookups, or when implementing
+      Floyd-Warshall (all-pairs shortest paths).
+    </div>
+  </section>
+
+  <!-- ============================= SECTION 5.3 ============================= -->
+  <section class="content-section" id="sec53">
+    <h2 class="sec-title"><span class="sec-num">5.3</span> Graph Traversal</h2>
+  <button class="review-btn" data-week="4" data-sec="sec53"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Graph traversal algorithms systematically visit every vertex and edge in a graph. The two
+      fundamental traversals — DFS and BFS — underpin an enormous range of graph algorithms.
+      Both visit each vertex exactly once and work on directed and undirected graphs alike.
+    </p>
+
+    <!-- ---- DFS ---- -->
+    <h3 class="subsec" id="dfs">Depth-First Search (DFS)</h3>
+
+    <p>
+      DFS explores a graph by following a path as <strong>deep as possible</strong> from a starting vertex before
+      backtracking. When a dead end is reached (no unvisited neighbours), the algorithm retreats
+      to the most recent vertex that still has unvisited neighbours and continues from there.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Intuition</div>
+      DFS is maze-solving by always taking the first unexplored corridor. When you hit a dead end,
+      retrace your steps until you find an unexplored fork. The edges you actually traverse form
+      a <strong>DFS tree</strong>.
+    </div>
+
+    <h4 class="subsubsec">Recursive DFS (canonical form)</h4>
+
+    <div class="algo-header">
+      Algorithm: Generic DFS (Recursive)
+      <span class="algo-complexity">O(|V| + |E|)</span>
+    </div>
+    <pre class="code-block has-header">
+function TRAVERSE(G = (V, E)):
+    visited[1..n] = false
+    for each vertex u = 1 to n:
+        if not visited[u]:
+            DFS(u)
+
+function DFS(u):
+    visited[u] = true
+    for each vertex v adjacent to u:
+        if not visited[v]:
+            DFS(v)
+</pre>
+
+<!-- VZ25: Generic DFS widget -->
+<div id="vz25" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 25</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">Generic DFS — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(V+E)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz25svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz25lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz25txt">Click Next to start DFS from vertex A.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Visited</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz25sv">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">DFS calls</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz25sc">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Stack depth</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz25sd">0</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz25step()" id="vz25nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz25reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz25ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var nodes=[
+    {id:0,lbl:'A',x:80,y:140},
+    {id:1,lbl:'B',x:200,y:60},
+    {id:2,lbl:'C',x:200,y:220},
+    {id:3,lbl:'D',x:340,y:40},
+    {id:4,lbl:'E',x:340,y:140},
+    {id:5,lbl:'F',x:340,y:240}
+  ];
+  var edges=[[0,1],[0,2],[1,3],[1,4],[2,5]];
+  var steps=[
+    {lbl:'INIT',txt:'Initialize: visited=[F,F,F,F,F,F]. Outer loop begins at u=A.',visited:[],active:-1,edge:null,calls:0,depth:0},
+    {lbl:'CALL DFS(A)',txt:'A not visited → call DFS(A). Mark A as visited (blue = active).',visited:[0],active:0,edge:null,calls:1,depth:1},
+    {lbl:'EXPLORE A→B',txt:'DFS(A): examine neighbor B — not visited → recurse DFS(B).',visited:[0],active:0,edge:[0,1],calls:1,depth:1},
+    {lbl:'CALL DFS(B)',txt:'Enter DFS(B). Mark B as visited.',visited:[0,1],active:1,edge:[0,1],calls:2,depth:2},
+    {lbl:'EXPLORE B→D',txt:'DFS(B): examine neighbor D — not visited → recurse DFS(D).',visited:[0,1],active:1,edge:[1,3],calls:2,depth:2},
+    {lbl:'CALL DFS(D)',txt:'Enter DFS(D). Mark D as visited. No unvisited neighbors → return.',visited:[0,1,3],active:3,edge:[1,3],calls:3,depth:3},
+    {lbl:'EXPLORE B→E',txt:'Back in DFS(B). D done. Examine E — not visited → recurse DFS(E).',visited:[0,1,3],active:1,edge:[1,4],calls:3,depth:2},
+    {lbl:'CALL DFS(E)',txt:'Enter DFS(E). Mark E as visited. No unvisited neighbors → return.',visited:[0,1,3,4],active:4,edge:[1,4],calls:4,depth:3},
+    {lbl:'RETURN DFS(B)',txt:'Back in DFS(B). All neighbors visited. B finishes (green = done).',visited:[0,1,3,4],active:0,edge:null,calls:4,depth:2},
+    {lbl:'EXPLORE A→C',txt:'Back in DFS(A). Examine neighbor C — not visited → recurse DFS(C).',visited:[0,1,3,4],active:0,edge:[0,2],calls:4,depth:1},
+    {lbl:'CALL DFS(C)',txt:'Enter DFS(C). Mark C as visited.',visited:[0,1,2,3,4],active:2,edge:[0,2],calls:5,depth:2},
+    {lbl:'EXPLORE C→F',txt:'DFS(C): examine neighbor F — not visited → recurse DFS(F).',visited:[0,1,2,3,4],active:2,edge:[2,5],calls:5,depth:2},
+    {lbl:'CALL DFS(F)',txt:'Enter DFS(F). Mark F as visited. No unvisited neighbors → return.',visited:[0,1,2,3,4,5],active:5,edge:[2,5],calls:6,depth:3},
+    {lbl:'COMPLETE',txt:'All vertices visited. DFS traversal complete! visited=[T,T,T,T,T,T].',visited:[0,1,2,3,4,5],active:-1,edge:null,calls:6,depth:0}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz25svg');
+  var cels={},tels={},eels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var el=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(el);
+      eels[e[0]+'-'+e[1]]=el;eels[e[1]+'-'+e[0]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      svg.appendChild(c);svg.appendChild(t);
+      cels[n.id]=c;tels[n.id]=t;
+    });
+  }
+
+  function render(s){
+    nodes.forEach(function(n){
+      var done=s.visited.indexOf(n.id)>=0;
+      var active=n.id===s.active;
+      if(active){cels[n.id].setAttribute('fill','#1f6feb1a');cels[n.id].setAttribute('stroke','#58a6ff');tels[n.id].setAttribute('fill','#58a6ff');}
+      else if(done){cels[n.id].setAttribute('fill','#3fb9500d');cels[n.id].setAttribute('stroke','#3fb950');tels[n.id].setAttribute('fill','#3fb950');}
+      else{cels[n.id].setAttribute('fill','#21262d');cels[n.id].setAttribute('stroke','#30363d');tels[n.id].setAttribute('fill','#c9d1d9');}
+    });
+    edges.forEach(function(e){
+      var k=e[0]+'-'+e[1];
+      var el=eels[k];if(!el)return;
+      var traversed=s.edge&&((s.edge[0]===e[0]&&s.edge[1]===e[1])||(s.edge[0]===e[1]&&s.edge[1]===e[0]));
+      var bothDone=s.visited.indexOf(e[0])>=0&&s.visited.indexOf(e[1])>=0;
+      if(traversed){el.setAttribute('stroke','#58a6ff');el.setAttribute('stroke-width','2.5');}
+      else if(bothDone){el.setAttribute('stroke','#3fb95055');el.setAttribute('stroke-width','2');}
+      else{el.setAttribute('stroke','#30363d');el.setAttribute('stroke-width','2');}
+    });
+    document.getElementById('vz25lbl').textContent=s.lbl;
+    document.getElementById('vz25txt').textContent=s.txt;
+    document.getElementById('vz25sv').textContent=s.visited.length;
+    document.getElementById('vz25sc').textContent=s.calls;
+    document.getElementById('vz25sd').textContent=s.depth;
+    document.getElementById('vz25ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz25nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz25step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz25reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <p>
+      The outer loop in <code>TRAVERSE</code> ensures that all connected components are covered,
+      not just the one containing the starting vertex.
+    </p>
+
+    <h4 class="subsubsec">Iterative DFS (explicit stack)</h4>
+
+    <div class="algo-header">
+      Algorithm: Iterative DFS
+      <span class="algo-complexity">O(|V| + |E|)</span>
+    </div>
+    <pre class="code-block has-header">
+function DFS_ITERATIVE(G = (V, E), s):
+    visited[1..n] = false
+    stack = Stack()
+    stack.push(s)
+    while stack is not empty:
+        u = stack.pop()
+        if not visited[u]:
+            visited[u] = true
+            for each vertex v adjacent to u:
+                if not visited[v]:
+                    stack.push(v)
+</pre>
+
+    <div class="callout warn">
+      <div class="callout-title">Caveat</div>
+      The iterative and recursive forms may visit neighbours in different orders depending on
+      how the stack is populated. Both are valid DFS traversals but may produce different DFS trees.
+    </div>
+
+    <h4 class="subsubsec">Complexity Analysis</h4>
+    <div class="callout cplx">
+      <div class="callout-title">DFS Complexity</div>
+      <ul style="margin:0;">
+        <li><strong>Time:</strong> O(|V| + |E|) — each vertex visited once, each edge examined at most twice (undirected) or once (directed).</li>
+        <li><strong>Space:</strong> O(|V| + |E|) — for the graph representation plus O(|V|) recursion stack depth in the worst case.</li>
+      </ul>
+    </div>
+
+    <h4 class="subsubsec">DFS Tree and Edge Classification</h4>
+    <p>
+      The edges traversed by DFS (those that first discover a vertex) form a <strong>DFS tree</strong> (or DFS forest
+      if the graph is disconnected). The remaining edges can be classified:
+    </p>
+    <table>
+      <thead>
+        <tr><th>Edge Type</th><th>Description</th><th>Significance</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Tree edge</strong></td>
+          <td>Discovers a new (unvisited) vertex</td>
+          <td>Forms the DFS tree</td>
+        </tr>
+        <tr>
+          <td><strong>Back edge</strong></td>
+          <td>Leads to an ancestor in the DFS tree</td>
+          <td>Indicates a <em>cycle</em></td>
+        </tr>
+        <tr>
+          <td><strong>Forward edge</strong></td>
+          <td>Leads to a descendant (directed graphs only)</td>
+          <td>Skips levels of the DFS tree</td>
+        </tr>
+        <tr>
+          <td><strong>Cross edge</strong></td>
+          <td>Leads to a vertex in a different subtree (directed graphs only)</td>
+          <td>Connects different DFS branches</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem</div>
+      In an undirected graph, DFS produces only <strong>tree edges</strong> and <strong>back edges</strong>.
+      Forward and cross edges do not appear. Therefore, a back edge is equivalent to the presence
+      of a cycle.
+    </div>
+
+    <!-- ---- Connected Components ---- -->
+    <h3 class="subsec" id="connected-components">Finding Connected Components</h3>
+
+    <p>
+      A single DFS call from vertex u visits exactly the connected component containing u.
+      By repeating DFS for each unvisited vertex, we discover all components in O(|V| + |E|).
+    </p>
+
+    <div class="algo-header">
+      Algorithm: Connected Components via DFS
+      <span class="algo-complexity">O(|V| + |E|)</span>
+    </div>
+    <pre class="code-block has-header">
+function CONNECTED_COMPONENTS(G = (V, E)):
+    component[1..n] = null
+    num_components = 0
+    for each vertex u = 1 to n:
+        if component[u] = null:
+            num_components += 1
+            DFS(u, num_components)
+    return num_components, component[1..n]
+
+function DFS(u, comp_num):
+    component[u] = comp_num
+    for each vertex v adjacent to u:
+        if component[v] = null:
+            DFS(v, comp_num)
+</pre>
+
+<!-- VZ26: Connected Components widget -->
+<div id="vz26" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 26</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">Connected Components — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(V+E)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz26svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz26lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz26txt">Two components: {A,B,C} (triangle) and {D,E,F} (triangle). Click Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Components</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz26sc">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Nodes labeled</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz26nl">0</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz26step()" id="vz26nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz26reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz26ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  // Component 1: A(0),B(1),C(2) triangle. Component 2: D(3),E(4),F(5) triangle
+  var nodes=[
+    {id:0,lbl:'A',x:110,y:100},{id:1,lbl:'B',x:200,y:55},{id:2,lbl:'C',x:200,y:145},
+    {id:3,lbl:'D',x:320,y:100},{id:4,lbl:'E',x:410,y:55},{id:5,lbl:'F',x:410,y:145}
+  ];
+  var edges=[[0,1],[1,2],[0,2],[3,4],[4,5],[3,5]];
+  // comp: 0=unset, 1=blue, 2=orange
+  var steps=[
+    {lbl:'INIT',txt:'component[all]=null. num_components=0. Two triangles with no cross edges.',comp:[0,0,0,0,0,0],comps:0},
+    {lbl:'u=A (null)',txt:'A has no component. num_components→1. Call DFS(A, 1).',comp:[0,0,0,0,0,0],comps:1},
+    {lbl:'DFS(A,1)',txt:'component[A]=1. Examine neighbors B,C.',comp:[1,0,0,0,0,0],comps:1},
+    {lbl:'DFS(B,1)',txt:'component[B]=1. Neighbor C unvisited → DFS(C,1).',comp:[1,1,0,0,0,0],comps:1},
+    {lbl:'DFS(C,1)',txt:'component[C]=1. Neighbors A,B already labeled. Component 1 complete.',comp:[1,1,1,0,0,0],comps:1},
+    {lbl:'u=D (null)',txt:'D has no component. num_components→2. Call DFS(D, 2).',comp:[1,1,1,0,0,0],comps:2},
+    {lbl:'DFS(D,2)',txt:'component[D]=2. Examine neighbors E,F.',comp:[1,1,1,2,0,0],comps:2},
+    {lbl:'DFS(E,2)',txt:'component[E]=2. Neighbor F unvisited → DFS(F,2).',comp:[1,1,1,2,2,0],comps:2},
+    {lbl:'DFS(F,2)',txt:'component[F]=2. All neighbors labeled. Component 2 complete.',comp:[1,1,1,2,2,2],comps:2},
+    {lbl:'COMPLETE',txt:'2 components found. {A,B,C}→comp 1 (blue), {D,E,F}→comp 2 (orange). CONNECTED(A,B)=true, CONNECTED(A,D)=false.',comp:[1,1,1,2,2,2],comps:2}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz26svg');
+  var cels={},tels={},eels={};
+  var C1='#58a6ff',C2='#f0883e';
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var el=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(el);
+      eels[e[0]+'-'+e[1]]=el;eels[e[1]+'-'+e[0]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      svg.appendChild(c);svg.appendChild(t);
+      cels[n.id]=c;tels[n.id]=t;
+    });
+  }
+
+  function render(s){
+    nodes.forEach(function(n){
+      var co=s.comp[n.id];
+      if(co===1){cels[n.id].setAttribute('fill','rgba(88,166,255,0.12)');cels[n.id].setAttribute('stroke',C1);tels[n.id].setAttribute('fill',C1);}
+      else if(co===2){cels[n.id].setAttribute('fill','rgba(240,136,62,0.12)');cels[n.id].setAttribute('stroke',C2);tels[n.id].setAttribute('fill',C2);}
+      else{cels[n.id].setAttribute('fill','#21262d');cels[n.id].setAttribute('stroke','#30363d');tels[n.id].setAttribute('fill','#c9d1d9');}
+    });
+    edges.forEach(function(e){
+      var c0=s.comp[e[0]],c1=s.comp[e[1]];
+      var el=eels[e[0]+'-'+e[1]];if(!el)return;
+      if(c0===1&&c1===1){el.setAttribute('stroke',C1);el.setAttribute('stroke-width','2');}
+      else if(c0===2&&c1===2){el.setAttribute('stroke',C2);el.setAttribute('stroke-width','2');}
+      else{el.setAttribute('stroke','#30363d');el.setAttribute('stroke-width','2');}
+    });
+    document.getElementById('vz26lbl').textContent=s.lbl;
+    document.getElementById('vz26txt').textContent=s.txt;
+    document.getElementById('vz26sc').textContent=s.comps;
+    document.getElementById('vz26nl').textContent=s.comp.filter(function(x){return x>0;}).length;
+    document.getElementById('vz26ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz26nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz26step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz26reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <p>
+      After running, <code>component[u]</code> stores the component ID of vertex u.
+      Two vertices are in the same component if and only if <code>component[u] = component[v]</code>.
+      Note: the <code>component</code> array replaces the <code>visited</code> array — a vertex is
+      "visited" when it has been assigned a component ID.
+    </p>
+
+    <!-- ---- Cycle Finding ---- -->
+    <h3 class="subsec" id="cycle-finding">Cycle Finding in Undirected Graphs</h3>
+
+    <p>
+      In an undirected graph, a <strong>back edge</strong> — an edge (u, v) where v is already visited
+      and v is not the parent p of u — indicates a cycle. We must track the parent to avoid
+      treating the edge we came from as a cycle.
+    </p>
+
+    <div class="algo-header">
+      Algorithm: Cycle Detection (Undirected Graph)
+      <span class="algo-complexity">O(|V| + |E|)</span>
+    </div>
+    <pre class="code-block has-header">
+function HAS_CYCLE(G = (V, E)):
+    visited[1..n] = false
+    for each vertex u = 1 to n:
+        if not visited[u] and DFS(u, null) = true:
+            return true
+    return false
+
+// Returns true if a cycle was detected starting from u with parent p
+function DFS(u, p):
+    visited[u] = true
+    for each vertex v adjacent to u:
+        if visited[v] and v != p:
+            return true              // back edge found → cycle!
+        else if v != p and DFS(v, u) = true:
+            return true
+    return false
+</pre>
+
+<!-- VZ27: Cycle Detection widget -->
+<div id="vz27" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 27</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">Cycle Detection — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(V+E)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz27svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz27lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz27txt">Graph: A-B, B-C, C-D, D-B (back edge!), D-E. Click Next to trace DFS cycle detection.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:80px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Visited</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz27sv">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:80px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Has cycle</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz27hc">—</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz27step()" id="vz27nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz27reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz27ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  // Nodes: A(0),B(1),C(2),D(3),E(4)
+  var nodes=[
+    {id:0,lbl:'A',x:80,y:140},
+    {id:1,lbl:'B',x:210,y:80},
+    {id:2,lbl:'C',x:310,y:80},
+    {id:3,lbl:'D',x:260,y:200},
+    {id:4,lbl:'E',x:420,y:200}
+  ];
+  // edges: A-B, B-C, C-D, D-B (back edge forming cycle B-C-D-B), D-E
+  var edges=[[0,1],[1,2],[2,3],[3,1],[3,4]];
+  var steps=[
+    {lbl:'INIT',txt:'visited=[F,F,F,F,F]. Graph has cycle B→C→D→B (back edge D-B).',visited:[],active:-1,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'CALL DFS(A,null)',txt:'A not visited → DFS(A, null). Mark A visited.',visited:[0],active:0,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'DFS(A): examine B',txt:'Neighbor B unvisited, B≠null → recurse DFS(B, A).',visited:[0],active:0,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'CALL DFS(B,A)',txt:'Mark B visited. Examine neighbors: A,C,D.',visited:[0,1],active:1,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'DFS(B): skip A (parent)',txt:'Neighbor A is visited AND A==parent → skip (not a cycle).',visited:[0,1],active:1,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'DFS(B): examine C',txt:'Neighbor C unvisited, C≠A → recurse DFS(C, B).',visited:[0,1],active:1,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'CALL DFS(C,B)',txt:'Mark C visited. Examine neighbors: B,D.',visited:[0,1,2],active:2,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'DFS(C): skip B (parent)',txt:'B is visited AND B==parent → skip.',visited:[0,1,2],active:2,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'DFS(C): examine D',txt:'D unvisited, D≠B → recurse DFS(D, C).',visited:[0,1,2],active:2,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'CALL DFS(D,C)',txt:'Mark D visited. Examine neighbors: C,B,E.',visited:[0,1,2,3],active:3,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'DFS(D): skip C (parent)',txt:'C is visited AND C==parent → skip.',visited:[0,1,2,3],active:3,backEdge:null,cycle:false,hasCycle:'—'},
+    {lbl:'BACK EDGE FOUND!',txt:'Neighbor B: visited[B]=true AND B≠parent(C). Back edge D→B found! CYCLE DETECTED!',visited:[0,1,2,3],active:3,backEdge:[3,1],cycle:true,hasCycle:'YES'},
+    {lbl:'CYCLE DETECTED',txt:'HAS_CYCLE returns true. The cycle is B→C→D→B (back edge D-B shown in red).',visited:[0,1,2,3],active:-1,backEdge:[3,1],cycle:true,hasCycle:'YES'}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz27svg');
+  var cels={},tels={},eels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var el=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(el);
+      var key=e[0]+'-'+e[1];
+      eels[key]=el;eels[e[1]+'-'+e[0]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      svg.appendChild(c);svg.appendChild(t);
+      cels[n.id]=c;tels[n.id]=t;
+    });
+  }
+
+  function render(s){
+    nodes.forEach(function(n){
+      var vis=s.visited.indexOf(n.id)>=0;
+      var active=n.id===s.active;
+      if(active){cels[n.id].setAttribute('fill','#1f6feb1a');cels[n.id].setAttribute('stroke','#58a6ff');tels[n.id].setAttribute('fill','#58a6ff');}
+      else if(vis){cels[n.id].setAttribute('fill','#3fb9500d');cels[n.id].setAttribute('stroke','#3fb950');tels[n.id].setAttribute('fill','#3fb950');}
+      else{cels[n.id].setAttribute('fill','#21262d');cels[n.id].setAttribute('stroke','#30363d');tels[n.id].setAttribute('fill','#c9d1d9');}
+    });
+    edges.forEach(function(e){
+      var el=eels[e[0]+'-'+e[1]];if(!el)return;
+      var isBack=s.backEdge&&((s.backEdge[0]===e[0]&&s.backEdge[1]===e[1])||(s.backEdge[0]===e[1]&&s.backEdge[1]===e[0]));
+      var bothVis=s.visited.indexOf(e[0])>=0&&s.visited.indexOf(e[1])>=0;
+      if(isBack){el.setAttribute('stroke','#f85149');el.setAttribute('stroke-width','3');}
+      else if(bothVis){el.setAttribute('stroke','#3fb95055');el.setAttribute('stroke-width','2');}
+      else{el.setAttribute('stroke','#30363d');el.setAttribute('stroke-width','2');}
+    });
+    var lblEl=document.getElementById('vz27lbl');
+    lblEl.style.color=s.cycle?'#f85149':'#58a6ff';
+    lblEl.textContent=s.lbl;
+    document.getElementById('vz27txt').textContent=s.txt;
+    document.getElementById('vz27sv').textContent=s.visited.length;
+    var hcEl=document.getElementById('vz27hc');
+    hcEl.textContent=s.hasCycle;
+    hcEl.style.color=s.hasCycle==='YES'?'#f85149':'#c9d1d9';
+    document.getElementById('vz27ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz27nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz27step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz27reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <!-- ---- BFS ---- -->
+    <h3 class="subsec" id="bfs">Breadth-First Search (BFS)</h3>
+
+    <p>
+      BFS visits vertices in order of their distance from the source. It first visits all vertices
+      1 hop away, then all vertices 2 hops away, and so on. This layer-by-layer expansion is
+      achieved using a <strong>queue</strong> (FIFO).
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Intuition</div>
+      BFS is like ripples spreading outward from a stone dropped in water — all vertices at
+      distance k are reached before any vertex at distance k+1. The spanning tree produced by
+      BFS is a <strong>shortest-path tree</strong> (for unweighted graphs).
+    </div>
+
+    <div class="algo-header">
+      Algorithm: Generic BFS
+      <span class="algo-complexity">O(|V| + |E|)</span>
+    </div>
+    <pre class="code-block has-header">
+function BFS(G = (V, E), s):
+    visited[1..n] = false
+    visited[s] = true
+    queue = Queue()
+    queue.push(s)
+    while queue is not empty:
+        u = queue.pop()                   // dequeue from front
+        for each vertex v adjacent to u:
+            if not visited[v]:
+                visited[v] = true
+                queue.push(v)             // enqueue at back
+</pre>
+
+<!-- VZ28: Generic BFS widget -->
+<div id="vz28" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 28</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">Generic BFS — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(V+E)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz28svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz28lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz28txt">BFS from A. Queue shown at each step. Click Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:80px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Queue size</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz28qs">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:60px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Level</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz28lv">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:80px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Visited</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz28vi">0</span></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.78em;color:#8b949e;">Queue: <span id="vz28qd" style="color:#58a6ff;">[ ]</span></div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz28step()" id="vz28nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz28reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz28ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var nodes=[
+    {id:0,lbl:'A',x:80,y:140},
+    {id:1,lbl:'B',x:200,y:60},
+    {id:2,lbl:'C',x:200,y:220},
+    {id:3,lbl:'D',x:340,y:40},
+    {id:4,lbl:'E',x:340,y:140},
+    {id:5,lbl:'F',x:340,y:240}
+  ];
+  var edges=[[0,1],[0,2],[1,3],[1,4],[2,5]];
+  var steps=[
+    {lbl:'INIT',txt:'visited=[F,F,F,F,F,F]. Initialize BFS from A.',vis:[],inQueue:[],treeEdges:[],queue:['A'],level:0},
+    {lbl:'ENQUEUE A',txt:'Mark A visited. Push A into queue. Queue=[A]. Level 0.',vis:[0],inQueue:[0],treeEdges:[],queue:['A'],level:0},
+    {lbl:'DEQUEUE A',txt:'Pop A. Examine neighbors B,C.',vis:[0],inQueue:[],treeEdges:[],queue:[],level:0},
+    {lbl:'DISCOVER B',txt:'B unvisited → mark visited, enqueue B. Discover C → mark, enqueue C. Queue=[B,C]. Level 1.',vis:[0,1,2],inQueue:[1,2],treeEdges:[[0,1],[0,2]],queue:['B','C'],level:1},
+    {lbl:'DEQUEUE B',txt:'Pop B. Examine neighbors A(visited),D,E. Queue=[C].',vis:[0,1,2],inQueue:[2],treeEdges:[[0,1],[0,2]],queue:['C'],level:1},
+    {lbl:'DISCOVER D,E',txt:'D,E unvisited → mark & enqueue. Queue=[C,D,E]. Level 2.',vis:[0,1,2,3,4],inQueue:[2,3,4],treeEdges:[[0,1],[0,2],[1,3],[1,4]],queue:['C','D','E'],level:2},
+    {lbl:'DEQUEUE C',txt:'Pop C. Examine neighbors A(visited),F. Queue=[D,E].',vis:[0,1,2,3,4],inQueue:[3,4],treeEdges:[[0,1],[0,2],[1,3],[1,4]],queue:['D','E'],level:2},
+    {lbl:'DISCOVER F',txt:'F unvisited → mark & enqueue. Queue=[D,E,F]. Level 2.',vis:[0,1,2,3,4,5],inQueue:[3,4,5],treeEdges:[[0,1],[0,2],[1,3],[1,4],[2,5]],queue:['D','E','F'],level:2},
+    {lbl:'DEQUEUE D,E,F',txt:'Dequeue D (no new neighbors), E (no new), F (no new). Queue empty.',vis:[0,1,2,3,4,5],inQueue:[],treeEdges:[[0,1],[0,2],[1,3],[1,4],[2,5]],queue:[],level:2},
+    {lbl:'COMPLETE',txt:'BFS complete. All 6 nodes visited. Levels: A=0, B=1, C=1, D=2, E=2, F=2.',vis:[0,1,2,3,4,5],inQueue:[],treeEdges:[[0,1],[0,2],[1,3],[1,4],[2,5]],queue:[],level:2}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz28svg');
+  var cels={},tels={},eels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var el=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(el);
+      eels[e[0]+'-'+e[1]]=el;eels[e[1]+'-'+e[0]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      svg.appendChild(c);svg.appendChild(t);
+      cels[n.id]=c;tels[n.id]=t;
+    });
+  }
+
+  function render(s){
+    nodes.forEach(function(n){
+      var inQ=s.inQueue.indexOf(n.id)>=0;
+      var vis=s.vis.indexOf(n.id)>=0;
+      if(inQ){cels[n.id].setAttribute('fill','#1f6feb1a');cels[n.id].setAttribute('stroke','#58a6ff');tels[n.id].setAttribute('fill','#58a6ff');}
+      else if(vis){cels[n.id].setAttribute('fill','#3fb9500d');cels[n.id].setAttribute('stroke','#3fb950');tels[n.id].setAttribute('fill','#3fb950');}
+      else{cels[n.id].setAttribute('fill','#21262d');cels[n.id].setAttribute('stroke','#30363d');tels[n.id].setAttribute('fill','#c9d1d9');}
+    });
+    var treeSet={};
+    s.treeEdges.forEach(function(e){treeSet[e[0]+'-'+e[1]]=1;treeSet[e[1]+'-'+e[0]]=1;});
+    edges.forEach(function(e){
+      var el=eels[e[0]+'-'+e[1]];if(!el)return;
+      if(treeSet[e[0]+'-'+e[1]]){el.setAttribute('stroke','#58a6ff');el.setAttribute('stroke-width','2.5');}
+      else{el.setAttribute('stroke','#30363d');el.setAttribute('stroke-width','2');}
+    });
+    document.getElementById('vz28lbl').textContent=s.lbl;
+    document.getElementById('vz28txt').textContent=s.txt;
+    document.getElementById('vz28qs').textContent=s.queue.length;
+    document.getElementById('vz28lv').textContent=s.level;
+    document.getElementById('vz28vi').textContent=s.vis.length;
+    document.getElementById('vz28qd').textContent='[ '+s.queue.join(', ')+' ]';
+    document.getElementById('vz28ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz28nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz28step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz28reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <div class="callout cplx">
+      <div class="callout-title">BFS Complexity</div>
+      <ul style="margin:0;">
+        <li><strong>Time:</strong> O(|V| + |E|) — each vertex enqueued/dequeued once; each edge examined once (directed) or twice (undirected).</li>
+        <li><strong>Space:</strong> O(|V| + |E|) for the graph plus O(|V|) for the queue and visited array.</li>
+      </ul>
+    </div>
+
+    <h4 class="subsubsec">BFS Tree</h4>
+    <p>
+      The edges via which BFS first discovers each vertex form a <strong>BFS tree</strong> (breadth-first tree).
+      Crucially, the path from the source s to any vertex v in the BFS tree is a
+      <strong>shortest path</strong> in the original unweighted graph — this is the key property that
+      distinguishes BFS from DFS and motivates its use in shortest-path computations.
+    </p>
+
+    <h3 class="subsec">DFS vs. BFS — When to Use Which</h3>
+    <table>
+      <thead>
+        <tr><th>Property</th><th>DFS</th><th>BFS</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Data structure</td><td>Stack (implicit via recursion or explicit)</td><td>Queue</td></tr>
+        <tr><td>Traversal order</td><td>Deep first, then backtrack</td><td>Layer by layer</td></tr>
+        <tr><td>Finds shortest paths?</td><td>No (in general)</td><td>Yes (unweighted graphs)</td></tr>
+        <tr><td>Cycle detection</td><td>Yes (via back edges)</td><td>Yes (but DFS is simpler)</td></tr>
+        <tr><td>Topological sort</td><td>Yes (reverse finish order)</td><td>Yes (Kahn's uses BFS/queue)</td></tr>
+        <tr><td>Memory (worst case)</td><td>O(|V|) stack depth</td><td>O(|V|) queue width</td></tr>
+        <tr><td>Useful for</td><td>Cycle detection, topo sort, SCCs, bridges</td><td>Shortest paths (unweighted), level-order</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Applications Summary</h3>
+    <ul>
+      <li><strong>Reachability:</strong> Is v reachable from u? Run DFS/BFS from u, check if v is visited.</li>
+      <li><strong>Connected components:</strong> Repeated DFS/BFS (see Algorithm above).</li>
+      <li><strong>Bipartiteness testing:</strong> BFS/DFS with 2-colouring; a graph is bipartite iff no two adjacent vertices share a colour.</li>
+      <li><strong>Cycle detection:</strong> DFS back edges (undirected); for directed graphs, track "in-progress" nodes.</li>
+      <li><strong>Shortest paths (unweighted):</strong> BFS, O(|V| + |E|). Covered in Section 5.4.</li>
+      <li><strong>Topological sort:</strong> DFS reverse finish order, or Kahn's algorithm. Covered in Section 5.5.</li>
+      <li><strong>Bridges &amp; articulation points:</strong> DFS-based algorithms (advanced).</li>
+    </ul>
+  </section>
+
+  <!-- ============================= SECTION 5.4 ============================= -->
+  <section class="content-section" id="sec54">
+    <h2 class="sec-title"><span class="sec-num">5.4</span> Shortest Paths</h2>
+  <button class="review-btn" data-week="4" data-sec="sec54"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>
+      Shortest path problems ask: given a source vertex s, what is the minimum-weight path from
+      s to each other vertex? This is one of the most practically important problems in graph
+      theory (navigation, network routing, scheduling).
+    </p>
+
+    <h3 class="subsec">Properties of Shortest Paths</h3>
+
+    <h4 class="subsubsec">1. Optimal Substructure</h4>
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Optimal Substructure</div>
+      Any subpath of a shortest path is itself a shortest path. If the shortest path from u to v
+      passes through vertex x, then the subpath from u to x is a shortest path from u to x, and
+      the subpath from x to v is a shortest path from x to v.
+      <br><br>
+      <em>Proof sketch (contradiction):</em> If a subpath were not shortest, replace it with a
+      shorter one, making the whole path shorter — contradicting the assumption that the
+      original was a shortest path.
+    </div>
+
+    <h4 class="subsubsec">2. Triangle Inequality</h4>
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Triangle Inequality</div>
+      Let &delta;(s, v) denote the shortest-path distance from s to v. For any edge (u, v) with
+      weight w(u, v):
+      <br><br>
+      <strong>&delta;(s, v) &le; &delta;(s, u) + w(u, v)</strong>
+      <br><br>
+      In plain English: you cannot improve on a shortest path by adding an extra edge at the end.
+      This underpins the relaxation step in Dijkstra's and Bellman-Ford algorithms.
+    </div>
+
+    <h4 class="subsubsec">3. Shortest Paths Are Simple (No Repeated Vertices)</h4>
+    <p>
+      We can always assume shortest paths are simple (no cycles):
+    </p>
+    <ul>
+      <li>A positive-weight cycle can be removed to shorten the path.</li>
+      <li>A zero-weight cycle can be removed without changing the path length.</li>
+      <li>A negative-weight cycle makes shortest paths undefined (can loop forever to decrease cost).</li>
+    </ul>
+    <p>
+      Therefore: a shortest path in a graph with n vertices uses <strong>at most |V| &minus; 1 edges</strong>
+      (a simple path through all vertices). This bound is exploited by the Bellman-Ford algorithm
+      (Week 7).
+    </p>
+
+    <h3 class="subsec">Shortest Path Problem Variants</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Single-Pair Shortest Path (SPSP)</div>
+      Given G = (V, E) and vertices u, v &isin; V, find the shortest path from u to v.
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">Single-Source Shortest Path (SSSP)</div>
+      Given G = (V, E) and a source s &isin; V, find the shortest path from s to every other vertex.
+      Note: SSSP subsumes SPSP — once you have SSSP, you have the answer to any single-pair query.
+    </div>
+
+    <div class="callout def">
+      <div class="callout-title">All-Pairs Shortest Path (APSP)</div>
+      Given G = (V, E), find shortest paths between every pair of vertices u, v &isin; V.
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Problem</th><th>Algorithm</th><th>Graph Type</th><th>Complexity</th><th>Week</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>SSSP (unweighted)</td><td>BFS</td><td>Unweighted</td><td>O(|V| + |E|)</td><td>Week 4</td></tr>
+        <tr><td>SSSP</td><td>Dijkstra's</td><td>Non-negative weights</td><td>O((|V|+|E|) log |V|)</td><td>Week 5</td></tr>
+        <tr><td>SSSP</td><td>Bellman-Ford</td><td>Any weights (no neg cycles)</td><td>O(|V| &middot; |E|)</td><td>Week 7</td></tr>
+        <tr><td>APSP</td><td>Floyd-Warshall</td><td>Any weights (no neg cycles)</td><td>O(|V|<sup>3</sup>)</td><td>Week 7</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Unweighted SSSP via BFS</h3>
+
+    <p>
+      Because BFS visits vertices in order of distance from the source, it naturally computes
+      shortest hop-counts (shortest paths in an unweighted graph). We augment standard BFS
+      with two arrays:
+    </p>
+    <ul>
+      <li><code>dist[v]</code>: the shortest distance (number of edges) from s to v.</li>
+      <li><code>pred[v]</code>: the predecessor of v on the shortest path from s (used to reconstruct the path).</li>
+    </ul>
+
+    <div class="algo-header">
+      Algorithm: SSSP in Unweighted Graph (BFS)
+      <span class="algo-complexity">O(|V| + |E|)</span>
+    </div>
+    <pre class="code-block has-header">
+function BFS_SSSP(G = (V, E), s):
+    dist[1..n] = ∞
+    pred[1..n] = null
+    queue = Queue()
+    queue.push(s)
+    dist[s] = 0
+    while queue is not empty:
+        u = queue.pop()
+        for each vertex v adjacent to u:
+            if dist[v] = ∞:              // v not yet visited
+                dist[v] = dist[u] + 1
+                pred[v] = u
+                queue.push(v)
+</pre>
+
+<!-- VZ29: SSSP Unweighted BFS widget -->
+<div id="vz29" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 29</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">SSSP Unweighted BFS — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(V+E)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz29svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz29lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz29txt">Source=S. BFS computes dist[] and pred[]. Distance labels appear on nodes as they are discovered.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Nodes reached</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz29nr">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Max distance</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz29md">0</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz29step()" id="vz29nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz29reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz29ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  // Nodes: S(0),A(1),B(2),C(3),D(4)
+  var nodes=[
+    {id:0,lbl:'S',x:80,y:140},
+    {id:1,lbl:'A',x:220,y:70},
+    {id:2,lbl:'B',x:220,y:210},
+    {id:3,lbl:'C',x:360,y:70},
+    {id:4,lbl:'D',x:360,y:210}
+  ];
+  var edges=[[0,1],[0,2],[1,3],[1,4],[2,4]];
+  // dist: -1=inf, else number. pred: node id or -1
+  var steps=[
+    {lbl:'INIT',txt:'dist=[∞,∞,∞,∞,∞], pred=[null,null,null,null,null]. Push S, dist[S]=0.',dist:[-1,-1,-1,-1,-1],pred:[-1,-1,-1,-1,-1],treeEdges:[],reached:1,maxd:0},
+    {lbl:'dist[S]=0',txt:'Source S gets distance 0. Push S into queue.',dist:[0,-1,-1,-1,-1],pred:[-1,-1,-1,-1,-1],treeEdges:[],reached:1,maxd:0},
+    {lbl:'POP S',txt:'Dequeue S. Examine neighbors A,B.',dist:[0,-1,-1,-1,-1],pred:[-1,-1,-1,-1,-1],treeEdges:[],reached:1,maxd:0},
+    {lbl:'DISCOVER A,B',txt:'dist[A]=∞→set dist[A]=1, pred[A]=S. dist[B]=∞→set dist[B]=1, pred[B]=S.',dist:[0,1,1,-1,-1],pred:[-1,0,0,-1,-1],treeEdges:[[0,1],[0,2]],reached:3,maxd:1},
+    {lbl:'POP A',txt:'Dequeue A. Examine neighbors S(dist=0),C,D.',dist:[0,1,1,-1,-1],pred:[-1,0,0,-1,-1],treeEdges:[[0,1],[0,2]],reached:3,maxd:1},
+    {lbl:'DISCOVER C,D from A',txt:'dist[C]=∞→dist[C]=2,pred[C]=A. dist[D]=∞→dist[D]=2,pred[D]=A.',dist:[0,1,1,2,2],pred:[-1,0,0,1,1],treeEdges:[[0,1],[0,2],[1,3],[1,4]],reached:5,maxd:2},
+    {lbl:'POP B',txt:'Dequeue B. Examine neighbors S(dist=0),D(dist=2). D already settled.',dist:[0,1,1,2,2],pred:[-1,0,0,1,1],treeEdges:[[0,1],[0,2],[1,3],[1,4]],reached:5,maxd:2},
+    {lbl:'POP C,D',txt:'Dequeue C: no unvisited neighbors. Dequeue D: no unvisited neighbors. Queue empty.',dist:[0,1,1,2,2],pred:[-1,0,0,1,1],treeEdges:[[0,1],[0,2],[1,3],[1,4]],reached:5,maxd:2},
+    {lbl:'COMPLETE',txt:'dist=[S:0,A:1,B:1,C:2,D:2]. pred=[S:−,A:S,B:S,C:A,D:A]. Pred arrows shown as tree edges.',dist:[0,1,1,2,2],pred:[-1,0,0,1,1],treeEdges:[[0,1],[0,2],[1,3],[1,4]],reached:5,maxd:2}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz29svg');
+  var cels={},tels={},eels={},dLabels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var el=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(el);
+      eels[e[0]+'-'+e[1]]=el;eels[e[1]+'-'+e[0]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      var dl=mk('text',{x:n.x+28,y:n.y-18,'text-anchor':'middle',fill:'#58a6ff','font-size':'11','font-family':'JetBrains Mono,monospace'});
+      dl.textContent='';
+      svg.appendChild(c);svg.appendChild(t);svg.appendChild(dl);
+      cels[n.id]=c;tels[n.id]=t;dLabels[n.id]=dl;
+    });
+  }
+
+  function render(s){
+    var treeSet={};
+    s.treeEdges.forEach(function(e){treeSet[e[0]+'-'+e[1]]=1;treeSet[e[1]+'-'+e[0]]=1;});
+    nodes.forEach(function(n){
+      var d=s.dist[n.id];
+      var settled=d>=0;
+      if(settled){cels[n.id].setAttribute('fill','#3fb9500d');cels[n.id].setAttribute('stroke','#3fb950');tels[n.id].setAttribute('fill','#3fb950');dLabels[n.id].textContent='d='+d;}
+      else{cels[n.id].setAttribute('fill','#21262d');cels[n.id].setAttribute('stroke','#30363d');tels[n.id].setAttribute('fill','#c9d1d9');dLabels[n.id].textContent='';}
+    });
+    edges.forEach(function(e){
+      var el=eels[e[0]+'-'+e[1]];if(!el)return;
+      if(treeSet[e[0]+'-'+e[1]]){el.setAttribute('stroke','#58a6ff');el.setAttribute('stroke-width','2.5');}
+      else{el.setAttribute('stroke','#30363d');el.setAttribute('stroke-width','2');}
+    });
+    document.getElementById('vz29lbl').textContent=s.lbl;
+    document.getElementById('vz29txt').textContent=s.txt;
+    document.getElementById('vz29nr').textContent=s.reached;
+    document.getElementById('vz29md').textContent=s.maxd;
+    document.getElementById('vz29ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz29nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz29step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz29reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <p>
+      Note: <code>dist[v] = ∞</code> serves the same role as the <code>visited</code> flag —
+      a vertex is "unvisited" until its distance is set.
+    </p>
+
+    <h4 class="subsubsec">Reconstruct Shortest Path</h4>
+
+    <div class="algo-header">
+      Algorithm: Path Reconstruction
+      <span class="algo-complexity">O(|V|)</span>
+    </div>
+    <pre class="code-block has-header">
+function GET_PATH(s, u, pred[1..n]):
+    path = [u]
+    while u != s:
+        path.append(pred[u])
+        u = pred[u]
+    return reverse(path)
+</pre>
+
+<!-- VZ30: Reconstruct Shortest Path widget -->
+<div id="vz30" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 30</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">Reconstruct Shortest Path — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(V)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz30svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz30lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz30txt">After BFS: pred=[S:—,A:S,B:S,C:A,D:A]. Reconstruct path from D back to S. Click Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Path length</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz30pl">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Path edges</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz30pe">0</span></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.78em;color:#8b949e;">Path: <span id="vz30pd" style="color:#f0883e;">[ ]</span></div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz30step()" id="vz30nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz30reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz30ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  // Same graph as Alg 29: S(0),A(1),B(2),C(3),D(4)
+  var nodes=[
+    {id:0,lbl:'S',x:80,y:140},
+    {id:1,lbl:'A',x:220,y:70},
+    {id:2,lbl:'B',x:220,y:210},
+    {id:3,lbl:'C',x:360,y:70},
+    {id:4,lbl:'D',x:360,y:210}
+  ];
+  var edges=[[0,1],[0,2],[1,3],[1,4],[2,4]];
+  var pred=[-1,0,0,1,1]; // pred[S]=-, pred[A]=S, pred[B]=S, pred[C]=A, pred[D]=A
+  var dist=[0,1,1,2,2];
+  var labels=['S','A','B','C','D'];
+  // Trace: reconstruct path to D (id=4). Path backwards: D→A→S, then reverse to S→A→D
+  var steps=[
+    {lbl:'START GET_PATH(S,D)',txt:'Reconstruct path from D to S using pred[]. Start: path=[D].',tracePath:[4],highlighted:[],pathEdges:[],pl:1,pe:0},
+    {lbl:'u=D, u≠S',txt:'D≠S. Append pred[D]=A to path. path=[D,A]. Move u=A.',tracePath:[4,1],highlighted:[4,1],pathEdges:[],pl:2,pe:1},
+    {lbl:'u=A, u≠S',txt:'A≠S. Append pred[A]=S to path. path=[D,A,S]. Move u=S.',tracePath:[4,1,0],highlighted:[4,1,0],pathEdges:[],pl:3,pe:2},
+    {lbl:'u=S, exit loop',txt:'u=S=source. Exit while loop. Reverse path=[D,A,S] → [S,A,D].',tracePath:[4,1,0],highlighted:[0,1,4],pathEdges:[[0,1],[1,4]],pl:3,pe:2},
+    {lbl:'COMPLETE',txt:'Shortest path S→A→D (length 2, 2 edges) highlighted in orange.',tracePath:[4,1,0],highlighted:[0,1,4],pathEdges:[[0,1],[1,4]],pl:3,pe:2}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz30svg');
+  var cels={},tels={},eels={},dLabels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var el=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(el);
+      eels[e[0]+'-'+e[1]]=el;eels[e[1]+'-'+e[0]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      var dl=mk('text',{x:n.x+28,y:n.y-18,'text-anchor':'middle',fill:'#3fb950','font-size':'11','font-family':'JetBrains Mono,monospace'});
+      dl.textContent='d='+dist[n.id];
+      svg.appendChild(c);svg.appendChild(t);svg.appendChild(dl);
+      cels[n.id]=c;tels[n.id]=t;dLabels[n.id]=dl;
+    });
+  }
+
+  function render(s){
+    var hlSet={};
+    s.highlighted.forEach(function(id){hlSet[id]=1;});
+    var peSet={};
+    s.pathEdges.forEach(function(e){peSet[e[0]+'-'+e[1]]=1;peSet[e[1]+'-'+e[0]]=1;});
+    nodes.forEach(function(n){
+      var hl=hlSet[n.id];
+      if(hl){cels[n.id].setAttribute('fill','rgba(240,136,62,0.15)');cels[n.id].setAttribute('stroke','#f0883e');tels[n.id].setAttribute('fill','#f0883e');}
+      else{cels[n.id].setAttribute('fill','#3fb9500d');cels[n.id].setAttribute('stroke','#3fb950');tels[n.id].setAttribute('fill','#3fb950');}
+    });
+    edges.forEach(function(e){
+      var el=eels[e[0]+'-'+e[1]];if(!el)return;
+      if(peSet[e[0]+'-'+e[1]]){el.setAttribute('stroke','#f0883e');el.setAttribute('stroke-width','3');}
+      else{el.setAttribute('stroke','#30363d');el.setAttribute('stroke-width','2');}
+    });
+    document.getElementById('vz30lbl').textContent=s.lbl;
+    document.getElementById('vz30txt').textContent=s.txt;
+    document.getElementById('vz30pl').textContent=s.pl;
+    document.getElementById('vz30pe').textContent=s.pe;
+    var pathStr=s.tracePath.map(function(id){return labels[id];}).join('→');
+    document.getElementById('vz30pd').textContent='[ '+pathStr+' ]';
+    document.getElementById('vz30ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz30nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz30step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz30reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <p>
+      Starting from the destination u, follow <code>pred</code> pointers back to the source s.
+      Reversing gives the path in the correct order. If <code>dist[u] = ∞</code>, no path exists.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Why BFS gives shortest paths</div>
+      BFS processes vertices strictly in non-decreasing order of distance from s.
+      When a vertex v is first dequeued and its neighbour w is discovered, the distance assigned
+      to w (<code>dist[v] + 1</code>) is optimal — because any shorter path to w would have
+      caused w to be discovered earlier (contradiction with BFS ordering).
+    </div>
+  </section>
+
+  <!-- ============================= SECTION 5.5 ============================= -->
+  <section class="content-section" id="sec55">
+    <h2 class="sec-title"><span class="sec-num">5.5</span> Topological Sorting</h2>
+  <button class="review-btn" data-week="4" data-sec="sec55"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Topological Order</div>
+      Given a DAG G = (V, E), a <strong>topological ordering</strong> is a permutation of the vertices
+      such that for every directed edge (u, v), vertex u appears <em>before</em> vertex v in the permutation.
+      Equivalently, if edges represent prerequisites, a topological order is a valid sequence for
+      completing all tasks.
+    </div>
+
+    <p>
+      Key observations:
+    </p>
+    <ul>
+      <li>A topological ordering exists <strong>if and only if</strong> the graph is a DAG (no directed cycles).</li>
+      <li>A DAG can have <strong>multiple valid</strong> topological orderings (incomparable vertices can be in any relative order).</li>
+      <li>Both algorithms below run in O(|V| + |E|) and can detect cycles.</li>
+    </ul>
+
+    <h3 class="subsec">Applications</h3>
+    <ul>
+      <li><strong>Course scheduling:</strong> compute a valid order to take subjects, respecting prerequisites.</li>
+      <li><strong>Build systems:</strong> compile source files in the correct order (e.g. Makefile dependencies).</li>
+      <li><strong>Project management:</strong> schedule tasks respecting "must-finish-before" constraints (critical path analysis).</li>
+      <li><strong>Spreadsheet recalculation:</strong> update cells in the correct order based on formula dependencies.</li>
+    </ul>
+
+    <h3 class="subsec">Kahn's Algorithm</h3>
+
+    <p>
+      Kahn's algorithm maintains a count of <strong>in-degrees</strong> for each vertex. Vertices with
+      in-degree 0 have no unresolved prerequisites and are ready to be output. As each vertex is
+      processed, the in-degrees of its successors are decremented, potentially making more
+      vertices ready.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Idea</div>
+      A vertex can be placed next in the topological order when it has no remaining incoming
+      edges (no outstanding prerequisites). Process these greedily using a queue.
+    </div>
+
+    <div class="algo-header">
+      Algorithm: Topological Sort — Kahn's Algorithm
+      <span class="algo-complexity">O(|V| + |E|)</span>
+    </div>
+    <pre class="code-block has-header">
+function TOPOLOGICAL_SORT_KAHN(G = (V, E)):
+    // Compute in-degree for each vertex
+    in_degree[1..n] = 0
+    for each edge (u, v) in E:
+        in_degree[v] += 1
+
+    // Initialise queue with all zero-in-degree vertices
+    order = empty array
+    ready = Queue()
+    for each vertex u = 1 to n:
+        if in_degree[u] = 0:
+            ready.push(u)
+
+    while ready is not empty:
+        u = ready.pop()
+        order.append(u)
+        for each edge (u, v) adjacent to u:
+            in_degree[v] -= 1
+            if in_degree[v] = 0:
+                ready.push(v)
+
+    // Cycle detection: if not all vertices are in order, a cycle exists
+    if len(order) != n:
+        return "Cycle detected — not a DAG"
+    return order
+</pre>
+
+<!-- VZ31: Kahn's Topological Sort widget -->
+<div id="vz31" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 31</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">Kahn's Topological Sort — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(V+E)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz31svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz31lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz31txt">DAG: A→C, A→D, B→D, C→E, D→E. In-degrees shown on nodes. Click Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:80px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Queue size</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz31qs">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Output order</span><span style="font-size:.9em;font-weight:700;line-height:1.3;color:#3fb950;font-family:monospace;" id="vz31oo">—</span></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.78em;color:#8b949e;">Queue: <span id="vz31qd" style="color:#58a6ff;">[ ]</span></div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz31step()" id="vz31nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz31reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz31ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  // DAG: A(0),B(1),C(2),D(3),E(4). Edges: A→C, A→D, B→D, C→E, D→E
+  var nodes=[
+    {id:0,lbl:'A',x:80,y:140},
+    {id:1,lbl:'B',x:80,y:240},
+    {id:2,lbl:'C',x:220,y:70},
+    {id:3,lbl:'D',x:220,y:210},
+    {id:4,lbl:'E',x:400,y:140}
+  ];
+  // Directed edges [from, to]
+  var edges=[[0,2],[0,3],[1,3],[2,4],[3,4]];
+  var lbls=['A','B','C','D','E'];
+  var steps=[
+    {lbl:'IN-DEGREES',txt:'Compute in-degrees: A=0,B=0,C=1,D=2,E=2. A and B have in-degree 0 → ready queue.',indeg:[0,0,1,2,2],done:[],active:-1,queue:['A','B'],order:[]},
+    {lbl:'INIT QUEUE',txt:'ready=[A,B]. Both have no incoming edges.',indeg:[0,0,1,2,2],done:[],active:-1,queue:['A','B'],order:[]},
+    {lbl:'POP A',txt:'Dequeue A. Append to order. Remove edges A→C,A→D.',indeg:[0,0,1,2,2],done:[0],active:0,queue:['B'],order:['A']},
+    {lbl:'UPDATE C,D',txt:'in_deg[C]=1→0 (enqueue C). in_deg[D]=2→1 (not 0).',indeg:[0,0,0,1,2],done:[0],active:0,queue:['B','C'],order:['A']},
+    {lbl:'POP B',txt:'Dequeue B. Append to order. Remove edge B→D.',indeg:[0,0,0,1,2],done:[0,1],active:1,queue:['C'],order:['A','B']},
+    {lbl:'UPDATE D',txt:'in_deg[D]=1→0 → enqueue D. queue=[C,D].',indeg:[0,0,0,0,2],done:[0,1],active:1,queue:['C','D'],order:['A','B']},
+    {lbl:'POP C',txt:'Dequeue C. Append to order. Remove edge C→E.',indeg:[0,0,0,0,2],done:[0,1,2],active:2,queue:['D'],order:['A','B','C']},
+    {lbl:'UPDATE E',txt:'in_deg[E]=2→1. Not 0 yet.',indeg:[0,0,0,0,1],done:[0,1,2],active:2,queue:['D'],order:['A','B','C']},
+    {lbl:'POP D',txt:'Dequeue D. Append to order. Remove edge D→E.',indeg:[0,0,0,0,1],done:[0,1,2,3],active:3,queue:[],order:['A','B','C','D']},
+    {lbl:'UPDATE E',txt:'in_deg[E]=1→0 → enqueue E. queue=[E].',indeg:[0,0,0,0,0],done:[0,1,2,3],active:3,queue:['E'],order:['A','B','C','D']},
+    {lbl:'POP E',txt:'Dequeue E. Append to order. No outgoing edges.',indeg:[0,0,0,0,0],done:[0,1,2,3,4],active:4,queue:[],order:['A','B','C','D','E']},
+    {lbl:'COMPLETE',txt:'Topological order: A,B,C,D,E. Every directed edge goes left→right. Valid!',indeg:[0,0,0,0,0],done:[0,1,2,3,4],active:-1,queue:[],order:['A','B','C','D','E']}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz31svg');
+  var cels={},tels={},iLabels={},eels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function mkArrow(){
+    var defs=mk('defs',{});
+    var m=mk('marker',{id:'vz31arr',markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'});
+    var p=mk('path',{d:'M0,0 L0,6 L8,3 z',fill:'#30363d'});
+    m.appendChild(p);defs.appendChild(m);svg.appendChild(defs);
+    return p;
+  }
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var markerFill=mkArrow();
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy);
+      var ux=dx/len,uy=dy/len;
+      var x1=a.x+ux*24,y1=a.y+uy*24,x2=b.x-ux*26,y2=b.y-uy*26;
+      var el=mk('line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:'#30363d','stroke-width':'2','marker-end':'url(#vz31arr)'});
+      svg.appendChild(el);
+      eels[e[0]+'-'+e[1]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      var il=mk('text',{x:n.x,y:n.y-28,'text-anchor':'middle',fill:'#f0883e','font-size':'11','font-family':'JetBrains Mono,monospace'});
+      il.textContent='';
+      svg.appendChild(c);svg.appendChild(t);svg.appendChild(il);
+      cels[n.id]=c;tels[n.id]=t;iLabels[n.id]=il;
+    });
+  }
+
+  function render(s){
+    var doneSet={};s.done.forEach(function(id){doneSet[id]=1;});
+    nodes.forEach(function(n){
+      var done=doneSet[n.id];
+      var active=n.id===s.active;
+      if(active){cels[n.id].setAttribute('fill','#1f6feb1a');cels[n.id].setAttribute('stroke','#58a6ff');tels[n.id].setAttribute('fill','#58a6ff');}
+      else if(done){cels[n.id].setAttribute('fill','#3fb9500d');cels[n.id].setAttribute('stroke','#3fb950');tels[n.id].setAttribute('fill','#3fb950');}
+      else{cels[n.id].setAttribute('fill','#21262d');cels[n.id].setAttribute('stroke','#30363d');tels[n.id].setAttribute('fill','#c9d1d9');}
+      iLabels[n.id].textContent='in:'+s.indeg[n.id];
+    });
+    edges.forEach(function(e){
+      var el=eels[e[0]+'-'+e[1]];if(!el)return;
+      var fromDone=doneSet[e[0]];
+      if(fromDone){el.setAttribute('stroke','#30363d44');el.setAttribute('stroke-dasharray','4,4');}
+      else{el.setAttribute('stroke','#30363d');el.setAttribute('stroke-dasharray','');}
+    });
+    document.getElementById('vz31lbl').textContent=s.lbl;
+    document.getElementById('vz31txt').textContent=s.txt;
+    document.getElementById('vz31qs').textContent=s.queue.length;
+    document.getElementById('vz31oo').textContent=s.order.join('→')||'—';
+    document.getElementById('vz31qd').textContent='[ '+s.queue.join(', ')+' ]';
+    document.getElementById('vz31ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz31nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz31step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz31reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <div class="callout thm">
+      <div class="callout-title">Cycle Detection with Kahn's</div>
+      If the graph contains a cycle, the vertices in the cycle will never have their in-degree
+      reduced to 0 (because they depend on each other). After the algorithm finishes,
+      <code>len(order) &lt; |V|</code> signals a cycle.
+    </div>
+
+    <div class="callout cplx">
+      <div class="callout-title">Kahn's Algorithm Complexity</div>
+      <ul style="margin:0;">
+        <li><strong>Time:</strong> O(|V| + |E|) — each vertex is enqueued/dequeued once; each edge is processed once.</li>
+        <li><strong>Space:</strong> O(|V|) for in-degree array and queue.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">DFS-Based Topological Sort</h3>
+
+    <p>
+      An alternative approach uses DFS. The key insight: after a DFS from vertex v finishes
+      visiting all of v's descendants, v is appended to an output array. This guarantees that v's
+      descendants all appear before v. Reversing the array gives the topological order.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight</div>
+      In DFS, a vertex finishes (its DFS call returns) only after all vertices reachable from it
+      have been visited. Therefore, the <strong>reverse of DFS finish order</strong> is a valid
+      topological ordering.
+    </div>
+
+    <div class="algo-header">
+      Algorithm: Topological Sort — DFS-Based
+      <span class="algo-complexity">O(|V| + |E|)</span>
+    </div>
+    <pre class="code-block has-header">
+function TOPOLOGICAL_SORT_DFS(G = (V, E)):
+    order = empty array
+    visited[1..n] = false
+    for each vertex v = 1 to n:
+        if not visited[v]:
+            DFS(v)
+    return reverse(order)
+
+function DFS(u):
+    visited[u] = true
+    for each vertex v adjacent to u:
+        if not visited[v]:
+            DFS(v)
+    order.append(u)           // append AFTER visiting all descendants
+</pre>
+
+<!-- VZ32: DFS Topological Sort widget -->
+<div id="vz32" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 32</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">DFS Topological Sort — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(V+E)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz32svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz32lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz32txt">DFS on DAG: finish-time labels accumulate in reverse topo order. Click Next.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;width:100%;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Finish order (stack→reversed)</span><span style="font-size:.9em;font-weight:700;line-height:1.3;color:#3fb950;font-family:monospace;" id="vz32fo">—</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz32step()" id="vz32nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz32reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz32ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var nodes=[
+    {id:0,lbl:'A',x:80,y:140},
+    {id:1,lbl:'B',x:80,y:240},
+    {id:2,lbl:'C',x:220,y:70},
+    {id:3,lbl:'D',x:220,y:210},
+    {id:4,lbl:'E',x:400,y:140}
+  ];
+  var edges=[[0,2],[0,3],[1,3],[2,4],[3,4]];
+  var lbls=['A','B','C','D','E'];
+  // finish order builds up. finishNums: -1 = not finished, number = finish order
+  var steps=[
+    {lbl:'INIT',txt:'visited=[F,F,F,F,F], order=[]. DFS from A.',visited:[],active:-1,finished:[],finishNums:[-1,-1,-1,-1,-1]},
+    {lbl:'DFS(A)',txt:'Mark A visited. Explore neighbor C.',visited:[0],active:0,finished:[],finishNums:[-1,-1,-1,-1,-1]},
+    {lbl:'DFS(C)',txt:'Mark C visited. Explore neighbor E.',visited:[0,2],active:2,finished:[],finishNums:[-1,-1,-1,-1,-1]},
+    {lbl:'DFS(E)',txt:'Mark E visited. No unvisited neighbors. Append E to order. Finish E.',visited:[0,2,4],active:4,finished:[4],finishNums:[-1,-1,-1,-1,1]},
+    {lbl:'FINISH C',txt:'Back in DFS(C). All neighbors done. Append C to order.',visited:[0,2,4],active:2,finished:[4,2],finishNums:[-1,-1,2,-1,1]},
+    {lbl:'DFS(A)→D',txt:'Back in DFS(A). Neighbor D unvisited → DFS(D).',visited:[0,2,4],active:0,finished:[4,2],finishNums:[-1,-1,2,-1,1]},
+    {lbl:'DFS(D)',txt:'Mark D visited. Neighbor E already visited. Append D to order.',visited:[0,2,3,4],active:3,finished:[4,2,3],finishNums:[-1,-1,2,3,1]},
+    {lbl:'FINISH A',txt:'Back in DFS(A). All neighbors done. Append A to order.',visited:[0,2,3,4],active:-1,finished:[4,2,3,0],finishNums:[4,-1,2,3,1]},
+    {lbl:'DFS(B)',txt:'Outer loop: B not visited → DFS(B). Neighbor D already visited. Append B.',visited:[0,1,2,3,4],active:1,finished:[4,2,3,0,1],finishNums:[4,5,2,3,1]},
+    {lbl:'REVERSE',txt:'order=[E,C,D,A,B]. Reverse → [B,A,D,C,E]. This is a valid topological order!',visited:[0,1,2,3,4],active:-1,finished:[4,2,3,0,1],finishNums:[4,5,2,3,1]}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz32svg');
+  var cels={},tels={},fLabels={},eels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function mkArrow(){
+    var defs=mk('defs',{});
+    var m=mk('marker',{id:'vz32arr',markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'});
+    var p=mk('path',{d:'M0,0 L0,6 L8,3 z',fill:'#30363d'});
+    m.appendChild(p);defs.appendChild(m);svg.appendChild(defs);
+  }
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    mkArrow();
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy);
+      var ux=dx/len,uy=dy/len;
+      var x1=a.x+ux*24,y1=a.y+uy*24,x2=b.x-ux*26,y2=b.y-uy*26;
+      var el=mk('line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:'#30363d','stroke-width':'2','marker-end':'url(#vz32arr)'});
+      svg.appendChild(el);
+      eels[e[0]+'-'+e[1]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      var fl=mk('text',{x:n.x+26,y:n.y-14,'text-anchor':'middle',fill:'#f0883e','font-size':'11','font-family':'JetBrains Mono,monospace'});
+      fl.textContent='';
+      svg.appendChild(c);svg.appendChild(t);svg.appendChild(fl);
+      cels[n.id]=c;tels[n.id]=t;fLabels[n.id]=fl;
+    });
+  }
+
+  function render(s){
+    var finSet={};s.finished.forEach(function(id){finSet[id]=1;});
+    var visSet={};s.visited.forEach(function(id){visSet[id]=1;});
+    nodes.forEach(function(n){
+      var active=n.id===s.active;
+      var fin=finSet[n.id];
+      var vis=visSet[n.id];
+      if(active){cels[n.id].setAttribute('fill','#1f6feb1a');cels[n.id].setAttribute('stroke','#58a6ff');tels[n.id].setAttribute('fill','#58a6ff');}
+      else if(fin){cels[n.id].setAttribute('fill','#3fb9500d');cels[n.id].setAttribute('stroke','#3fb950');tels[n.id].setAttribute('fill','#3fb950');}
+      else if(vis){cels[n.id].setAttribute('fill','#f0883e0d');cels[n.id].setAttribute('stroke','#f0883e');tels[n.id].setAttribute('fill','#f0883e');}
+      else{cels[n.id].setAttribute('fill','#21262d');cels[n.id].setAttribute('stroke','#30363d');tels[n.id].setAttribute('fill','#c9d1d9');}
+      var fn=s.finishNums[n.id];
+      fLabels[n.id].textContent=fn>=0?'f:'+fn:'';
+    });
+    document.getElementById('vz32lbl').textContent=s.lbl;
+    document.getElementById('vz32txt').textContent=s.txt;
+    // Show finish order reversed
+    var fo=s.finished.map(function(id){return lbls[id];});
+    var rev=fo.slice().reverse();
+    document.getElementById('vz32fo').textContent=rev.length?rev.join('→'):'—';
+    document.getElementById('vz32ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz32nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz32step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz32reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <div class="callout cplx">
+      <div class="callout-title">DFS Topo Sort Complexity</div>
+      <ul style="margin:0;">
+        <li><strong>Time:</strong> O(|V| + |E|) — standard DFS plus O(|V|) appends.</li>
+        <li><strong>Space:</strong> O(|V|) for visited array and order array, plus recursion stack depth.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsec">Example Trace</h3>
+    <p>
+      Consider the DAG: A &rarr; B, A &rarr; C, B &rarr; D, C &rarr; E, E &rarr; D.
+      Valid topological orderings include: A, B, C, E, D and A, C, B, E, D and A, C, E, B, D.
+      The ordering A, B, E, C, D is <strong>invalid</strong> because E &rarr; D and C &rarr; E requires
+      C to come before E, but in A, B, E, C, D we have E before C — violating A &rarr; C &rarr; E.
+    </p>
+  </section>
+
+  <!-- ============================= SECTION 5.6 ============================= -->
+  <section class="content-section" id="sec56">
+    <h2 class="sec-title"><span class="sec-num">5.6</span> Incremental Graph Connectivity (Union-Find)</h2>
+  <button class="review-btn" data-week="4" data-sec="sec56"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <h3 class="subsec">The Problem</h3>
+
+    <p>
+      We have seen that DFS/BFS can find all connected components of a static graph in O(|V| + |E|).
+      But what if the graph is <em>changing</em> — specifically, what if edges are being
+      <strong>added</strong> one at a time, and we need to answer connectivity queries in between additions?
+    </p>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Incremental Connectivity Problem</div>
+      Design a data structure supporting two operations efficiently:
+      <ul style="margin-top:8px;">
+        <li><strong>CONNECTED(u, v):</strong> Are vertices u and v in the same connected component?</li>
+        <li><strong>LINK(u, v):</strong> Add an edge between u and v (potentially merging two components).</li>
+      </ul>
+      Naively rerunning DFS/BFS after each LINK operation would cost O(|V| + |E|) per query.
+      The union-find data structure solves this much more efficiently.
+    </div>
+
+    <h3 class="subsec">Union-Find / Disjoint-Set Data Structure</h3>
+
+    <p>
+      The union-find (or disjoint-set) data structure maintains a collection of <strong>n elements</strong>,
+      each belonging to a disjoint set, supporting two operations:
+    </p>
+    <ul>
+      <li><strong>FIND(u):</strong> Return the <em>representative</em> (root) of the set containing u.</li>
+      <li><strong>UNION(u, v):</strong> Merge the sets containing u and v into one set.</li>
+    </ul>
+    <p>
+      Connectivity queries reduce to: are u and v connected? &hArr; FIND(u) = FIND(v).
+    </p>
+
+    <h3 class="subsec">Representation: Disjoint-Set Forest</h3>
+
+    <p>
+      Each set is represented as a <strong>rooted tree</strong>. Each node stores a pointer to its parent.
+      The root of the tree is the representative. Roots point to themselves.
+    </p>
+    <p>
+      The FIND operation follows parent pointers up to the root. The UNION operation makes
+      the root of one tree a child of the root of the other.
+    </p>
+
+<!-- VZ33: Connectivity Check widget -->
+<div id="vz33" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 33</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">Connectivity Check — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(1) after O(V+E) prep</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz33svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz33lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz33txt">Graph: A-B-C-D connected, E isolated. BFS from A counts visited nodes vs total.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Visited</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz33sv">0</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Total</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz33st">5</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Connected?</span><span style="font-size:1.1em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz33cn">—</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz33step()" id="vz33nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz33reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz33ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  // Nodes: A(0),B(1),C(2),D(3),E(4 isolated)
+  var nodes=[
+    {id:0,lbl:'A',x:80,y:140},
+    {id:1,lbl:'B',x:200,y:80},
+    {id:2,lbl:'C',x:320,y:80},
+    {id:3,lbl:'D',x:440,y:140},
+    {id:4,lbl:'E',x:270,y:220}
+  ];
+  var edges=[[0,1],[1,2],[2,3]]; // E is isolated
+  var steps=[
+    {lbl:'INIT',txt:'Graph: A-B-C-D chain, E isolated. Total nodes=5. Start BFS from A.',vis:[],active:-1,treeEdges:[],conn:'—'},
+    {lbl:'VISIT A',txt:'Mark A visited. Enqueue A.',vis:[0],active:0,treeEdges:[],conn:'—'},
+    {lbl:'DISCOVER B',txt:'From A: discover B. Visited=2.',vis:[0,1],active:1,treeEdges:[[0,1]],conn:'—'},
+    {lbl:'DISCOVER C',txt:'From B: discover C. Visited=3.',vis:[0,1,2],active:2,treeEdges:[[0,1],[1,2]],conn:'—'},
+    {lbl:'DISCOVER D',txt:'From C: discover D. Visited=4.',vis:[0,1,2,3],active:3,treeEdges:[[0,1],[1,2],[2,3]],conn:'—'},
+    {lbl:'BFS DONE',txt:'Queue empty. BFS from A visited 4 nodes. Total=5. 4≠5 → graph is NOT connected. E was never reached!',vis:[0,1,2,3],active:-1,treeEdges:[[0,1],[1,2],[2,3]],conn:'No (E isolated)'},
+    {lbl:'RESULT',txt:'CONNECTED check: visited=4, total=5. Not equal → not fully connected. E is isolated (no edges).',vis:[0,1,2,3],active:-1,treeEdges:[[0,1],[1,2],[2,3]],conn:'No (E isolated)'}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz33svg');
+  var cels={},tels={},eels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      var el=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#30363d','stroke-width':'2'});
+      svg.appendChild(el);
+      eels[e[0]+'-'+e[1]]=el;eels[e[1]+'-'+e[0]]=el;
+    });
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:n.id===4?'#f85149':'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:n.id===4?'#f85149':'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.lbl;
+      svg.appendChild(c);svg.appendChild(t);
+      cels[n.id]=c;tels[n.id]=t;
+    });
+    // Label E as isolated
+    var il=mk('text',{x:nodes[4].x,y:nodes[4].y-30,'text-anchor':'middle',fill:'#f85149','font-size':'10','font-family':'JetBrains Mono,monospace'});
+    il.textContent='isolated';
+    svg.appendChild(il);
+  }
+
+  function render(s){
+    var treeSet={};s.treeEdges.forEach(function(e){treeSet[e[0]+'-'+e[1]]=1;treeSet[e[1]+'-'+e[0]]=1;});
+    nodes.forEach(function(n){
+      var vis=s.vis.indexOf(n.id)>=0;
+      var active=n.id===s.active;
+      if(n.id===4 && !vis){cels[n.id].setAttribute('fill','rgba(248,81,73,0.1)');cels[n.id].setAttribute('stroke','#f85149');tels[n.id].setAttribute('fill','#f85149');}
+      else if(active){cels[n.id].setAttribute('fill','#1f6feb1a');cels[n.id].setAttribute('stroke','#58a6ff');tels[n.id].setAttribute('fill','#58a6ff');}
+      else if(vis){cels[n.id].setAttribute('fill','#3fb9500d');cels[n.id].setAttribute('stroke','#3fb950');tels[n.id].setAttribute('fill','#3fb950');}
+      else{cels[n.id].setAttribute('fill','#21262d');cels[n.id].setAttribute('stroke','#30363d');tels[n.id].setAttribute('fill','#c9d1d9');}
+    });
+    edges.forEach(function(e){
+      var el=eels[e[0]+'-'+e[1]];if(!el)return;
+      if(treeSet[e[0]+'-'+e[1]]){el.setAttribute('stroke','#58a6ff');el.setAttribute('stroke-width','2.5');}
+      else{el.setAttribute('stroke','#30363d');el.setAttribute('stroke-width','2');}
+    });
+    document.getElementById('vz33lbl').textContent=s.lbl;
+    document.getElementById('vz33txt').textContent=s.txt;
+    document.getElementById('vz33sv').textContent=s.vis.length;
+    var cnEl=document.getElementById('vz33cn');
+    cnEl.textContent=s.conn;
+    cnEl.style.color=s.conn==='—'?'#c9d1d9':s.conn.startsWith('No')?'#f85149':'#3fb950';
+    document.getElementById('vz33ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz33nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz33step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz33reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <h4 class="subsubsec">Naive Implementation (No Optimisations)</h4>
+
+    <div class="algo-header">
+      Algorithm: Union-Find — Naive
+      <span class="algo-complexity">O(n) per operation (worst case)</span>
+    </div>
+    <pre class="code-block has-header">
+function INITIALISE(n):
+    parent[1..n] = [1, 2, 3, ..., n]   // each node is its own root
+
+function FIND(x):
+    if parent[x] = x:
+        return x
+    else:
+        return FIND(parent[x])          // follow parent pointers to root
+
+function UNION(x, y):
+    parent[FIND(x)] = FIND(y)           // attach root of x's tree to root of y's tree
+</pre>
+
+<!-- VZ34: Union-Find Basic widget -->
+<div id="vz34" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Alg 34</span>
+    <span style="font-size:14px;font-weight:600;color:#c9d1d9;flex:1;">Union-Find Basic — Interactive Visualization</span>
+    <span style="font-size:11px;font-family:monospace;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(n) worst</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <svg id="vz34svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
+    <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz34lbl">READY</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz34txt">5 isolated nodes. parent[i]=i. Click Next to perform UNION operations.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Sets remaining</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz34sr">5</span></div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:80px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Tree height</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz34th">0</span></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.78em;color:#8b949e;word-break:break-all;">parent[]: <span id="vz34pa" style="color:#f0883e;">0 1 2 3 4</span></div>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button onclick="vz34step()" id="vz34nb" style="background:#1f6feb;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;font-weight:700;">Next &#9654;</button>
+        <button onclick="vz34reset()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.82em;">&#8635; Reset</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.67em;color:#8b949e;align-self:center;" id="vz34ctr">0 / 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  // 5 nodes in a row: 0,1,2,3,4
+  var nodes=[
+    {id:0,x:60,y:200},{id:1,x:160,y:200},{id:2,x:260,y:200},{id:3,x:360,y:200},{id:4,x:460,y:200}
+  ];
+  var lbls=['0','1','2','3','4'];
+  // parent array state, tree edges (as parent pointers drawn upward)
+  var steps=[
+    {lbl:'INIT',txt:'INITIALISE(5). parent=[0,1,2,3,4]. Each node is its own root. 5 singleton sets.',parent:[0,1,2,3,4],edges:[],sets:5,height:0},
+    {lbl:'UNION(0,1)',txt:'FIND(0)=0, FIND(1)=1. parent[0]=1. Node 0 now points to 1.',parent:[1,1,2,3,4],edges:[[0,1]],sets:4,height:1},
+    {lbl:'UNION(2,3)',txt:'FIND(2)=2, FIND(3)=3. parent[2]=3. Node 2 now points to 3.',parent:[1,1,3,3,4],edges:[[0,1],[2,3]],sets:3,height:1},
+    {lbl:'UNION(0,2)',txt:'FIND(0): 0→1 (root=1). FIND(2): 2→3 (root=3). parent[1]=3. Trees merge.',parent:[1,3,3,3,4],edges:[[0,1],[2,3],[1,3]],sets:2,height:2},
+    {lbl:'FIND(0)',txt:'FIND(0): follow 0→1→3. Root=3. No compression — path length 2!',parent:[1,3,3,3,4],edges:[[0,1],[2,3],[1,3]],sets:2,height:2},
+    {lbl:'UNION(0,4)',txt:'FIND(0)=3, FIND(4)=4. parent[3]=4. Chain grows: 0→1→3→4.',parent:[1,3,3,4,4],edges:[[0,1],[2,3],[1,3],[3,4]],sets:1,height:3},
+    {lbl:'FIND(0) slow',txt:'FIND(0) now traverses: 0→1→3→4. Chain length 3 (O(n) worst case).',parent:[1,3,3,4,4],edges:[[0,1],[2,3],[1,3],[3,4]],sets:1,height:3},
+    {lbl:'ALL CONNECTED',txt:'CONNECTED(0,2): FIND(0)=4, FIND(2)=4. Same root → connected! Without optimizations chains grow to O(n).',parent:[1,3,3,4,4],edges:[[0,1],[2,3],[1,3],[3,4]],sets:1,height:3}
+  ];
+  var cur=0;
+  var svg=document.getElementById('vz34svg');
+  var cels={},tels={};
+
+  function mk(tag,a){var el=document.createElementNS(NS,tag);for(var k in a)el.setAttribute(k,a[k]);return el;}
+
+  function build(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    nodes.forEach(function(n){
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:'#21262d',stroke:'#30363d','stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:'#c9d1d9','font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.id;
+      svg.appendChild(c);svg.appendChild(t);
+      cels[n.id]=c;tels[n.id]=t;
+    });
+  }
+
+  function render(s){
+    // Clear and rebuild tree structure
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    // Compute tree layout - nodes point upward to parent
+    var yLevel={};
+    var parent=s.parent;
+    function getRoot(x){return parent[x]===x?x:getRoot(parent[x]);}
+    function depth(x){return parent[x]===x?0:1+depth(parent[x]);}
+    var maxD=0;
+    nodes.forEach(function(n){var d=depth(n.id);if(d>maxD)maxD=d;});
+    // Draw parent-pointer arrows
+    var colors=['#58a6ff','#f0883e','#3fb950','#bc8cff','#79c0ff'];
+    var rootColors={};
+    nodes.forEach(function(n){
+      var r=getRoot(n.id);
+      if(!(r in rootColors)){
+        var keys=Object.keys(rootColors).length;
+        rootColors[r]=colors[keys%colors.length];
+      }
+    });
+    // Draw edges first
+    s.edges.forEach(function(e){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      // Draw upward curve
+      var mx=(a.x+b.x)/2,my=Math.min(a.y,b.y)-40;
+      var d='M '+a.x+' '+a.y+' Q '+mx+' '+my+' '+b.x+' '+b.y;
+      var path=mk('path',{d:d,stroke:'#58a6ff',fill:'none','stroke-width':'2','marker-end':'url(#vz34arr)'});
+      svg.appendChild(path);
+    });
+    // Arrow marker
+    var defs=mk('defs',{});
+    var m=mk('marker',{id:'vz34arr',markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'});
+    var p=mk('path',{d:'M0,0 L0,6 L8,3 z',fill:'#58a6ff'});
+    m.appendChild(p);defs.appendChild(m);svg.appendChild(defs);
+    // Draw nodes
+    nodes.forEach(function(n){
+      var r=getRoot(n.id);
+      var col=rootColors[r]||'#c9d1d9';
+      var isRoot=parent[n.id]===n.id;
+      var c=mk('circle',{cx:n.x,cy:n.y,r:'22',fill:isRoot?'rgba(63,185,80,0.1)':'#21262d',stroke:isRoot?'#3fb950':col,'stroke-width':'2'});
+      var t=mk('text',{x:n.x,y:n.y+5,'text-anchor':'middle',fill:isRoot?'#3fb950':col,'font-size':'14','font-family':'JetBrains Mono,monospace','font-weight':'700'});
+      t.textContent=n.id;
+      svg.appendChild(c);svg.appendChild(t);
+      cels[n.id]=c;tels[n.id]=t;
+    });
+    document.getElementById('vz34lbl').textContent=s.lbl;
+    document.getElementById('vz34txt').textContent=s.txt;
+    document.getElementById('vz34sr').textContent=s.sets;
+    document.getElementById('vz34th').textContent=s.height;
+    document.getElementById('vz34pa').textContent=s.parent.join(' ');
+    document.getElementById('vz34ctr').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('vz34nb').disabled=cur>=steps.length-1;
+  }
+
+  window.vz34step=function(){if(cur<steps.length-1){cur++;render(steps[cur]);}};
+  window.vz34reset=function(){cur=0;build();render(steps[0]);};
+  build();render(steps[0]);
+})();
+</script>
+
+    <div class="callout warn">
+      <div class="callout-title">Problem with Naive Version</div>
+      A sequence of UNION operations can create a long chain (degenerate tree), making
+      subsequent FIND operations take O(n) time. Two optimisations fix this.
+    </div>
+
+    <h3 class="subsec">Optimisation 1: Path Compression</h3>
+
+    <p>
+      During a FIND, every node on the path to the root is made to point <strong>directly</strong> to the root.
+      This flattens the tree so that future FIND operations on these nodes are O(1).
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Effect</div>
+      After path compression, subsequent FINDs on previously traversed nodes skip directly to the root,
+      eliminating redundant traversal of long chains. Over a sequence of m operations,
+      this gives a worst-case cost of O(m log n).
+    </div>
+
+    <div class="algo-header">
+      Algorithm: FIND with Path Compression
+      <span class="algo-complexity">Amortised O(log n) per operation</span>
+    </div>
+    <pre class="code-block has-header">
+function FIND(x):
+    if parent[x] != x:
+        parent[x] = FIND(parent[x])    // recursively compress; set parent to root
+    return parent[x]
+</pre>
+
+<div id="vz35" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="display:flex;align-items:center;padding:10px 18px;background:#21262d;border-bottom:1px solid #30363d;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;letter-spacing:.08em;text-transform:uppercase;">Algorithm 35 · FIND with Path Compression</span>
+    <span style="margin-left:auto;font-size:11px;color:#f0883e;font-family:monospace;">O(log n) amortised</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:280px;">
+    <div style="padding:20px;border-right:1px solid #30363d;">
+      <svg id="vz35svg" viewBox="0 0 480 240" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div id="vz35lbl" style="font-size:10px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;">Step 0 of 7</div>
+      <div id="vz35txt" style="font-size:13px;line-height:1.6;color:#c9d1d9;flex:1;min-height:80px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:6px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Path Len</div>
+          <div id="vz35pathlen" style="font-size:18px;font-weight:700;color:#58a6ff;margin-top:2px;">5</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:6px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Compressed</div>
+          <div id="vz35compressed" style="font-size:18px;font-weight:700;color:#bc8cff;margin-top:2px;">0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:auto;">
+        <button id="vz35prev" onclick="vz35step(-1)" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;" disabled>◀ Prev</button>
+        <button id="vz35next" onclick="vz35step(1)" style="background:#1f6feb;border:none;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;flex:1;">Next ▶</button>
+        <button onclick="vz35reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS = 'http://www.w3.org/2000/svg';
+  var cur = 0;
+
+  // Node positions: nodes 1-5 at indices 0-4
+  var nx = [55,145,235,325,415];
+  var ny = 120;
+
+  // Steps: each step has text, pathLen, compressed, activeNodes (blue), doneNodes (purple), compressedEdges (which source nodes point directly to root=5)
+  var steps = [
+    {
+      lbl:'Step 0 of 7',
+      txt:'Initial 5-node chain. parent[1]=2, parent[2]=3, parent[3]=4, parent[4]=5, parent[5]=5 (root). We call FIND(1).',
+      pathLen:5, compressed:0,
+      active:[], done:[], compEdges:[]
+    },
+    {
+      lbl:'Step 1 of 7',
+      txt:'FIND(1): parent[1]=2 ≠ 1, so recurse FIND(2). Node 1 is on the call stack.',
+      pathLen:4, compressed:0,
+      active:[0], done:[], compEdges:[]
+    },
+    {
+      lbl:'Step 2 of 7',
+      txt:'FIND(2): parent[2]=3 ≠ 2, so recurse FIND(3). Nodes 1 and 2 are on the call stack.',
+      pathLen:3, compressed:0,
+      active:[0,1], done:[], compEdges:[]
+    },
+    {
+      lbl:'Step 3 of 7',
+      txt:'FIND(3): parent[3]=4 ≠ 3, so recurse FIND(4). Nodes 1, 2, 3 are on the call stack.',
+      pathLen:2, compressed:0,
+      active:[0,1,2], done:[], compEdges:[]
+    },
+    {
+      lbl:'Step 4 of 7',
+      txt:'FIND(4): parent[4]=5 ≠ 4, so recurse FIND(5). All non-root nodes on the call stack.',
+      pathLen:1, compressed:0,
+      active:[0,1,2,3], done:[], compEdges:[]
+    },
+    {
+      lbl:'Step 5 of 7',
+      txt:'FIND(5): parent[5]=5. Root found! Return 5. Now unwinding the recursion stack…',
+      pathLen:1, compressed:0,
+      active:[0,1,2,3], done:[], compEdges:[], rootFound:true
+    },
+    {
+      lbl:'Step 6 of 7',
+      txt:'Unwinding: parent[4] already = 5 (no change). parent[3] = 5, parent[2] = 5. Compressing paths!',
+      pathLen:1, compressed:2,
+      active:[], done:[1,2,3], compEdges:[1,2,3]
+    },
+    {
+      lbl:'Step 7 of 7',
+      txt:'parent[1] = 5. All 4 nodes now point directly to root 5! Future FIND(1) = O(1). Path compression complete.',
+      pathLen:1, compressed:3,
+      active:[], done:[0,1,2,3], compEdges:[0,1,2,3]
+    }
+  ];
+
+  function mkEl(tag, attrs){
+    var el = document.createElementNS(NS, tag);
+    for(var k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  function render(){
+    var svg = document.getElementById('vz35svg');
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var s = steps[cur];
+
+    // Defs for arrowheads
+    var defs = mkEl('defs',{});
+    var marker = mkEl('marker',{id:'vz35arr','markerWidth':'8','markerHeight':'8','refX':'6','refY':'3','orient':'auto'});
+    var poly = mkEl('polygon',{points:'0 0, 6 3, 0 6',fill:'#8b949e'});
+    marker.appendChild(poly);
+    var marker2 = mkEl('marker',{id:'vz35arr2','markerWidth':'8','markerHeight':'8','refX':'6','refY':'3','orient':'auto'});
+    var poly2 = mkEl('polygon',{points:'0 0, 6 3, 0 6',fill:'#bc8cff'});
+    marker2.appendChild(poly2);
+    var marker3 = mkEl('marker',{id:'vz35arr3','markerWidth':'8','markerHeight':'8','refX':'6','refY':'3','orient':'auto'});
+    var poly3 = mkEl('polygon',{points:'0 0, 6 3, 0 6',fill:'#3fb950'});
+    marker3.appendChild(poly3);
+    defs.appendChild(marker);
+    defs.appendChild(marker2);
+    defs.appendChild(marker3);
+    svg.appendChild(defs);
+
+    var compSet = {};
+    s.compEdges.forEach(function(i){ compSet[i]=true; });
+
+    // Draw chain edges for non-compressed nodes (nodes 0-3, each → next)
+    // Node i connects to node i+1 (1-indexed: 1→2, 2→3, 3→4, 4→5)
+    for(var i=0;i<4;i++){
+      if(!compSet[i]){
+        var x1=nx[i], x2=nx[i+1];
+        var line = mkEl('line',{
+          x1:x1+22, y1:ny,
+          x2:x2-22, y2:ny,
+          stroke:'#8b949e','stroke-width':'1.5',
+          'marker-end':'url(#vz35arr)'
+        });
+        svg.appendChild(line);
+      }
+    }
+
+    // Draw compressed edges (curved above) from compressed nodes to node 5 (index 4)
+    s.compEdges.forEach(function(i){
+      var x1=nx[i], x2=nx[4];
+      var cx=(x1+x2)/2, cy=40;
+      var dx=x2-x1;
+      var nx2end = x2-22;
+      // angle at endpoint for arrowhead alignment — use path approach
+      var path = mkEl('path',{
+        d:'M '+(x1)+','+(ny-22)+' Q '+cx+','+cy+' '+(nx2end)+','+(ny-8),
+        fill:'none',stroke:'#bc8cff','stroke-width':'1.8',
+        'marker-end':'url(#vz35arr2)'
+      });
+      svg.appendChild(path);
+    });
+
+    // Root self-loop indicator (small arc on root)
+    var rootLoop = mkEl('path',{
+      d:'M '+(nx[4]+16)+','+(ny-10)+' C '+(nx[4]+38)+','+(ny-30)+' '+(nx[4]+38)+','+(ny+10)+' '+(nx[4]+16)+','+(ny+10),
+      fill:'none',stroke:'#3fb950','stroke-width':'1.5','stroke-dasharray':'3,2'
+    });
+    svg.appendChild(rootLoop);
+
+    // Draw nodes
+    for(var i=0;i<5;i++){
+      var isRoot=(i===4);
+      var isActive=s.active.indexOf(i)>=0;
+      var isDone=s.done.indexOf(i)>=0;
+      var fill,stroke;
+      if(isRoot){
+        fill=s.rootFound?'#1a4731':'#0d2818';
+        stroke='#3fb950';
+      } else if(isDone){
+        fill='#1e1535';
+        stroke='#bc8cff';
+      } else if(isActive){
+        fill='#0d1e3a';
+        stroke='#58a6ff';
+      } else {
+        fill='#21262d';
+        stroke='#30363d';
+      }
+
+      if(isRoot){
+        var outer=mkEl('circle',{cx:nx[i],cy:ny,r:22,fill:fill,stroke:stroke,'stroke-width':'2'});
+        var inner=mkEl('circle',{cx:nx[i],cy:ny,r:17,fill:'none',stroke:stroke,'stroke-width':'1','stroke-dasharray':'3,2'});
+        svg.appendChild(outer);
+        svg.appendChild(inner);
+      } else {
+        var circ=mkEl('circle',{cx:nx[i],cy:ny,r:22,fill:fill,stroke:stroke,'stroke-width':'2'});
+        svg.appendChild(circ);
+      }
+
+      var lbl=mkEl('text',{x:nx[i],y:ny+5,
+        'text-anchor':'middle','font-size':'14','font-weight':'700',
+        fill:isRoot?'#3fb950':(isDone?'#bc8cff':(isActive?'#58a6ff':'#c9d1d9')),
+        'font-family':'monospace'
+      });
+      lbl.textContent=String(i+1);
+      svg.appendChild(lbl);
+    }
+
+    // Labels below nodes
+    var parentArr=[2,3,4,5,5];
+    // After compression:
+    var compArr = JSON.parse(JSON.stringify(parentArr));
+    s.compEdges.forEach(function(i){ compArr[i]=5; });
+    for(var i=0;i<5;i++){
+      var ptxt=mkEl('text',{x:nx[i],y:ny+40,
+        'text-anchor':'middle','font-size':'9','fill':'#8b949e','font-family':'monospace'
+      });
+      ptxt.textContent='p='+compArr[i];
+      svg.appendChild(ptxt);
+    }
+
+    // Root label
+    var rl=mkEl('text',{x:nx[4],y:ny-30,'text-anchor':'middle','font-size':'9','fill':'#3fb950','font-family':'sans-serif','font-weight':'700'});
+    rl.textContent='ROOT';
+    svg.appendChild(rl);
+
+    // Update panel
+    document.getElementById('vz35lbl').textContent = s.lbl;
+    document.getElementById('vz35txt').textContent = s.txt;
+    document.getElementById('vz35pathlen').textContent = s.pathLen;
+    document.getElementById('vz35compressed').textContent = s.compressed;
+    document.getElementById('vz35prev').disabled = (cur===0);
+    document.getElementById('vz35next').disabled = (cur===steps.length-1);
+  }
+
+  window.vz35step = function(d){
+    cur = Math.max(0, Math.min(steps.length-1, cur+d));
+    render();
+  };
+  window.vz35reset = function(){
+    cur=0; render();
+  };
+
+  render();
+})();
+</script>
+
+    <p>
+      This elegant one-liner achieves path compression: after the recursive call returns the root,
+      <code>parent[x]</code> is set directly to that root, flattening the path for future queries.
+    </p>
+
+    <h3 class="subsec">Optimisation 2: Union by Rank</h3>
+
+    <p>
+      Each tree is assigned a <strong>rank</strong> — an upper bound on its height. When merging two trees,
+      always attach the tree with the <em>smaller</em> rank as a subtree of the one with the
+      <em>larger</em> rank. This keeps trees balanced and short, preventing degenerate chains.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Effect</div>
+      With union by rank, the height of any tree is at most O(log n). A sequence of m operations
+      has worst-case cost O(m log n).
+    </div>
+
+    <div class="algo-header">
+      Algorithm: UNION by Rank
+      <span class="algo-complexity">Amortised O(log n) per operation</span>
+    </div>
+    <pre class="code-block has-header">
+function INITIALISE(n):
+    parent[1..n] = [1, 2, ..., n]
+    rank[1..n] = 0              // all trees start as single nodes with rank 0
+
+function UNION(x, y):
+    x = FIND(x)                 // get representatives
+    y = FIND(y)
+    if x = y: return            // already in the same set
+
+    if rank[x] < rank[y]:
+        parent[x] = y           // smaller rank tree becomes child of larger
+    else:
+        parent[y] = x           // y becomes child of x
+        if rank[x] = rank[y]:
+            rank[x] += 1        // only increase rank when merging equal-rank trees
+</pre>
+
+<div id="vz36" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="display:flex;align-items:center;padding:10px 18px;background:#21262d;border-bottom:1px solid #30363d;">
+    <span style="font-size:11px;font-weight:700;color:#8b949e;letter-spacing:.08em;text-transform:uppercase;">Algorithm 36 · UNION by Rank</span>
+    <span style="margin-left:auto;font-size:11px;color:#f0883e;font-family:monospace;">O(log n) amortised</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:290px;">
+    <div style="padding:20px;border-right:1px solid #30363d;">
+      <svg id="vz36svg" viewBox="0 0 480 260" style="width:100%;height:auto;background:#0d1117;border-radius:6px;display:block;"></svg>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div id="vz36lbl" style="font-size:10px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.1em;">Step 0 of 4</div>
+      <div id="vz36txt" style="font-size:13px;line-height:1.6;color:#c9d1d9;flex:1;min-height:80px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:6px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Sets</div>
+          <div id="vz36sets" style="font-size:18px;font-weight:700;color:#58a6ff;margin-top:2px;">5</div>
+        </div>
+        <div style="background:#21262d;border:1px solid #30363d;border-radius:6px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Max Rank</div>
+          <div id="vz36rank" style="font-size:18px;font-weight:700;color:#f0883e;margin-top:2px;">0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:auto;">
+        <button id="vz36prev" onclick="vz36step(-1)" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;" disabled>◀ Prev</button>
+        <button id="vz36next" onclick="vz36step(1)" style="background:#1f6feb;border:none;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;flex:1;">Next ▶</button>
+        <button onclick="vz36reset()" style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var NS = 'http://www.w3.org/2000/svg';
+  var cur = 0;
+
+  // Steps: each step defines node positions, edges (parent→child), ranks, highlight info
+  // Nodes: 0,1,2,3,4 (displayed as "0","1","2","3","4")
+  // positions per step: array of {x,y} indexed by node
+  var stepData = [
+    {
+      lbl:'Step 0 of 4',
+      txt:'5 isolated nodes. parent=[0,1,2,3,4], rank=[0,0,0,0,0]. Each node is its own root.',
+      sets:5, maxRank:0,
+      pos:[{x:55,y:130},{x:145,y:130},{x:235,y:130},{x:325,y:130},{x:415,y:130}],
+      edges:[],
+      roots:[0,1,2,3,4],
+      ranks:[0,0,0,0,0],
+      newEdge:-1
+    },
+    {
+      lbl:'Step 1 of 4',
+      txt:'UNION(0,1): rank[0]=rank[1]=0 (equal) → parent[1]=0, rank[0] becomes 1. Node 1 is now a child of root 0.',
+      sets:4, maxRank:1,
+      pos:[{x:100,y:80},{x:100,y:170},{x:295,y:80},{x:295,y:170},{x:415,y:130}],
+      edges:[{from:1,to:0},{from:3,to:2}],
+      roots:[0,2,4],
+      ranks:[1,0,0,0,0],
+      newEdge:0
+    },
+    {
+      lbl:'Step 2 of 4',
+      txt:'UNION(2,3): rank[2]=rank[3]=0 (equal) → parent[3]=2, rank[2] becomes 1. Two balanced 2-node trees now exist.',
+      sets:3, maxRank:1,
+      pos:[{x:100,y:80},{x:100,y:170},{x:295,y:80},{x:295,y:170},{x:415,y:130}],
+      edges:[{from:1,to:0},{from:3,to:2}],
+      roots:[0,2,4],
+      ranks:[1,0,1,0,0],
+      newEdge:1
+    },
+    {
+      lbl:'Step 3 of 4',
+      txt:'UNION(4,2): rank[4]=0 < rank[2]=1 → parent[4]=2. Node 4 attaches under root 2. Rank unchanged (only increases on equal-rank merge).',
+      sets:2, maxRank:1,
+      pos:[{x:100,y:80},{x:100,y:170},{x:310,y:65},{x:240,y:165},{x:380,y:165}],
+      edges:[{from:1,to:0},{from:3,to:2},{from:4,to:2}],
+      roots:[0,2],
+      ranks:[1,0,1,0,0],
+      newEdge:2
+    },
+    {
+      lbl:'Step 4 of 4',
+      txt:'UNION(0,2): rank[0]=rank[2]=1 (equal) → parent[2]=0, rank[0] becomes 2. All 5 nodes under root 0! Final tree height = 2.',
+      sets:1, maxRank:2,
+      pos:[{x:240,y:40},{x:130,y:130},{x:350,y:130},{x:300,y:215},{x:400,y:215}],
+      edges:[{from:1,to:0},{from:2,to:0},{from:3,to:2},{from:4,to:2}],
+      roots:[0],
+      ranks:[2,0,1,0,0],
+      newEdge:3
+    }
+  ];
+
+  function mkEl(tag,attrs){
+    var el=document.createElementNS(NS,tag);
+    for(var k in attrs) el.setAttribute(k,attrs[k]);
+    return el;
+  }
+
+  function render(){
+    var svg=document.getElementById('vz36svg');
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    var s=stepData[cur];
+
+    // Defs
+    var defs=mkEl('defs',{});
+    function mkMarker(id,color){
+      var m=mkEl('marker',{id:id,'markerWidth':'8','markerHeight':'8','refX':'6','refY':'3','orient':'auto'});
+      var p=mkEl('polygon',{points:'0 0, 6 3, 0 6',fill:color});
+      m.appendChild(p); defs.appendChild(m);
+    }
+    mkMarker('vz36arr','#8b949e');
+    mkMarker('vz36arrNew','#58a6ff');
+    svg.appendChild(defs);
+
+    var pos=s.pos;
+    var rootSet={};
+    s.roots.forEach(function(r){rootSet[r]=true;});
+
+    // Draw edges
+    s.edges.forEach(function(e,idx){
+      var isNew=(idx===s.newEdge);
+      var from=pos[e.from], to=pos[e.to];
+      // direction from child toward parent (to)
+      var dx=to.x-from.x, dy=to.y-from.y;
+      var dist=Math.sqrt(dx*dx+dy*dy);
+      var ux=dx/dist, uy=dy/dist;
+      var r=22;
+      var x1=from.x+ux*r, y1=from.y+uy*r;
+      var x2=to.x-ux*r, y2=to.y-uy*r;
+      var line=mkEl('line',{
+        x1:x1,y1:y1,x2:x2,y2:y2,
+        stroke:isNew?'#58a6ff':'#8b949e',
+        'stroke-width':isNew?'2':'1.5',
+        'marker-end':isNew?'url(#vz36arrNew)':'url(#vz36arr)'
+      });
+      svg.appendChild(line);
+    });
+
+    // Draw nodes
+    for(var i=0;i<5;i++){
+      var isRoot=!!rootSet[i];
+      var fill,stroke,textColor;
+      if(isRoot){
+        fill='#0d2818'; stroke='#3fb950'; textColor='#3fb950';
+      } else {
+        fill='#21262d'; stroke='#30363d'; textColor='#c9d1d9';
+      }
+      if(isRoot){
+        var outer=mkEl('circle',{cx:pos[i].x,cy:pos[i].y,r:22,fill:fill,stroke:stroke,'stroke-width':'2'});
+        var inner=mkEl('circle',{cx:pos[i].x,cy:pos[i].y,r:17,fill:'none',stroke:stroke,'stroke-width':'1','stroke-dasharray':'3,2'});
+        svg.appendChild(outer);
+        svg.appendChild(inner);
+      } else {
+        var circ=mkEl('circle',{cx:pos[i].x,cy:pos[i].y,r:22,fill:fill,stroke:stroke,'stroke-width':'2'});
+        svg.appendChild(circ);
+      }
+      var lbl=mkEl('text',{x:pos[i].x,y:pos[i].y+5,
+        'text-anchor':'middle','font-size':'14','font-weight':'700',
+        fill:textColor,'font-family':'monospace'
+      });
+      lbl.textContent=String(i);
+      svg.appendChild(lbl);
+      // rank label
+      var rkLbl=mkEl('text',{x:pos[i].x,y:pos[i].y+38,
+        'text-anchor':'middle','font-size':'9','fill':'#8b949e','font-family':'monospace'
+      });
+      rkLbl.textContent='r='+s.ranks[i];
+      svg.appendChild(rkLbl);
+    }
+
+    document.getElementById('vz36lbl').textContent=s.lbl;
+    document.getElementById('vz36txt').textContent=s.txt;
+    document.getElementById('vz36sets').textContent=s.sets;
+    document.getElementById('vz36rank').textContent=s.maxRank;
+    document.getElementById('vz36prev').disabled=(cur===0);
+    document.getElementById('vz36next').disabled=(cur===stepData.length-1);
+  }
+
+  window.vz36step=function(d){
+    cur=Math.max(0,Math.min(stepData.length-1,cur+d));
+    render();
+  };
+  window.vz36reset=function(){
+    cur=0; render();
+  };
+
+  render();
+})();
+</script>
+
+    <h3 class="subsec">Combined: Path Compression + Union by Rank</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Nearly O(1) Amortised Complexity</div>
+      When both path compression and union by rank are used together, a sequence of
+      <em>m</em> FIND and UNION operations on a universe of <em>n</em> elements has a total
+      worst-case cost of:
+      <br><br>
+      <strong>O(m &middot; &alpha;(n))</strong>
+      <br><br>
+      where <strong>&alpha;(n)</strong> is the <em>inverse Ackermann function</em> — an extraordinarily
+      slowly growing function. For all practical values of n (up to the number of atoms in
+      the universe), &alpha;(n) &le; 4. This means each operation is effectively O(1) in practice.
+      <br><br>
+      This bound is provably <em>optimal</em> — no disjoint-set data structure can do better.
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Optimisation</th><th>Worst-case per op</th><th>Total for m ops</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>None</td><td>O(n)</td><td>O(mn)</td></tr>
+        <tr><td>Path compression only</td><td>O(log n)</td><td>O(m log n)</td></tr>
+        <tr><td>Union by rank only</td><td>O(log n)</td><td>O(m log n)</td></tr>
+        <tr><td><strong>Both combined</strong></td><td><strong>O(&alpha;(n)) &asymp; O(1)</strong></td><td><strong>O(m &middot; &alpha;(n))</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsec">Complete Implementation (Both Optimisations)</h3>
+
+    <div class="algo-header">
+      Algorithm: Union-Find — Path Compression + Union by Rank
+      <span class="algo-complexity">O(&alpha;(n)) per operation</span>
+    </div>
+    <pre class="code-block has-header">
+function INITIALISE(n):
+    parent[1..n] = [1, 2, ..., n]
+    rank[1..n] = 0
+
+function FIND(x):
+    if parent[x] != x:
+        parent[x] = FIND(parent[x])   // path compression
+    return parent[x]
+
+function UNION(x, y):
+    x = FIND(x)
+    y = FIND(y)
+    if x = y: return                  // same component already
+
+    if rank[x] < rank[y]:             // union by rank
+        parent[x] = y
+    else:
+        parent[y] = x
+        if rank[x] = rank[y]:
+            rank[x] += 1
+
+function CONNECTED(u, v):
+    return FIND(u) = FIND(v)
+
+function LINK(u, v):
+    UNION(u, v)
+</pre>
+
+    <h3 class="subsec">Applications</h3>
+    <ul>
+      <li>
+        <strong>Kruskal's Minimum Spanning Tree Algorithm (Week 5):</strong>
+        Process edges in order of increasing weight; use UNION-FIND to check whether adding
+        an edge would form a cycle (i.e. the two endpoints are already connected). If not,
+        add the edge and call UNION.
+      </li>
+      <li>
+        <strong>Dynamic connectivity:</strong>
+        In network monitoring, detect whether two nodes remain connected as new links are added
+        (e.g. after a failure or upgrade).
+      </li>
+      <li>
+        <strong>Image processing:</strong>
+        Connected-component labelling (flood fill) can use union-find to efficiently merge
+        adjacent pixel regions.
+      </li>
+      <li>
+        <strong>Percolation theory:</strong>
+        Determine when a random graph becomes connected as edges are added (e.g. modelling
+        fluid flow through a porous medium).
+      </li>
+    </ul>
+
+    <div class="callout insight">
+      <div class="callout-title">Union-Find vs. DFS for Connectivity</div>
+      For a <em>static</em> graph, DFS/BFS (O(|V| + |E|)) finds all components more efficiently
+      than union-find. But for a <em>dynamic</em> graph with edge insertions, union-find
+      (O(&alpha;(n)) per operation) vastly outperforms repeated DFS recomputation.
+    </div>
+  </section>
+
+  <!-- ===== INTERACTIVE DEMO: BFS ===== -->
+  <section class="content-section" id="w4-demo">
+    <h2 class="sec-title"><span class="sec-num">Interactive</span> BFS — Breadth-First Search</h2>
+    <button class="review-btn" data-week="4" data-sec="w4-demo"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+    <div class="algo-demo">
+      <p class="demo-eyebrow">Algorithm Demo</p>
+      <p class="demo-lede">BFS explores a graph level by level using a queue. <b>Click any node</b> to start BFS from it. Watch the queue fill and nodes get discovered layer by layer.</p>
+      <div class="demo-board" id="d4-board">
+        <div class="demo-stage">
+          <svg id="d4-svg" viewBox="0 0 780 330" style="display:block;width:100%;height:auto;background:#0d1117"></svg>
+        </div>
+        <div class="demo-panel">
+          <div class="demo-narrate">
+            <div class="demo-step-label" id="d4-label">READY</div>
+            <div class="demo-step-text" id="d4-text">Click any node to start BFS from it, or click Run to start from node 0.</div>
+            <div class="demo-stats">
+              <div class="demo-chip"><span class="k">Visited</span><span class="v" id="d4-visited">0</span></div>
+              <div class="demo-chip"><span class="k">Queue size</span><span class="v" id="d4-qsize">0</span></div>
+              <div class="demo-chip" id="d4-chip-dist"><span class="k">Max dist</span><span class="v" id="d4-dist">0</span></div>
+            </div>
+          </div>
+          <div class="demo-side">
+            <h4>Queue &amp; Order</h4>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.78em;color:var(--text-muted);line-height:1.8">
+              <div>Queue: <span id="d4-queue-disp" style="color:#58a6ff">[ ]</span></div>
+              <div style="margin-top:6px">Visited order:</div>
+              <div id="d4-order" style="color:var(--green);word-break:break-all">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-controls">
+          <button class="demo-btn" id="d4-run-btn">Run ▶ (from 0)</button>
+          <button class="demo-btn" id="d4-reset-btn">Reset</button>
+          <div class="demo-spd"><span>Speed</span><input type="range" id="d4-spd" min="1" max="5" value="3"><span id="d4-spd-lbl">3×</span></div>
+        </div>
+        <div class="demo-hint">Click different start nodes to see how BFS explores from different sources</div>
+      </div>
+    </div>
+  </section>
+
+
+
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+</html>

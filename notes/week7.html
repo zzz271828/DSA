@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 7 — Dynamic Programming Graph Algorithms | FIT2004</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+  --text: #c9d1d9; --text-muted: #8b949e;
+  --blue: #58a6ff; --orange: #f0883e; --green: #3fb950;
+  --purple: #bc8cff; --red: #f85149; --cyan: #79c0ff;
+}
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.7; display: flex; min-height: 100vh; }
+nav { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+nav .logo { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+nav .course { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
+nav .nav-section { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 6px; padding-left: 8px; }
+nav ul { list-style: none; }
+nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 0.82em; display: block; padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; border-left: 2px solid transparent; }
+nav ul li a:hover { color: var(--text); background: var(--bg3); }
+nav ul li a.current { color: var(--blue); background: #1f6feb1a; border-left-color: var(--blue); }
+nav ul li a.sub { padding-left: 20px; font-size: 0.78em; }
+main { flex: 1; max-width: 860px; padding: 48px 56px; }
+.week-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.week-badge { display: inline-block; background: #1f6feb1a; color: var(--blue); border: 1px solid #1f6feb40; padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+.week-header h1 { font-size: 2.4em; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
+.week-header .subtitle { color: var(--text-muted); font-size: 1em; margin-bottom: 20px; }
+.topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.topics span { background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 0.78em; color: var(--text-muted); }
+section.content-section { margin-bottom: 56px; }
+h2.sec-title { font-size: 1.6em; font-weight: 700; color: var(--blue); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+h2.sec-title .sec-num { font-size: 0.6em; background: var(--bg3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+h3.subsec { font-size: 1.15em; font-weight: 600; color: var(--purple); margin: 28px 0 12px; }
+h4.subsubsec { font-size: 0.82em; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 8px; }
+p { margin-bottom: 14px; }
+.callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+.callout.def { background: #1f6feb0d; border-color: var(--blue); }
+.callout.thm { background: #3fb9500d; border-color: var(--green); }
+.callout.cplx { background: #f0883e0d; border-color: var(--orange); }
+.callout.insight { background: #bc8cff0d; border-color: var(--purple); }
+.callout.warn { background: #f851490d; border-color: var(--red); }
+.callout-title { font-size: 0.72em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.callout.def .callout-title { color: var(--blue); }
+.callout.thm .callout-title { color: var(--green); }
+.callout.cplx .callout-title { color: var(--orange); }
+.callout.insight .callout-title { color: var(--purple); }
+.callout.warn .callout-title { color: var(--red); }
+pre.code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 8px; padding: 20px 24px; margin: 20px 0; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.83em; line-height: 1.65; overflow-x: auto; white-space: pre; color: var(--text); }
+.algo-header { background: var(--bg3); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 10px 20px; font-size: 0.8em; font-weight: 700; color: var(--orange); display: flex; justify-content: space-between; align-items: center; }
+.algo-header .algo-complexity { color: var(--text-muted); font-weight: 400; font-family: monospace; }
+pre.code-block.has-header { border-radius: 0 0 8px 8px; border-top: none; margin-top: 0; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88em; }
+th { background: var(--bg3); color: var(--blue); padding: 10px 16px; text-align: left; border: 1px solid var(--border); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+td { padding: 10px 16px; border: 1px solid var(--border); }
+tr:nth-child(even) td { background: var(--bg2); }
+code { background: var(--bg3); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; color: var(--orange); }
+ul, ol { padding-left: 24px; margin-bottom: 14px; }
+li { margin-bottom: 7px; }
+.complexity-tag { display: inline-block; background: var(--bg3); border: 1px solid var(--orange); color: var(--orange); padding: 2px 9px; border-radius: 4px; font-family: monospace; font-size: 0.82em; font-weight: 700; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+@media (max-width: 768px) { body { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 24px 20px; } }
+
+    /* ── Progress rings ── */
+    nav ul li a { display: flex !important; align-items: center; justify-content: space-between; }
+    nav ul li a span { flex: 1; min-width: 0; }
+    .prog-arc { transition: stroke-dashoffset 0.4s ease; }
+    /* ── Mark-reviewed button ── */
+    .review-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68em; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+      margin-top: 10px; margin-bottom: 0;
+      letter-spacing: 0.02em;
+    }
+    .review-btn:hover { border-color: var(--green); color: var(--green); }
+    .review-btn.done { background: #3fb9501a; border-color: var(--green); color: var(--green); }
+    .review-btn .chk { width: 13px; height: 13px; border: 1.5px solid currentColor;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  
+    /* ══ Interactive Algorithm Demos ══ */
+    .algo-demo { margin: 32px 0 8px; }
+    .demo-eyebrow { font-family: 'JetBrains Mono','Fira Code',monospace; font-size: 0.65em;
+      letter-spacing: 0.26em; text-transform: uppercase; color: var(--green); margin: 0 0 6px; }
+    .demo-lede { font-size: 0.9em; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; max-width: 66ch; }
+    .demo-lede b { color: var(--text); }
+    .demo-board { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5); overflow: hidden; }
+    .demo-stage { position: relative; background: var(--bg); }
+    .demo-stage svg { display: block; width: 100%; height: auto; }
+    .demo-panel { display: grid; grid-template-columns: 1.2fr .8fr; border-top: 1px solid var(--border); }
+    @media(max-width:640px){.demo-panel{grid-template-columns:1fr}}
+    .demo-narrate { padding: 16px 18px; border-right: 1px solid var(--border); }
+    @media(max-width:640px){.demo-narrate{border-right:none;border-bottom:1px solid var(--border)}}
+    .demo-step-label { font-family: 'JetBrains Mono',monospace; font-size: 0.63em;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin: 0 0 5px; min-height: 14px; }
+    .demo-step-text { font-size: 0.88em; line-height: 1.5; margin: 0; min-height: 52px; }
+    .demo-step-text code { background: var(--bg3); padding: 1px 5px; border-radius: 4px;
+      font-family: 'JetBrains Mono',monospace; font-size: .83em; color: var(--orange); }
+    .demo-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+      padding: 6px 11px; min-width: 72px; }
+    .demo-chip .k { font-family: 'JetBrains Mono',monospace; font-size: .58em;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px; }
+    .demo-chip .v { font-size: 1.3em; font-weight: 700; line-height: 1; color: var(--text); }
+    .demo-chip.good .v { color: var(--green); }
+    .demo-side { padding: 16px 18px; background: var(--bg3); }
+    .demo-side h4 { font-family: 'JetBrains Mono',monospace; font-size: .6em;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
+    .demo-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding: 11px 18px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .demo-btn { font-family: 'JetBrains Mono',monospace; font-size: .77em; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); padding: 7px 13px; border-radius: 7px;
+      transition: background .1s, border-color .1s, transform .06s; }
+    .demo-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .demo-btn:active { transform: translateY(1px); }
+    .demo-btn.primary { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+    .demo-btn.primary:hover { background: #1f6feb33; }
+    .demo-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .demo-spd { margin-left: auto; display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono',monospace; font-size: .67em; color: var(--text-muted); }
+    .demo-spd input[type=range] { accent-color: var(--blue); width: 88px; }
+    .demo-hint { font-family: 'JetBrains Mono',monospace; font-size: .69em;
+      color: var(--text-muted); text-align: center; margin: 10px 0 0; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FIT2004</div>
+  <div class="course">Algorithms &amp; Data Structures</div>
+
+  <div class="nav-section">All Weeks</div>
+  <ul>
+    <li><a href="week1.html"><span>W1 — Intro &amp; Complexity</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa1"/></svg></a></li>
+    <li><a href="week2.html"><span>W2 — Proofs &amp; Sorting</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa2"/></svg></a></li>
+    <li><a href="week3.html"><span>W3 — Quicksort &amp; Selection</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa3"/></svg></a></li>
+    <li><a href="week4.html"><span>W4 — Introduction to Graphs</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa4"/></svg></a></li>
+    <li><a href="week5.html"><span>W5 — Greedy Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa5"/></svg></a></li>
+    <li><a href="week6.html"><span>W6 — Dynamic Programming</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa6"/></svg></a></li>
+    <li><a href="week7.html" class="current"><span>W7 — DP Graph Algorithms</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa7"/></svg></a></li>
+    <li><a href="week8.html"><span>W8 — String Data Structures</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa8"/></svg></a></li>
+    <li><a href="week9.html"><span>W9 — Search Trees</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa9"/></svg></a></li>
+    <li><a href="week10.html"><span>W10 — Network Flow</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa10"/></svg></a></li>
+    <li><a href="week11.html"><span>W11 — Circulations &amp; Applications</span><svg viewBox="0 0 22 22" width="18" height="18" style="flex-shrink:0;margin-left:4px"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--border)" stroke-width="2.2"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-dasharray="50.3" stroke-dashoffset="50.3" stroke-linecap="round" transform="rotate(-90 11 11)" id="pa11"/></svg></a></li>
+  </ul>
+
+  <div class="nav-section">This Week</div>
+  <ul>
+    <li><a href="#sec-8-1" class="sub">8.1 Bellman-Ford</a></li>
+    <li><a href="#sec-8-2" class="sub">8.2 Floyd-Warshall</a></li>
+    <li><a href="#sec-8-3" class="sub">8.3 Transitive Closure</a></li>
+    <li><a href="#sec-8-4" class="sub">8.4 Critical Path</a></li>
+    <li><a href="#summary" class="sub">Week 7 Summary</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="algorithms.html">All Algorithms Table</a></li>
+    <li><a href="index.html">↑ Course Home</a></li>
+  </ul>
+</nav>
+
+<main>
+  <!-- ===== HEADER ===== -->
+  <div class="week-header">
+    <div class="week-badge">Week 7 &mdash; Chapter 8</div>
+    <h1>Dynamic Programming Graph Algorithms</h1>
+    <p class="subtitle">Shortest paths with negative weights, all-pairs shortest paths, transitive closure, and the critical path problem.</p>
+    <div class="topics">
+      <span>Bellman-Ford</span>
+      <span>Negative Cycles</span>
+      <span>All-Pairs Shortest Paths</span>
+      <span>Floyd-Warshall</span>
+      <span>Transitive Closure</span>
+      <span>Critical Path Problem</span>
+      <span>DAG DP</span>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 8.1: BELLMAN-FORD ===== -->
+  <section class="content-section" id="sec-8-1">
+    <h2 class="sec-title">
+      <span class="sec-num">8.1</span>
+      Shortest Paths with Negative Weights (Bellman-Ford)
+    </h2>
+  <button class="review-btn" data-week="7" data-sec="sec-8-1"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <p>The Bellman-Ford algorithm was one of the first applications of the dynamic programming paradigm. Given a source vertex <code>s</code>, it returns the shortest distances from <code>s</code> to all other vertices — provided there are no negative-weight cycles reachable from <code>s</code>. If a reachable negative cycle exists, the algorithm detects and reports it.</p>
+
+    <!-- Why Dijkstra Fails -->
+    <h3 class="subsec" id="sec-8-1-why">Why Dijkstra's Algorithm Fails with Negative Weights</h3>
+
+    <p>Dijkstra's algorithm relies on a greedy invariant: once a vertex is finalised (popped from the priority queue), its distance is correct and will never improve. This invariant breaks in the presence of negative-weight edges.</p>
+
+    <div class="callout def">
+      <div class="callout-title">Counterexample</div>
+      <p>Consider the graph: <code>s</code> &rarr; <code>a</code> with weight 6, <code>s</code> &rarr; <code>b</code> with weight 3, <code>a</code> &rarr; <code>b</code> with weight &minus;4.</p>
+      <p>Dijkstra finalises <code>b</code> with distance 3 (via <code>s &rarr; b</code>). But the true shortest path is <code>s &rarr; a &rarr; b</code> with total weight 6 + (&minus;4) = 2. Dijkstra gave the wrong answer because it finalised <code>b</code> before exploring the negative-weight shortcut.</p>
+      <p>The root cause: Dijkstra assumes that no future edge can decrease the distance to an already-finalised vertex. Negative edges violate this assumption.</p>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Undefined Shortest Paths — Negative Cycles</div>
+      <p>If a negative-weight cycle is reachable from <code>s</code> and a vertex <code>t</code> is reachable from that cycle, then the shortest path <code>s &rightsquigarrow; t</code> is <strong>undefined</strong> (effectively &minus;&infin;). Given any path <em>P</em>, you can always construct a shorter path <em>P'</em> by traversing the negative cycle one more time.</p>
+      <p>Example: <code>s</code> can reach cycle <code>a &rarr; b &rarr; c</code> with total edge weight &minus;6 (i.e., &minus;2 + (&minus;3) + (&minus;1) = &minus;6), and from this cycle vertex <code>d</code> is reachable. There is no well-defined shortest path from <code>s</code> to <code>d</code>.</p>
+    </div>
+
+    <!-- Core Idea -->
+    <h3 class="subsec" id="sec-8-1-algo">The Bellman-Ford Algorithm</h3>
+
+    <h4 class="subsubsec">Key Idea: Optimality of Subpaths</h4>
+    <p>A critical fact from Week 5 (used in many shortest-path proofs): if <em>P</em> is a shortest path <code>s &rightsquigarrow; v</code> and <code>u</code> is the second-to-last vertex on <em>P</em>, then the sub-path <code>s &rightsquigarrow; u</code> is also a shortest path. If a shorter path <em>R</em> to <em>u</em> existed, then <em>R + (u,v)</em> would be a shorter path to <em>v</em> than <em>P</em> — contradiction.</p>
+
+    <div class="callout insight">
+      <div class="callout-title">Core Observation</div>
+      <p>If no negative cycles are reachable from <code>s</code>, then for every reachable vertex <code>t</code> there exists a <em>simple</em> shortest path (no repeated vertices). Why?</p>
+      <ul>
+        <li>A positive-weight cycle on any path can be removed to get a strictly shorter path.</li>
+        <li>A zero-weight cycle can be removed to get an equally short simple path.</li>
+        <li>Only a negative cycle could help, but we assumed none are reachable.</li>
+      </ul>
+      <p>Since any simple path visits at most <code>|V|</code> vertices, it uses at most <code>|V| &minus; 1</code> edges. Therefore it suffices to look for shortest paths of at most <code>|V| &minus; 1</code> edges.</p>
+    </div>
+
+    <h4 class="subsubsec">DP Recurrence</h4>
+    <p>Let <code>OPT[i, v]</code> = the minimum weight of any <code>s &rightsquigarrow; v</code> path using at most <code>i</code> edges. The recurrence is:</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Bellman-Ford Recurrence</div>
+      <p><strong>OPT[0, s] = 0</strong>; <strong>OPT[0, v] = &infin;</strong> for all <code>v &ne; s</code>.</p>
+      <p><strong>OPT[i, v] = min(OPT[i&minus;1, v], &nbsp; min<sub>u:(u,v)&isin;E</sub>(OPT[i&minus;1, u] + w(u,v)))</strong></p>
+      <p>In words: the shortest path to <code>v</code> with at most <code>i</code> edges either (a) already has at most <code>i&minus;1</code> edges, or (b) ends with some edge <code>(u,v)</code> where the sub-path to <code>u</code> uses at most <code>i&minus;1</code> edges.</p>
+    </div>
+
+    <p>We want <code>OPT[|V|&minus;1, v]</code> for all vertices <code>v</code>.</p>
+
+    <h4 class="subsubsec">Optimised (Space-Efficient) Pseudocode</h4>
+    <p>In practice, a space-efficient version is implemented that collapses the 2D table to a single 1D array. The counter <code>i</code> simply controls how many full passes over all edges are made. In each pass, edges are "relaxed" in-place.</p>
+
+    <div class="algo-header">
+      Algorithm 54 — Bellman-Ford (Optimised)
+      <span class="algo-complexity">Time: O(|V| &times; |E|) &nbsp;|&nbsp; Space: O(|V|)</span>
+    </div>
+    <pre class="code-block has-header">function BELLMAN_FORD(G = (V, E), s):
+    dist[1..|V|] = &infin;
+    pred[1..|V|] = null
+    dist[s] = 0
+
+    for i = 1 to |V| - 1 do
+        for each edge (u, v) in E do
+            if dist[u] + w(u, v) &lt; dist[v] then
+                dist[v] = dist[u] + w(u, v)
+                pred[v] = u
+
+    return dist[1..|V|], pred[1..|V|]</pre>
+
+<!-- ── Widget: Algorithm 54 — Bellman-Ford ── -->
+<div id="vz54-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.7em;letter-spacing:.14em;text-transform:uppercase;color:#f0883e;font-weight:700;">Algorithm 54</span>
+    <span style="font-size:0.92em;font-weight:600;color:#c9d1d9;flex:1;">Bellman-Ford — step-by-step relaxation</span>
+    <span style="font-size:0.7em;font-family:monospace;background:rgba(88,166,255,.1);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(|V||E|)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <div style="border-right:1px solid #30363d;">
+      <svg id="vz54-svg" viewBox="0 0 520 280" style="width:100%;height:auto;display:block;">
+        <defs>
+          <marker id="vz54-arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#30363d"/></marker>
+          <marker id="vz54-arr-o" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f0883e"/></marker>
+          <marker id="vz54-arr-b" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#58a6ff"/></marker>
+          <marker id="vz54-arr-g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/></marker>
+        </defs>
+        <!-- Edges: S(80,140) A(220,60) B(220,220) C(380,140) -->
+        <!-- S→A -->
+        <line id="vz54-e0" x1="100" y1="128" x2="202" y2="72" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="143" y="90" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">6</text>
+        <!-- S→B -->
+        <line id="vz54-e1" x1="100" y1="153" x2="202" y2="210" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="143" y="196" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">7</text>
+        <!-- A→C -->
+        <line id="vz54-e2" x1="242" y1="70" x2="358" y2="130" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="308" y="91" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">5</text>
+        <!-- B→A -->
+        <line id="vz54-e3" x1="220" y1="198" x2="220" y2="82" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="235" y="144" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">-2</text>
+        <!-- B→C -->
+        <line id="vz54-e4" x1="242" y1="212" x2="358" y2="152" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="308" y="195" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">-4</text>
+        <!-- Nodes -->
+        <circle id="vz54-n0" cx="80" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="80" y="140" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">S</text>
+        <text id="vz54-d0" x="80" y="172" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">0</text>
+        <circle id="vz54-n1" cx="220" cy="60" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="220" y="60" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
+        <text id="vz54-d1" x="220" y="92" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
+        <circle id="vz54-n2" cx="220" cy="220" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="220" y="220" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
+        <text id="vz54-d2" x="220" y="252" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
+        <circle id="vz54-n3" cx="380" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="380" y="140" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">C</text>
+        <text id="vz54-d3" x="380" y="172" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
+      <div>
+        <div style="font-family:monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz54-lbl">Ready</div>
+        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:52px;" id="vz54-txt">Press <b>Step</b> to begin. Graph: S&#x2192;A(6), S&#x2192;B(7), A&#x2192;C(5), B&#x2192;A(-2), B&#x2192;C(-4). Source = S.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:64px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Round</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz54-s-round">—</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:64px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Improved</span>
+          <span style="font-size:1.2em;font-weight:700;color:#3fb950;" id="vz54-s-imp">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:64px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Tried</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz54-s-tried">0</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-family:monospace;font-size:.8em;">
+        <div style="color:#8b949e;">dist[S]</div><div id="vz54-tv0" style="color:#3fb950;">0</div>
+        <div style="color:#8b949e;">dist[A]</div><div id="vz54-tv1" style="color:#c9d1d9;">&#x221e;</div>
+        <div style="color:#8b949e;">dist[B]</div><div id="vz54-tv2" style="color:#c9d1d9;">&#x221e;</div>
+        <div style="color:#8b949e;">dist[C]</div><div id="vz54-tv3" style="color:#c9d1d9;">&#x221e;</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 16px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz54step()" id="vz54-btn-step" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:6px 14px;border-radius:7px;">Step &#x25B6;</button>
+    <button onclick="vz54reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:6px 14px;border-radius:7px;">Reset</button>
+  </div>
+</div>
+<script>
+(function(){
+  'use strict';
+  var INF = Infinity;
+  // nodes: 0=S,1=A,2=B,3=C
+  // edges: [from,to,weight,svgIdx]
+  var EDGES54 = [[0,1,6,0],[0,2,7,1],[1,3,5,2],[2,1,-2,3],[2,3,-4,4]];
+  var LABELS54 = ['S','A','B','C'];
+  var dist54 = [0,INF,INF,INF];
+  var round54 = 0, eIdx54 = 0, tried54 = 0, imp54 = 0, done54 = false;
+
+  function fmt54(d){ return d===INF?'∞':String(d); }
+  function setN54(i,st){
+    var c=document.getElementById('vz54-n'+i),d=document.getElementById('vz54-d'+i);
+    if(!c)return;
+    var fills={default:['#21262d','#30363d'],active:['#1f6feb1a','#58a6ff'],updated:['#f0883e1a','#f0883e'],done:['#3fb9500d','#3fb950'],src:['#3fb9500d','#3fb950']};
+    var f=fills[st]||fills.default;
+    c.setAttribute('fill',f[0]);c.setAttribute('stroke',f[1]);c.setAttribute('stroke-width','2');
+    if(d){d.setAttribute('fill',f[1]);d.textContent=fmt54(dist54[i]);}
+  }
+  function setE54(i,st){
+    var e=document.getElementById('vz54-e'+i);if(!e)return;
+    var map={default:['#30363d','2','vz54-arr'],trying:['#f0883e','2.5','vz54-arr-o'],improved:['#58a6ff','3','vz54-arr-b'],done:['#3fb950','2','vz54-arr-g']};
+    var m=map[st]||map.default;
+    e.setAttribute('stroke',m[0]);e.setAttribute('stroke-width',m[1]);e.setAttribute('marker-end','url(#'+m[2]+')');
+  }
+  function updateDisplay54(){
+    for(var i=0;i<4;i++){
+      var tv=document.getElementById('vz54-tv'+i);
+      if(tv)tv.textContent=fmt54(dist54[i]);
+    }
+    document.getElementById('vz54-s-tried').textContent=tried54;
+    document.getElementById('vz54-s-imp').textContent=imp54;
+    document.getElementById('vz54-s-round').textContent=round54<=0?'—':(round54+' / 3');
+  }
+  function reset54Visual(){
+    for(var i=0;i<5;i++)setE54(i,'default');
+    setN54(0,'src');
+    for(var i=1;i<4;i++)setN54(i,'default');
+  }
+
+  window.vz54reset=function(){
+    dist54=[0,INF,INF,INF];round54=0;eIdx54=0;tried54=0;imp54=0;done54=false;
+    reset54Visual();updateDisplay54();
+    document.getElementById('vz54-lbl').textContent='Ready';
+    document.getElementById('vz54-txt').innerHTML='Press <b>Step</b> to begin. Graph: S&#x2192;A(6), S&#x2192;B(7), A&#x2192;C(5), B&#x2192;A(-2), B&#x2192;C(-4). Source = S.';
+    document.getElementById('vz54-btn-step').disabled=false;
+    for(var i=0;i<4;i++){var tv=document.getElementById('vz54-tv'+i);if(tv){tv.textContent=fmt54(dist54[i]);tv.style.color=i===0?'#3fb950':'#c9d1d9';}}
+    var d0=document.getElementById('vz54-d0');if(d0){d0.textContent='0';d0.setAttribute('fill','#3fb950');}
+  };
+
+  window.vz54step=function(){
+    if(done54)return;
+    // Start first round
+    if(round54===0){
+      round54=1;eIdx54=0;
+      document.getElementById('vz54-lbl').textContent='Round 1 of 3';
+      document.getElementById('vz54-txt').textContent='Trying to relax all edges. Each attempt: if dist[u]+w < dist[v], update dist[v].';
+      document.getElementById('vz54-s-round').textContent='1 / 3';
+      return;
+    }
+    if(round54<=3){
+      if(eIdx54<EDGES54.length){
+        // clear prev
+        for(var i=0;i<5;i++)setE54(i,'default');
+        for(var i=1;i<4;i++)setN54(i,'default');
+        var edge=EDGES54[eIdx54];
+        var u=edge[0],v=edge[1],w=edge[2],ei=edge[3];
+        tried54++;
+        setE54(ei,'trying');
+        var oldD=dist54[v];
+        var newD=dist54[u]===INF?INF:dist54[u]+w;
+        if(newD<oldD){
+          dist54[v]=newD;imp54++;
+          setE54(ei,'improved');setN54(v,'updated');
+          document.getElementById('vz54-lbl').textContent='Round '+round54+' — Improved!';
+          document.getElementById('vz54-txt').innerHTML='Relax <b>'+LABELS54[u]+'→'+LABELS54[v]+'</b> (w='+w+'): '+fmt54(dist54[u])+'+'+w+'=<b style="color:#58a6ff">'+fmt54(dist54[v])+'</b> &lt; '+fmt54(oldD)+' → updated!';
+          var tv=document.getElementById('vz54-tv'+v);if(tv){tv.textContent=fmt54(dist54[v]);tv.style.color='#58a6ff';}
+          var dn=document.getElementById('vz54-d'+v);if(dn){dn.textContent=fmt54(dist54[v]);dn.setAttribute('fill','#58a6ff');}
+        } else {
+          setE54(ei,'default');setN54(v,'default');
+          document.getElementById('vz54-lbl').textContent='Round '+round54+' — No change';
+          document.getElementById('vz54-txt').innerHTML='Relax <b>'+LABELS54[u]+'→'+LABELS54[v]+'</b> (w='+w+'): '+fmt54(dist54[u])+'+'+w+'='+fmt54(newD)+' ≥ '+fmt54(oldD)+' → no update.';
+        }
+        document.getElementById('vz54-s-tried').textContent=tried54;
+        document.getElementById('vz54-s-imp').textContent=imp54;
+        eIdx54++;
+      }
+      if(eIdx54>=EDGES54.length){
+        var prevRound=round54;eIdx54=0;round54++;
+        if(round54<=3){
+          for(var i=0;i<5;i++)setE54(i,'default');
+          for(var i=1;i<4;i++)setN54(i,'default');
+          document.getElementById('vz54-s-round').textContent=round54+' / 3';
+          document.getElementById('vz54-lbl').textContent='Round '+prevRound+' complete';
+          document.getElementById('vz54-txt').textContent='Starting round '+round54+'. Trying all edges again — further improvements possible.';
+        } else {
+          // done
+          done54=true;
+          for(var i=0;i<5;i++)setE54(i,'done');
+          for(var i=0;i<4;i++)setN54(i,'done');
+          for(var i=0;i<4;i++){var tv=document.getElementById('vz54-tv'+i);if(tv){tv.textContent=fmt54(dist54[i]);tv.style.color='#3fb950';}}
+          document.getElementById('vz54-lbl').textContent='Complete — Round '+prevRound+' done';
+          document.getElementById('vz54-txt').innerHTML='All 3 rounds done. Final: S=0, A=5, B=7, C=3. Shortest S→A is S→B→A (7−2=5), not direct (6). <b style="color:#3fb950">No negative cycle detected.</b>';
+          document.getElementById('vz54-btn-step').disabled=true;
+        }
+      }
+    }
+  };
+  reset54Visual();
+})();
+</script>
+
+    <div class="callout insight">
+      <div class="callout-title">Why |V| &minus; 1 Iterations?</div>
+      <p>After <code>k</code> iterations of the outer loop, <code>dist[v]</code> is guaranteed to be &le; the weight of the shortest path from <code>s</code> to <code>v</code> using at most <code>k</code> edges. Since the longest simple path has at most <code>|V|&minus;1</code> edges, after <code>|V|&minus;1</code> iterations all shortest paths are found.</p>
+      <p>Note: with the in-place update, <code>dist[v]</code> may actually be correct even sooner depending on edge ordering — but the guarantee only holds after <code>|V|&minus;1</code> passes in the worst case.</p>
+    </div>
+
+    <h4 class="subsubsec">Correctness (Induction Sketch)</h4>
+    <div class="callout thm">
+      <div class="callout-title">Theorem — Correctness of Bellman-Ford</div>
+      <p>After at most <code>|V|&minus;1</code> iterations, Bellman-Ford terminates with correct distance estimates for all vertices whose shortest path is well-defined.</p>
+      <p><strong>Proof sketch (induction on number of edges in shortest path):</strong></p>
+      <ul>
+        <li><em>Base case:</em> <code>dist[s] = 0</code> is correct (0-edge path to self).</li>
+        <li><em>Inductive step:</em> Suppose all shortest paths of &le; k edges are correct after k iterations. A shortest path to <code>v</code> with k+1 edges ends with edge <code>(u,v)</code>. By the substructure property, the sub-path to <code>u</code> has &le; k edges and is correct. In the (k+1)-th iteration, the edge <code>(u,v)</code> is relaxed, updating <code>dist[v] = dist[u] + w(u,v)</code> = &delta;(s,v). &square;</li>
+      </ul>
+    </div>
+
+    <!-- Worked Example -->
+    <h3 class="subsec" id="sec-8-1-example">Worked Example</h3>
+    <p>Consider the graph with vertices {s, a, b, c, d} and edges:</p>
+    <ul>
+      <li>s &rarr; a, weight 6</li>
+      <li>s &rarr; b, weight 7</li>
+      <li>a &rarr; b, weight 8</li>
+      <li>a &rarr; c, weight &minus;2 (negative!)</li>
+      <li>a &rarr; d, weight &minus;3 (negative!)</li>
+      <li>b &rarr; c, weight &minus;1 (negative!)</li>
+      <li>b &rarr; d, weight 9</li>
+      <li>c &rarr; a, weight &minus;4 (negative!)</li>
+      <li>d &rarr; c, weight 7</li>
+    </ul>
+    <p>Edge relaxation order: s&rarr;a, c&rarr;a, s&rarr;b, a&rarr;b, a&rarr;c, b&rarr;c, d&rarr;c, a&rarr;d, b&rarr;d.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Iteration (i)</th>
+          <th>dist[s]</th>
+          <th>dist[a]</th>
+          <th>dist[b]</th>
+          <th>dist[c]</th>
+          <th>dist[d]</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Initial</td><td>0</td><td>&infin;</td><td>&infin;</td><td>&infin;</td><td>&infin;</td></tr>
+        <tr><td>After i=1</td><td>0</td><td>6</td><td>7</td><td>4</td><td>5</td></tr>
+        <tr><td>After i=2</td><td>0</td><td>2</td><td>7</td><td>4</td><td>1</td></tr>
+        <tr><td>After i=3</td><td>0</td><td>2</td><td>7</td><td>4</td><td>1</td></tr>
+        <tr><td>After i=4</td><td>0</td><td>2</td><td>7</td><td>4</td><td>1</td></tr>
+      </tbody>
+    </table>
+
+    <p>The final distances are: s=0, a=2, b=7, c=4, d=1. No further updates in iteration 3 — early stop triggered.</p>
+
+    <div class="callout insight">
+      <div class="callout-title">Order Matters for Speed (Not Correctness)</div>
+      <p>If edges are relaxed in a "lucky" order that mimics the shortest path directions (e.g., s&rarr;b, b&rarr;d, d&rarr;c, c&rarr;a), the algorithm can converge in a single outer iteration. If relaxed in "reverse" order (e.g., c&rarr;a first when dist[c]=&infin;), all <code>|V|&minus;1</code> iterations may be needed. Correctness is guaranteed regardless; only speed differs.</p>
+    </div>
+
+    <h4 class="subsubsec">Early Stop Optimisation</h4>
+    <p>If a complete pass over all edges results in <em>no</em> relaxations, the algorithm can terminate early — shortest paths have already been found. This also proves there are no reachable negative cycles (saving the need for the detection pass below).</p>
+
+    <!-- Detecting Negative Cycles -->
+    <h3 class="subsec" id="sec-8-1-neg-cycles">Detecting Negative Cycles</h3>
+
+    <div class="callout def">
+      <div class="callout-title">Detection Method</div>
+      <p>After <code>|V|&minus;1</code> iterations, run <strong>one additional (|V|-th) iteration</strong>. If any distance estimate can still be improved, a negative cycle reachable from <code>s</code> exists — because a valid shortest path would already be optimal after <code>|V|&minus;1</code> passes.</p>
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Propagating -&infin; to All Affected Vertices</div>
+      <p>To mark all vertices affected by a negative cycle with <code>&minus;&infin;</code>: run <code>|V|</code> additional iterations (not just one). Any vertex whose distance estimate is updated in these extra iterations is reachable from the negative cycle. Set those distances to <code>&minus;&infin;</code>. After this post-processing, each entry in <code>dist</code> is:</p>
+      <ul>
+        <li><code>&infin;</code> — vertex unreachable from <code>s</code></li>
+        <li><code>&minus;&infin;</code> — vertex reachable via a negative cycle (no well-defined shortest path)</li>
+        <li>A finite value — the correct shortest distance</li>
+      </ul>
+      <p><strong>Warning:</strong> Do not try to reconstruct paths to vertices with distance <code>&minus;&infin;</code> — the <code>pred</code> array may contain cycles.</p>
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Detecting Negative Cycles Anywhere in the Graph</div>
+      <p>Standard Bellman-Ford only detects negative cycles <em>reachable from the chosen source</em>. To detect any negative cycle in the entire graph: add an auxiliary vertex <code>r</code> and add zero-weight edges from <code>r</code> to every other vertex. Run Bellman-Ford with <code>r</code> as the source — any negative cycle is now reachable from <code>r</code>.</p>
+    </div>
+
+    <!-- Complexity Comparison -->
+    <h3 class="subsec" id="sec-8-1-compare">Dijkstra vs. Bellman-Ford: Comparison</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Time Complexity</th>
+          <th>Negative Weights?</th>
+          <th>Negative Cycles?</th>
+          <th>Use When</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Dijkstra</strong> (binary heap)</td>
+          <td>O((|V| + |E|) log |V|)</td>
+          <td>No</td>
+          <td>No</td>
+          <td>Non-negative weights, dense or sparse graphs</td>
+        </tr>
+        <tr>
+          <td><strong>Bellman-Ford</strong></td>
+          <td>O(|V| &times; |E|)</td>
+          <td>Yes</td>
+          <td>Detects (reachable)</td>
+          <td>Negative weights present, or need to detect negative cycles</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout cplx">
+      <div class="callout-title">Complexity Breakdown</div>
+      <p>Bellman-Ford outer loop: <code>|V|&minus;1</code> iterations. Inner loop: <code>|E|</code> edge relaxations. Each relaxation: <code>O(1)</code>. Total: <strong>O(|V| &times; |E|)</strong>.</p>
+      <p>For a connected graph with <code>|E| = |V|&minus;1</code> (a tree), this is O(|V|<sup>2</sup>). For a dense graph with <code>|E| = O(|V|<sup>2</sup>)</code>, this is O(|V|<sup>3</sup>).</p>
+    </div>
+
+    <p>An advanced variant called the <strong>Shortest Path Faster Algorithm (SPFA)</strong> maintains a queue of edges to relax, reducing the average-case complexity to O(|E|) for sparse graphs — but the worst case remains O(|V| &times; |E|).</p>
+  </section>
+
+  <!-- ===== SECTION 8.2: ALL-PAIRS SHORTEST PATHS ===== -->
+  <section class="content-section" id="sec-8-2">
+    <h2 class="sec-title">
+      <span class="sec-num">8.2</span>
+      The All-Pairs Shortest Path Problem
+    </h2>
+  <button class="review-btn" data-week="7" data-sec="sec-8-2"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Problem Statement</div>
+      <p>Given a weighted directed graph <code>G = (V, E)</code>, find the shortest path between <em>every</em> pair of vertices <code>(u, v)</code>. The output is a <code>|V| &times; |V|</code> distance matrix.</p>
+    </div>
+
+    <p>The simplest approach is to run a single-source shortest path algorithm from every vertex as the source. Depending on the graph type, different algorithms are preferred:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Approach</th>
+          <th>Sparse (|E| &approx; |V|)</th>
+          <th>Dense (|E| &approx; |V|<sup>2</sup>)</th>
+          <th>Handles Negative Weights?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Repeated BFS (unweighted)</td>
+          <td>O(|V|<sup>2</sup>)</td>
+          <td>O(|V|<sup>3</sup>)</td>
+          <td>N/A (unweighted)</td>
+        </tr>
+        <tr>
+          <td>Repeated Dijkstra</td>
+          <td>O(|V|<sup>2</sup> log |V|)</td>
+          <td>O(|V|<sup>3</sup> log |V|)</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Repeated Bellman-Ford</td>
+          <td>O(|V|<sup>3</sup>)</td>
+          <td>O(|V|<sup>4</sup>)</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Johnson's Algorithm</td>
+          <td>O(|V|<sup>2</sup> log |V|)</td>
+          <td>O(|V|<sup>3</sup> log |V|)</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td><strong>Floyd-Warshall</strong></td>
+          <td><strong>O(|V|<sup>3</sup>)</strong></td>
+          <td><strong>O(|V|<sup>3</sup>)</strong></td>
+          <td><strong>Yes</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Choosing an Algorithm</div>
+      <ul>
+        <li><strong>No negative weights, dense graph:</strong> Floyd-Warshall or repeated Dijkstra are equivalent — both O(|V|<sup>3</sup>).</li>
+        <li><strong>No negative weights, sparse graph:</strong> Repeated Dijkstra wins (O(|V|<sup>2</sup> log |V|)).</li>
+        <li><strong>Negative weights, any graph:</strong> Floyd-Warshall is simple and O(|V|<sup>3</sup>) regardless of density. Johnson's is better for sparse graphs.</li>
+        <li><strong>Negative weights, sparse graph:</strong> Johnson's algorithm (re-weighting + Dijkstra) achieves O(|V|<sup>2</sup> log |V|).</li>
+      </ul>
+    </div>
+
+    <!-- Floyd-Warshall -->
+    <h3 class="subsec" id="sec-8-2-1">8.2.1 Floyd-Warshall Algorithm</h3>
+
+    <p>Floyd-Warshall (Robert Floyd, Turing Award 1978; Stephen Warshall) is an elegant all-pairs shortest path algorithm based on dynamic programming. It runs in <span class="complexity-tag">O(|V|<sup>3</sup>)</span> time for any graph without negative cycles and uses <span class="complexity-tag">O(|V|<sup>2</sup>)</span> space.</p>
+
+    <div class="callout def">
+      <div class="callout-title">Key Insight — Intermediate Vertices</div>
+      <p>Number the vertices 1 to n. The algorithm iteratively expands the set of allowed intermediate vertices. After the <code>k</code>-th outer iteration:</p>
+      <p style="text-align:center; font-family: monospace;"><strong>dist[u][v]</strong> = length of the shortest path u &rightsquigarrow; v using only vertices from {1, 2, ..., k} as intermediates.</p>
+    </div>
+
+    <h4 class="subsubsec">Subproblem and Recurrence</h4>
+    <p>Let <code>D<sup>(k)</sup>[i][j]</code> denote the shortest path distance from vertex <code>i</code> to vertex <code>j</code> using only vertices from <code>{1, ..., k}</code> as intermediate nodes.</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Floyd-Warshall Recurrence</div>
+      <p><strong>Base case (k=0):</strong></p>
+      <ul>
+        <li><code>D<sup>(0)</sup>[i][i] = 0</code> for all <code>i</code></li>
+        <li><code>D<sup>(0)</sup>[i][j] = w(i,j)</code> if edge <code>(i,j)</code> exists</li>
+        <li><code>D<sup>(0)</sup>[i][j] = &infin;</code> otherwise</li>
+      </ul>
+      <p><strong>Recurrence:</strong></p>
+      <p style="font-family: monospace;">D<sup>(k)</sup>[i][j] = min( D<sup>(k-1)</sup>[i][j], &nbsp; D<sup>(k-1)</sup>[i][k] + D<sup>(k-1)</sup>[k][j] )</p>
+      <p>Interpretation: The shortest path from <code>i</code> to <code>j</code> either (a) does not use vertex <code>k</code> as an intermediate — so it equals <code>D<sup>(k-1)</sup>[i][j]</code> — or (b) it does pass through <code>k</code>, in which case it decomposes into two sub-paths: <code>i &rightsquigarrow; k</code> and <code>k &rightsquigarrow; j</code>, both only using intermediates <code>{1, ..., k-1}</code>.</p>
+    </div>
+
+    <h4 class="subsubsec">Key Correctness Detail</h4>
+    <p>When the path goes through <code>k</code>, vertex <code>k</code> appears exactly once (assuming no negative cycles). If it appeared multiple times, it would form a cycle, which could be removed for a non-positive net benefit. So the decomposition into two sub-paths <code>i &rightsquigarrow; k</code> and <code>k &rightsquigarrow; j</code> — neither using <code>k</code> as an <em>intermediate</em> — is valid.</p>
+
+    <div class="callout insight">
+      <div class="callout-title">Space Savings — Why We Don't Need the Superscript</div>
+      <p>Notice that the update uses <code>D<sup>(k-1)</sup>[i][k]</code> and <code>D<sup>(k-1)</sup>[k][j]</code>. When we are updating the <code>k</code>-th outer iteration in-place, the values <code>dist[i][k]</code> and <code>dist[k][j]</code> are unchanged during the <code>k</code>-th iteration (since any path through <code>k</code> as an intermediate to reach <code>k</code> would need <code>k</code> itself, forming a cycle). So we can safely update <code>dist[u][v]</code> in-place without allocating a new matrix — this is why the algorithm already uses DP space savings implicitly.</p>
+    </div>
+
+    <h4 class="subsubsec">Algorithm Pseudocode</h4>
+
+    <div class="algo-header">
+      Algorithm 55 — Floyd-Warshall
+      <span class="algo-complexity">Time: O(|V|<sup>3</sup>) &nbsp;|&nbsp; Space: O(|V|<sup>2</sup>)</span>
+    </div>
+    <pre class="code-block has-header">function FLOYD_WARSHALL(G = (V, E)):
+    dist[1..|V|][1..|V|] = &infin;
+    dist[v][v] = 0               for all vertices v
+    dist[u][v] = w(u, v)         for all edges (u, v) in E
+
+    for k = 1 to |V| do
+        for u = 1 to |V| do
+            for v = 1 to |V| do
+                dist[u][v] = min(dist[u][v], dist[u][k] + dist[k][v])
+
+    return dist[1..|V|][1..|V|]</pre>
+
+<!-- ── Widget: Algorithm 55 — Floyd-Warshall ── -->
+<div id="vz55-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.7em;letter-spacing:.14em;text-transform:uppercase;color:#f0883e;font-weight:700;">Algorithm 55</span>
+    <span style="font-size:0.92em;font-weight:600;color:#c9d1d9;flex:1;">Floyd-Warshall — all-pairs shortest paths</span>
+    <span style="font-size:0.7em;font-family:monospace;background:rgba(88,166,255,.1);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(|V|³)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <div style="border-right:1px solid #30363d;padding:16px 18px;overflow-x:auto;">
+      <div style="font-family:monospace;font-size:.6em;letter-spacing:.14em;text-transform:uppercase;color:#8b949e;margin-bottom:8px;">Distance Matrix</div>
+      <table id="vz55-mat" style="border-collapse:collapse;font-family:monospace;font-size:.82em;width:100%;"></table>
+      <div style="margin-top:12px;font-size:.75em;color:#8b949e;">Edges: 0&#x2192;1(3), 0&#x2192;3(7), 1&#x2192;0(8), 1&#x2192;2(2), 2&#x2192;0(5), 2&#x2192;3(1), 3&#x2192;0(2)</div>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
+      <div>
+        <div style="font-family:monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz55-lbl">Ready</div>
+        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;" id="vz55-txt">Press <b>Step</b>. For each intermediate k=0..3, try all pairs (i,j): update dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:56px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">k</span>
+          <span style="font-size:1.2em;font-weight:700;color:#f0883e;" id="vz55-s-k">—</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:56px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Updates</span>
+          <span style="font-size:1.2em;font-weight:700;color:#3fb950;" id="vz55-s-upd">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:56px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Total</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz55-s-tot">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 16px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz55step()" id="vz55-btn-step" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:6px 14px;border-radius:7px;">Step &#x25B6;</button>
+    <button onclick="vz55reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:6px 14px;border-radius:7px;">Reset</button>
+  </div>
+</div>
+<script>
+(function(){
+  'use strict';
+  var N55=4;
+  var INF55=1e9;
+  // Edges: 0→1(3), 0→3(7), 1→0(8), 1→2(2), 2→0(5), 2→3(1), 3→0(2)
+  var INIT55=[
+    [0,3,INF55,7],
+    [8,0,2,INF55],
+    [5,INF55,0,1],
+    [2,INF55,INF55,0]
+  ];
+  var dist55,k55,i55,j55,updK55,totUpd55,done55,phase55;
+  // phase55: 'init'=show initial matrix, then steps per (k,i,j)
+  // steps: array of {k,i,j} or special
+
+  function fmt55(v){return v>=INF55?'∞':String(v);}
+  function copyMat(m){return m.map(function(r){return r.slice();});}
+
+  function renderMat55(activeK,activeI,activeJ,flashI,flashJ){
+    var t=document.getElementById('vz55-mat');if(!t)return;
+    var h='<thead><tr><th style="padding:5px 8px;background:#161b22;border:1px solid #30363d;color:#8b949e;font-size:.7em;text-align:center;"></th>';
+    for(var c=0;c<N55;c++)h+='<th style="padding:5px 8px;background:'+(c===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(c===activeK?'#f0883e':'#30363d')+';color:'+(c===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;text-align:center;">'+c+'</th>';
+    h+='</tr></thead><tbody>';
+    for(var r=0;r<N55;r++){
+      h+='<tr><td style="padding:5px 8px;background:'+(r===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(r===activeK?'#f0883e':'#30363d')+';color:'+(r===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;font-weight:700;text-align:center;">'+r+'</td>';
+      for(var cc=0;cc<N55;cc++){
+        var isActive=(r===activeI&&cc===activeJ);
+        var isFlash=(r===flashI&&cc===flashJ);
+        var bg=isFlash?'#3fb9500d':isActive?'#1f6feb1a':'#21262d';
+        var bd=isFlash?'#3fb950':isActive?'#58a6ff':'#30363d';
+        var col=isFlash?'#3fb950':isActive?'#58a6ff':'#c9d1d9';
+        h+='<td style="padding:5px 8px;background:'+bg+';border:1px solid '+bd+';color:'+col+';text-align:center;font-family:monospace;font-size:.82em;">'+fmt55(dist55[r][cc])+'</td>';
+      }
+      h+='</tr>';
+    }
+    h+='</tbody>';
+    t.innerHTML=h;
+  }
+
+  // Build sequence of steps: each step is {type,k,i,j} or {type:'done'}
+  var steps55,stepIdx55;
+  function buildSteps55(){
+    steps55=[];
+    // init step
+    steps55.push({type:'init'});
+    for(var k=0;k<N55;k++){
+      steps55.push({type:'newk',k:k});
+      for(var i=0;i<N55;i++){
+        for(var j=0;j<N55;j++){
+          if(i!==j)steps55.push({type:'cell',k:k,i:i,j:j});
+        }
+      }
+    }
+    steps55.push({type:'done'});
+  }
+
+  function applyStep55(idx){
+    var s=steps55[idx];
+    if(s.type==='init'){
+      dist55=copyMat(INIT55);updK55=0;totUpd55=0;k55=null;i55=null;j55=null;
+      renderMat55(-1,-1,-1,-1,-1);
+      document.getElementById('vz55-lbl').textContent='Initial matrix';
+      document.getElementById('vz55-txt').textContent='Matrix initialised: diagonal = 0, direct edges filled in, others = ∞.';
+      document.getElementById('vz55-s-k').textContent='—';
+      document.getElementById('vz55-s-upd').textContent='0';
+      document.getElementById('vz55-s-tot').textContent='0';
+    } else if(s.type==='newk'){
+      k55=s.k;updK55=0;i55=null;j55=null;
+      renderMat55(k55,-1,-1,-1,-1);
+      document.getElementById('vz55-lbl').textContent='k = '+k55+' (via vertex '+k55+')';
+      document.getElementById('vz55-txt').textContent='Now trying all (i,j) pairs: can routing through vertex '+k55+' shorten any path?';
+      document.getElementById('vz55-s-k').textContent=String(k55);
+    } else if(s.type==='cell'){
+      var k=s.k,i=s.i,j=s.j;
+      var via=dist55[i][k]===INF55||dist55[k][j]===INF55?INF55:dist55[i][k]+dist55[k][j];
+      var flashJ=-1,flashI=-1;
+      if(via<dist55[i][j]){
+        var old55=dist55[i][j];
+        dist55[i][j]=via;updK55++;totUpd55++;
+        flashI=i;flashJ=j;
+        renderMat55(k,i,j,flashI,flashJ);
+        document.getElementById('vz55-lbl').textContent='Updated ('+i+','+j+') via k='+k;
+        document.getElementById('vz55-txt').innerHTML='dist['+i+']['+j+'] = min('+fmt55(old55)+', dist['+i+']['+k+']+dist['+k+']['+j+']) = min('+fmt55(old55)+', '+fmt55(dist55[i][k])+'+'+fmt55(dist55[k][j])+') = <b style="color:#3fb950">'+fmt55(dist55[i][j])+'</b>';
+        document.getElementById('vz55-s-upd').textContent=String(updK55);
+        document.getElementById('vz55-s-tot').textContent=String(totUpd55);
+      } else {
+        renderMat55(k,i,j,-1,-1);
+        document.getElementById('vz55-lbl').textContent='No update ('+i+','+j+') via k='+k;
+        document.getElementById('vz55-txt').textContent='dist['+i+']['+j+']: min('+fmt55(dist55[i][j])+', '+fmt55(dist55[i][k])+'+'+fmt55(dist55[k][j])+') = '+fmt55(dist55[i][j])+' — no improvement.';
+      }
+    } else if(s.type==='done'){
+      done55=true;
+      renderMat55(-1,-1,-1,-1,-1);
+      document.getElementById('vz55-lbl').textContent='Complete';
+      document.getElementById('vz55-txt').innerHTML='All-pairs shortest paths computed. Total updates: <b style="color:#3fb950">'+totUpd55+'</b>. Check diagonal: all zeros → no negative cycles.';
+      document.getElementById('vz55-btn-step').disabled=true;
+    }
+  }
+
+  window.vz55reset=function(){
+    dist55=copyMat(INIT55);k55=null;i55=null;j55=null;updK55=0;totUpd55=0;done55=false;
+    buildSteps55();stepIdx55=0;
+    renderMat55(-1,-1,-1,-1,-1);
+    document.getElementById('vz55-lbl').textContent='Ready';
+    document.getElementById('vz55-txt').innerHTML='Press <b>Step</b>. For each intermediate k=0..3, try all pairs (i,j): update dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).';
+    document.getElementById('vz55-s-k').textContent='—';
+    document.getElementById('vz55-s-upd').textContent='0';
+    document.getElementById('vz55-s-tot').textContent='0';
+    document.getElementById('vz55-btn-step').disabled=false;
+  };
+
+  window.vz55step=function(){
+    if(done55)return;
+    if(stepIdx55<steps55.length){
+      applyStep55(stepIdx55);stepIdx55++;
+    }
+  };
+
+  window.vz55reset();
+})();
+</script>
+
+    <h4 class="subsubsec">Path Reconstruction — Predecessor Matrix</h4>
+    <p>To recover the actual shortest paths (not just distances), maintain a <strong>predecessor matrix</strong> <code>pred[u][v]</code> = the vertex before <code>v</code> on the shortest path from <code>u</code> to <code>v</code>. Update it alongside the distance matrix:</p>
+
+    <pre class="code-block">// During initialisation:
+pred[u][v] = u    for all edges (u, v) in E
+pred[v][v] = null (or v)
+pred[u][v] = null for all non-edges
+
+// During the main loop:
+if dist[u][k] + dist[k][v] &lt; dist[u][v] then
+    dist[u][v] = dist[u][k] + dist[k][v]
+    pred[u][v] = pred[k][v]    // The predecessor of v on path from u is
+                               // the same as predecessor of v on path from k
+
+// To reconstruct path from u to v:
+function GET_PATH(u, v):
+    if pred[u][v] == null: return null  // No path
+    path = [v]
+    while pred[u][v] != u:
+        v = pred[u][v]
+        path.prepend(v)
+    path.prepend(u)
+    return path</pre>
+
+    <!-- Floyd-Warshall Worked Example -->
+    <h3 class="subsec" id="sec-8-2-example">Floyd-Warshall Worked Example</h3>
+
+    <p>Consider the 4-vertex graph with directed edges:</p>
+    <ul>
+      <li>1 &rarr; 2, weight 4</li>
+      <li>1 &rarr; 3, weight &minus;2</li>
+      <li>2 &rarr; 4, weight &minus;1</li>
+      <li>3 &rarr; 2, weight 3</li>
+      <li>4 &rarr; 3, weight 2</li>
+    </ul>
+
+    <p><strong>Initial distance matrix</strong> (k=0, direct edges only):</p>
+    <table>
+      <thead><tr><th>dist</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1</strong></td><td>0</td><td>4</td><td>&infin;</td><td>&infin;</td></tr>
+        <tr><td><strong>2</strong></td><td>&infin;</td><td>0</td><td>&infin;</td><td>&minus;1</td></tr>
+        <tr><td><strong>3</strong></td><td>&minus;2</td><td>3</td><td>0</td><td>&infin;</td></tr>
+        <tr><td><strong>4</strong></td><td>&infin;</td><td>&infin;</td><td>2</td><td>0</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>After initialising direct edges</strong> (same as above, plus dist[v][v]=0).</p>
+
+    <p><strong>After k=1</strong> (using vertex 1 as possible intermediate): Notable update: dist[3][2] = min(3, &minus;2 + 4) = min(3, 2) = <strong>2</strong> (path 3 &rarr; 1 &rarr; 2).</p>
+
+    <table>
+      <thead><tr><th>dist</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1</strong></td><td>0</td><td>4</td><td>&infin;</td><td>&infin;</td></tr>
+        <tr><td><strong>2</strong></td><td>&infin;</td><td>0</td><td>&infin;</td><td>&minus;1</td></tr>
+        <tr><td><strong>3</strong></td><td>&minus;2</td><td>2</td><td>0</td><td>&infin;</td></tr>
+        <tr><td><strong>4</strong></td><td>&infin;</td><td>&infin;</td><td>2</td><td>0</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>After k=2</strong> (adding vertex 2 as intermediate): dist[4][1] = &infin; &gt; &minus;1 + 4 = 3 &rarr; updated to <strong>3</strong>. dist[4][3] = 2 &gt; &minus;1 + 2 = 1 &rarr; updated to <strong>1</strong>. dist[1][4] = &infin; &gt; 4 + (&minus;1) = 3 &rarr; updated to <strong>3</strong>.</p>
+
+    <table>
+      <thead><tr><th>dist</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1</strong></td><td>0</td><td>4</td><td>&infin;</td><td>3</td></tr>
+        <tr><td><strong>2</strong></td><td>&infin;</td><td>0</td><td>&infin;</td><td>&minus;1</td></tr>
+        <tr><td><strong>3</strong></td><td>&minus;2</td><td>2</td><td>0</td><td>1</td></tr>
+        <tr><td><strong>4</strong></td><td>3</td><td>&infin;</td><td>2</td><td>0</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>After k=3</strong> and <strong>k=4</strong>: Further updates propagate. The final distance matrix (after all k) is:</p>
+
+    <table>
+      <thead><tr><th>dist</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1</strong></td><td>0</td><td>4</td><td>5</td><td>3</td></tr>
+        <tr><td><strong>2</strong></td><td>&minus;1</td><td>0</td><td>1</td><td>&minus;1</td></tr>
+        <tr><td><strong>3</strong></td><td>&minus;2</td><td>2</td><td>0</td><td>1</td></tr>
+        <tr><td><strong>4</strong></td><td>0</td><td>4</td><td>2</td><td>0</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="subsubsec">Detecting Negative Cycles in Floyd-Warshall</h4>
+
+    <div class="callout warn">
+      <div class="callout-title">Negative Cycle Detection</div>
+      <p>After running Floyd-Warshall, check the <strong>main diagonal</strong> of the distance matrix. If <code>dist[v][v] &lt; 0</code> for any vertex <code>v</code>, then <code>v</code> lies on a negative-weight cycle.</p>
+      <p>This is a key advantage over Bellman-Ford: Floyd-Warshall detects <em>any</em> negative cycle in the graph, not just those reachable from a particular source.</p>
+      <p>If a negative diagonal entry is found, return an error — the shortest paths are not well-defined for vertices affected by the cycle.</p>
+    </div>
+
+    <div class="callout thm">
+      <div class="callout-title">Correctness of Floyd-Warshall (Invariant)</div>
+      <p><strong>Invariant:</strong> At the start of iteration <code>k</code> of the outer loop, <code>dist[u][v]</code> contains the length of the shortest path u &rightsquigarrow; v using only intermediate vertices from <code>{1, ..., k&minus;1}</code>.</p>
+      <ul>
+        <li><em>Base (k=1):</em> No intermediates allowed yet. <code>dist[u][v]</code> is initialised to direct edge weights, which is correct.</li>
+        <li><em>Inductive step:</em> Assume the invariant holds for k. We consider adding vertex <code>k</code> to the pool. The shortest path through <code>k</code> decomposes at <code>k</code> (visited exactly once, since a repeated visit would imply a cycle), giving sub-paths <code>u &rightsquigarrow; k</code> and <code>k &rightsquigarrow; v</code> both using only intermediates <code>{1,...,k&minus;1}</code>. By the inductive hypothesis, <code>dist[u][k]</code> and <code>dist[k][v]</code> are optimal, so the update is correct.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 8.3: TRANSITIVE CLOSURE ===== -->
+  <section class="content-section" id="sec-8-3">
+    <h2 class="sec-title">
+      <span class="sec-num">8.3</span>
+      Transitive Closure
+    </h2>
+  <button class="review-btn" data-week="7" data-sec="sec-8-3"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Definition — Transitive Closure</div>
+      <p>The <strong>transitive closure</strong> of a directed graph <code>G = (V, E)</code> is a new graph <code>G' = (V, E')</code> on the same vertex set such that there is a directed edge <code>(u, v) &isin; E'</code> if and only if there exists a directed path from <code>u</code> to <code>v</code> in <code>G</code> (including <code>u = v</code>).</p>
+      <p>In other words: can vertex <code>u</code> reach vertex <code>v</code>?</p>
+    </div>
+
+    <p>The transitive closure can be reduced to the all-pairs shortest path problem: there is a path from <code>u</code> to <code>v</code> if and only if <code>dist[u][v] &lt; &infin;</code>. However, we can do better in terms of constants by storing a Boolean matrix instead of distances.</p>
+
+    <h3 class="subsec">Warshall's Algorithm — Boolean Floyd-Warshall</h3>
+
+    <p>Warshall's algorithm is the Boolean analogue of Floyd-Warshall. Instead of tracking distances, it tracks reachability using a Boolean matrix <code>connected[u][v]</code>.</p>
+
+    <div class="callout thm">
+      <div class="callout-title">Warshall's Recurrence</div>
+      <p><code>TC<sup>(k)</sup>[i][j] = TC<sup>(k-1)</sup>[i][j] &nbsp; OR &nbsp; (TC<sup>(k-1)</sup>[i][k] AND TC<sup>(k-1)</sup>[k][j])</code></p>
+      <p>Interpretation: vertex <code>i</code> can reach vertex <code>j</code> using intermediates <code>{1,...,k}</code> if either:</p>
+      <ul>
+        <li>It could already do so without vertex <code>k</code>, or</li>
+        <li>It can reach <code>k</code> (using intermediates <code>{1,...,k-1}</code>) AND <code>k</code> can reach <code>j</code> (using intermediates <code>{1,...,k-1}</code>).</li>
+      </ul>
+    </div>
+
+    <div class="algo-header">
+      Algorithm 56 — Warshall's Transitive Closure
+      <span class="algo-complexity">Time: O(|V|<sup>3</sup>) &nbsp;|&nbsp; Space: O(|V|<sup>2</sup>)</span>
+    </div>
+    <pre class="code-block has-header">function TRANSITIVE_CLOSURE(G = (V, E)):
+    connected[1..|V|][1..|V|] = false
+    connected[v][v] = true         for all vertices v
+    connected[u][v] = true         for all edges (u, v) in E
+
+    for k = 1 to |V| do
+        for u = 1 to |V| do
+            for v = 1 to |V| do
+                connected[u][v] = connected[u][v]
+                                   OR (connected[u][k] AND connected[k][v])
+
+    return connected[1..|V|][1..|V|]</pre>
+
+<!-- ── Widget: Algorithm 56 — Warshall's Transitive Closure ── -->
+<div id="vz56-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.7em;letter-spacing:.14em;text-transform:uppercase;color:#f0883e;font-weight:700;">Algorithm 56</span>
+    <span style="font-size:0.92em;font-weight:600;color:#c9d1d9;flex:1;">Warshall's Transitive Closure — boolean reachability</span>
+    <span style="font-size:0.7em;font-family:monospace;background:rgba(88,166,255,.1);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(|V|³)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <div style="border-right:1px solid #30363d;padding:16px 18px;overflow-x:auto;">
+      <div style="font-family:monospace;font-size:.6em;letter-spacing:.14em;text-transform:uppercase;color:#8b949e;margin-bottom:8px;">Reach Matrix (0=false, 1=true)</div>
+      <table id="vz56-mat" style="border-collapse:collapse;font-family:monospace;font-size:.82em;width:100%;"></table>
+      <div style="margin-top:12px;font-size:.75em;color:#8b949e;">Graph: 0&#x2192;1, 1&#x2192;2, 2&#x2192;3 (chain)</div>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
+      <div>
+        <div style="font-family:monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz56-lbl">Ready</div>
+        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;" id="vz56-txt">Press <b>Step</b>. For each k, set reach[i][j] |= reach[i][k] &amp;&amp; reach[k][j]. Cells turn 1 as reachability is discovered.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:56px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">k</span>
+          <span style="font-size:1.2em;font-weight:700;color:#f0883e;" id="vz56-s-k">—</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">New pairs</span>
+          <span style="font-size:1.2em;font-weight:700;color:#3fb950;" id="vz56-s-new">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 16px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz56step()" id="vz56-btn-step" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:6px 14px;border-radius:7px;">Step &#x25B6;</button>
+    <button onclick="vz56reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:6px 14px;border-radius:7px;">Reset</button>
+  </div>
+</div>
+<script>
+(function(){
+  'use strict';
+  var N56=4;
+  // Edges: 0→1, 1→2, 2→3
+  var reach56;
+  var k56,newPairs56,done56;
+  var steps56,stepIdx56;
+
+  function copyBool(m){return m.map(function(r){return r.slice();});}
+  var INIT56=[
+    [true,true,false,false],
+    [false,true,true,false],
+    [false,false,true,true],
+    [false,false,false,true]
+  ];
+
+  function renderMat56(activeK,flashI,flashJ){
+    var t=document.getElementById('vz56-mat');if(!t)return;
+    var h='<thead><tr><th style="padding:5px 8px;background:#161b22;border:1px solid #30363d;color:#8b949e;font-size:.7em;text-align:center;"></th>';
+    for(var c=0;c<N56;c++)h+='<th style="padding:5px 8px;background:'+(c===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(c===activeK?'#f0883e':'#30363d')+';color:'+(c===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;text-align:center;">'+c+'</th>';
+    h+='</tr></thead><tbody>';
+    for(var r=0;r<N56;r++){
+      h+='<tr><td style="padding:5px 8px;background:'+(r===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(r===activeK?'#f0883e':'#30363d')+';color:'+(r===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;font-weight:700;text-align:center;">'+r+'</td>';
+      for(var cc=0;cc<N56;cc++){
+        var isFlash=(r===flashI&&cc===flashJ);
+        var val=reach56[r][cc];
+        var bg=isFlash?'#3fb9500d':val?'#1f6feb0d':'#21262d';
+        var bd=isFlash?'#3fb950':val?'#58a6ff':'#30363d';
+        var col=isFlash?'#3fb950':val?'#58a6ff':'#8b949e';
+        h+='<td style="padding:5px 8px;background:'+bg+';border:1px solid '+bd+';color:'+col+';text-align:center;font-family:monospace;font-size:.82em;">'+(val?'1':'0')+'</td>';
+      }
+      h+='</tr>';
+    }
+    h+='</tbody>';
+    t.innerHTML=h;
+  }
+
+  function buildSteps56(){
+    steps56=[];
+    steps56.push({type:'init'});
+    for(var k=0;k<N56;k++){
+      steps56.push({type:'newk',k:k});
+      for(var i=0;i<N56;i++){
+        for(var j=0;j<N56;j++){
+          if(i!==j)steps56.push({type:'cell',k:k,i:i,j:j});
+        }
+      }
+    }
+    steps56.push({type:'done'});
+  }
+
+  function applyStep56(idx){
+    var s=steps56[idx];
+    if(s.type==='init'){
+      reach56=copyBool(INIT56);k56=null;newPairs56=0;
+      renderMat56(-1,-1,-1);
+      document.getElementById('vz56-lbl').textContent='Initial reach matrix';
+      document.getElementById('vz56-txt').textContent='Initialised: diagonal = 1 (self-reach), direct edges set to 1.';
+      document.getElementById('vz56-s-k').textContent='—';
+      document.getElementById('vz56-s-new').textContent='0';
+    } else if(s.type==='newk'){
+      k56=s.k;newPairs56=0;
+      renderMat56(k56,-1,-1);
+      document.getElementById('vz56-lbl').textContent='k = '+k56;
+      document.getElementById('vz56-txt').textContent='Via vertex '+k56+': reach[i][j] |= reach[i]['+k56+'] && reach['+k56+'][j].';
+      document.getElementById('vz56-s-k').textContent=String(k56);
+      document.getElementById('vz56-s-new').textContent='0';
+    } else if(s.type==='cell'){
+      var k=s.k,i=s.i,j=s.j;
+      if(!reach56[i][j]&&reach56[i][k]&&reach56[k][j]){
+        reach56[i][j]=true;newPairs56++;
+        renderMat56(k,i,j);
+        document.getElementById('vz56-lbl').textContent='New: reach['+i+']['+j+']=1 via k='+k;
+        document.getElementById('vz56-txt').textContent='reach['+i+']['+k+']=1 AND reach['+k+']['+j+']=1 → reach['+i+']['+j+'] set to 1! Vertex '+i+' can now reach '+j+' via '+k+'.';
+        document.getElementById('vz56-s-new').textContent=String(newPairs56);
+      } else {
+        renderMat56(k,-1,-1);
+        document.getElementById('vz56-lbl').textContent='reach['+i+']['+j+'] via k='+k+' — no change';
+        if(reach56[i][j]){
+          document.getElementById('vz56-txt').textContent='reach['+i+']['+j+'] already 1. No update needed.';
+        } else {
+          document.getElementById('vz56-txt').textContent='reach['+i+']['+k+']='+reach56[i][k]+' or reach['+k+']['+j+']='+reach56[k][j]+' is false → cannot extend through k='+k+'.';
+        }
+      }
+    } else if(s.type==='done'){
+      done56=true;
+      renderMat56(-1,-1,-1);
+      document.getElementById('vz56-lbl').textContent='Complete';
+      document.getElementById('vz56-txt').innerHTML='Transitive closure done. 0 can reach 1,2,3; 1 can reach 2,3; 2 can reach 3; 3 only reaches itself.';
+      document.getElementById('vz56-btn-step').disabled=true;
+    }
+  }
+
+  window.vz56reset=function(){
+    reach56=copyBool(INIT56);k56=null;newPairs56=0;done56=false;
+    buildSteps56();stepIdx56=0;
+    renderMat56(-1,-1,-1);
+    document.getElementById('vz56-lbl').textContent='Ready';
+    document.getElementById('vz56-txt').innerHTML='Press <b>Step</b>. For each k, set reach[i][j] |= reach[i][k] &amp;&amp; reach[k][j]. Cells turn 1 as reachability is discovered.';
+    document.getElementById('vz56-s-k').textContent='—';
+    document.getElementById('vz56-s-new').textContent='0';
+    document.getElementById('vz56-btn-step').disabled=false;
+  };
+
+  window.vz56step=function(){
+    if(done56)return;
+    if(stepIdx56<steps56.length){applyStep56(stepIdx56);stepIdx56++;}
+  };
+
+  window.vz56reset();
+})();
+</script>
+
+    <div class="callout insight">
+      <div class="callout-title">Space Optimisation with Bitvectors</div>
+      <p>Each row of the <code>connected</code> matrix can be stored as a <strong>bitvector</strong> (bitset), where each bit represents reachability to one vertex. The AND and OR operations then become single bitwise instructions on machine words of width <code>w</code>.</p>
+      <ul>
+        <li><strong>Space:</strong> O(|V|<sup>2</sup> / w) bits instead of O(|V|<sup>2</sup>) booleans</li>
+        <li><strong>Time:</strong> O(|V|<sup>3</sup> / w) with bitwise operations (not covered in detail in this unit)</li>
+      </ul>
+    </div>
+
+    <h4 class="subsubsec">Transitive Closure Example</h4>
+    <p>Consider graph with vertices {a, b, c, d, e} and edges a&rarr;b, b&rarr;c, c&rarr;d, d&rarr;b, e&rarr;a.</p>
+    <p>After running Warshall's algorithm, the transitive closure contains edges:</p>
+    <ul>
+      <li>e can reach: e, a, b, c, d (via chain e&rarr;a&rarr;b&rarr;c&rarr;d and the b-c-d cycle)</li>
+      <li>a can reach: a, b, c, d (via a&rarr;b and the b-c-d cycle)</li>
+      <li>b, c, d can all reach each other (they form a cycle)</li>
+      <li>No vertex can reach e or a (no back edges)</li>
+    </ul>
+  </section>
+
+  <!-- ===== SECTION 8.4: CRITICAL PATH PROBLEM ===== -->
+  <section class="content-section" id="sec-8-4">
+    <h2 class="sec-title">
+      <span class="sec-num">8.4</span>
+      The Critical Path Problem
+    </h2>
+  <button class="review-btn" data-week="7" data-sec="sec-8-4"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <div class="callout def">
+      <div class="callout-title">Problem Statement — Longest Path in a DAG</div>
+      <p>The <strong>critical path problem</strong> is the problem of finding the <em>longest</em> (maximum-weight) path in a Directed Acyclic Graph (DAG).</p>
+      <p><strong>Project management context:</strong> Vertices represent task completions (or milestones), edges represent tasks with weights equal to their duration, and edges dictate prerequisites. The longest path gives the <em>minimum project completion time</em> — the bottleneck sequence of tasks that determines the project schedule.</p>
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Why DAG? Why Not General Graphs?</div>
+      <p>Longest path in a general graph is NP-hard (it generalises the Hamiltonian path problem). On a DAG however, it admits optimal substructure and can be solved efficiently in <span class="complexity-tag">O(|V| + |E|)</span>.</p>
+      <p><strong>Optimal substructure of longest paths in DAGs:</strong> If P is the longest path starting at <code>u</code>, and <code>(u, v)</code> is the first edge of P, then the rest of P (from <code>v</code> onwards) must be the longest path starting at <code>v</code>. If a longer path from <code>v</code> existed, we could combine it with <code>(u,v)</code> to get a longer path from <code>u</code> — contradiction.</p>
+      <p>Note: This property does NOT hold for general graphs because cycles could be exploited.</p>
+    </div>
+
+    <h3 class="subsec" id="sec-8-4-dp">Dynamic Programming Formulation</h3>
+
+    <div class="callout thm">
+      <div class="callout-title">DP Recurrence — Longest Path from u</div>
+      <p>Let <code>longest[u]</code> = the length of the longest path that <em>starts</em> at vertex <code>u</code>.</p>
+      <p><strong>Base case:</strong> <code>longest[v] = 0</code> for all vertices <code>v</code> with no outgoing edges (sinks).</p>
+      <p><strong>Recurrence:</strong></p>
+      <p style="font-family: monospace; text-align:center;">longest[u] = max<sub>v &isin; adj[u]</sub> ( w(u, v) + longest[v] )</p>
+      <p>The longest path from <code>u</code> is the best first step: for each outgoing edge <code>(u, v)</code>, we take that edge (cost <code>w(u,v)</code>) and then follow the longest path from <code>v</code>.</p>
+    </div>
+
+    <h4 class="subsubsec">Dependency Order</h4>
+    <p>To compute <code>longest[u]</code>, we need <code>longest[v]</code> for all outgoing neighbours <code>v</code> of <code>u</code> — i.e., all descendants of <code>u</code> must be computed first. This means we must process vertices in <strong>reverse topological order</strong> (sinks first, source last).</p>
+
+    <h4 class="subsubsec">Bottom-Up Algorithm (Iterative)</h4>
+
+    <div class="algo-header">
+      Algorithm 57 — Bottom-Up Longest Path in a DAG
+      <span class="algo-complexity">Time: O(|V| + |E|) &nbsp;|&nbsp; Space: O(|V|)</span>
+    </div>
+    <pre class="code-block has-header">function CRITICAL_PATH_BOTTOM_UP(G = (V, E)):
+    longest[1..|V|] = 0
+    order = REVERSE(TOPOLOGICAL_SORT(G))   // Sinks come first
+
+    for each vertex u in order do
+        for each edge (u, v) adjacent to u do
+            longest[u] = max(longest[u], w(u, v) + longest[v])
+
+    return longest[1..|V|]</pre>
+
+<!-- ── Widget: Algorithm 57 — Bottom-up Longest Path in DAG ── -->
+<div id="vz57-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.7em;letter-spacing:.14em;text-transform:uppercase;color:#f0883e;font-weight:700;">Algorithm 57</span>
+    <span style="font-size:0.92em;font-weight:600;color:#c9d1d9;flex:1;">Bottom-up Longest Path in a DAG</span>
+    <span style="font-size:0.7em;font-family:monospace;background:rgba(88,166,255,.1);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(|V|+|E|)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <div style="border-right:1px solid #30363d;">
+      <svg id="vz57-svg" viewBox="0 0 520 280" style="width:100%;height:auto;display:block;">
+        <defs>
+          <marker id="vz57-arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#30363d"/></marker>
+          <marker id="vz57-arr-o" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f0883e"/></marker>
+          <marker id="vz57-arr-g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/></marker>
+        </defs>
+        <!-- DAG: A(80,140) B(220,60) C(220,220) D(360,140) E(460,140) -->
+        <!-- A→B(3) -->
+        <line id="vz57-e0" x1="102" y1="128" x2="198" y2="72" stroke="#30363d" stroke-width="2" marker-end="url(#vz57-arr)"/>
+        <text x="145" y="90" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">3</text>
+        <!-- A→C(1) -->
+        <line id="vz57-e1" x1="102" y1="153" x2="198" y2="210" stroke="#30363d" stroke-width="2" marker-end="url(#vz57-arr)"/>
+        <text x="145" y="196" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">1</text>
+        <!-- B→D(2) -->
+        <line id="vz57-e2" x1="242" y1="70" x2="338" y2="128" stroke="#30363d" stroke-width="2" marker-end="url(#vz57-arr)"/>
+        <text x="298" y="88" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">2</text>
+        <!-- C→D(4) -->
+        <line id="vz57-e3" x1="242" y1="210" x2="338" y2="153" stroke="#30363d" stroke-width="2" marker-end="url(#vz57-arr)"/>
+        <text x="298" y="198" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">4</text>
+        <!-- D→E(1) -->
+        <line id="vz57-e4" x1="382" y1="140" x2="437" y2="140" stroke="#30363d" stroke-width="2" marker-end="url(#vz57-arr)"/>
+        <text x="412" y="132" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">1</text>
+        <!-- Nodes: A,B,C,D,E indices 0-4 -->
+        <circle id="vz57-n0" cx="80" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="80" y="140" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
+        <text id="vz57-l0" x="80" y="172" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">0</text>
+        <circle id="vz57-n1" cx="220" cy="60" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="220" y="60" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
+        <text id="vz57-l1" x="220" y="92" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">0</text>
+        <circle id="vz57-n2" cx="220" cy="220" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="220" y="220" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">C</text>
+        <text id="vz57-l2" x="220" y="252" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">0</text>
+        <circle id="vz57-n3" cx="360" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="360" y="140" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">D</text>
+        <text id="vz57-l3" x="360" y="172" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">0</text>
+        <circle id="vz57-n4" cx="460" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="460" y="140" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">E</text>
+        <text id="vz57-l4" x="460" y="172" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">0</text>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
+      <div>
+        <div style="font-family:monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz57-lbl">Ready</div>
+        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;" id="vz57-txt">Press <b>Step</b>. Process vertices in reverse-topo order (E,D,C,B,A). For each vertex update longest[u] = max over outgoing edges.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:80px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Current</span>
+          <span style="font-size:1.2em;font-weight:700;color:#f0883e;" id="vz57-s-cur">—</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:80px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Longest</span>
+          <span style="font-size:1.2em;font-weight:700;color:#3fb950;" id="vz57-s-len">—</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-family:monospace;font-size:.8em;">
+        <div style="color:#8b949e;">longest[A]</div><div id="vz57-tv0" style="color:#c9d1d9;">0</div>
+        <div style="color:#8b949e;">longest[B]</div><div id="vz57-tv1" style="color:#c9d1d9;">0</div>
+        <div style="color:#8b949e;">longest[C]</div><div id="vz57-tv2" style="color:#c9d1d9;">0</div>
+        <div style="color:#8b949e;">longest[D]</div><div id="vz57-tv3" style="color:#c9d1d9;">0</div>
+        <div style="color:#8b949e;">longest[E]</div><div id="vz57-tv4" style="color:#c9d1d9;">0</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 16px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz57step()" id="vz57-btn-step" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:6px 14px;border-radius:7px;">Step &#x25B6;</button>
+    <button onclick="vz57reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:6px 14px;border-radius:7px;">Reset</button>
+  </div>
+</div>
+<script>
+(function(){
+  'use strict';
+  // Nodes: 0=A,1=B,2=C,3=D,4=E
+  // Edges: A→B(3), A→C(1), B→D(2), C→D(4), D→E(1)
+  // Topo order: A,B,C,D,E → reversed: E,D,C,B,A
+  var LABELS57=['A','B','C','D','E'];
+  var ADJ57=[[1,3],[2],[3,4],[3,2],[4,1]]; // [toIdx, weight]
+  // ADJ57[0]=A→B(3),A→C(1)  ADJ57[1]=B→D(2)  ADJ57[2]=C→D(4)  ADJ57[3]=D→E(1)  ADJ57[4]=E (no edges)
+  var ADJ57_MAP={0:[[1,3],[2,1]],1:[[3,2]],2:[[3,4]],3:[[4,1]],4:[]};
+  // edge SVG indices: A→B=0, A→C=1, B→D=2, C→D=3, D→E=4
+  var EDGE_IDX57={};
+  EDGE_IDX57['0-1']=0;EDGE_IDX57['0-2']=1;EDGE_IDX57['1-3']=2;EDGE_IDX57['2-3']=3;EDGE_IDX57['3-4']=4;
+  var REVTOPO57=[4,3,2,1,0]; // E,D,C,B,A
+  var longest57,done57,steps57,stepIdx57;
+
+  function setN57(i,st){
+    var c=document.getElementById('vz57-n'+i);if(!c)return;
+    var map={default:['#21262d','#30363d'],active:['#1f6feb1a','#58a6ff'],done:['#3fb9500d','#3fb950'],best:['#f0883e1a','#f0883e']};
+    var f=map[st]||map.default;
+    c.setAttribute('fill',f[0]);c.setAttribute('stroke',f[1]);c.setAttribute('stroke-width','2');
+  }
+  function setE57(i,st){
+    var e=document.getElementById('vz57-e'+i);if(!e)return;
+    var map={default:['#30363d','2','vz57-arr'],active:['#f0883e','2.5','vz57-arr-o'],best:['#3fb950','3','vz57-arr-g']};
+    var m=map[st]||map.default;
+    e.setAttribute('stroke',m[0]);e.setAttribute('stroke-width',m[1]);e.setAttribute('marker-end','url(#'+m[2]+')');
+  }
+  function updateTv57(){
+    for(var i=0;i<5;i++){
+      var t=document.getElementById('vz57-tv'+i);
+      if(t){t.textContent=longest57[i];t.style.color=longest57[i]>0?'#3fb950':'#c9d1d9';}
+      var l=document.getElementById('vz57-l'+i);
+      if(l){l.textContent=longest57[i];l.setAttribute('fill',longest57[i]>0?'#3fb950':'#8b949e');}
+    }
+  }
+
+  function buildSteps57(){
+    steps57=[];
+    steps57.push({type:'init'});
+    for(var oi=0;oi<REVTOPO57.length;oi++){
+      var u=REVTOPO57[oi];
+      steps57.push({type:'visit',u:u});
+      var edges=ADJ57_MAP[u];
+      var bestVal=-1,bestEdgeIdx=-1;
+      for(var ei=0;ei<edges.length;ei++){
+        var v=edges[ei][0],w=edges[ei][1];
+        steps57.push({type:'edge',u:u,v:v,w:w,ei:EDGE_IDX57[u+'-'+v]});
+      }
+      if(edges.length>0)steps57.push({type:'nodeupdate',u:u});
+    }
+    steps57.push({type:'done'});
+  }
+
+  window.vz57reset=function(){
+    longest57=[0,0,0,0,0];done57=false;
+    for(var i=0;i<5;i++)setN57(i,'default');
+    for(var i=0;i<5;i++)setE57(i,'default');
+    buildSteps57();stepIdx57=0;
+    updateTv57();
+    document.getElementById('vz57-lbl').textContent='Ready';
+    document.getElementById('vz57-txt').innerHTML='Press <b>Step</b>. Process vertices in reverse-topo order (E,D,C,B,A). For each vertex update longest[u] = max over outgoing edges.';
+    document.getElementById('vz57-s-cur').textContent='—';
+    document.getElementById('vz57-s-len').textContent='—';
+    document.getElementById('vz57-btn-step').disabled=false;
+  };
+
+  window.vz57step=function(){
+    if(done57)return;
+    if(stepIdx57>=steps57.length)return;
+    var s=steps57[stepIdx57++];
+    if(s.type==='init'){
+      document.getElementById('vz57-lbl').textContent='Initialise';
+      document.getElementById('vz57-txt').textContent='Set longest[u]=0 for all u. Process in reverse-topological order: E, D, C, B, A (sinks first).';
+    } else if(s.type==='visit'){
+      for(var i=0;i<5;i++)setN57(i,'default');
+      for(var i=0;i<5;i++)setE57(i,'default');
+      setN57(s.u,'active');
+      document.getElementById('vz57-s-cur').textContent=LABELS57[s.u];
+      document.getElementById('vz57-lbl').textContent='Process '+LABELS57[s.u];
+      var edges=ADJ57_MAP[s.u];
+      if(edges.length===0){
+        document.getElementById('vz57-txt').textContent=LABELS57[s.u]+' is a sink — no outgoing edges. longest['+LABELS57[s.u]+']=0 (base case).';
+      } else {
+        document.getElementById('vz57-txt').textContent='Visiting '+LABELS57[s.u]+'. Will try each outgoing edge and take the max.';
+      }
+    } else if(s.type==='edge'){
+      setE57(s.ei,'active');
+      var candidate=s.w+longest57[s.v];
+      document.getElementById('vz57-lbl').textContent='Edge '+LABELS57[s.u]+'→'+LABELS57[s.v];
+      document.getElementById('vz57-txt').innerHTML='Try edge <b>'+LABELS57[s.u]+'→'+LABELS57[s.v]+'</b> (w='+s.w+'): w+longest['+LABELS57[s.v]+']='+s.w+'+'+longest57[s.v]+'='+candidate+'. max('+longest57[s.u]+','+candidate+')='+(candidate>longest57[s.u]?candidate:longest57[s.u])+'.';
+      if(candidate>longest57[s.u]){
+        longest57[s.u]=candidate;
+        setE57(s.ei,'best');setN57(s.u,'best');
+        var tv=document.getElementById('vz57-tv'+s.u);if(tv){tv.textContent=longest57[s.u];tv.style.color='#f0883e';}
+        var l=document.getElementById('vz57-l'+s.u);if(l){l.textContent=longest57[s.u];l.setAttribute('fill','#f0883e');}
+        document.getElementById('vz57-s-len').textContent=longest57[0]; // show A's longest
+      }
+    } else if(s.type==='nodeupdate'){
+      setN57(s.u,'done');
+      for(var i=0;i<5;i++)setE57(i,'default');
+      var tv=document.getElementById('vz57-tv'+s.u);if(tv){tv.textContent=longest57[s.u];tv.style.color='#3fb950';}
+      var l=document.getElementById('vz57-l'+s.u);if(l){l.textContent=longest57[s.u];l.setAttribute('fill','#3fb950');}
+      document.getElementById('vz57-lbl').textContent=LABELS57[s.u]+' done';
+      document.getElementById('vz57-txt').textContent='longest['+LABELS57[s.u]+']='+longest57[s.u]+' finalised.';
+    } else if(s.type==='done'){
+      done57=true;
+      for(var i=0;i<5;i++)setN57(i,'done');
+      updateTv57();
+      document.getElementById('vz57-s-len').textContent=longest57[0];
+      document.getElementById('vz57-lbl').textContent='Complete — Critical Path = '+longest57[0];
+      document.getElementById('vz57-txt').innerHTML='longest[A]='+longest57[0]+' (path A→C→D→E). longest[B]='+longest57[1]+', longest[C]='+longest57[2]+', longest[D]='+longest57[3]+', longest[E]='+longest57[4]+'.';
+      document.getElementById('vz57-btn-step').disabled=true;
+    }
+  };
+
+  window.vz57reset();
+})();
+</script>
+
+    <p>The call to <code>TOPOLOGICAL_SORT</code> takes O(|V| + |E|) and the main loop processes each vertex and edge once — O(|V| + |E|) total.</p>
+
+    <h4 class="subsubsec">Top-Down Algorithm (Recursive with Memoisation)</h4>
+
+    <div class="algo-header">
+      Algorithm 58 — Recursive Longest Path in a DAG (Top-Down DP)
+      <span class="algo-complexity">Time: O(|V| + |E|) &nbsp;|&nbsp; Space: O(|V|)</span>
+    </div>
+    <pre class="code-block has-header">// longest[1..|V|] = null (uninitialised, used as memoisation table)
+
+function CRITICAL_PATH(u):
+    if longest[u] != null then
+        return longest[u]      // Already computed (memoised)
+
+    longest[u] = 0
+    for each edge (u, v) adjacent to u do
+        longest[u] = max(longest[u], w(u, v) + CRITICAL_PATH(v))
+
+    return longest[u]
+
+// Call CRITICAL_PATH(source) or CRITICAL_PATH(u) for each source of interest</pre>
+
+<!-- ── Widget: Algorithm 58 — Recursive Longest Path in DAG ── -->
+<div id="vz58-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
+  <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
+    <span style="font-family:monospace;font-size:0.7em;letter-spacing:.14em;text-transform:uppercase;color:#f0883e;font-weight:700;">Algorithm 58</span>
+    <span style="font-size:0.92em;font-weight:600;color:#c9d1d9;flex:1;">Recursive Longest Path — top-down memoisation</span>
+    <span style="font-size:0.7em;font-family:monospace;background:rgba(88,166,255,.1);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:2px 8px;border-radius:10px;">O(|V|+|E|)</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:300px;">
+    <div style="border-right:1px solid #30363d;">
+      <svg id="vz58-svg" viewBox="0 0 520 280" style="width:100%;height:auto;display:block;">
+        <defs>
+          <marker id="vz58-arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#30363d"/></marker>
+          <marker id="vz58-arr-o" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f0883e"/></marker>
+          <marker id="vz58-arr-p" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#bc8cff"/></marker>
+          <marker id="vz58-arr-g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/></marker>
+        </defs>
+        <!-- Same DAG as Alg 57 -->
+        <line id="vz58-e0" x1="102" y1="128" x2="198" y2="72" stroke="#30363d" stroke-width="2" marker-end="url(#vz58-arr)"/>
+        <text x="145" y="90" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">3</text>
+        <line id="vz58-e1" x1="102" y1="153" x2="198" y2="210" stroke="#30363d" stroke-width="2" marker-end="url(#vz58-arr)"/>
+        <text x="145" y="196" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">1</text>
+        <line id="vz58-e2" x1="242" y1="70" x2="338" y2="128" stroke="#30363d" stroke-width="2" marker-end="url(#vz58-arr)"/>
+        <text x="298" y="88" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">2</text>
+        <line id="vz58-e3" x1="242" y1="210" x2="338" y2="153" stroke="#30363d" stroke-width="2" marker-end="url(#vz58-arr)"/>
+        <text x="298" y="198" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">4</text>
+        <line id="vz58-e4" x1="382" y1="140" x2="437" y2="140" stroke="#30363d" stroke-width="2" marker-end="url(#vz58-arr)"/>
+        <text x="412" y="132" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">1</text>
+        <!-- Nodes -->
+        <circle id="vz58-n0" cx="80" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="80" y="140" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
+        <text id="vz58-m0" x="80" y="172" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">null</text>
+        <circle id="vz58-n1" cx="220" cy="60" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="220" y="60" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
+        <text id="vz58-m1" x="220" y="92" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">null</text>
+        <circle id="vz58-n2" cx="220" cy="220" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="220" y="220" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">C</text>
+        <text id="vz58-m2" x="220" y="252" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">null</text>
+        <circle id="vz58-n3" cx="360" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="360" y="140" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">D</text>
+        <text id="vz58-m3" x="360" y="172" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">null</text>
+        <circle id="vz58-n4" cx="460" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="460" y="140" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">E</text>
+        <text id="vz58-m4" x="460" y="172" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">null</text>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
+      <div>
+        <div style="font-family:monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz58-lbl">Ready</div>
+        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;" id="vz58-txt">Press <b>Step</b>. Top-down recursion from A. Orange = computing, purple = memoised hit, green = finalised.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Cache hits</span>
+          <span style="font-size:1.2em;font-weight:700;color:#bc8cff;" id="vz58-s-hits">0</span>
+        </div>
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:72px;">
+          <span style="font-family:monospace;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Calls</span>
+          <span style="font-size:1.2em;font-weight:700;color:#c9d1d9;" id="vz58-s-calls">0</span>
+        </div>
+      </div>
+      <div style="font-family:monospace;font-size:.75em;color:#8b949e;line-height:1.6;">
+        <div>A: <span id="vz58-tv0" style="color:#c9d1d9;">null</span></div>
+        <div>B: <span id="vz58-tv1" style="color:#c9d1d9;">null</span></div>
+        <div>C: <span id="vz58-tv2" style="color:#c9d1d9;">null</span></div>
+        <div>D: <span id="vz58-tv3" style="color:#c9d1d9;">null</span></div>
+        <div>E: <span id="vz58-tv4" style="color:#c9d1d9;">null</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 16px;border-top:1px solid #30363d;background:#161b22;align-items:center;">
+    <button onclick="vz58step()" id="vz58-btn-step" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:6px 14px;border-radius:7px;">Step &#x25B6;</button>
+    <button onclick="vz58reset()" style="font-family:monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:6px 14px;border-radius:7px;">Reset</button>
+  </div>
+</div>
+<script>
+(function(){
+  'use strict';
+  var LABELS58=['A','B','C','D','E'];
+  var ADJ58={0:[[1,3],[2,1]],1:[[3,2]],2:[[3,4]],3:[[4,1]],4:[]};
+  var EDGE_IDX58={'0-1':0,'0-2':1,'1-3':2,'2-3':3,'3-4':4};
+  var memo58,hits58,calls58,done58;
+  var steps58,stepIdx58;
+
+  function setN58(i,st){
+    var c=document.getElementById('vz58-n'+i);if(!c)return;
+    var map={default:['#21262d','#30363d'],computing:['#f0883e1a','#f0883e'],cached:['#bc8cff1a','#bc8cff'],done:['#3fb9500d','#3fb950']};
+    var f=map[st]||map.default;
+    c.setAttribute('fill',f[0]);c.setAttribute('stroke',f[1]);c.setAttribute('stroke-width','2');
+  }
+  function setE58(i,st){
+    var e=document.getElementById('vz58-e'+i);if(!e)return;
+    var map={default:['#30363d','2','vz58-arr'],recurse:['#f0883e','2.5','vz58-arr-o'],cached:['#bc8cff','2.5','vz58-arr-p'],done:['#3fb950','2.5','vz58-arr-g']};
+    var m=map[st]||map.default;
+    e.setAttribute('stroke',m[0]);e.setAttribute('stroke-width',m[1]);e.setAttribute('marker-end','url(#'+m[2]+')');
+  }
+  function updateMemoDisplay58(){
+    for(var i=0;i<5;i++){
+      var m=document.getElementById('vz58-m'+i);
+      var tv=document.getElementById('vz58-tv'+i);
+      var v=memo58[i];
+      var txt=v===null?'null':String(v);
+      var col=v===null?'#8b949e':v>=0?'#3fb950':'#c9d1d9';
+      if(m){m.textContent=txt;m.setAttribute('fill',col);}
+      if(tv){tv.textContent=txt;tv.style.color=col;}
+    }
+  }
+
+  // Build a linear step sequence simulating the recursion
+  // Call trace from A: A→B→D→E(base)→D returns→B returns→A checks C→C→D(cached)→C returns→A returns
+  function buildSteps58(){
+    steps58=[
+      {type:'call',u:0,msg:'Call CRITICAL_PATH(A). longest[A]=null → compute.'},
+      {type:'call',u:1,edge:'0-1',msg:'A has edge →B(3). Recurse: CRITICAL_PATH(B). longest[B]=null → compute.'},
+      {type:'call',u:3,edge:'1-3',msg:'B has edge →D(2). Recurse: CRITICAL_PATH(D). longest[D]=null → compute.'},
+      {type:'call',u:4,edge:'3-4',msg:'D has edge →E(1). Recurse: CRITICAL_PATH(E). longest[E]=null → compute.'},
+      {type:'base',u:4,val:0,msg:'E has no outgoing edges. longest[E]=0 (base case). Memoised.'},
+      {type:'ret',from:4,to:3,edge:'3-4',val:0,msg:'Return 0 to D. D: w(D,E)+longest[E]=1+0=1. max(0,1)=1. longest[D]=1.'},
+      {type:'memo',u:3,val:1,msg:'D has no more edges. longest[D]=1 memoised.'},
+      {type:'ret',from:3,to:1,edge:'1-3',val:1,msg:'Return 1 to B. B: w(B,D)+longest[D]=2+1=3. max(0,3)=3. longest[B]=3.'},
+      {type:'memo',u:1,val:3,msg:'B has no more edges. longest[B]=3 memoised.'},
+      {type:'ret',from:1,to:0,edge:'0-1',val:3,msg:'Return 3 to A. A: w(A,B)+longest[B]=3+3=6. longest[A]=max(0,6)=6 tentatively.'},
+      {type:'call',u:2,edge:'0-2',msg:'A has edge →C(1). Recurse: CRITICAL_PATH(C). longest[C]=null → compute.'},
+      {type:'call',u:3,edge:'2-3',cached:true,msg:'C has edge →D(4). Recurse: CRITICAL_PATH(D). longest[D]=1 — cache hit! Return immediately.'},
+      {type:'ret',from:3,to:2,edge:'2-3',val:1,cached:true,msg:'Return (cached) 1 to C. C: w(C,D)+longest[D]=4+1=5. max(0,5)=5. longest[C]=5.'},
+      {type:'memo',u:2,val:5,msg:'C has no more edges. longest[C]=5 memoised.'},
+      {type:'ret',from:2,to:0,edge:'0-2',val:5,msg:'Return 5 to A. A: w(A,C)+longest[C]=1+5=6. max(6,6)=6. longest[A]=6 confirmed.'},
+      {type:'memo',u:0,val:6,msg:'A has no more edges. longest[A]=6 memoised. Done!'},
+      {type:'done',msg:'Recursion complete. longest: A=6, B=3, C=5, D=1, E=0. Critical path: A→C→D→E (1+4+1=6).'}
+    ];
+  }
+
+  window.vz58reset=function(){
+    memo58=[null,null,null,null,null];hits58=0;calls58=0;done58=false;
+    for(var i=0;i<5;i++)setN58(i,'default');
+    for(var i=0;i<5;i++)setE58(i,'default');
+    buildSteps58();stepIdx58=0;
+    updateMemoDisplay58();
+    document.getElementById('vz58-lbl').textContent='Ready';
+    document.getElementById('vz58-txt').innerHTML='Press <b>Step</b>. Top-down recursion from A. Orange = computing, purple = memoised hit, green = finalised.';
+    document.getElementById('vz58-s-hits').textContent='0';
+    document.getElementById('vz58-s-calls').textContent='0';
+    document.getElementById('vz58-btn-step').disabled=false;
+  };
+
+  window.vz58step=function(){
+    if(done58)return;
+    if(stepIdx58>=steps58.length)return;
+    var s=steps58[stepIdx58++];
+    // clear edges first
+    for(var i=0;i<5;i++)setE58(i,'default');
+
+    if(s.type==='call'){
+      calls58++;
+      document.getElementById('vz58-s-calls').textContent=calls58;
+      setN58(s.u,'computing');
+      if(s.edge)setE58(EDGE_IDX58[s.edge],'recurse');
+      document.getElementById('vz58-lbl').textContent='Call CP('+LABELS58[s.u]+')';
+      document.getElementById('vz58-txt').textContent=s.msg;
+      if(s.cached){hits58++;document.getElementById('vz58-s-hits').textContent=hits58;setN58(s.u,'cached');}
+    } else if(s.type==='base'){
+      memo58[s.u]=s.val;
+      setN58(s.u,'done');
+      updateMemoDisplay58();
+      document.getElementById('vz58-lbl').textContent='Base case: '+LABELS58[s.u]+'='+s.val;
+      document.getElementById('vz58-txt').textContent=s.msg;
+    } else if(s.type==='ret'){
+      var eidx=EDGE_IDX58[s.edge];
+      setE58(eidx,s.cached?'cached':'done');
+      if(s.cached)setN58(s.from,'cached');
+      document.getElementById('vz58-lbl').textContent='Return '+s.val+' to '+LABELS58[s.to];
+      document.getElementById('vz58-txt').textContent=s.msg;
+    } else if(s.type==='memo'){
+      memo58[s.u]=s.val;
+      setN58(s.u,'done');
+      updateMemoDisplay58();
+      document.getElementById('vz58-lbl').textContent='Memoised: '+LABELS58[s.u]+'='+s.val;
+      document.getElementById('vz58-txt').textContent=s.msg;
+    } else if(s.type==='done'){
+      done58=true;
+      for(var i=0;i<5;i++)setN58(i,'done');
+      document.getElementById('vz58-lbl').textContent='Complete — longest[A]=6';
+      document.getElementById('vz58-txt').innerHTML=s.msg+' Cache hits=<b style="color:#bc8cff">'+hits58+'</b> (D was reused by C).';
+      document.getElementById('vz58-btn-step').disabled=true;
+    }
+  };
+
+  window.vz58reset();
+})();
+</script>
+
+    <p>This is simultaneously a DFS on the graph and a top-down DP. Each vertex and edge is processed exactly once: O(|V| + |E|).</p>
+
+    <!-- Topological Sort Connection -->
+    <h3 class="subsec" id="sec-8-4-insight">Connection to Topological Sort and DP</h3>
+
+    <div class="callout insight">
+      <div class="callout-title">Deep Insight — DFS, Topological Order, and DP</div>
+      <p>The recursive solution to the critical path problem reveals a fundamental relationship between depth-first search, topological ordering, and dynamic programming:</p>
+      <ul>
+        <li>Every DP algorithm has a <em>subproblem dependency graph</em> — a DAG where each subproblem is a vertex and each dependency is a directed edge.</li>
+        <li>Bottom-up DP must process subproblems in a valid topological order of this dependency DAG.</li>
+        <li>Top-down DP (with memoisation) does <em>not</em> need to know the topological order in advance, because the recursion itself performs a DFS on the dependency DAG, which implicitly produces a valid reverse topological order.</li>
+      </ul>
+      <p>This is why top-down recursion works "automatically" without needing to pre-compute a topological order: the DFS discovers and resolves dependencies on the fly.</p>
+      <p><strong>Practical implication:</strong> Many DP problems can be rephrased as shortest/longest path problems on DAGs. For example, the coin change problem from Chapter 7 is equivalent to finding the shortest path in a DAG where nodes are dollar amounts and edges connect amount <code>V</code> to <code>V - c_i</code> for each coin denomination <code>c_i</code>.</p>
+    </div>
+
+    <h4 class="subsubsec">Why Longest Path Requires a DAG (Not a General Graph)</h4>
+    <div class="callout warn">
+      <div class="callout-title">General Graphs: Longest Path is NP-Hard</div>
+      <p>On a general directed or undirected graph, the longest simple path (no repeated vertices) problem is NP-hard. The key obstruction is <strong>cycles</strong>: in a graph with a positive-weight cycle, you could traverse it repeatedly to make the path arbitrarily long. Even ignoring such cycles, determining the longest acyclic path requires examining exponentially many candidate paths in the worst case.</p>
+      <p>DAGs avoid this problem because they have no cycles by definition, so topological order provides a clean dependency structure for the DP.</p>
+    </div>
+
+    <h4 class="subsubsec">Early and Late Times, Slack (CPM Context)</h4>
+    <p>In the context of Critical Path Method (CPM) project scheduling, two additional quantities are computed for each activity/edge:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Concept</th>
+          <th>Definition</th>
+          <th>Computation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Earliest Start</strong> of task <code>(u,v)</code></td>
+          <td>The earliest time task <code>(u,v)</code> can begin</td>
+          <td>= earliest completion time of vertex <code>u</code> = longest path from source to <code>u</code></td>
+        </tr>
+        <tr>
+          <td><strong>Latest Start</strong> of task <code>(u,v)</code></td>
+          <td>The latest time task <code>(u,v)</code> can begin without delaying the project</td>
+          <td>= total project length &minus; longest path from <code>v</code> to sink &minus; <code>w(u,v)</code></td>
+        </tr>
+        <tr>
+          <td><strong>Float / Slack</strong> of task <code>(u,v)</code></td>
+          <td>How much the task can be delayed without affecting the overall project duration</td>
+          <td>= Latest Start &minus; Earliest Start</td>
+        </tr>
+        <tr>
+          <td><strong>Critical Path</strong></td>
+          <td>The longest path from source to sink</td>
+          <td>All tasks on this path have <strong>zero slack</strong> — they cannot be delayed at all</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Critical Path = Zero-Slack Activities</div>
+      <p>Any activity with float = 0 lies on the critical path. Delaying any critical-path activity by even a single time unit delays the entire project. Project managers focus resources on critical-path activities to accelerate the project, since non-critical activities have slack and won't impact the deadline.</p>
+    </div>
+
+    <h4 class="subsubsec">Summary of Complexity</h4>
+    <div class="callout cplx">
+      <div class="callout-title">Critical Path Complexity</div>
+      <ul>
+        <li><strong>Topological sort:</strong> O(|V| + |E|)</li>
+        <li><strong>Bottom-up DP traversal:</strong> O(|V| + |E|)</li>
+        <li><strong>Top-down recursive DP:</strong> O(|V| + |E|)</li>
+        <li><strong>Total:</strong> <span class="complexity-tag">O(|V| + |E|)</span></li>
+      </ul>
+      <p>This is linear in the size of the graph — optimal since we must at minimum read all vertices and edges.</p>
+    </div>
+  </section>
+
+  <!-- ===== SUMMARY TABLE ===== -->
+  <section class="content-section" id="summary">
+    <h2 class="sec-title">Week 7 Summary</h2>
+  <button class="review-btn" data-week="7" data-sec="summary"><span class="chk"></span><span class="lbl">Mark reviewed</span></button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Problem</th>
+          <th>Time</th>
+          <th>Space</th>
+          <th>Handles Neg. Weights?</th>
+          <th>Detects Neg. Cycles?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Bellman-Ford</strong></td>
+          <td>Single-source shortest paths</td>
+          <td>O(|V| &times; |E|)</td>
+          <td>O(|V|)</td>
+          <td>Yes</td>
+          <td>Yes (reachable from source)</td>
+        </tr>
+        <tr>
+          <td><strong>Floyd-Warshall</strong></td>
+          <td>All-pairs shortest paths</td>
+          <td>O(|V|<sup>3</sup>)</td>
+          <td>O(|V|<sup>2</sup>)</td>
+          <td>Yes</td>
+          <td>Yes (anywhere in graph)</td>
+        </tr>
+        <tr>
+          <td><strong>Warshall's TC</strong></td>
+          <td>Transitive closure (reachability)</td>
+          <td>O(|V|<sup>3</sup>)</td>
+          <td>O(|V|<sup>2</sup>)</td>
+          <td>N/A</td>
+          <td>N/A</td>
+        </tr>
+        <tr>
+          <td><strong>Critical Path DP</strong></td>
+          <td>Longest path in DAG</td>
+          <td>O(|V| + |E|)</td>
+          <td>O(|V|)</td>
+          <td>N/A (DAG)</td>
+          <td>N/A (DAG)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Takeaways</div>
+      <ul>
+        <li><strong>Dijkstra fails with negative weights</strong> because its greedy finalisation invariant breaks. Use Bellman-Ford instead.</li>
+        <li><strong>Bellman-Ford</strong> relaxes all edges <code>|V|&minus;1</code> times. The i-th iteration guarantees correct distances for shortest paths with &le;i edges.</li>
+        <li><strong>Floyd-Warshall</strong> solves all-pairs shortest paths in O(|V|<sup>3</sup>) by iteratively expanding the set of allowable intermediate vertices. It equals or beats all alternatives for dense graphs.</li>
+        <li><strong>Negative cycle detection:</strong> Bellman-Ford — run one extra iteration and check if any distance updates; Floyd-Warshall — check diagonal entries of the final matrix for negative values.</li>
+        <li><strong>Transitive closure</strong> (Warshall's algorithm) is a Boolean variant of Floyd-Warshall — replace min(+) with OR(AND).</li>
+        <li><strong>Critical path</strong> = longest path in a DAG = O(|V|+|E|) DP using reverse topological order. Top-down recursion implicitly discovers topological order via DFS.</li>
+        <li>DP subproblem dependencies form a DAG — bottom-up DP requires a topological order; top-down DP discovers one automatically via DFS.</li>
+      </ul>
+    </div>
+  </section>
+
+
+</main>
+<script>
+(function(){
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var C=50.3;
+  function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
+  function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
+  function pct(w){var d=getP(),done=new Set(d[w]||[]),secs=ALL[w]||[];return secs.length?done.size/secs.length:0;}
+  function updateRings(){
+    for(var w=1;w<=11;w++){
+      var arc=document.getElementById('pa'+w);
+      if(!arc)continue;
+      var p=pct(w);
+      arc.style.strokeDashoffset=C*(1-p);
+      arc.style.stroke=p>=1?'#3fb950':p>0?'#58a6ff':'#30363d';
+    }
+  }
+  document.querySelectorAll('.review-btn').forEach(function(btn){
+    var w=parseInt(btn.dataset.week),sec=btn.dataset.sec;
+    var d=getP(),done=new Set(d[w]||[]);
+    if(done.has(sec)){btn.classList.add('done');btn.querySelector('.lbl').textContent='✓ Reviewed';btn.querySelector('.chk').textContent='✓';}
+    btn.addEventListener('click',function(){
+      var d2=getP(),s=new Set(d2[w]||[]),now=!s.has(sec);
+      if(now)s.add(sec);else s.delete(sec);
+      d2[w]=[...s];setP(d2);
+      btn.classList.toggle('done',now);
+      btn.querySelector('.lbl').textContent=now?'✓ Reviewed':'Mark reviewed';
+      btn.querySelector('.chk').textContent=now?'✓':'';
+      updateRings();
+    });
+  });
+  updateRings();
+})();
+</script>
+</body>
+</html>
