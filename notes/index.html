@@ -288,15 +288,25 @@
 
 <div class="container">
 
-  <!-- ── Algorithm Reference ── -->
-  <a href="algorithms.html" style="display:flex;align-items:center;gap:16px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:10px;padding:18px 24px;text-decoration:none;margin-bottom:32px;transition:background .15s;">
-    <div style="font-size:28px;">📋</div>
-    <div>
-      <div style="font-size:15px;font-weight:600;color:var(--blue);">Algorithm Reference Table</div>
-      <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">All 60+ algorithms in one place — time/space complexities, paradigms, stability, and links to week notes. With live search.</div>
-    </div>
-    <div style="margin-left:auto;color:var(--text-muted);font-size:20px;">→</div>
-  </a>
+  <!-- ── Quick Access Cards ── -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:32px;">
+    <a href="algorithms.html" style="display:flex;align-items:center;gap:16px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:10px;padding:18px 24px;text-decoration:none;transition:background .15s,border-color .15s;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:28px;">📋</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--blue);">Algorithm Reference Table</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">All 60+ algorithms — complexities, paradigms, and flashcard mode.</div>
+      </div>
+      <div style="margin-left:auto;color:var(--text-muted);font-size:20px;">→</div>
+    </a>
+    <a href="questions.html" style="display:flex;align-items:center;gap:16px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:10px;padding:18px 24px;text-decoration:none;transition:background .15s,border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:28px;">📚</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--purple);">Practice Questions Bank</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">87 exam-relevant problems — filter by week, section, topic, and key problems.</div>
+      </div>
+      <div style="margin-left:auto;color:var(--text-muted);font-size:20px;">→</div>
+    </a>
+  </div>
 
   <!-- ── All Weeks ── -->
   <div class="section-heading">All Weeks</div>

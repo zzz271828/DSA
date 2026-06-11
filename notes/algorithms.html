@@ -125,6 +125,7 @@
   .fc-detail-value { font-size: 0.85em; }
   .fc-notes { font-size: 0.85em; color: var(--text-muted); line-height: 1.7; background: var(--bg3); border-radius: 8px; padding: 10px 14px; }
   .fc-notation { font-size: 0.78em; color: var(--text-muted); margin-top: 10px; font-family: "SF Mono", Menlo, Consolas, monospace; line-height: 1.7; background: var(--bg3); border-radius: 8px; padding: 9px 14px; }
+  .fc-code { font-family: "SF Mono", Menlo, Monaco, Consolas, monospace; font-size: 0.92em; color: var(--cyan); }
   .reveal-btn { display: block; width: 100%; padding: 10px; border-radius: 8px; border: 1px dashed var(--border); background: transparent; color: var(--text-muted); font-family: inherit; font-size: 0.82em; font-weight: 600; cursor: pointer; transition: all 0.15s; margin-top: 20px; }
   .reveal-btn:hover { border-color: var(--blue); color: var(--blue); }
   .reveal-btn.hidden-btn { display: none; }
@@ -1107,59 +1108,104 @@ function setMode(mode) {
   }
 }
 
-// ── Flashcard data ──
+// ── Flashcard data — comprehensive algorithm list ──
 var algoData = [], fcDeck = [], fcIdx = 0, fcRatings = {};
 
-var catColors = {
-  'par-sort':   { label: 'Sorting',            color: 'var(--yellow)'  },
-  'par-dc':     { label: 'Divide & Conquer',   color: 'var(--blue)'    },
-  'par-graph':  { label: 'Graph / Traversal',  color: 'var(--cyan)'    },
-  'par-greedy': { label: 'Greedy',             color: 'var(--green)'   },
-  'par-dp':     { label: 'Dynamic Programming',color: 'var(--purple)'  },
-  'par-flow':   { label: 'Network Flow',       color: 'var(--orange)'  },
-  'par-struct': { label: 'Data Structures',    color: 'var(--red)'     }
-};
+var ALGO_FC_DATA = [
+  // Week 1 — Divide & Conquer
+  {id:0,  w:1, cat:'Divide & Conquer',    col:'#58a6ff', name:'Binary Search',                                          time:'O(log n)',       space:'O(1)',     idea:'Halve the search space each step by comparing the target to the midpoint of the remaining range.'},
+  {id:1,  w:1, cat:'Divide & Conquer',    col:'#58a6ff', name:"Karatsuba's Multiplication",                             time:'O(n^1.585)',     space:'O(n)',     idea:'Multiply n-bit integers using 3 recursive half-size subproblems instead of 4, via algebraic identity.'},
+  {id:2,  w:1, cat:'Divide & Conquer',    col:'#58a6ff', name:'Merge',                                                  time:'O(n)',           space:'O(n)',     idea:'Merge two sorted arrays into one sorted array by always picking the smaller front element.'},
+  {id:3,  w:1, cat:'Divide & Conquer',    col:'#58a6ff', name:'Merge Sort',                                             time:'O(n log n)',     space:'O(n)',     idea:'Recursively split in half, sort each half, then merge the two sorted halves back together.'},
+  {id:4,  w:1, cat:'Divide & Conquer',    col:'#58a6ff', name:'Sort-and-CountInv',                                      time:'O(n log n)',     space:'O(n)',     idea:'Count total inversions by summing split-inversions discovered during each merge step.'},
+  {id:5,  w:1, cat:'Divide & Conquer',    col:'#58a6ff', name:'Merge-and-CountSplitInv',                                time:'O(n)',           space:'O(n)',     idea:'During merge, whenever a right-half element is chosen, count all remaining left-half elements as inversions.'},
+  // Week 2 — Sorting & Heap
+  {id:6,  w:2, cat:'Sorting',             col:'#e3b341', name:'Selection Sort',                                         time:'O(n²)',          space:'O(1)',     idea:'Find the minimum of the unsorted portion, swap it to its final position; repeat n−1 times.'},
+  {id:7,  w:2, cat:'Sorting',             col:'#e3b341', name:'Insertion Sort',                                         time:'O(n²) / O(n)*',  space:'O(1)',     idea:'Build a sorted prefix one element at a time by shifting larger elements right to make room.'},
+  {id:8,  w:2, cat:'Sorting',             col:'#e3b341', name:'Heapsort',                                               time:'O(n log n)',     space:'O(1)',     idea:'Build a max-heap in O(n), then repeatedly extract the max by swapping root with last and sifting down.'},
+  {id:9,  w:2, cat:'Data Structures',     col:'#f85149', name:'Heapify (Build-Heap)',                                   time:'O(n)',           space:'O(1)',     idea:'Convert an unsorted array into a valid max-heap by sifting down from the last internal node upward.'},
+  {id:10, w:2, cat:'Data Structures',     col:'#f85149', name:'Heap: Insert',                                           time:'O(log n)',       space:'O(1)',     idea:'Append the element at the end of the heap array, then rise (bubble-up) to restore the heap property.'},
+  {id:11, w:2, cat:'Data Structures',     col:'#f85149', name:'Heap: Delete',                                           time:'O(log n)',       space:'O(1)',     idea:'Swap the root with the last element, remove the last, then fall (sift-down) from the root to restore order.'},
+  {id:12, w:2, cat:'Data Structures',     col:'#f85149', name:'Heap: Rise',                                             time:'O(log n)',       space:'O(1)',     idea:'While element > parent: swap with parent. Restores heap property after inserting a new element.'},
+  {id:13, w:2, cat:'Data Structures',     col:'#f85149', name:'Heap: Fall',                                             time:'O(log n)',       space:'O(1)',     idea:'While element < largest child: swap with that child. Restores heap property after removing the root.'},
+  {id:14, w:2, cat:'Sorting',             col:'#e3b341', name:'Counting Sort',                                          time:'O(n + k)',       space:'O(k)',     idea:'Count occurrences of each key value, compute prefix sums, then scatter elements to their correct positions.'},
+  {id:15, w:2, cat:'Sorting',             col:'#e3b341', name:'Radix Sort (LSD)',                                       time:'O(d(n + k))',    space:'O(n + k)', idea:'Sort by each digit position from least to most significant, using a stable sort each pass.'},
+  // Week 3 — Quicksort & Selection
+  {id:16, w:3, cat:'Sorting',             col:'#bc8cff', name:'Naive 3-way Partitioning',                               time:'O(n)',           space:'O(n)',     idea:'Partition into <pivot, =pivot, >pivot using two extra output arrays, then copy back.'},
+  {id:17, w:3, cat:'Sorting',             col:'#bc8cff', name:'Hoare Partitioning',                                     time:'O(n)',           space:'O(1)',     idea:'Two pointers scanning inward from both ends; swap elements that are on the wrong side; stop when they cross.'},
+  {id:18, w:3, cat:'Sorting',             col:'#bc8cff', name:'Dutch National Flag Partitioning',                       time:'O(n)',           space:'O(1)',     idea:'Three pointers (lo, mid, hi) maintain <pivot | =pivot | unscanned | >pivot invariant in one pass.'},
+  {id:19, w:3, cat:'Sorting',             col:'#bc8cff', name:'Quicksort',                                              time:'O(n log n) avg', space:'O(log n)', idea:'Partition array around a pivot, then recursively sort each side; average O(n log n) with random pivot.'},
+  {id:20, w:3, cat:'Selection',           col:'#bc8cff', name:'Select Minimum',                                         time:'O(n)',           space:'O(1)',     idea:'Single linear scan: keep a running minimum, update whenever a smaller element is found.'},
+  {id:21, w:3, cat:'Selection',           col:'#bc8cff', name:'Select Minimum and Maximum',                             time:'O(1.5n)',        space:'O(1)',     idea:'Process elements in pairs: compare the two, then compare each against the current min and max.'},
+  {id:22, w:3, cat:'Selection',           col:'#bc8cff', name:'Quickselect',                                            time:'O(n) avg',       space:'O(log n)', idea:'Partition like quicksort but only recurse into the partition that contains rank k.'},
+  {id:23, w:3, cat:'Selection',           col:'#bc8cff', name:'Median of Medians',                                      time:'O(n) worst',     space:'O(n)',     idea:'Group into sets of 5, find each median, recurse on medians to find a pivot guaranteed ≥30% and ≤70% of elements.'},
+  // Week 4 — Graphs
+  {id:24, w:4, cat:'Graph',               col:'#3fb950', name:'Generic Depth-First Search',                             time:'O(V + E)',       space:'O(V)',     idea:'Explore as deep as possible along one branch before backtracking, using a stack (or recursion).'},
+  {id:25, w:4, cat:'Graph',               col:'#3fb950', name:'Finding Connected Components (DFS)',                     time:'O(V + E)',       space:'O(V)',     idea:'Run DFS from each unvisited vertex; each DFS tree corresponds to one connected component.'},
+  {id:26, w:4, cat:'Graph',               col:'#3fb950', name:'Cycle Detection — Undirected Graph (DFS)',               time:'O(V + E)',       space:'O(V)',     idea:'During DFS, a back edge to a visited non-parent vertex signals a cycle.'},
+  {id:27, w:4, cat:'Graph',               col:'#3fb950', name:'Generic Breadth-First Search',                           time:'O(V + E)',       space:'O(V)',     idea:'Explore all neighbours at distance d before any at distance d+1, using a FIFO queue.'},
+  {id:28, w:4, cat:'Graph',               col:'#3fb950', name:'Single-Source Shortest Paths (Unweighted)',              time:'O(V + E)',       space:'O(V)',     idea:'BFS from the source; the BFS layer number equals the shortest-path distance in unweighted graphs.'},
+  {id:29, w:4, cat:'Graph',               col:'#3fb950', name:'Reconstruct Shortest Path',                              time:'O(V)',           space:'O(V)',     idea:'Follow predecessor pointers backwards from destination to source, then reverse the resulting path.'},
+  {id:30, w:4, cat:'Graph',               col:'#3fb950', name:"Topological Sort — Kahn's Algorithm",                   time:'O(V + E)',       space:'O(V)',     idea:'Repeatedly emit all vertices of in-degree 0, then decrement in-degrees of their successors.'},
+  {id:31, w:4, cat:'Graph',               col:'#3fb950', name:'Topological Sort — DFS',                                 time:'O(V + E)',       space:'O(V)',     idea:'Run DFS and push each vertex onto a stack after all its outgoing neighbours finish; reverse the stack.'},
+  {id:32, w:4, cat:'Graph',               col:'#3fb950', name:'Connectivity Check',                                     time:'O(V + E)',       space:'O(V)',     idea:'Run BFS/DFS from any vertex; the graph is connected iff every vertex is visited.'},
+  {id:33, w:4, cat:'Data Structures',     col:'#f85149', name:'Union-Find (No Optimisations)',                          time:'O(n)',           space:'O(n)',     idea:'Represent each component as a rooted tree; FIND walks to root, UNION links one root under the other.'},
+  {id:34, w:4, cat:'Data Structures',     col:'#f85149', name:'FIND with Path Compression',                             time:'O(α(n)) amort.', space:'O(1)',     idea:'During FIND, flatten every node on the path directly under the root, shortening future finds.'},
+  {id:35, w:4, cat:'Data Structures',     col:'#f85149', name:'UNION with Union by Rank',                               time:'O(α(n)) amort.', space:'O(1)',     idea:'Attach the tree with smaller rank (height bound) under the tree with larger rank to bound tree height.'},
+  // Week 5 — Greedy
+  {id:36, w:5, cat:'Greedy',              col:'#f0883e', name:'Edge Relaxation',                                        time:'O(1)',           space:'O(1)',     idea:'If dist[u] + w(u,v) < dist[v], update dist[v] and record u as predecessor of v.'},
+  {id:37, w:5, cat:'Greedy',              col:'#f0883e', name:"Dijkstra's Algorithm",                                   time:'O((V+E) log V)', space:'O(V)',     idea:'Greedily settle the unsettled vertex with smallest dist[], relax all its outgoing edges, repeat.'},
+  {id:38, w:5, cat:'Greedy',              col:'#f0883e', name:"Improved Dijkstra's Algorithm",                          time:'O((V+E) log V)', space:'O(V)',     idea:'Use decrease-key in a min-heap to update priority of relaxed vertices without re-insertion.'},
+  {id:39, w:5, cat:'Greedy',              col:'#f0883e', name:"Prim's Algorithm (MST)",                                 time:'O((V+E) log V)', space:'O(V)',     idea:'Grow the MST one vertex at a time; always add the cheapest edge from the tree to a new vertex.'},
+  {id:40, w:5, cat:'Greedy',              col:'#f0883e', name:"Kruskal's Algorithm (MST)",                              time:'O(E log E)',     space:'O(V)',     idea:'Sort edges by weight; add each edge if it does not form a cycle (checked via Union-Find).'},
+  // Week 6 — Dynamic Programming
+  {id:41, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Recursive Fibonacci',                                    time:'O(2ⁿ)',          space:'O(n)',     idea:'Naïve recursion F(n)=F(n−1)+F(n−2); exponential time because subproblems are recomputed repeatedly.'},
+  {id:42, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Memoised Fibonacci',                                     time:'O(n)',           space:'O(n)',     idea:'Top-down: cache each F(k) on first computation so every subproblem is solved at most once.'},
+  {id:43, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Bottom-up Fibonacci',                                    time:'O(n)',           space:'O(1)',     idea:'Iteratively compute F(1)…F(n), keeping only the last two values to achieve O(1) space.'},
+  {id:44, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Top-down Coin Change',                                   time:'O(nW)',          space:'O(W)',     idea:'Memoised recursion: min coins for amount a = 1 + min over all coins c of memo(a−c).'},
+  {id:45, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Bottom-up Coin Change',                                  time:'O(nW)',          space:'O(W)',     idea:'Fill dp[0..W]: dp[a] = min over all coins c of 1+dp[a−c]; dp[0]=0 is the base case.'},
+  {id:46, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Coin Change — Backtrack Reconstruction',                 time:'O(W)',           space:'O(W)',     idea:'Starting from target, repeatedly subtract the coin used at each step (stored in decision table).'},
+  {id:47, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Coin Change — Decision Table Reconstruction',            time:'O(nW)',          space:'O(nW)',    idea:'2D table stores which coin was chosen at each (coin index, amount) cell; follow it back to reconstruct.'},
+  {id:48, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Bottom-up Unbounded Knapsack',                           time:'O(nW)',          space:'O(W)',     idea:'For each item type (in any order) iterate over all capacities from low to high, allowing item reuse.'},
+  {id:49, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Bottom-up 0-1 Knapsack',                                 time:'O(nW)',          space:'O(nW)',    idea:'2D table: for each item decide skip or take; iterate capacity high-to-low to prevent reuse.'},
+  {id:50, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Bottom-up Edit Distance',                                time:'O(mn)',          space:'O(mn)',    idea:'dp[i][j] = min edits to transform s[0..i] into t[0..j]; choices are insert, delete, or substitute.'},
+  {id:51, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Optimal Sequence Alignment',                             time:'O(mn)',          space:'O(mn)',    idea:'Generalise edit distance with a scoring function; maximise total score over all alignment choices.'},
+  {id:52, w:6, cat:'Dynamic Programming', col:'#e3b341', name:'Optimal Matrix Multiplication (Chain)',                  time:'O(n³)',          space:'O(n²)',    idea:'Interval DP: for each sub-chain length try every split point; dp[i][j] = min multiplications.'},
+  // Week 7 — DP on Graphs
+  {id:53, w:7, cat:'DP Graph',            col:'#f85149', name:'Bellman-Ford',                                           time:'O(VE)',          space:'O(V)',     idea:'Relax all edges V−1 times; a (V)th relaxation that still improves a distance signals a negative cycle.'},
+  {id:54, w:7, cat:'DP Graph',            col:'#f85149', name:'Floyd-Warshall Algorithm',                               time:'O(V³)',          space:'O(V²)',    idea:'For each intermediate vertex k, update dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).'},
+  {id:55, w:7, cat:'DP Graph',            col:'#f85149', name:"Warshall's Transitive Closure",                          time:'O(V³)',          space:'O(V²)',    idea:'Boolean Floyd-Warshall: reach[i][j] |= reach[i][k] && reach[k][j] for each intermediate k.'},
+  {id:56, w:7, cat:'DP Graph',            col:'#f85149', name:'Bottom-up Longest Path in a DAG',                        time:'O(V + E)',       space:'O(V)',     idea:'Process vertices in topological order; dp[v] = max(dp[u]+w(u,v)) over all incoming edges.'},
+  {id:57, w:7, cat:'DP Graph',            col:'#f85149', name:'Recursive Longest Path in a DAG',                        time:'O(V + E)',       space:'O(V)',     idea:'Memoised recursion: longest(v) = max over successors s of w(v,s)+longest(s).'},
+  // Week 8 — String Structures
+  {id:58, w:8, cat:'String Structures',   col:'#39d353', name:'Prefix Trie: Insertion',                                 time:'O(m)',           space:'O(m)',     idea:'Walk the trie one character at a time, creating new nodes for characters not yet present.'},
+  {id:59, w:8, cat:'String Structures',   col:'#39d353', name:'Prefix Trie: Lookup',                                    time:'O(m)',           space:'O(1)',     idea:'Follow trie edges for each character; return false if any edge or the terminal marker is missing.'},
+  {id:60, w:8, cat:'String Structures',   col:'#39d353', name:'Prefix Trie: String Sorting',                            time:'O(N·m)',         space:'O(N·m)',   idea:'Insert all strings; DFS in lexicographic edge order yields all strings in sorted order.'},
+  {id:61, w:8, cat:'String Structures',   col:'#39d353', name:'Patricia Trie: Insertion',                               time:'O(m)',           space:'O(N)',     idea:'Compress chains into labelled edges; split an edge when a new string diverges from the label.'},
+  {id:62, w:8, cat:'String Structures',   col:'#39d353', name:'Suffix Tree Construction (Ukkonen)',                     time:'O(m)',           space:'O(m)',     idea:'Build compressed trie of all m suffixes online; implicit suffix links enable O(m) total time.'},
+  {id:63, w:8, cat:'String Structures',   col:'#39d353', name:'Pattern Matching via Suffix Tree',                       time:'O(p)',           space:'O(1)',     idea:'Traverse from root matching each pattern character; all occurrences are leaves in the matched subtree.'},
+  {id:64, w:8, cat:'String Structures',   col:'#39d353', name:'Longest Common Substring (Suffix Tree)',                 time:'O(m + n)',       space:'O(m + n)', idea:'Build generalised suffix tree; deepest internal node with leaves from both strings is the LCS.'},
+  // Week 9 — Search Trees
+  {id:65, w:9, cat:'Search Trees',        col:'#58a6ff', name:'BST: Search',                                            time:'O(h)',           space:'O(1)',     idea:'Compare target to node key; recurse left if smaller, right if larger, until found or null.'},
+  {id:66, w:9, cat:'Search Trees',        col:'#58a6ff', name:'BST: Insert',                                            time:'O(h)',           space:'O(1)',     idea:'Search for the key\'s position; attach a new leaf node when a null child is reached.'},
+  {id:67, w:9, cat:'Search Trees',        col:'#58a6ff', name:'BST: Delete',                                            time:'O(h)',           space:'O(1)',     idea:'0/1 children: replace with child. 2 children: swap with in-order successor and delete that.'},
+  {id:68, w:9, cat:'Search Trees',        col:'#58a6ff', name:'AVL: Single Rotation',                                   time:'O(1)',           space:'O(1)',     idea:'One left or right rotation fixes a zig (left-left) or zag (right-right) imbalance.'},
+  {id:69, w:9, cat:'Search Trees',        col:'#58a6ff', name:'AVL: Double Rotation',                                   time:'O(1)',           space:'O(1)',     idea:'Two rotations fix a zig-zag imbalance: rotate the child first, then rotate the grandparent.'},
+  {id:70, w:9, cat:'Search Trees',        col:'#58a6ff', name:'2-3 Tree: Insert',                                       time:'O(log n)',       space:'O(1)',     idea:'Insert into correct leaf; if node overflows to 3 keys, push median up and split, propagating as needed.'},
+  {id:71, w:9, cat:'Search Trees',        col:'#58a6ff', name:'Red-Black Tree: Insert Fix-up',                          time:'O(log n)',       space:'O(1)',     idea:'Colour new node red; recolour and rotate ancestors to restore five RB properties (≤2 rotations).'},
+  // Week 10 — Network Flow
+  {id:72, w:10, cat:'Network Flow',       col:'#79c0ff', name:'Ford-Fulkerson Method',                                  time:'O(E·|f*|)',      space:'O(V+E)',   idea:'Repeatedly find any s-t path in residual graph and push flow equal to the bottleneck capacity.'},
+  {id:73, w:10, cat:'Network Flow',       col:'#79c0ff', name:'Ford-Fulkerson via DFS',                                 time:'O(E·|f*|)',      space:'O(V+E)',   idea:'Use DFS to find augmenting paths; may not terminate for irrational capacities.'},
+  {id:74, w:10, cat:'Network Flow',       col:'#79c0ff', name:'Edmonds-Karp (BFS Augmentation)',                        time:'O(VE²)',         space:'O(V+E)',   idea:'Ford-Fulkerson always using BFS to find the shortest (fewest-edge) augmenting path; polynomial.'},
+  {id:75, w:10, cat:'Network Flow',       col:'#79c0ff', name:'Min-Cut from Residual Graph',                            time:'O(V + E)',       space:'O(V)',     idea:'After max-flow: BFS residual from source; reachable = source side of min-cut, saturated edges = cut.'},
+  // Week 11 — Circulation & Flow Applications
+  {id:76, w:11, cat:'Network Flow',       col:'#bc8cff', name:'Circulation with Demands',                               time:'O(VE²)',         space:'O(V+E)',   idea:'Subtract lower bounds, add super-source/sink; feasible iff max-flow saturates all new demand edges.'},
+  {id:77, w:11, cat:'Network Flow',       col:'#bc8cff', name:'Project Selection (Min-Cut Reduction)',                  time:'O(VE²)',         space:'O(V+E)',   idea:'Profitable projects → source; costly resources → sink; min s-t cut = optimal set of projects to select.'},
+  {id:78, w:11, cat:'Network Flow',       col:'#bc8cff', name:'Survey Design (Flow Feasibility)',                       time:'O(VE²)',         space:'O(V+E)',   idea:'Model per-customer/per-product constraints as lower/upper bounds; feasible flow = valid survey.'}
+];
 
 function buildAlgoData() {
-  var data = [];
-  document.querySelectorAll('tbody tr[data-search]').forEach(function(row, i) {
-    var cells = Array.from(row.querySelectorAll('td'));
-    if (cells.length < 2) return;
-    var name = cells[0].textContent.trim();
-    if (!name) return;
-    var link = cells[0].querySelector('a');
-
-    var category = { label: 'Reference', color: 'var(--text-muted)' };
-    Object.keys(catColors).forEach(function(cls) {
-      if (row.classList.contains(cls)) category = catColors[cls];
-    });
-
-    var idea = cells[1] ? cells[1].textContent.trim() : '';
-    var headers = Array.from(row.closest('table').querySelectorAll('thead th')).map(function(th) { return th.textContent.trim(); });
-
-    var complexities = [];
-    cells.forEach(function(td, idx) {
-      if (idx < 2) return;
-      var pill = td.querySelector('.pill');
-      if (!pill) return;
-      var label = headers[idx] || '';
-      complexities.push({ label: label, html: td.innerHTML.trim() });
-    });
-
-    var notationEl = row.querySelector('td.notation');
-    var noteEl = row.querySelector('td.note');
-    data.push({
-      id: i,
-      name: name,
-      href: link ? link.getAttribute('href') : '',
-      category: category,
-      idea: idea,
-      complexities: complexities,
-      notation: notationEl ? notationEl.textContent.trim() : '',
-      note: noteEl ? noteEl.innerHTML : ''
-    });
-  });
-  return data;
+  return ALGO_FC_DATA;
 }
 
 function shuffled(arr) {
@@ -1180,12 +1226,14 @@ function renderFcCard() {
 
   var algo = fcDeck[fcIdx];
   document.getElementById('fcCat').innerHTML =
-    '<span class="fc-cat-dot" style="background:' + algo.category.color + '"></span>' + esc(algo.category.label);
+    '<span class="fc-cat-dot" style="background:' + algo.col + '"></span>' +
+    esc(algo.cat) + ' &nbsp;&middot;&nbsp; W' + algo.w;
   document.getElementById('fcAlgoName').textContent = algo.name;
 
   var linkEl = document.getElementById('fcAlgoLink');
-  if (algo.href) { linkEl.style.display = ''; linkEl.href = algo.href; linkEl.textContent = '→ Open in notes'; }
-  else { linkEl.style.display = 'none'; }
+  linkEl.style.display = '';
+  linkEl.href = 'week' + algo.w + '.html';
+  linkEl.textContent = '→ Week ' + algo.w + ' notes';
 
   // Reset reveal state
   document.getElementById('fcRevealBtn').classList.remove('hidden-btn');
@@ -1195,13 +1243,11 @@ function renderFcCard() {
 
   // Populate reveal content
   document.getElementById('fcIdea').textContent = algo.idea;
-  document.getElementById('fcDetailGrid').innerHTML = algo.complexities.map(function(c) {
-    return '<div class="fc-detail-cell"><div class="fc-detail-label">' + esc(c.label) + '</div><div class="fc-detail-value">' + c.html + '</div></div>';
-  }).join('');
-  document.getElementById('fcNotes').innerHTML = algo.note || '<em style="color:var(--text-muted)">—</em>';
-  var notEl = document.getElementById('fcNotation');
-  if (algo.notation) { notEl.style.display = ''; notEl.textContent = algo.notation; }
-  else { notEl.style.display = 'none'; }
+  document.getElementById('fcDetailGrid').innerHTML =
+    '<div class="fc-detail-cell"><div class="fc-detail-label">Time</div><div class="fc-detail-value fc-code">' + esc(algo.time) + '</div></div>' +
+    '<div class="fc-detail-cell"><div class="fc-detail-label">Space</div><div class="fc-detail-value fc-code">' + esc(algo.space) + '</div></div>';
+  document.getElementById('fcNotes').style.display = 'none';
+  document.getElementById('fcNotation').style.display = 'none';
 
   if (fcRatings[algo.id] !== null) fcReveal();
 }
