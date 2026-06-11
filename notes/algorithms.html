@@ -97,6 +97,81 @@
   .legend-bar { width: 14px; height: 14px; border-radius: 3px; }
 
   @media (max-width: 900px) { nav { display: none; } main { padding: 24px 20px; } }
+
+  /* ── Mode Toggle ── */
+  .mode-row { display: flex; gap: 8px; margin-bottom: 28px; align-items: center; }
+  .mode-btn { font-size: 0.82em; padding: 7px 18px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.15s; }
+  .mode-btn:hover { border-color: var(--text-muted); color: var(--text); }
+  .mode-btn.active { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+  .mode-count { font-size: 0.78em; color: var(--text-muted); }
+
+  /* ── Flashcard section ── */
+  .fc-section { display: none; max-width: 720px; margin: 0 auto 48px; }
+  .fc-section.active { display: block; }
+  .fc-shortcuts { text-align: center; font-size: 0.72em; color: var(--text-muted); margin-bottom: 14px; }
+  .flashcard { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 32px; min-height: 260px; margin-bottom: 20px; }
+  .fc-cat { font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .fc-cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .fc-algo-name { font-size: 1.5em; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 6px; }
+  .fc-algo-link { font-size: 0.78em; color: var(--blue); text-decoration: none; }
+  .fc-algo-link:hover { text-decoration: underline; }
+  hr.fc-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .fc-reveal-area { display: none; }
+  .fc-reveal-area.visible { display: block; }
+  .fc-idea { font-size: 0.95em; line-height: 1.8; color: var(--text); margin-bottom: 14px; }
+  .fc-detail-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+  .fc-detail-cell { background: var(--bg3); border-radius: 8px; padding: 9px 14px; }
+  .fc-detail-label { font-size: 0.62em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 5px; }
+  .fc-detail-value { font-size: 0.85em; }
+  .fc-notes { font-size: 0.85em; color: var(--text-muted); line-height: 1.7; background: var(--bg3); border-radius: 8px; padding: 10px 14px; }
+  .fc-notation { font-size: 0.78em; color: var(--text-muted); margin-top: 10px; font-family: "SF Mono", Menlo, Consolas, monospace; line-height: 1.7; background: var(--bg3); border-radius: 8px; padding: 9px 14px; }
+  .reveal-btn { display: block; width: 100%; padding: 10px; border-radius: 8px; border: 1px dashed var(--border); background: transparent; color: var(--text-muted); font-family: inherit; font-size: 0.82em; font-weight: 600; cursor: pointer; transition: all 0.15s; margin-top: 20px; }
+  .reveal-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .reveal-btn.hidden-btn { display: none; }
+  .rating-row { display: none; gap: 10px; margin-top: 20px; }
+  .rating-row.visible { display: flex; }
+  .rating-btn { flex: 1; padding: 9px 8px; border-radius: 8px; border: 1px solid var(--border); background: transparent; font-family: inherit; font-size: 0.8em; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+  .rating-btn.know { color: var(--green); border-color: #3fb95040; }
+  .rating-btn.know:hover { background: #3fb9501a; border-color: var(--green); }
+  .rating-btn.unsure { color: var(--orange); border-color: #f0883e40; }
+  .rating-btn.unsure:hover { background: #f0883e1a; border-color: var(--orange); }
+  .rating-btn.dont { color: var(--red); border-color: #f8514940; }
+  .rating-btn.dont:hover { background: #f851491a; border-color: var(--red); }
+  .fc-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .fc-nav-btn { font-size: 0.8em; padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.15s; }
+  .fc-nav-btn:hover:not(:disabled) { border-color: var(--text-muted); color: var(--text); }
+  .fc-nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .fc-position { font-size: 0.8em; color: var(--text-muted); font-weight: 600; }
+  .fc-status { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .fc-stat { display: flex; align-items: center; gap: 7px; font-size: 0.8em; }
+  .fc-stat .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .dot-know { background: var(--green); }
+  .dot-unsure { background: var(--orange); }
+  .dot-dont { background: var(--red); }
+  .dot-unseen { background: var(--border); }
+  .fc-stat .count { font-weight: 700; color: var(--text); }
+  .fc-stat .label { color: var(--text-muted); }
+  .fc-progress-bar { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; display: flex; min-width: 80px; }
+  .fc-progress-bar .seg { height: 100%; transition: width 0.3s ease; }
+  .seg-know { background: var(--green); }
+  .seg-unsure { background: var(--orange); }
+  .seg-dont { background: var(--red); }
+
+  /* ── Questions Bank Card ── */
+  .qbank-section { margin-top: 48px; }
+  .qbank-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; transition: border-color 0.2s; }
+  .qbank-card:hover { border-color: var(--blue); }
+  .qbank-content { flex: 1; }
+  .qbank-eyebrow { font-size: 0.68em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--blue); margin-bottom: 6px; }
+  .qbank-title { font-size: 1.2em; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .qbank-desc { font-size: 0.85em; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px; max-width: 560px; }
+  .qbank-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+  .qbank-pill { font-size: 0.72em; font-weight: 600; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-muted); background: var(--bg3); }
+  .qbank-pill.blue { background: #1f6feb1a; border-color: #1f6feb40; color: var(--blue); }
+  .qbank-pill.purple { background: #bc8cff1a; border-color: #bc8cff40; color: var(--purple); }
+  .qbank-pill.green { background: #3fb9501a; border-color: #3fb95040; color: var(--green); }
+  .qbank-link-btn { display: inline-flex; align-items: center; gap: 6px; background: #1f6feb1a; color: var(--blue); text-decoration: none; font-size: 0.85em; font-weight: 700; padding: 10px 22px; border-radius: 8px; border: 1px solid #1f6feb40; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+  .qbank-link-btn:hover { background: #1f6feb30; border-color: var(--blue); }
 </style>
 </head>
 <body>
@@ -127,12 +202,62 @@
   <a class="cat-link" href="#flow">Network Flow</a>
   <a class="cat-link" href="#structures">Data Structures</a>
   <a class="cat-link" href="#string">String Structures</a>
+  <div class="divider"></div>
+  <h3>Practice</h3>
+  <a class="week-link" href="questions.html">&#x1F4DA; Questions Bank</a>
 </nav>
 
 <main>
   <h1>Algorithm Reference Table</h1>
   <p class="subtitle">FIT2004 · All 60+ algorithms — complexities, core ideas, notation guide, and key properties.</p>
 
+  <!-- Mode toggle -->
+  <div class="mode-row">
+    <button class="mode-btn active" id="btnBrowse" onclick="setMode('browse')">Browse Mode</button>
+    <button class="mode-btn" id="btnFlashcard" onclick="setMode('flashcard')">Flashcard Mode</button>
+    <span class="mode-count" id="fcModeCount"></span>
+  </div>
+
+  <!-- Flashcard section (hidden until Flashcard Mode activated) -->
+  <div class="fc-section" id="fcSection">
+    <div class="fc-shortcuts">&#8592; &#8594; Navigate &nbsp;&middot;&nbsp; Space / Enter to reveal</div>
+    <div class="fc-nav">
+      <button class="fc-nav-btn" id="fcPrev" onclick="fcMove(-1)">&#8592; Prev</button>
+      <span class="fc-position" id="fcPosition">0 / 0</span>
+      <button class="fc-nav-btn" id="fcNext" onclick="fcMove(1)">Next &#8594;</button>
+    </div>
+    <div class="flashcard" id="fcCard">
+      <div class="fc-cat" id="fcCat"></div>
+      <div class="fc-algo-name" id="fcAlgoName"></div>
+      <a class="fc-algo-link" id="fcAlgoLink" href="#">&#x2192; Open in notes</a>
+      <button class="reveal-btn" id="fcRevealBtn" onclick="fcReveal()">&#9654; Reveal Details</button>
+      <hr class="fc-divider" id="fcDivider" style="display:none;">
+      <div class="fc-reveal-area" id="fcRevealArea">
+        <div class="fc-idea" id="fcIdea"></div>
+        <div class="fc-detail-grid" id="fcDetailGrid"></div>
+        <div class="fc-notes" id="fcNotes"></div>
+        <div class="fc-notation" id="fcNotation"></div>
+      </div>
+      <div class="rating-row" id="fcRatingRow">
+        <button class="rating-btn know" onclick="fcRate('know')">&#10003; Know it</button>
+        <button class="rating-btn unsure" onclick="fcRate('unsure')">~ Unsure</button>
+        <button class="rating-btn dont" onclick="fcRate('dont')">&#10007; Don&rsquo;t know</button>
+      </div>
+    </div>
+    <div class="fc-status">
+      <div class="fc-stat"><span class="dot dot-know"></span><span class="count" id="fcKnowCount">0</span><span class="label">Know</span></div>
+      <div class="fc-stat"><span class="dot dot-unsure"></span><span class="count" id="fcUnsureCount">0</span><span class="label">Unsure</span></div>
+      <div class="fc-stat"><span class="dot dot-dont"></span><span class="count" id="fcDontCount">0</span><span class="label">Don't know</span></div>
+      <div class="fc-stat"><span class="dot dot-unseen"></span><span class="count" id="fcUnseenCount">0</span><span class="label">Unseen</span></div>
+      <div class="fc-progress-bar">
+        <div class="seg seg-know" id="segKnow" style="width:0%"></div>
+        <div class="seg seg-unsure" id="segUnsure" style="width:0%"></div>
+        <div class="seg seg-dont" id="segDont" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="browseContent">
   <div class="search-wrap">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -898,10 +1023,34 @@
     </table>
   </div>
 
+  <!-- Questions Bank Card -->
+  <div class="qbank-section">
+    <div class="section-header">
+      <h2>Practice Questions Bank</h2>
+    </div>
+    <div class="qbank-card">
+      <div class="qbank-content">
+        <div class="qbank-eyebrow">&#x1F4DA; Exam Practice</div>
+        <div class="qbank-title">FIT2004 Applied Question Bank</div>
+        <div class="qbank-desc">87 exam-relevant problems from FIT2004 applied class sheets, filtered to match the exam structure. Browse by week, section, and topic — or challenge yourself in flashcard mode with self-rating.</div>
+        <div class="qbank-pills">
+          <span class="qbank-pill blue">87 Questions</span>
+          <span class="qbank-pill">Weeks 1–12</span>
+          <span class="qbank-pill green">Section 1 · 2 · 3</span>
+          <span class="qbank-pill purple">&#11088; Key Problems Marked</span>
+          <span class="qbank-pill">Flashcard Mode</span>
+        </div>
+      </div>
+      <a href="questions.html" class="qbank-link-btn">Open Questions Bank &#8594;</a>
+    </div>
+  </div>
+  </div><!-- #browseContent -->
+
   <div style="height: 80px;"></div>
 </main>
 
 <script>
+// ── Browse / Search ──
 function filterTable() {
   const q = document.getElementById('search').value.toLowerCase().trim();
   const rows = document.querySelectorAll('tbody tr[data-search]');
@@ -929,6 +1078,183 @@ function clearHighlights(row) {
   row.querySelectorAll('mark').forEach(m => m.replaceWith(document.createTextNode(m.textContent)));
 }
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Mode toggle ──
+function setMode(mode) {
+  const browse = document.getElementById('browseContent');
+  const fc = document.getElementById('fcSection');
+  const btnBrowse = document.getElementById('btnBrowse');
+  const btnFlashcard = document.getElementById('btnFlashcard');
+  if (mode === 'flashcard') {
+    browse.style.display = 'none';
+    fc.classList.add('active');
+    btnBrowse.classList.remove('active');
+    btnFlashcard.classList.add('active');
+    if (!algoData.length) algoData = buildAlgoData();
+    fcDeck = shuffled(algoData);
+    fcRatings = {};
+    algoData.forEach(function(a) { fcRatings[a.id] = null; });
+    document.getElementById('fcModeCount').textContent = fcDeck.length + ' algorithms';
+    fcIdx = 0;
+    renderFcCard();
+    updateFcStats();
+  } else {
+    browse.style.display = '';
+    fc.classList.remove('active');
+    btnBrowse.classList.add('active');
+    btnFlashcard.classList.remove('active');
+    document.getElementById('fcModeCount').textContent = '';
+  }
+}
+
+// ── Flashcard data ──
+var algoData = [], fcDeck = [], fcIdx = 0, fcRatings = {};
+
+var catColors = {
+  'par-sort':   { label: 'Sorting',            color: 'var(--yellow)'  },
+  'par-dc':     { label: 'Divide & Conquer',   color: 'var(--blue)'    },
+  'par-graph':  { label: 'Graph / Traversal',  color: 'var(--cyan)'    },
+  'par-greedy': { label: 'Greedy',             color: 'var(--green)'   },
+  'par-dp':     { label: 'Dynamic Programming',color: 'var(--purple)'  },
+  'par-flow':   { label: 'Network Flow',       color: 'var(--orange)'  },
+  'par-struct': { label: 'Data Structures',    color: 'var(--red)'     }
+};
+
+function buildAlgoData() {
+  var data = [];
+  document.querySelectorAll('tbody tr[data-search]').forEach(function(row, i) {
+    var cells = Array.from(row.querySelectorAll('td'));
+    if (cells.length < 2) return;
+    var name = cells[0].textContent.trim();
+    if (!name) return;
+    var link = cells[0].querySelector('a');
+
+    var category = { label: 'Reference', color: 'var(--text-muted)' };
+    Object.keys(catColors).forEach(function(cls) {
+      if (row.classList.contains(cls)) category = catColors[cls];
+    });
+
+    var idea = cells[1] ? cells[1].textContent.trim() : '';
+    var headers = Array.from(row.closest('table').querySelectorAll('thead th')).map(function(th) { return th.textContent.trim(); });
+
+    var complexities = [];
+    cells.forEach(function(td, idx) {
+      if (idx < 2) return;
+      var pill = td.querySelector('.pill');
+      if (!pill) return;
+      var label = headers[idx] || '';
+      complexities.push({ label: label, html: td.innerHTML.trim() });
+    });
+
+    var notationEl = row.querySelector('td.notation');
+    var noteEl = row.querySelector('td.note');
+    data.push({
+      id: i,
+      name: name,
+      href: link ? link.getAttribute('href') : '',
+      category: category,
+      idea: idea,
+      complexities: complexities,
+      notation: notationEl ? notationEl.textContent.trim() : '',
+      note: noteEl ? noteEl.innerHTML : ''
+    });
+  });
+  return data;
+}
+
+function shuffled(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function renderFcCard() {
+  var total = fcDeck.length;
+  if (!total) return;
+  document.getElementById('fcPosition').textContent = (fcIdx + 1) + ' / ' + total;
+  document.getElementById('fcPrev').disabled = fcIdx === 0;
+  document.getElementById('fcNext').disabled = fcIdx === total - 1;
+
+  var algo = fcDeck[fcIdx];
+  document.getElementById('fcCat').innerHTML =
+    '<span class="fc-cat-dot" style="background:' + algo.category.color + '"></span>' + esc(algo.category.label);
+  document.getElementById('fcAlgoName').textContent = algo.name;
+
+  var linkEl = document.getElementById('fcAlgoLink');
+  if (algo.href) { linkEl.style.display = ''; linkEl.href = algo.href; linkEl.textContent = '→ Open in notes'; }
+  else { linkEl.style.display = 'none'; }
+
+  // Reset reveal state
+  document.getElementById('fcRevealBtn').classList.remove('hidden-btn');
+  document.getElementById('fcDivider').style.display = 'none';
+  document.getElementById('fcRevealArea').classList.remove('visible');
+  document.getElementById('fcRatingRow').classList.remove('visible');
+
+  // Populate reveal content
+  document.getElementById('fcIdea').textContent = algo.idea;
+  document.getElementById('fcDetailGrid').innerHTML = algo.complexities.map(function(c) {
+    return '<div class="fc-detail-cell"><div class="fc-detail-label">' + esc(c.label) + '</div><div class="fc-detail-value">' + c.html + '</div></div>';
+  }).join('');
+  document.getElementById('fcNotes').innerHTML = algo.note || '<em style="color:var(--text-muted)">—</em>';
+  var notEl = document.getElementById('fcNotation');
+  if (algo.notation) { notEl.style.display = ''; notEl.textContent = algo.notation; }
+  else { notEl.style.display = 'none'; }
+
+  if (fcRatings[algo.id] !== null) fcReveal();
+}
+
+function fcReveal() {
+  document.getElementById('fcRevealBtn').classList.add('hidden-btn');
+  document.getElementById('fcDivider').style.display = 'block';
+  document.getElementById('fcRevealArea').classList.add('visible');
+  document.getElementById('fcRatingRow').classList.add('visible');
+}
+
+function fcMove(dir) {
+  var n = fcIdx + dir;
+  if (n < 0 || n >= fcDeck.length) return;
+  fcIdx = n;
+  renderFcCard();
+}
+
+function fcRate(rating) {
+  fcRatings[fcDeck[fcIdx].id] = rating;
+  updateFcStats();
+  if (fcIdx < fcDeck.length - 1) { fcIdx++; renderFcCard(); }
+}
+
+function updateFcStats() {
+  var total = fcDeck.length;
+  var know = 0, unsure = 0, dont = 0;
+  fcDeck.forEach(function(a) {
+    var r = fcRatings[a.id];
+    if (r === 'know') know++;
+    else if (r === 'unsure') unsure++;
+    else if (r === 'dont') dont++;
+  });
+  var unseen = total - know - unsure - dont;
+  document.getElementById('fcKnowCount').textContent = know;
+  document.getElementById('fcUnsureCount').textContent = unsure;
+  document.getElementById('fcDontCount').textContent = dont;
+  document.getElementById('fcUnseenCount').textContent = unseen;
+  document.getElementById('segKnow').style.width   = (know   / total * 100).toFixed(1) + '%';
+  document.getElementById('segUnsure').style.width = (unsure / total * 100).toFixed(1) + '%';
+  document.getElementById('segDont').style.width   = (dont   / total * 100).toFixed(1) + '%';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('fcSection').classList.contains('active')) return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); fcMove(1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); fcMove(-1); }
+  else if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    if (!document.getElementById('fcRevealBtn').classList.contains('hidden-btn')) fcReveal();
+  }
+});
 </script>
 </body>
 </html>

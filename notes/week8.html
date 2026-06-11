@@ -170,6 +170,7 @@
 
   <div class="nav-section">Reference</div>
   <ul>
+    <li><a href="questions.html">&#x1F4DA; Questions Bank</a></li>
     <li><a href="algorithms.html">All Algorithms Table</a></li>
     <li><a href="index.html">↑ Course Home</a></li>
   </ul>
@@ -340,84 +341,103 @@ function INSERT(S[1..n]):
   <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
     <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;text-transform:uppercase;letter-spacing:.2em;color:#f0883e;">Algorithm 62</span>
     <span style="font-weight:600;color:#c9d1d9;flex:1;">Prefix Trie Insertion — Interactive</span>
-    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Insert: app, apple, apt, bat</span>
+    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Insert: bad, bank, box, dog</span>
   </div>
   <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
     <div style="background:#0d1117;overflow:hidden;">
-      <svg id="vz62-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+      <svg id="vz62-svg" viewBox="0 0 520 310" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
         <defs>
           <marker id="vz62-ah" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
             <path d="M0,0 L6,3 L0,6 Z" fill="#30363d"/>
           </marker>
         </defs>
-        <!-- Edges: drawn first so nodes render on top -->
-        <!-- root(260,28) -> a(130,90) edge label 'a' -->
-        <line id="vz62-e-root-a" x1="260" y1="46" x2="130" y2="72" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-root-a" x="188" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">a</text>
-        <!-- root(260,28) -> b(390,90) edge label 'b' -->
-        <line id="vz62-e-root-b" x1="260" y1="46" x2="390" y2="72" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-root-b" x="330" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">b</text>
-        <!-- a(130,90) -> ap(130,158) edge label 'p' -->
-        <line id="vz62-e-a-ap" x1="130" y1="108" x2="130" y2="140" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-a-ap" x="116" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">p</text>
-        <!-- ap(130,158) -> app(78,226) edge label 'p' -->
-        <line id="vz62-e-ap-app" x1="118" y1="174" x2="90" y2="208" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-ap-app" x="97" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">p</text>
-        <!-- ap(130,158) -> apt(182,226) edge label 't' -->
-        <line id="vz62-e-ap-apt" x1="142" y1="174" x2="170" y2="208" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-ap-apt" x="163" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">t</text>
-        <!-- app(78,226) -> apple-l(52,268) edge label 'l' -->
-        <line id="vz62-e-app-l" x1="70" y1="244" x2="52" y2="252" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-app-l" x="54" y="248" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">l</text>
-        <!-- apple-l(52,268) -> apple-e(28,282) edge label 'e' -->
-        <line id="vz62-e-l-e" x1="46" y1="262" x2="30" y2="272" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-l-e" x="31" y="263" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">e</text>
-        <!-- b(390,90) -> ba(390,158) edge label 'a' -->
-        <line id="vz62-e-b-ba" x1="390" y1="108" x2="390" y2="140" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-b-ba" x="376" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">a</text>
-        <!-- ba(390,158) -> bat(390,226) edge label 't' -->
-        <line id="vz62-e-ba-bat" x1="390" y1="174" x2="390" y2="208" stroke="#30363d" stroke-width="1.8" opacity="0"/>
-        <text id="vz62-el-ba-bat" x="376" y="195" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">t</text>
+        <!-- Trie layout:
+             root(260,28)
+             root -> b(155,95)  edge 'b'
+             root -> d(380,95)  edge 'd'
+             b -> ba(95,165)    edge 'a'
+             b -> bo(215,165)   edge 'o'
+             d -> do(380,165)   edge 'o'
+             ba -> bad(60,240)  edge 'd'   [eow]
+             ba -> ban(140,240) edge 'n'
+             bo -> box(215,240) edge 'x'   [eow]
+             do -> dog(380,240) edge 'g'   [eow]
+             ban -> bank(140,295) edge 'k' [eow]
+        -->
+        <!-- Edges drawn first -->
+        <!-- root -> b -->
+        <line id="vz62-e-root-b" x1="248" y1="44" x2="167" y2="77" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-root-b" x="200" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">b</text>
+        <!-- root -> d -->
+        <line id="vz62-e-root-d" x1="272" y1="44" x2="368" y2="77" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-root-d" x="326" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">d</text>
+        <!-- b -> ba -->
+        <line id="vz62-e-b-ba" x1="141" y1="111" x2="109" y2="147" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-b-ba" x="118" y="126" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">a</text>
+        <!-- b -> bo -->
+        <line id="vz62-e-b-bo" x1="169" y1="111" x2="201" y2="147" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-b-bo" x="192" y="126" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">o</text>
+        <!-- d -> do -->
+        <line id="vz62-e-d-do" x1="380" y1="113" x2="380" y2="147" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-d-do" x="366" y="134" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">o</text>
+        <!-- ba -> bad -->
+        <line id="vz62-e-ba-bad" x1="82" y1="181" x2="68" y2="222" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-ba-bad" x="68" y="199" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">d</text>
+        <!-- ba -> ban -->
+        <line id="vz62-e-ba-ban" x1="108" y1="181" x2="132" y2="222" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-ba-ban" x="127" y="199" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">n</text>
+        <!-- bo -> box -->
+        <line id="vz62-e-bo-box" x1="215" y1="183" x2="215" y2="222" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-bo-box" x="201" y="206" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">x</text>
+        <!-- do -> dog -->
+        <line id="vz62-e-do-dog" x1="380" y1="183" x2="380" y2="222" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-do-dog" x="366" y="206" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">g</text>
+        <!-- ban -> bank -->
+        <line id="vz62-e-ban-bank" x1="140" y1="258" x2="140" y2="277" stroke="#30363d" stroke-width="1.8" opacity="0"/>
+        <text id="vz62-el-ban-bank" x="126" y="271" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" opacity="0">k</text>
 
         <!-- Nodes -->
         <circle id="vz62-n-root" cx="260" cy="28" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
         <text x="260" y="28" font-size="9" font-family="monospace" fill="#c9d1d9" text-anchor="middle" dominant-baseline="central" font-weight="700">root</text>
 
-        <circle id="vz62-n-a" cx="130" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <text id="vz62-nt-a" x="130" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">a</text>
+        <circle id="vz62-n-b" cx="155" cy="95" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-b" x="155" y="95" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">b</text>
 
-        <circle id="vz62-n-ap" cx="130" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <text id="vz62-nt-ap" x="130" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">p</text>
+        <circle id="vz62-n-d" cx="380" cy="95" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-d" x="380" y="95" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">d</text>
 
-        <circle id="vz62-n-app" cx="78" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <circle id="vz62-neow-app" cx="78" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
-        <text id="vz62-nt-app" x="78" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">p</text>
+        <circle id="vz62-n-ba" cx="95" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-ba" x="95" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">a</text>
 
-        <circle id="vz62-n-l" cx="44" cy="266" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <text id="vz62-nt-l" x="44" y="266" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">l</text>
+        <circle id="vz62-n-bo" cx="215" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-bo" x="215" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">o</text>
 
-        <circle id="vz62-n-e" cx="22" cy="282" r="14" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <circle id="vz62-neow-e" cx="22" cy="282" r="18" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
-        <text id="vz62-nt-e" x="22" y="282" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">e</text>
+        <circle id="vz62-n-do" cx="380" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-do" x="380" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">o</text>
 
-        <circle id="vz62-n-apt" cx="182" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <circle id="vz62-neow-apt" cx="182" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
-        <text id="vz62-nt-apt" x="182" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">t</text>
+        <circle id="vz62-n-bad" cx="60" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="vz62-neow-bad" cx="60" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="vz62-nt-bad" x="60" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">d</text>
 
-        <circle id="vz62-n-b" cx="390" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <text id="vz62-nt-b" x="390" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">b</text>
+        <circle id="vz62-n-ban" cx="140" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <text id="vz62-nt-ban" x="140" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">n</text>
 
-        <circle id="vz62-n-ba" cx="390" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <text id="vz62-nt-ba" x="390" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">a</text>
+        <circle id="vz62-n-box" cx="215" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="vz62-neow-box" cx="215" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="vz62-nt-box" x="215" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">x</text>
 
-        <circle id="vz62-n-bat" cx="390" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
-        <circle id="vz62-neow-bat" cx="390" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
-        <text id="vz62-nt-bat" x="390" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">t</text>
+        <circle id="vz62-n-dog" cx="380" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="vz62-neow-dog" cx="380" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="vz62-nt-dog" x="380" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">g</text>
+
+        <circle id="vz62-n-bank" cx="140" cy="295" r="18" fill="#21262d" stroke="#30363d" stroke-width="2" opacity="0"/>
+        <circle id="vz62-neow-bank" cx="140" cy="295" r="23" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0"/>
+        <text id="vz62-nt-bank" x="140" y="295" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700" opacity="0">k</text>
       </svg>
     </div>
     <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
       <div>
-        <div id="vz62-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 12</div>
+        <div id="vz62-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 13</div>
         <div id="vz62-narration" style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;">Press <b>Next</b> to begin inserting words into the trie.</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -447,51 +467,56 @@ function INSERT(S[1..n]):
 (function(){
   'use strict';
   // Node/edge ids and step data for Algorithm 62
+  // Trie stores: bad, bank, box, dog
+  // Nodes: b, d, ba, bo, do, bad, ban, box, dog, bank
+  // Edges: root-b, root-d, b-ba, b-bo, d-do, ba-bad, ba-ban, bo-box, do-dog, ban-bank
   var VZ62_STEPS = [
     // Step 1: Empty trie
-    { label:'Step 1 / 12', narration:'Start with empty trie. About to insert <b style="color:#58a6ff">\"app\"</b>.', words:0, nodes:0, reused:0,
+    { label:'Step 1 / 13', narration:'Start with empty trie. About to insert <b style="color:#58a6ff">\"bad\"</b>.', words:0, nodes:0, reused:0,
       show:[], active:[], green:[], eow:[], edgeShow:[], edgeActive:[], edgeGreen:[] },
-    // Step 2: Insert 'app' - 'a'
-    { label:'Step 2 / 12', narration:'Insert <b>\"app\"</b> — char <b style="color:#f0883e">\'a\'</b>: no child \'a\' from root → <b style="color:#f0883e">create new node</b>.', words:0, nodes:1, reused:0,
-      show:['a'], active:['a'], green:[], eow:[], edgeShow:['root-a'], edgeActive:['root-a'], edgeGreen:[] },
-    // Step 3: Insert 'app' - first 'p'
-    { label:'Step 3 / 12', narration:'Insert <b>\"app\"</b> — char <b style="color:#f0883e">\'p\'</b>: no child \'p\' from \'a\' → <b style="color:#f0883e">create new node</b>.', words:0, nodes:2, reused:0,
-      show:['a','ap'], active:['ap'], green:['a'], eow:[], edgeShow:['root-a','a-ap'], edgeActive:['a-ap'], edgeGreen:['root-a'] },
-    // Step 4: Insert 'app' - second 'p' (end of word)
-    { label:'Step 4 / 12', narration:'Insert <b>\"app\"</b> — second <b style="color:#f0883e">\'p\'</b>: create node, end of word → <b style="color:#3fb950">mark * (double circle)</b>.', words:1, nodes:3, reused:0,
-      show:['a','ap','app'], active:['app'], green:['a','ap'], eow:['app'], edgeShow:['root-a','a-ap','ap-app'], edgeActive:['ap-app'], edgeGreen:['root-a','a-ap'] },
-    // Step 5: Insert 'apple' - follow existing a,p,p
-    { label:'Step 5 / 12', narration:'Insert <b>\"apple\"</b> — follow existing <b style="color:#3fb950">\'a\'→\'p\'→\'p\'</b>. Nodes reused, none created.', words:1, nodes:3, reused:3,
-      show:['a','ap','app'], active:['a','ap','app'], green:[], eow:['app'], edgeShow:['root-a','a-ap','ap-app'], edgeActive:['root-a','a-ap','ap-app'], edgeGreen:[] },
-    // Step 6: Insert 'apple' - 'l'
-    { label:'Step 6 / 12', narration:'Insert <b>\"apple\"</b> — char <b style="color:#f0883e">\'l\'</b>: no \'l\' child → <b style="color:#f0883e">create new node</b>.', words:1, nodes:4, reused:3,
-      show:['a','ap','app','l'], active:['l'], green:['a','ap','app'], eow:['app'], edgeShow:['root-a','a-ap','ap-app','app-l'], edgeActive:['app-l'], edgeGreen:['root-a','a-ap','ap-app'] },
-    // Step 7: Insert 'apple' - 'e' (end of word)
-    { label:'Step 7 / 12', narration:'Insert <b>\"apple\"</b> — char <b style="color:#f0883e">\'e\'</b>: create node, end → <b style="color:#3fb950">mark *</b>. <b>\"apple\"</b> inserted.', words:2, nodes:5, reused:3,
-      show:['a','ap','app','l','e'], active:['e'], green:['a','ap','app','l'], eow:['app','e'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e'], edgeActive:['l-e'], edgeGreen:['root-a','a-ap','ap-app','app-l'] },
-    // Step 8: Insert 'apt' - follow existing a, p
-    { label:'Step 8 / 12', narration:'Insert <b>\"apt\"</b> — follow existing <b style="color:#3fb950">\'a\'→\'p\'</b>. Now check for \'t\'.', words:2, nodes:5, reused:5,
-      show:['a','ap','app','l','e'], active:['a','ap'], green:[], eow:['app','e'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e'], edgeActive:['root-a','a-ap'], edgeGreen:[] },
-    // Step 9: Insert 'apt' - 't' (end of word)
-    { label:'Step 9 / 12', narration:'Insert <b>\"apt\"</b> — <b style="color:#f0883e">\'t\'</b> is new → create node, <b style="color:#3fb950">mark *</b>. <b>\"apt\"</b> inserted.', words:3, nodes:6, reused:5,
-      show:['a','ap','app','l','e','apt'], active:['apt'], green:['a','ap'], eow:['app','e','apt'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e','ap-apt'], edgeActive:['ap-apt'], edgeGreen:['root-a','a-ap'] },
-    // Step 10: Insert 'bat' - 'b'
-    { label:'Step 10 / 12', narration:'New word <b>\"bat\"</b>. No \'b\' child from root → <b style="color:#f0883e">create \'b\'</b>.', words:3, nodes:7, reused:5,
-      show:['a','ap','app','l','e','apt','b'], active:['b'], green:['a','ap','app','l','e','apt'], eow:['app','e','apt'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b'], edgeActive:['root-b'], edgeGreen:['root-a','a-ap','ap-app','app-l','l-e','ap-apt'] },
-    // Step 11: Insert 'bat' - 'a', 't'
-    { label:'Step 11 / 12', narration:'Insert <b>\"bat\"</b> — create <b style="color:#f0883e">\'a\'</b> then <b style="color:#f0883e">\'t\'</b> (end *). <b>\"bat\"</b> inserted.', words:4, nodes:9, reused:5,
-      show:['a','ap','app','l','e','apt','b','ba','bat'], active:['ba','bat'], green:['a','ap','app','l','e','apt','b'], eow:['app','e','apt','bat'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'], edgeActive:['b-ba','ba-bat'], edgeGreen:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b'] },
-    // Step 12: Final
-    { label:'Step 12 / 12', narration:'<b style="color:#3fb950">Trie complete.</b> 4 words, 9 nodes. Shared prefixes saved 5 node-creations. Prefix search O(m) where m = word length.', words:4, nodes:9, reused:5,
-      show:['a','ap','app','l','e','apt','b','ba','bat'], active:[], green:['a','ap','app','l','e','apt','b','ba','bat'], eow:['app','e','apt','bat'], edgeShow:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'], edgeActive:[], edgeGreen:['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'] }
+    // Step 2: Insert 'bad' - 'b'
+    { label:'Step 2 / 13', narration:'Insert <b>\"bad\"</b> — char <b style="color:#f0883e">\'b\'</b>: no child \'b\' from root → <b style="color:#f0883e">create new node</b>.', words:0, nodes:1, reused:0,
+      show:['b'], active:['b'], green:[], eow:[], edgeShow:['root-b'], edgeActive:['root-b'], edgeGreen:[] },
+    // Step 3: Insert 'bad' - 'a'
+    { label:'Step 3 / 13', narration:'Insert <b>\"bad\"</b> — char <b style="color:#f0883e">\'a\'</b>: no child \'a\' from \'b\' → <b style="color:#f0883e">create new node</b>.', words:0, nodes:2, reused:0,
+      show:['b','ba'], active:['ba'], green:['b'], eow:[], edgeShow:['root-b','b-ba'], edgeActive:['b-ba'], edgeGreen:['root-b'] },
+    // Step 4: Insert 'bad' - 'd' (end of word)
+    { label:'Step 4 / 13', narration:'Insert <b>\"bad\"</b> — char <b style="color:#f0883e">\'d\'</b>: create node, end of word → <b style="color:#3fb950">mark * (double circle)</b>. <b>\"bad\"</b> inserted.', words:1, nodes:3, reused:0,
+      show:['b','ba','bad'], active:['bad'], green:['b','ba'], eow:['bad'], edgeShow:['root-b','b-ba','ba-bad'], edgeActive:['ba-bad'], edgeGreen:['root-b','b-ba'] },
+    // Step 5: Insert 'bank' - follow existing b, a
+    { label:'Step 5 / 13', narration:'Insert <b>\"bank\"</b> — follow existing <b style="color:#3fb950">\'b\'→\'a\'</b>. Now check for \'n\'.', words:1, nodes:3, reused:2,
+      show:['b','ba','bad'], active:['b','ba'], green:[], eow:['bad'], edgeShow:['root-b','b-ba','ba-bad'], edgeActive:['root-b','b-ba'], edgeGreen:[] },
+    // Step 6: Insert 'bank' - 'n'
+    { label:'Step 6 / 13', narration:'Insert <b>\"bank\"</b> — char <b style="color:#f0883e">\'n\'</b>: no \'n\' child from \'a\' → <b style="color:#f0883e">create new node</b>.', words:1, nodes:4, reused:2,
+      show:['b','ba','bad','ban'], active:['ban'], green:['b','ba'], eow:['bad'], edgeShow:['root-b','b-ba','ba-bad','ba-ban'], edgeActive:['ba-ban'], edgeGreen:['root-b','b-ba'] },
+    // Step 7: Insert 'bank' - 'k' (end of word)
+    { label:'Step 7 / 13', narration:'Insert <b>\"bank\"</b> — char <b style="color:#f0883e">\'k\'</b>: create node, end → <b style="color:#3fb950">mark *</b>. <b>\"bank\"</b> inserted.', words:2, nodes:5, reused:2,
+      show:['b','ba','bad','ban','bank'], active:['bank'], green:['b','ba','ban'], eow:['bad','bank'], edgeShow:['root-b','b-ba','ba-bad','ba-ban','ban-bank'], edgeActive:['ban-bank'], edgeGreen:['root-b','b-ba','ba-ban'] },
+    // Step 8: Insert 'box' - follow existing b
+    { label:'Step 8 / 13', narration:'Insert <b>\"box\"</b> — follow existing <b style="color:#3fb950">\'b\'</b>. Check for \'o\' child.', words:2, nodes:5, reused:1,
+      show:['b','ba','bad','ban','bank'], active:['b'], green:['ba'], eow:['bad','bank'], edgeShow:['root-b','b-ba','ba-bad','ba-ban','ban-bank'], edgeActive:['root-b'], edgeGreen:['b-ba'] },
+    // Step 9: Insert 'box' - 'o', then 'x' (end of word)
+    { label:'Step 9 / 13', narration:'Insert <b>\"box\"</b> — create <b style="color:#f0883e">\'o\'</b> then <b style="color:#f0883e">\'x\'</b> (end *). <b>\"box\"</b> inserted.', words:3, nodes:7, reused:1,
+      show:['b','ba','bad','ban','bank','bo','box'], active:['bo','box'], green:['b','ba','bad','ban','bank'], eow:['bad','bank','box'], edgeShow:['root-b','b-ba','ba-bad','ba-ban','ban-bank','b-bo','bo-box'], edgeActive:['b-bo','bo-box'], edgeGreen:['root-b','b-ba','ba-bad','ba-ban','ban-bank'] },
+    // Step 10: Insert 'dog' - 'd'
+    { label:'Step 10 / 13', narration:'New word <b>\"dog\"</b>. No \'d\' child from root → <b style="color:#f0883e">create \'d\'</b>.', words:3, nodes:8, reused:1,
+      show:['b','ba','bad','ban','bank','bo','box','d'], active:['d'], green:['b','ba','bad','ban','bank','bo','box'], eow:['bad','bank','box'], edgeShow:['root-b','b-ba','ba-bad','ba-ban','ban-bank','b-bo','bo-box','root-d'], edgeActive:['root-d'], edgeGreen:['root-b','b-ba','ba-bad','ba-ban','ban-bank','b-bo','bo-box'] },
+    // Step 11: Insert 'dog' - 'o', then 'g' (end of word)
+    { label:'Step 11 / 13', narration:'Insert <b>\"dog\"</b> — create <b style="color:#f0883e">\'o\'</b> then <b style="color:#f0883e">\'g\'</b> (end *). <b>\"dog\"</b> inserted.', words:4, nodes:10, reused:1,
+      show:['b','ba','bad','ban','bank','bo','box','d','do','dog'], active:['do','dog'], green:['b','ba','bad','ban','bank','bo','box','d'], eow:['bad','bank','box','dog'], edgeShow:['root-b','b-ba','ba-bad','ba-ban','ban-bank','b-bo','bo-box','root-d','d-do','do-dog'], edgeActive:['d-do','do-dog'], edgeGreen:['root-b','b-ba','ba-bad','ba-ban','ban-bank','b-bo','bo-box','root-d'] },
+    // Step 12: Highlight shared prefix ba-
+    { label:'Step 12 / 13', narration:'Note: <b style="color:#3fb950">\'b\'→\'a\'</b> is a <b>shared prefix</b> for both \"bad\" and \"bank\" — only 2 nodes serve both words.', words:4, nodes:10, reused:1,
+      show:['b','ba','bad','ban','bank','bo','box','d','do','dog'], active:['b','ba'], green:['bad','ban','bank','bo','box','d','do','dog'], eow:['bad','bank','box','dog'], edgeShow:['root-b','b-ba','ba-bad','ba-ban','ban-bank','b-bo','bo-box','root-d','d-do','do-dog'], edgeActive:['root-b','b-ba'], edgeGreen:['ba-bad','ba-ban','ban-bank','b-bo','bo-box','root-d','d-do','do-dog'] },
+    // Step 13: Final
+    { label:'Step 13 / 13', narration:'<b style="color:#3fb950">Trie complete.</b> 4 words, 10 nodes. Shared \'b\'→\'a\' prefix saves 1 node. Prefix search O(m) where m = word length.', words:4, nodes:10, reused:1,
+      show:['b','ba','bad','ban','bank','bo','box','d','do','dog'], active:[], green:['b','ba','bad','ban','bank','bo','box','d','do','dog'], eow:['bad','bank','box','dog'], edgeShow:['root-b','b-ba','ba-bad','ba-ban','ban-bank','b-bo','bo-box','root-d','d-do','do-dog'], edgeActive:[], edgeGreen:['root-b','b-ba','ba-bad','ba-ban','ban-bank','b-bo','bo-box','root-d','d-do','do-dog'] }
   ];
 
   var vz62cur = -1;
 
   function vz62applyStep(s) {
-    // All SVG nodes
-    var allNodes = ['a','ap','app','l','e','apt','b','ba','bat'];
-    var allEdges = ['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'];
+    var allNodes = ['b','d','ba','bo','do','bad','ban','box','dog','bank'];
+    var allEdges = ['root-b','root-d','b-ba','b-bo','d-do','ba-bad','ba-ban','bo-box','do-dog','ban-bank'];
 
     allNodes.forEach(function(id) {
       var c = document.getElementById('vz62-n-'+id);
@@ -550,8 +575,8 @@ function INSERT(S[1..n]):
   };
   window.vz62reset = function() {
     vz62cur = -1;
-    var allNodes = ['a','ap','app','l','e','apt','b','ba','bat'];
-    var allEdges = ['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'];
+    var allNodes = ['b','d','ba','bo','do','bad','ban','box','dog','bank'];
+    var allEdges = ['root-b','root-d','b-ba','b-bo','d-do','ba-bad','ba-ban','bo-box','do-dog','ban-bank'];
     allNodes.forEach(function(id) {
       var c = document.getElementById('vz62-n-'+id);
       var t = document.getElementById('vz62-nt-'+id);
@@ -566,7 +591,7 @@ function INSERT(S[1..n]):
       if (e) { e.setAttribute('opacity','0'); e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
       if (el) el.setAttribute('opacity','0');
     });
-    document.getElementById('vz62-step-label').textContent = 'Step 0 / 12';
+    document.getElementById('vz62-step-label').textContent = 'Step 0 / 13';
     document.getElementById('vz62-narration').innerHTML = 'Press <b>Next</b> to begin inserting words into the trie.';
     document.getElementById('vz62-s-words').textContent = '0';
     document.getElementById('vz62-s-nodes').textContent = '0';
@@ -605,74 +630,79 @@ function LOOKUP(S[1..n]):
   <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
     <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;text-transform:uppercase;letter-spacing:.2em;color:#f0883e;">Algorithm 63</span>
     <span style="font-weight:600;color:#c9d1d9;flex:1;">Prefix Trie Lookup — Interactive</span>
-    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Lookup: "apple" (success), "apr" (fail)</span>
+    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Lookup: "bank" (success), "boo" (fail)</span>
   </div>
   <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
     <div style="background:#0d1117;overflow:hidden;">
-      <svg id="vz63-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
-        <!-- Static pre-built trie: app, apple, apt, bat -->
+      <svg id="vz63-svg" viewBox="0 0 520 310" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+        <!-- Static pre-built trie: bad, bank, box, dog — same layout as VZ62 -->
         <!-- Edges -->
-        <line id="vz63-e-root-a" x1="260" y1="46" x2="130" y2="72" stroke="#30363d" stroke-width="1.8"/>
-        <text x="188" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
-        <line id="vz63-e-root-b" x1="260" y1="46" x2="390" y2="72" stroke="#30363d" stroke-width="1.8"/>
-        <text x="330" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">b</text>
-        <line id="vz63-e-a-ap" x1="130" y1="108" x2="130" y2="140" stroke="#30363d" stroke-width="1.8"/>
-        <text x="116" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">p</text>
-        <line id="vz63-e-ap-app" x1="118" y1="174" x2="90" y2="208" stroke="#30363d" stroke-width="1.8"/>
-        <text x="97" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">p</text>
-        <line id="vz63-e-ap-apt" x1="142" y1="174" x2="170" y2="208" stroke="#30363d" stroke-width="1.8"/>
-        <text x="163" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">t</text>
-        <line id="vz63-e-app-l" x1="70" y1="244" x2="52" y2="252" stroke="#30363d" stroke-width="1.8"/>
-        <text x="54" y="248" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">l</text>
-        <line id="vz63-e-l-e" x1="46" y1="262" x2="30" y2="272" stroke="#30363d" stroke-width="1.8"/>
-        <text x="31" y="263" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">e</text>
-        <line id="vz63-e-b-ba" x1="390" y1="108" x2="390" y2="140" stroke="#30363d" stroke-width="1.8"/>
-        <text x="376" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
-        <line id="vz63-e-ba-bat" x1="390" y1="174" x2="390" y2="208" stroke="#30363d" stroke-width="1.8"/>
-        <text x="376" y="195" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">t</text>
+        <line id="vz63-e-root-b" x1="248" y1="44" x2="167" y2="77" stroke="#30363d" stroke-width="1.8"/>
+        <text x="200" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">b</text>
+        <line id="vz63-e-root-d" x1="272" y1="44" x2="368" y2="77" stroke="#30363d" stroke-width="1.8"/>
+        <text x="326" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">d</text>
+        <line id="vz63-e-b-ba" x1="141" y1="111" x2="109" y2="147" stroke="#30363d" stroke-width="1.8"/>
+        <text x="118" y="126" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
+        <line id="vz63-e-b-bo" x1="169" y1="111" x2="201" y2="147" stroke="#30363d" stroke-width="1.8"/>
+        <text x="192" y="126" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">o</text>
+        <line id="vz63-e-d-do" x1="380" y1="113" x2="380" y2="147" stroke="#30363d" stroke-width="1.8"/>
+        <text x="366" y="134" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">o</text>
+        <line id="vz63-e-ba-bad" x1="82" y1="181" x2="68" y2="222" stroke="#30363d" stroke-width="1.8"/>
+        <text x="68" y="199" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">d</text>
+        <line id="vz63-e-ba-ban" x1="108" y1="181" x2="132" y2="222" stroke="#30363d" stroke-width="1.8"/>
+        <text x="127" y="199" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">n</text>
+        <line id="vz63-e-bo-box" x1="215" y1="183" x2="215" y2="222" stroke="#30363d" stroke-width="1.8"/>
+        <text x="201" y="206" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">x</text>
+        <line id="vz63-e-do-dog" x1="380" y1="183" x2="380" y2="222" stroke="#30363d" stroke-width="1.8"/>
+        <text x="366" y="206" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">g</text>
+        <line id="vz63-e-ban-bank" x1="140" y1="258" x2="140" y2="277" stroke="#30363d" stroke-width="1.8"/>
+        <text x="126" y="271" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">k</text>
 
         <!-- Nodes (always visible — pre-built trie) -->
         <circle id="vz63-n-root" cx="260" cy="28" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
         <text x="260" y="28" font-size="9" font-family="monospace" fill="#c9d1d9" text-anchor="middle" dominant-baseline="central" font-weight="700">root</text>
 
-        <circle id="vz63-n-a" cx="130" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="130" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
+        <circle id="vz63-n-b" cx="155" cy="95" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="155" y="95" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">b</text>
 
-        <circle id="vz63-n-ap" cx="130" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="130" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">p</text>
+        <circle id="vz63-n-d" cx="380" cy="95" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="380" y="95" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">d</text>
 
-        <circle id="vz63-n-app" cx="78" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <circle cx="78" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
-        <text x="78" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">p</text>
+        <circle id="vz63-n-ba" cx="95" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="95" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
 
-        <circle id="vz63-n-l" cx="44" cy="266" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="44" y="266" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">l</text>
+        <circle id="vz63-n-bo" cx="215" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="215" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">o</text>
 
-        <circle id="vz63-n-e" cx="22" cy="282" r="14" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <circle cx="22" cy="282" r="18" fill="none" stroke="#3fb950" stroke-width="1.5"/>
-        <text x="22" y="282" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">e</text>
+        <circle id="vz63-n-do" cx="380" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="380" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">o</text>
 
-        <circle id="vz63-n-apt" cx="182" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <circle cx="182" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
-        <text x="182" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">t</text>
+        <circle id="vz63-n-bad" cx="60" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="60" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="60" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">d</text>
 
-        <circle id="vz63-n-b" cx="390" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="390" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">b</text>
+        <circle id="vz63-n-ban" cx="140" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="140" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">n</text>
 
-        <circle id="vz63-n-ba" cx="390" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="390" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
+        <circle id="vz63-n-box" cx="215" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="215" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="215" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">x</text>
 
-        <circle id="vz63-n-bat" cx="390" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <circle cx="390" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
-        <text x="390" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">t</text>
+        <circle id="vz63-n-dog" cx="380" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="380" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="380" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">g</text>
+
+        <circle id="vz63-n-bank" cx="140" cy="295" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="140" cy="295" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="140" y="295" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">k</text>
 
         <!-- Result badge -->
-        <text id="vz63-result" x="420" y="40" font-size="16" font-family="monospace" font-weight="700" text-anchor="middle" opacity="0">?</text>
+        <text id="vz63-result" x="460" y="40" font-size="16" font-family="monospace" font-weight="700" text-anchor="middle" opacity="0">?</text>
       </svg>
     </div>
     <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
       <div>
-        <div id="vz63-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 9</div>
+        <div id="vz63-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 10</div>
         <div id="vz63-narration" style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;">Press <b>Next</b> to begin the lookup walkthroughs.</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -697,33 +727,33 @@ function LOOKUP(S[1..n]):
 <script>
 (function(){
   'use strict';
-  // All nodes in the trie for highlighting
-  var ALL_NODES_63 = ['root','a','ap','app','l','e','apt','b','ba','bat'];
-  var ALL_EDGES_63 = ['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'];
+  // Trie contains: bad, bank, box, dog
+  var ALL_NODES_63 = ['root','b','d','ba','bo','do','bad','ban','box','dog','bank'];
+  var ALL_EDGES_63 = ['root-b','root-d','b-ba','b-bo','d-do','ba-bad','ba-ban','bo-box','do-dog','ban-bank'];
 
-  // Steps: nodes/edges to highlight green (found), red (fail), active (current)
-  // result: null | 'SUCCESS ✓' | 'FAIL ✗'
   var VZ63_STEPS = [
-    // --- Lookup "apple" ---
-    { label:'Step 1 / 9', narration:'Lookup <b style="color:#58a6ff">\"apple\"</b>. Start at root.', matched:0, result:'—', resultColor:'#8b949e',
+    // --- Lookup "bank" ---
+    { label:'Step 1 / 10', narration:'Lookup <b style="color:#58a6ff">\"bank\"</b>. Start at root.', matched:0, result:'—', resultColor:'#8b949e',
       active:['root'], found:[], failed:[], edgeActive:[], edgeFound:[] },
-    { label:'Step 2 / 9', narration:'Follow <b style="color:#3fb950">\'a\'</b>: found child → move to it.', matched:1, result:'—', resultColor:'#8b949e',
-      active:['a'], found:['root'], failed:[], edgeActive:['root-a'], edgeFound:[] },
-    { label:'Step 3 / 9', narration:'Follow <b style="color:#3fb950">\'p\'</b>: found child → move.', matched:2, result:'—', resultColor:'#8b949e',
-      active:['ap'], found:['root','a'], failed:[], edgeActive:['a-ap'], edgeFound:['root-a'] },
-    { label:'Step 4 / 9', narration:'Follow <b style="color:#3fb950">\'p\'</b>: found child → move. Note: this node is <b>end-of-word</b> for \"app\".', matched:3, result:'—', resultColor:'#8b949e',
-      active:['app'], found:['root','a','ap'], failed:[], edgeActive:['ap-app'], edgeFound:['root-a','a-ap'] },
-    { label:'Step 5 / 9', narration:'Follow <b style="color:#3fb950">\'l\'</b>: found child → move.', matched:4, result:'—', resultColor:'#8b949e',
-      active:['l'], found:['root','a','ap','app'], failed:[], edgeActive:['app-l'], edgeFound:['root-a','a-ap','ap-app'] },
-    { label:'Step 6 / 9', narration:'Follow <b style="color:#3fb950">\'e\'</b>: found and <b style="color:#3fb950">marked end-of-word</b>. <b style="color:#3fb950">\"apple\" EXISTS in trie. ✓</b>', matched:5, result:'SUCCESS ✓', resultColor:'#3fb950',
-      active:[], found:['root','a','ap','app','l','e'], failed:[], edgeActive:[], edgeFound:['root-a','a-ap','ap-app','app-l','l-e'] },
-    // --- Lookup "apr" ---
-    { label:'Step 7 / 9', narration:'Now lookup <b style="color:#58a6ff">\"apr\"</b>. Reset to root.', matched:0, result:'—', resultColor:'#8b949e',
+    { label:'Step 2 / 10', narration:'Follow <b style="color:#3fb950">\'b\'</b>: found child → move to it.', matched:1, result:'—', resultColor:'#8b949e',
+      active:['b'], found:['root'], failed:[], edgeActive:['root-b'], edgeFound:[] },
+    { label:'Step 3 / 10', narration:'Follow <b style="color:#3fb950">\'a\'</b>: found child → move.', matched:2, result:'—', resultColor:'#8b949e',
+      active:['ba'], found:['root','b'], failed:[], edgeActive:['b-ba'], edgeFound:['root-b'] },
+    { label:'Step 4 / 10', narration:'Follow <b style="color:#3fb950">\'n\'</b>: found child → move.', matched:3, result:'—', resultColor:'#8b949e',
+      active:['ban'], found:['root','b','ba'], failed:[], edgeActive:['ba-ban'], edgeFound:['root-b','b-ba'] },
+    { label:'Step 5 / 10', narration:'Follow <b style="color:#3fb950">\'k\'</b>: found and <b style="color:#3fb950">marked end-of-word</b>. <b style="color:#3fb950">\"bank\" EXISTS in trie. ✓</b>', matched:4, result:'SUCCESS ✓', resultColor:'#3fb950',
+      active:[], found:['root','b','ba','ban','bank'], failed:[], edgeActive:[], edgeFound:['root-b','b-ba','ba-ban','ban-bank'] },
+    // --- Lookup "boo" ---
+    { label:'Step 6 / 10', narration:'Now lookup <b style="color:#58a6ff">\"boo\"</b>. Reset to root.', matched:0, result:'—', resultColor:'#8b949e',
       active:['root'], found:[], failed:[], edgeActive:[], edgeFound:[] },
-    { label:'Step 8 / 9', narration:'Follow <b style="color:#3fb950">\'a\'</b>, <b style="color:#3fb950">\'p\'</b>: both found.', matched:2, result:'—', resultColor:'#8b949e',
-      active:['ap'], found:['root','a'], failed:[], edgeActive:['a-ap'], edgeFound:['root-a'] },
-    { label:'Step 9 / 9', narration:'Follow <b style="color:#f85149">\'r\'</b>: <b>NO \'r\' child</b> from \'p\' node. <b style="color:#f85149">\"apr\" NOT in trie. ✗</b>', matched:2, result:'FAIL ✗', resultColor:'#f85149',
-      active:[], found:['root','a'], failed:['ap'], edgeActive:[], edgeFound:['root-a'] }
+    { label:'Step 7 / 10', narration:'Follow <b style="color:#3fb950">\'b\'</b>: found child → move to it.', matched:1, result:'—', resultColor:'#8b949e',
+      active:['b'], found:['root'], failed:[], edgeActive:['root-b'], edgeFound:[] },
+    { label:'Step 8 / 10', narration:'Follow <b style="color:#3fb950">\'o\'</b>: found child → move to it.', matched:2, result:'—', resultColor:'#8b949e',
+      active:['bo'], found:['root','b'], failed:[], edgeActive:['b-bo'], edgeFound:['root-b'] },
+    { label:'Step 9 / 10', narration:'Follow <b style="color:#f85149">\'o\'</b>: <b>NO second \'o\' child</b> from \'bo\' node (only \'x\' exists). <b style="color:#f85149">\"boo\" NOT in trie. ✗</b>', matched:2, result:'FAIL ✗', resultColor:'#f85149',
+      active:[], found:['root','b'], failed:['bo'], edgeActive:[], edgeFound:['root-b'] },
+    { label:'Step 10 / 10', narration:'Summary: <b style="color:#3fb950">\"bank\"</b> found in 4 hops. <b style="color:#f85149">\"boo\"</b> fails at depth 2 — \'bo\' node only has an \'x\' child. Lookup is always O(|query|).', matched:0, result:'—', resultColor:'#8b949e',
+      active:[], found:[], failed:[], edgeActive:[], edgeFound:[] }
   ];
 
   var vz63cur = -1;
@@ -782,7 +812,7 @@ function LOOKUP(S[1..n]):
       if (e) { e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
     });
     document.getElementById('vz63-result').setAttribute('opacity','0');
-    document.getElementById('vz63-step-label').textContent = 'Step 0 / 9';
+    document.getElementById('vz63-step-label').textContent = 'Step 0 / 10';
     document.getElementById('vz63-narration').innerHTML = 'Press <b>Next</b> to begin the lookup walkthroughs.';
     document.getElementById('vz63-s-matched').textContent = '0';
     var sr = document.getElementById('vz63-s-result'); sr.textContent = '—'; sr.style.color = '#8b949e';
@@ -843,70 +873,75 @@ function TRAVERSE(node, cur_string):
   <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
     <span style="font-family:'JetBrains Mono',monospace;font-size:.65em;text-transform:uppercase;letter-spacing:.2em;color:#f0883e;">Algorithm 64</span>
     <span style="font-weight:600;color:#c9d1d9;flex:1;">String Sorting via Trie DFS — Interactive</span>
-    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Input: [bat, app, apt, apple]</span>
+    <span style="font-family:monospace;font-size:.78em;color:#8b949e;">Input: [bad, bank, box, dog]</span>
   </div>
   <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
     <div style="background:#0d1117;overflow:hidden;">
-      <svg id="vz64-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
-        <!-- Static pre-built trie (same structure) -->
-        <line id="vz64-e-root-a" x1="260" y1="46" x2="130" y2="72" stroke="#30363d" stroke-width="1.8"/>
-        <text x="188" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
-        <line id="vz64-e-root-b" x1="260" y1="46" x2="390" y2="72" stroke="#30363d" stroke-width="1.8"/>
-        <text x="330" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">b</text>
-        <line id="vz64-e-a-ap" x1="130" y1="108" x2="130" y2="140" stroke="#30363d" stroke-width="1.8"/>
-        <text x="116" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">p</text>
-        <line id="vz64-e-ap-app" x1="118" y1="174" x2="90" y2="208" stroke="#30363d" stroke-width="1.8"/>
-        <text x="97" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">p</text>
-        <line id="vz64-e-ap-apt" x1="142" y1="174" x2="170" y2="208" stroke="#30363d" stroke-width="1.8"/>
-        <text x="163" y="188" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">t</text>
-        <line id="vz64-e-app-l" x1="70" y1="244" x2="52" y2="252" stroke="#30363d" stroke-width="1.8"/>
-        <text x="54" y="248" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">l</text>
-        <line id="vz64-e-l-e" x1="46" y1="262" x2="30" y2="272" stroke="#30363d" stroke-width="1.8"/>
-        <text x="31" y="263" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">e</text>
-        <line id="vz64-e-b-ba" x1="390" y1="108" x2="390" y2="140" stroke="#30363d" stroke-width="1.8"/>
-        <text x="376" y="128" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
-        <line id="vz64-e-ba-bat" x1="390" y1="174" x2="390" y2="208" stroke="#30363d" stroke-width="1.8"/>
-        <text x="376" y="195" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">t</text>
+      <svg id="vz64-svg" viewBox="0 0 520 310" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+        <!-- Static pre-built trie: bad, bank, box, dog — same layout as VZ62/VZ63 -->
+        <line id="vz64-e-root-b" x1="248" y1="44" x2="167" y2="77" stroke="#30363d" stroke-width="1.8"/>
+        <text x="200" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">b</text>
+        <line id="vz64-e-root-d" x1="272" y1="44" x2="368" y2="77" stroke="#30363d" stroke-width="1.8"/>
+        <text x="326" y="55" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">d</text>
+        <line id="vz64-e-b-ba" x1="141" y1="111" x2="109" y2="147" stroke="#30363d" stroke-width="1.8"/>
+        <text x="118" y="126" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">a</text>
+        <line id="vz64-e-b-bo" x1="169" y1="111" x2="201" y2="147" stroke="#30363d" stroke-width="1.8"/>
+        <text x="192" y="126" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">o</text>
+        <line id="vz64-e-d-do" x1="380" y1="113" x2="380" y2="147" stroke="#30363d" stroke-width="1.8"/>
+        <text x="366" y="134" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">o</text>
+        <line id="vz64-e-ba-bad" x1="82" y1="181" x2="68" y2="222" stroke="#30363d" stroke-width="1.8"/>
+        <text x="68" y="199" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">d</text>
+        <line id="vz64-e-ba-ban" x1="108" y1="181" x2="132" y2="222" stroke="#30363d" stroke-width="1.8"/>
+        <text x="127" y="199" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">n</text>
+        <line id="vz64-e-bo-box" x1="215" y1="183" x2="215" y2="222" stroke="#30363d" stroke-width="1.8"/>
+        <text x="201" y="206" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">x</text>
+        <line id="vz64-e-do-dog" x1="380" y1="183" x2="380" y2="222" stroke="#30363d" stroke-width="1.8"/>
+        <text x="366" y="206" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">g</text>
+        <line id="vz64-e-ban-bank" x1="140" y1="258" x2="140" y2="277" stroke="#30363d" stroke-width="1.8"/>
+        <text x="126" y="271" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle">k</text>
 
         <!-- Nodes -->
         <circle id="vz64-n-root" cx="260" cy="28" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
         <text x="260" y="28" font-size="9" font-family="monospace" fill="#c9d1d9" text-anchor="middle" dominant-baseline="central" font-weight="700">root</text>
 
-        <circle id="vz64-n-a" cx="130" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="130" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
+        <circle id="vz64-n-b" cx="155" cy="95" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="155" y="95" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">b</text>
 
-        <circle id="vz64-n-ap" cx="130" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="130" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">p</text>
+        <circle id="vz64-n-d" cx="380" cy="95" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="380" y="95" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">d</text>
 
-        <circle id="vz64-n-app" cx="78" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <circle cx="78" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
-        <text x="78" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">p</text>
+        <circle id="vz64-n-ba" cx="95" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="95" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
 
-        <circle id="vz64-n-l" cx="44" cy="266" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="44" y="266" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">l</text>
+        <circle id="vz64-n-bo" cx="215" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="215" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">o</text>
 
-        <circle id="vz64-n-e" cx="22" cy="282" r="14" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <circle cx="22" cy="282" r="18" fill="none" stroke="#3fb950" stroke-width="1.5"/>
-        <text x="22" y="282" font-size="11" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">e</text>
+        <circle id="vz64-n-do" cx="380" cy="165" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="380" y="165" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">o</text>
 
-        <circle id="vz64-n-apt" cx="182" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <circle cx="182" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
-        <text x="182" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">t</text>
+        <circle id="vz64-n-bad" cx="60" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="60" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="60" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">d</text>
 
-        <circle id="vz64-n-b" cx="390" cy="90" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="390" y="90" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">b</text>
+        <circle id="vz64-n-ban" cx="140" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="140" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">n</text>
 
-        <circle id="vz64-n-ba" cx="390" cy="158" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="390" y="158" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">a</text>
+        <circle id="vz64-n-box" cx="215" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="215" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="215" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">x</text>
 
-        <circle id="vz64-n-bat" cx="390" cy="226" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <circle cx="390" cy="226" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
-        <text x="390" y="226" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">t</text>
+        <circle id="vz64-n-dog" cx="380" cy="240" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="380" cy="240" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="380" y="240" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">g</text>
+
+        <circle id="vz64-n-bank" cx="140" cy="295" r="18" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <circle cx="140" cy="295" r="23" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="140" y="295" font-size="13" font-family="monospace" fill="#8b949e" text-anchor="middle" dominant-baseline="central" font-weight="700">k</text>
       </svg>
     </div>
     <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
       <div>
-        <div id="vz64-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 7</div>
+        <div id="vz64-step-label" style="font-family:'JetBrains Mono',monospace;font-size:.63em;letter-spacing:.2em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;">Step 0 / 9</div>
         <div id="vz64-narration" style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:56px;">Press <b>Next</b> to walk the DFS and sort the strings.</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -935,24 +970,30 @@ function TRAVERSE(node, cur_string):
 <script>
 (function(){
   'use strict';
-  var ALL_NODES_64 = ['root','a','ap','app','l','e','apt','b','ba','bat'];
-  var ALL_EDGES_64 = ['root-a','a-ap','ap-app','app-l','l-e','ap-apt','root-b','b-ba','ba-bat'];
+  // Trie contains: bad, bank, box, dog
+  // DFS lex order: bad, bank, box, dog
+  var ALL_NODES_64 = ['root','b','d','ba','bo','do','bad','ban','box','dog','bank'];
+  var ALL_EDGES_64 = ['root-b','root-d','b-ba','b-bo','d-do','ba-bad','ba-ban','bo-box','do-dog','ban-bank'];
 
   var VZ64_STEPS = [
-    { label:'Step 1 / 7', narration:'Trie contains: app, apple, apt, bat. DFS in lexicographic order will yield sorted output.', output:[], outputCount:0, visited:0,
+    { label:'Step 1 / 9', narration:'Trie contains: bad, bank, box, dog. DFS visits children alphabetically, outputting each end-of-word node.', output:[], outputCount:0, visited:1,
       active:['root'], dfsPath:[], edgeActive:[] },
-    { label:'Step 2 / 7', narration:'Enter <b style="color:#bc8cff">\'a\'</b> subtree first (a &lt; b lexicographically).', output:[], outputCount:0, visited:2,
-      active:['a'], dfsPath:['root'], edgeActive:['root-a'] },
-    { label:'Step 3 / 7', narration:'DFS: root→a→p→p — reached <b>end-of-word</b> for <b style="color:#3fb950">\"app\"</b>. Add to output!', output:['app'], outputCount:1, visited:4,
-      active:['app'], dfsPath:['root','a','ap'], edgeActive:['ap-app'] },
-    { label:'Step 4 / 7', narration:'Continue DFS in \'p\'→\'l\'→\'e\' — end-of-word for <b style="color:#3fb950">\"apple\"</b>. Add to output!', output:['app','apple'], outputCount:2, visited:6,
-      active:['e'], dfsPath:['root','a','ap','app','l'], edgeActive:['l-e'] },
-    { label:'Step 5 / 7', narration:'DFS backtracks to \'p\' (ap node), finds \'t\' branch → end-of-word for <b style="color:#3fb950">\"apt\"</b>. Output!', output:['app','apple','apt'], outputCount:3, visited:7,
-      active:['apt'], dfsPath:['root','a','ap'], edgeActive:['ap-apt'] },
-    { label:'Step 6 / 7', narration:'Backtrack to root, enter <b style="color:#bc8cff">\'b\'</b> subtree. b→a→t — end-of-word for <b style="color:#3fb950">\"bat\"</b>. Output!', output:['app','apple','apt','bat'], outputCount:4, visited:9,
-      active:['bat'], dfsPath:['root','b','ba'], edgeActive:['ba-bat'] },
-    { label:'Step 7 / 7', narration:'<b style="color:#3fb950">Sort complete!</b> Output: [app, apple, apt, bat]. O(total characters) — no comparisons needed!', output:['app','apple','apt','bat'], outputCount:4, visited:9,
-      active:[], dfsPath:['root','a','ap','app','l','e','apt','b','ba','bat'], edgeActive:[] }
+    { label:'Step 2 / 9', narration:'Enter <b style="color:#bc8cff">\'b\'</b> subtree first (b &lt; d lexicographically). Descend into \'b\'→\'a\'.', output:[], outputCount:0, visited:3,
+      active:['ba'], dfsPath:['root','b'], edgeActive:['b-ba'] },
+    { label:'Step 3 / 9', narration:'DFS: b→a→d — reached <b>end-of-word</b> for <b style="color:#3fb950">\"bad\"</b>. Add to output!', output:['bad'], outputCount:1, visited:4,
+      active:['bad'], dfsPath:['root','b','ba'], edgeActive:['ba-bad'] },
+    { label:'Step 4 / 9', narration:'Backtrack to \'a\' (ba node). Follow \'n\' branch: b→a→n→k — end-of-word for <b style="color:#3fb950">\"bank\"</b>. Output!', output:['bad','bank'], outputCount:2, visited:6,
+      active:['bank'], dfsPath:['root','b','ba','bad','ban'], edgeActive:['ban-bank'] },
+    { label:'Step 5 / 9', narration:'Backtrack to \'b\'. Follow \'o\' branch (a &lt; o, but \'a\' subtree is exhausted): b→o→x — end-of-word for <b style="color:#3fb950">\"box\"</b>. Output!', output:['bad','bank','box'], outputCount:3, visited:8,
+      active:['box'], dfsPath:['root','b','ba','bad','ban','bank','bo'], edgeActive:['bo-box'] },
+    { label:'Step 6 / 9', narration:'Backtrack to root. Enter <b style="color:#bc8cff">\'d\'</b> subtree. d→o→g — end-of-word for <b style="color:#3fb950">\"dog\"</b>. Output!', output:['bad','bank','box','dog'], outputCount:4, visited:11,
+      active:['dog'], dfsPath:['root','b','ba','bad','ban','bank','bo','box','d','do'], edgeActive:['do-dog'] },
+    { label:'Step 7 / 9', narration:'All nodes visited. DFS complete.', output:['bad','bank','box','dog'], outputCount:4, visited:11,
+      active:[], dfsPath:['root','b','ba','bad','ban','bank','bo','box','d','do','dog'], edgeActive:[] },
+    { label:'Step 8 / 9', narration:'Note the DFS order: within the \'b\'→\'a\' subtree, \'d\' comes before \'n\' (d &lt; n), so \"bad\" precedes \"bank\". Within \'b\', \'a\' comes before \'o\' (a &lt; o), so \"bad\"/\"bank\" precede \"box\".', output:['bad','bank','box','dog'], outputCount:4, visited:11,
+      active:[], dfsPath:['root','b','ba','bad','ban','bank','bo','box','d','do','dog'], edgeActive:[] },
+    { label:'Step 9 / 9', narration:'<b style="color:#3fb950">Sort complete!</b> Output: [bad, bank, box, dog]. O(total characters) — no string comparisons needed!', output:['bad','bank','box','dog'], outputCount:4, visited:11,
+      active:[], dfsPath:['root','b','ba','bad','ban','bank','bo','box','d','do','dog'], edgeActive:[] }
   ];
 
   var vz64cur = -1;
@@ -1002,7 +1043,7 @@ function TRAVERSE(node, cur_string):
       var e = document.getElementById('vz64-e-'+id);
       if (e) { e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','1.8'); }
     });
-    document.getElementById('vz64-step-label').textContent = 'Step 0 / 7';
+    document.getElementById('vz64-step-label').textContent = 'Step 0 / 9';
     document.getElementById('vz64-narration').innerHTML = 'Press <b>Next</b> to walk the DFS and sort the strings.';
     document.getElementById('vz64-s-output').textContent = '0';
     document.getElementById('vz64-s-visited').textContent = '0';
@@ -1802,7 +1843,7 @@ function LONGEST_REPEATED_SUBSTRING(suffix_tree):
 </main>
 <script>
 (function(){
-  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
   var C=50.3;
   function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
   function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}

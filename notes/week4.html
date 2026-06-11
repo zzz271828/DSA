@@ -164,6 +164,7 @@
 
   <div class="nav-section">Reference</div>
   <ul>
+    <li><a href="questions.html">&#x1F4DA; Questions Bank</a></li>
     <li><a href="algorithms.html">All Algorithms Table</a></li>
     <li><a href="index.html">↑ Course Home</a></li>
   </ul>
@@ -1570,7 +1571,7 @@ function TOPOLOGICAL_SORT_KAHN(G = (V, E)):
     <svg id="vz31svg" viewBox="0 0 520 280" style="display:block;width:100%;height:auto;background:#0d1117;"></svg>
     <div style="padding:16px 18px;background:#161b22;display:flex;flex-direction:column;gap:10px;border-left:1px solid #30363d;">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#58a6ff;" id="vz31lbl">READY</div>
-      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz31txt">DAG: A→C, A→D, B→D, C→E, D→E. In-degrees shown on nodes. Click Next.</div>
+      <div style="font-size:14px;color:#c9d1d9;min-height:80px;line-height:1.5;" id="vz31txt">DAG: A→B, A→C, B→D, C→E, E→D. In-degrees shown on nodes. Click Next.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:80px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Queue size</span><span style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;" id="vz31qs">0</span></div>
         <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Output order</span><span style="font-size:.9em;font-weight:700;line-height:1.3;color:#3fb950;font-family:monospace;" id="vz31oo">—</span></div>
@@ -1587,30 +1588,30 @@ function TOPOLOGICAL_SORT_KAHN(G = (V, E)):
 <script>
 (function(){
   var NS='http://www.w3.org/2000/svg';
-  // DAG: A(0),B(1),C(2),D(3),E(4). Edges: A→C, A→D, B→D, C→E, D→E
+  // DAG: A(0),B(1),C(2),D(3),E(4). Edges: A→B, A→C, B→D, C→E, E→D
   var nodes=[
     {id:0,lbl:'A',x:80,y:140},
-    {id:1,lbl:'B',x:80,y:240},
-    {id:2,lbl:'C',x:220,y:70},
-    {id:3,lbl:'D',x:220,y:210},
-    {id:4,lbl:'E',x:400,y:140}
+    {id:1,lbl:'B',x:240,y:70},
+    {id:2,lbl:'C',x:240,y:210},
+    {id:3,lbl:'D',x:440,y:140},
+    {id:4,lbl:'E',x:360,y:210}
   ];
   // Directed edges [from, to]
-  var edges=[[0,2],[0,3],[1,3],[2,4],[3,4]];
+  var edges=[[0,1],[0,2],[1,3],[2,4],[4,3]];
   var lbls=['A','B','C','D','E'];
   var steps=[
-    {lbl:'IN-DEGREES',txt:'Compute in-degrees: A=0,B=0,C=1,D=2,E=2. A and B have in-degree 0 → ready queue.',indeg:[0,0,1,2,2],done:[],active:-1,queue:['A','B'],order:[]},
-    {lbl:'INIT QUEUE',txt:'ready=[A,B]. Both have no incoming edges.',indeg:[0,0,1,2,2],done:[],active:-1,queue:['A','B'],order:[]},
-    {lbl:'POP A',txt:'Dequeue A. Append to order. Remove edges A→C,A→D.',indeg:[0,0,1,2,2],done:[0],active:0,queue:['B'],order:['A']},
-    {lbl:'UPDATE C,D',txt:'in_deg[C]=1→0 (enqueue C). in_deg[D]=2→1 (not 0).',indeg:[0,0,0,1,2],done:[0],active:0,queue:['B','C'],order:['A']},
-    {lbl:'POP B',txt:'Dequeue B. Append to order. Remove edge B→D.',indeg:[0,0,0,1,2],done:[0,1],active:1,queue:['C'],order:['A','B']},
-    {lbl:'UPDATE D',txt:'in_deg[D]=1→0 → enqueue D. queue=[C,D].',indeg:[0,0,0,0,2],done:[0,1],active:1,queue:['C','D'],order:['A','B']},
-    {lbl:'POP C',txt:'Dequeue C. Append to order. Remove edge C→E.',indeg:[0,0,0,0,2],done:[0,1,2],active:2,queue:['D'],order:['A','B','C']},
-    {lbl:'UPDATE E',txt:'in_deg[E]=2→1. Not 0 yet.',indeg:[0,0,0,0,1],done:[0,1,2],active:2,queue:['D'],order:['A','B','C']},
-    {lbl:'POP D',txt:'Dequeue D. Append to order. Remove edge D→E.',indeg:[0,0,0,0,1],done:[0,1,2,3],active:3,queue:[],order:['A','B','C','D']},
-    {lbl:'UPDATE E',txt:'in_deg[E]=1→0 → enqueue E. queue=[E].',indeg:[0,0,0,0,0],done:[0,1,2,3],active:3,queue:['E'],order:['A','B','C','D']},
-    {lbl:'POP E',txt:'Dequeue E. Append to order. No outgoing edges.',indeg:[0,0,0,0,0],done:[0,1,2,3,4],active:4,queue:[],order:['A','B','C','D','E']},
-    {lbl:'COMPLETE',txt:'Topological order: A,B,C,D,E. Every directed edge goes left→right. Valid!',indeg:[0,0,0,0,0],done:[0,1,2,3,4],active:-1,queue:[],order:['A','B','C','D','E']}
+    {lbl:'IN-DEGREES',txt:'Compute in-degrees: A=0,B=1,C=1,D=2,E=1. Only A has in-degree 0 → ready queue.',indeg:[0,1,1,2,1],done:[],active:-1,queue:['A'],order:[]},
+    {lbl:'INIT QUEUE',txt:'ready=[A]. Only A has no incoming edges.',indeg:[0,1,1,2,1],done:[],active:-1,queue:['A'],order:[]},
+    {lbl:'POP A',txt:'Dequeue A. Append to order. Remove edges A→B,A→C.',indeg:[0,1,1,2,1],done:[0],active:0,queue:[],order:['A']},
+    {lbl:'UPDATE B,C',txt:'in_deg[B]=1→0 (enqueue B). in_deg[C]=1→0 (enqueue C). queue=[B,C].',indeg:[0,0,0,2,1],done:[0],active:0,queue:['B','C'],order:['A']},
+    {lbl:'POP B',txt:'Dequeue B. Append to order. Remove edge B→D.',indeg:[0,0,0,2,1],done:[0,1],active:1,queue:['C'],order:['A','B']},
+    {lbl:'UPDATE D',txt:'in_deg[D]=2→1. Not 0 yet.',indeg:[0,0,0,1,1],done:[0,1],active:1,queue:['C'],order:['A','B']},
+    {lbl:'POP C',txt:'Dequeue C. Append to order. Remove edge C→E.',indeg:[0,0,0,1,1],done:[0,1,2],active:2,queue:[],order:['A','B','C']},
+    {lbl:'UPDATE E',txt:'in_deg[E]=1→0 → enqueue E. queue=[E].',indeg:[0,0,0,1,0],done:[0,1,2],active:2,queue:['E'],order:['A','B','C']},
+    {lbl:'POP E',txt:'Dequeue E. Append to order. Remove edge E→D.',indeg:[0,0,0,1,0],done:[0,1,2,4],active:4,queue:[],order:['A','B','C','E']},
+    {lbl:'UPDATE D',txt:'in_deg[D]=1→0 → enqueue D. queue=[D].',indeg:[0,0,0,0,0],done:[0,1,2,4],active:4,queue:['D'],order:['A','B','C','E']},
+    {lbl:'POP D',txt:'Dequeue D. Append to order. No outgoing edges.',indeg:[0,0,0,0,0],done:[0,1,2,3,4],active:3,queue:[],order:['A','B','C','E','D']},
+    {lbl:'COMPLETE',txt:'Topological order: A,B,C,E,D. Every directed edge goes left→right. Valid!',indeg:[0,0,0,0,0],done:[0,1,2,3,4],active:-1,queue:[],order:['A','B','C','E','D']}
   ];
   var cur=0;
   var svg=document.getElementById('vz31svg');
@@ -1759,25 +1760,26 @@ function DFS(u):
   var NS='http://www.w3.org/2000/svg';
   var nodes=[
     {id:0,lbl:'A',x:80,y:140},
-    {id:1,lbl:'B',x:80,y:240},
-    {id:2,lbl:'C',x:220,y:70},
-    {id:3,lbl:'D',x:220,y:210},
-    {id:4,lbl:'E',x:400,y:140}
+    {id:1,lbl:'B',x:240,y:70},
+    {id:2,lbl:'C',x:240,y:210},
+    {id:3,lbl:'D',x:440,y:140},
+    {id:4,lbl:'E',x:360,y:210}
   ];
-  var edges=[[0,2],[0,3],[1,3],[2,4],[3,4]];
+  var edges=[[0,1],[0,2],[1,3],[2,4],[4,3]];
   var lbls=['A','B','C','D','E'];
   // finish order builds up. finishNums: -1 = not finished, number = finish order
   var steps=[
     {lbl:'INIT',txt:'visited=[F,F,F,F,F], order=[]. DFS from A.',visited:[],active:-1,finished:[],finishNums:[-1,-1,-1,-1,-1]},
-    {lbl:'DFS(A)',txt:'Mark A visited. Explore neighbor C.',visited:[0],active:0,finished:[],finishNums:[-1,-1,-1,-1,-1]},
-    {lbl:'DFS(C)',txt:'Mark C visited. Explore neighbor E.',visited:[0,2],active:2,finished:[],finishNums:[-1,-1,-1,-1,-1]},
-    {lbl:'DFS(E)',txt:'Mark E visited. No unvisited neighbors. Append E to order. Finish E.',visited:[0,2,4],active:4,finished:[4],finishNums:[-1,-1,-1,-1,1]},
-    {lbl:'FINISH C',txt:'Back in DFS(C). All neighbors done. Append C to order.',visited:[0,2,4],active:2,finished:[4,2],finishNums:[-1,-1,2,-1,1]},
-    {lbl:'DFS(A)→D',txt:'Back in DFS(A). Neighbor D unvisited → DFS(D).',visited:[0,2,4],active:0,finished:[4,2],finishNums:[-1,-1,2,-1,1]},
-    {lbl:'DFS(D)',txt:'Mark D visited. Neighbor E already visited. Append D to order.',visited:[0,2,3,4],active:3,finished:[4,2,3],finishNums:[-1,-1,2,3,1]},
-    {lbl:'FINISH A',txt:'Back in DFS(A). All neighbors done. Append A to order.',visited:[0,2,3,4],active:-1,finished:[4,2,3,0],finishNums:[4,-1,2,3,1]},
-    {lbl:'DFS(B)',txt:'Outer loop: B not visited → DFS(B). Neighbor D already visited. Append B.',visited:[0,1,2,3,4],active:1,finished:[4,2,3,0,1],finishNums:[4,5,2,3,1]},
-    {lbl:'REVERSE',txt:'order=[E,C,D,A,B]. Reverse → [B,A,D,C,E]. This is a valid topological order!',visited:[0,1,2,3,4],active:-1,finished:[4,2,3,0,1],finishNums:[4,5,2,3,1]}
+    {lbl:'DFS(A)',txt:'Mark A visited. Explore neighbor B.',visited:[0],active:0,finished:[],finishNums:[-1,-1,-1,-1,-1]},
+    {lbl:'DFS(B)',txt:'Mark B visited. Explore neighbor D.',visited:[0,1],active:1,finished:[],finishNums:[-1,-1,-1,-1,-1]},
+    {lbl:'DFS(D)',txt:'Mark D visited. No unvisited neighbors. Finish D (f:1).',visited:[0,1,3],active:3,finished:[3],finishNums:[-1,-1,-1,1,-1]},
+    {lbl:'FINISH B',txt:'Back in DFS(B). All neighbors done. Finish B (f:2).',visited:[0,1,3],active:1,finished:[3,1],finishNums:[-1,2,-1,1,-1]},
+    {lbl:'DFS(A)→C',txt:'Back in DFS(A). Neighbor C unvisited → DFS(C).',visited:[0,1,3],active:0,finished:[3,1],finishNums:[-1,2,-1,1,-1]},
+    {lbl:'DFS(C)',txt:'Mark C visited. Explore neighbor E.',visited:[0,1,2,3],active:2,finished:[3,1],finishNums:[-1,2,-1,1,-1]},
+    {lbl:'DFS(E)',txt:'Mark E visited. Neighbor D already visited. Finish E (f:3).',visited:[0,1,2,3,4],active:4,finished:[3,1,4],finishNums:[-1,2,-1,1,3]},
+    {lbl:'FINISH C',txt:'Back in DFS(C). All neighbors done. Finish C (f:4).',visited:[0,1,2,3,4],active:2,finished:[3,1,4,2],finishNums:[-1,2,4,1,3]},
+    {lbl:'FINISH A',txt:'Back in DFS(A). All neighbors done. Finish A (f:5). All vertices visited.',visited:[0,1,2,3,4],active:-1,finished:[3,1,4,2,0],finishNums:[5,2,4,1,3]},
+    {lbl:'REVERSE',txt:'finish order=[D,B,E,C,A]. Reverse → [A,C,E,B,D]. Valid topo order!',visited:[0,1,2,3,4],active:-1,finished:[3,1,4,2,0],finishNums:[5,2,4,1,3]}
   ];
   var cur=0;
   var svg=document.getElementById('vz32svg');
@@ -2795,7 +2797,7 @@ function LINK(u, v):
 
 <script>
 (function(){
-  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
   var C=50.3;
   function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
   function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}

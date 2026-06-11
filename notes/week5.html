@@ -164,6 +164,7 @@
 
   <div class="nav-section">Reference</div>
   <ul>
+    <li><a href="questions.html">&#x1F4DA; Questions Bank</a></li>
     <li><a href="algorithms.html">All Algorithms Table</a></li>
     <li><a href="index.html">↑ Course Home</a></li>
   </ul>
@@ -526,7 +527,7 @@
       </div>
       <div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;margin-bottom:6px;">Priority Queue</div>
-        <div id="vz38-pq-list" style="font-family:'JetBrains Mono',monospace;font-size:.75em;color:#58a6ff;line-height:1.8;">(S,0)</div>
+        <div id="vz38-pq-list" style="font-family:'JetBrains Mono',monospace;font-size:.75em;color:#58a6ff;line-height:1.8;">(A,0)</div>
       </div>
       <div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:.6em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;margin-bottom:4px;">Distances</div>
@@ -546,16 +547,16 @@
   var svg=document.getElementById('vz38-svg');
   var INF=Infinity;
 
-  // Nodes: S A B C T
+  // Nodes: A B C D E (prose example, source=A)
   var NODES=[
-    {id:0,label:'S',x:80,y:150},
-    {id:1,label:'A',x:210,y:70},
-    {id:2,label:'B',x:210,y:230},
-    {id:3,label:'C',x:360,y:70},
-    {id:4,label:'T',x:450,y:150}
+    {id:0,label:'A',x:70,y:150},
+    {id:1,label:'B',x:230,y:75},
+    {id:2,label:'C',x:230,y:235},
+    {id:3,label:'D',x:440,y:150},
+    {id:4,label:'E',x:360,y:235}
   ];
-  // Directed edges [from,to,w]
-  var EDGES=[[0,1,4],[0,2,2],[2,1,1],[1,3,5],[2,3,8],[3,4,2],[1,4,6]];
+  // Directed edges [from,to,w]: A→B(10),A→C(5),C→B(3),C→E(2),C→D(9),B→D(1),D→E(4),E→D(6)
+  var EDGES=[[0,1,10],[0,2,5],[2,1,3],[2,4,2],[2,3,9],[1,3,1],[3,4,4],[4,3,6]];
 
   var nodeCircles={}, nodeLabels={}, distLabels={}, edgeLines={};
 
@@ -669,146 +670,136 @@
 
   function buildSteps(){
     stepDefs=[];
+    // adj: A(0)->B(1,10),C(2,5); C(2)->B(1,3),E(4,2),D(3,9); B(1)->D(3,1); D(3)->E(4,4); E(4)->D(3,6)
+    var adj={0:[[1,10],[2,5]],1:[[3,1]],2:[[1,3],[4,2],[3,9]],3:[[4,4]],4:[[3,6]]};
     var dist=[0,INF,INF,INF,INF];
     var final=[false,false,false,false,false];
     var pred=[-1,-1,-1,-1,-1];
     var pq=[[0,0]];
-    var adj={0:[],1:[],2:[],3:[],4:[]};
-    for(var i=0;i<EDGES.length;i++) adj[EDGES[i][0]].push([EDGES[i][1],EDGES[i][2]]);
-    var extracted=0;
 
-    // Step 0: init
+    // INIT
     stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:0,
       label:'STEP 1 — INIT',
-      text:'Initialise dist[S]=0, all others=∞. Priority queue = {(S,0)}.',
+      text:'dist[A]=0, all others=∞. Priority queue = {(A,0)}.',
       nodeStyle:function(d,f){ for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def'); resetEdges(); }
     });
 
-    // Extract S(0)
+    // Extract A(0)
     pq.sort(function(a,b){return a[0]-b[0];}); var cur=pq.shift();
-    var u=cur[1],ud=cur[0]; final[u]=true; extracted++;
-    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:extracted,
-      label:'STEP 2 — Extract S (dist=0)',
-      text:'Extract S (dist=0) from PQ. S is now finalized. Relax edges S→A(4) and S→B(2).',
+    var u=cur[1],ud=cur[0]; final[u]=true;
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:1,
+      label:'STEP 2 — Extract A (dist=0)',
+      text:'Extract A (dist=0). A finalized. Relax A→B(10) and A→C(5).',
       nodeStyle:function(d,f){ for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def'); setNode(0,'proc'); resetEdges(); }
     });
-
-    // Relax S→A and S→B
     for(var ni=0;ni<adj[0].length;ni++){
-      var v=adj[0][ni][0], w=adj[0][ni][2]||adj[0][ni][1];
-      // fix: adj[from] = [[to,w],...]
+      var vn=adj[0][ni][0],wn=adj[0][ni][1];
+      if(0+wn<dist[vn]){ dist[vn]=0+wn; pred[vn]=0; pq.push([dist[vn],vn]); }
     }
-    // redo adj correctly
-    adj={0:[],1:[],2:[],3:[],4:[]};
-    for(var ei=0;ei<EDGES.length;ei++) adj[EDGES[ei][0]].push([EDGES[ei][1],EDGES[ei][2]]);
-
-    // process S
-    for(var ni=0;ni<adj[u].length;ni++){
-      var vn=adj[u][ni][0], wn=adj[u][ni][1];
-      var nd2=ud+wn;
-      if(nd2<dist[vn]){ dist[vn]=nd2; pred[vn]=u; pq.push([nd2,vn]); }
-    }
-
-    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:extracted,
-      label:'STEP 3 — Relax S→A, S→B',
-      text:'Relax S→A: 0+4=4 < ∞ → dist[A]=4. Relax S→B: 0+2=2 < ∞ → dist[B]=2. Both labels update.',
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:1,
+      label:'STEP 3 — Relax A→B, A→C',
+      text:'A→B: 0+10=10 < ∞ → dist[B]=10. A→C: 0+5=5 < ∞ → dist[C]=5. PQ={(C,5),(B,10)}.',
       nodeStyle:function(d,f){
         for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
         setNode(0,'done'); resetEdges(); setEdge(0,1,'blue'); setEdge(0,2,'blue');
       }
     });
 
-    // Extract B(2)
+    // Extract C(5)
     pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
-    u=cur[1]; ud=cur[0]; final[u]=true; extracted++;
-    var distBeforeB=dist.slice();
-    // relax B's edges
-    for(var ni=0;ni<adj[u].length;ni++){
-      var vn=adj[u][ni][0], wn=adj[u][ni][1];
-      var nd2=ud+wn;
-      if(nd2<dist[vn]){ dist[vn]=nd2; pred[vn]=u; pq.push([nd2,vn]); }
+    u=cur[1]; ud=cur[0]; final[u]=true;
+    var distBfC=dist.slice(), predBfC=pred.slice();
+    for(var ni=0;ni<adj[2].length;ni++){
+      var vn=adj[2][ni][0],wn=adj[2][ni][1];
+      if(!final[vn]&&ud+wn<dist[vn]){ dist[vn]=ud+wn; pred[vn]=2; pq.push([dist[vn],vn]); }
     }
-
-    stepDefs.push({dist:distBeforeB,final:final.slice(),pred:pred.slice(),pq:pq.concat([]).map(function(x){return x.slice();}),extracted:extracted,
-      label:'STEP 4 — Extract B (dist=2)',
-      text:'B has smallest dist=2. Extract B (finalized). Relax B→A: 2+1=3 < 4 → dist[A]=3! Relax B→C: 2+8=10 < ∞ → dist[C]=10.',
+    stepDefs.push({dist:distBfC,final:final.slice(),pred:predBfC,pq:pq.slice(),extracted:2,
+      label:'STEP 4 — Extract C (dist=5)',
+      text:'Extract C (dist=5). C finalized. Relax C→B(3): 5+3=8<10; C→E(2): 5+2=7; C→D(9): 5+9=14.',
       nodeStyle:function(d,f){
         for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
         setNode(2,'proc'); resetEdges();
-        for(var i=0;i<5;i++) if(pred[i]>=0) setEdge(pred[i],i,'green');
+        for(var i=0;i<5;i++) if(predBfC[i]>=0) setEdge(predBfC[i],i,'green');
+      }
+    });
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:2,
+      label:'STEP 5 — After relaxing C\'s edges',
+      text:'dist[B]=8 (↓ from 10, via C). dist[E]=7 (new). dist[D]=14 (new). PQ={(E,7),(B,8),(B,10 stale),(D,14)}.',
+      nodeStyle:function(d,f){
+        var prd=pred.slice();
+        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
+        resetEdges(); setEdge(2,1,'blue'); setEdge(2,4,'blue'); setEdge(2,3,'blue');
+        for(var i=0;i<5;i++) if(prd[i]>=0) setEdge(prd[i],i,'green');
       }
     });
 
-    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:extracted,
-      label:'STEP 5 — After relaxing B\'s edges',
-      text:'dist[A] updated 4→3 (via B). dist[C]=10 (new). Priority queue now has (A,3),(C,10),(T=∞).',
+    // Extract E(7)
+    pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
+    u=cur[1]; ud=cur[0]; final[u]=true;
+    var distBfE=dist.slice(), predBfE=pred.slice();
+    for(var ni=0;ni<adj[4].length;ni++){
+      var vn=adj[4][ni][0],wn=adj[4][ni][1];
+      if(!final[vn]&&ud+wn<dist[vn]){ dist[vn]=ud+wn; pred[vn]=4; pq.push([dist[vn],vn]); }
+    }
+    stepDefs.push({dist:distBfE,final:final.slice(),pred:predBfE,pq:pq.slice(),extracted:3,
+      label:'STEP 6 — Extract E (dist=7)',
+      text:'Extract E (dist=7). E finalized. Relax E→D(6): 7+6=13 < 14 → dist[D]=13.',
       nodeStyle:function(d,f){
         for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
-        resetEdges(); setEdge(2,1,'blue'); setEdge(2,3,'blue');
-        for(var i=0;i<5;i++) if(pred[i]>=0) setEdge(pred[i],i,'green');
+        setNode(4,'proc'); resetEdges();
+        for(var i=0;i<5;i++) if(predBfE[i]>=0) setEdge(predBfE[i],i,'green');
+      }
+    });
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:3,
+      label:'STEP 7 — After relaxing E\'s edges',
+      text:'dist[D]=13 (↓ from 14, via E). PQ={(B,8),(D,13),(D,14 stale)}.',
+      nodeStyle:function(d,f){
+        var prd=pred.slice();
+        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
+        resetEdges(); setEdge(4,3,'blue');
+        for(var i=0;i<5;i++) if(prd[i]>=0) setEdge(prd[i],i,'green');
       }
     });
 
-    // Extract A(3)
+    // Extract B(8)
     pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
-    u=cur[1]; ud=cur[0]; final[u]=true; extracted++;
-    var distBeforeA=dist.slice(), predBeforeA=pred.slice();
-    for(var ni=0;ni<adj[u].length;ni++){
-      var vn=adj[u][ni][0], wn=adj[u][ni][1];
-      if(!final[vn]){ var nd2=ud+wn; if(nd2<dist[vn]){ dist[vn]=nd2; pred[vn]=u; pq.push([nd2,vn]); } }
+    u=cur[1]; ud=cur[0]; final[u]=true;
+    var distBfB=dist.slice(), predBfB=pred.slice();
+    for(var ni=0;ni<adj[1].length;ni++){
+      var vn=adj[1][ni][0],wn=adj[1][ni][1];
+      if(!final[vn]&&ud+wn<dist[vn]){ dist[vn]=ud+wn; pred[vn]=1; pq.push([dist[vn],vn]); }
     }
-
-    stepDefs.push({dist:distBeforeA,final:final.slice(),pred:predBeforeA.slice(),pq:pq.slice(),extracted:extracted,
-      label:'STEP 6 — Extract A (dist=3)',
-      text:'A has smallest dist=3. Extract A (finalized). Relax A→C: 3+5=8 < 10 → dist[C]=8. Relax A→T: 3+6=9 < ∞ → dist[T]=9.',
+    stepDefs.push({dist:distBfB,final:final.slice(),pred:predBfB,pq:pq.slice(),extracted:4,
+      label:'STEP 8 — Extract B (dist=8)',
+      text:'Extract B (dist=8). B finalized. Relax B→D(1): 8+1=9 < 13 → dist[D]=9.',
       nodeStyle:function(d,f){
         for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
         setNode(1,'proc'); resetEdges();
-        for(var i=0;i<5;i++) if(predBeforeA[i]>=0) setEdge(predBeforeA[i],i,'green');
+        for(var i=0;i<5;i++) if(predBfB[i]>=0) setEdge(predBfB[i],i,'green');
       }
     });
-
-    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:extracted,
-      label:'STEP 7 — After relaxing A\'s edges',
-      text:'dist[C] updated 10→8 (via A). dist[T]=9 (new). PQ: (C,8),(T,9).',
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:pq.slice(),extracted:4,
+      label:'STEP 9 — After relaxing B\'s edges',
+      text:'dist[D]=9 (↓ from 13, via B). PQ={(D,9),(D,13 stale),(D,14 stale)}.',
       nodeStyle:function(d,f){
+        var prd=pred.slice();
         for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
-        resetEdges(); setEdge(1,3,'blue'); setEdge(1,4,'blue');
-        for(var i=0;i<5;i++) if(pred[i]>=0) setEdge(pred[i],i,'green');
+        resetEdges(); setEdge(1,3,'blue');
+        for(var i=0;i<5;i++) if(prd[i]>=0) setEdge(prd[i],i,'green');
       }
     });
 
-    // Extract C(8)
+    // Extract D(9)
     pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
-    u=cur[1]; ud=cur[0]; final[u]=true; extracted++;
-    var distBeforeC=dist.slice(), predBeforeC=pred.slice();
-    for(var ni=0;ni<adj[u].length;ni++){
-      var vn=adj[u][ni][0], wn=adj[u][ni][1];
-      if(!final[vn]){ var nd2=ud+wn; if(nd2<dist[vn]){ dist[vn]=nd2; pred[vn]=u; pq.push([nd2,vn]); } }
-    }
-
-    stepDefs.push({dist:distBeforeC,final:final.slice(),pred:predBeforeC.slice(),pq:pq.slice(),extracted:extracted,
-      label:'STEP 8 — Extract C (dist=8)',
-      text:'Extract C (dist=8). Relax C→T: 8+2=10 > dist[T]=9 — no update. T already has a better path via A.',
+    u=cur[1]; ud=cur[0]; final[u]=true;
+    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:[],extracted:5,
+      label:'STEP 10 — Extract D (dist=9). Done!',
+      text:'Extract D (dist=9). D→E: 9+4=13 > dist[E]=7 — no update. All vertices finalized. A=0,B=8,C=5,D=9,E=7.',
       nodeStyle:function(d,f){
-        for(var i=0;i<5;i++) setNode(i,f[i]?'done':d[i]<INF?'pq':'def');
-        setNode(3,'proc'); resetEdges();
-        for(var i=0;i<5;i++) if(predBeforeC[i]>=0) setEdge(predBeforeC[i],i,'green');
-        setEdge(3,4,'red');
-      }
-    });
-
-    // Extract T(9)
-    pq.sort(function(a,b){return a[0]-b[0];}); cur=pq.shift();
-    u=cur[1]; ud=cur[0]; final[u]=true; extracted++;
-
-    stepDefs.push({dist:dist.slice(),final:final.slice(),pred:pred.slice(),pq:[],extracted:extracted,
-      label:'STEP 9 — Extract T (dist=9). Done!',
-      text:'Extract T (dist=9, finalized). PQ empty. Shortest S→B→A→T = 0+2+1+6 = 9. All distances found!',
-      nodeStyle:function(d,f){
+        var prd=pred.slice();
         for(var i=0;i<5;i++) setNode(i,'done');
         resetEdges();
-        for(var i=0;i<5;i++) if(pred[i]>=0) setEdge(pred[i],i,'green');
+        for(var i=0;i<5;i++) if(prd[i]>=0) setEdge(prd[i],i,'green');
       }
     });
   }
@@ -818,7 +809,7 @@
     var s=stepDefs[stepIdx];
     s.nodeStyle(s.dist,s.final);
     for(var i=0;i<NODES.length;i++) distLabels[i].textContent=fmtD(s.dist[i]);
-    updateUI(s.dist,s.final,s.pq,s.label,s.text,s.extracted,s.dist[4]);
+    updateUI(s.dist,s.final,s.pq,s.label,s.text,s.extracted,s.dist[3]);
     stepIdx++;
     document.getElementById('vz38-btn-step').disabled=(stepIdx>=stepDefs.length);
   }
@@ -838,8 +829,8 @@
     buildSteps();
     for(var i=0;i<NODES.length;i++) distLabels[i].textContent=i===0?'0':'∞';
     document.getElementById('vz38-label').textContent='READY';
-    document.getElementById('vz38-text').textContent='Click Step to trace Dijkstra from S. Alg 39 (improved, no decrease-key) uses the same logic with a min-heap push instead of key update.';
-    document.getElementById('vz38-pq-list').textContent='(S,0)';
+    document.getElementById('vz38-text').textContent='Click Step to trace Dijkstra from A. Alg 39 (improved, no decrease-key) uses the same logic with a min-heap push instead of key update.';
+    document.getElementById('vz38-pq-list').textContent='(A,0)';
     document.getElementById('vz38-dist-list').innerHTML=
       NODES.map(function(n,i){ return '<span style="color:#8b949e">'+n.label+': '+(i===0?'0':'∞')+'</span>'; }).join('<br>');
     document.getElementById('vz38-extracted').textContent='0';
@@ -1124,9 +1115,9 @@ return T</pre>
     {id:3,label:'D',x:420,y:100},
     {id:4,label:'E',x:440,y:220}
   ];
-  // Undirected edges [a,b,w]
+  // Undirected edges [a,b,w]: A-B(10),A-C(5),B-C(3),B-D(1),C-D(9),C-E(2),D-E(6)
   var EDGES=[
-    [0,1,2],[0,2,3],[1,2,1],[1,3,4],[2,3,3],[2,4,5],[3,4,1]
+    [0,1,10],[0,2,5],[1,2,3],[1,3,1],[2,3,9],[2,4,2],[3,4,6]
   ];
   var INF=999;
 
@@ -1238,7 +1229,7 @@ return T</pre>
 
     stepDefs.push({
       label:'STEP 2 — Add A, explore cut edges',
-      text:'A added to MST. Cut edges: A-B(2) and A-C(3). Minimum cut edge = A-B(2).',
+      text:'A added to MST. Cut edges: A-B(10) and A-C(5). Minimum cut edge = A-C(5).',
       mstNodes:1, mstW:0, mstEdges:0,
       mstList:'—', keyList:snapKeyList(key,inMST),
       draw:function(){
@@ -1250,85 +1241,86 @@ return T</pre>
       }
     });
 
-    // Extract B(2) — min cut edge
-    inMST[1]=true; mstEdges.push([parent[1],1,key[1]]); mstW+=key[1];
+    // Extract C(5) — min cut edge
+    inMST[2]=true; mstEdges.push([parent[2],2,key[2]]); mstW+=key[2];
     var snMstW=mstW;
-    for(var ni=0;ni<adj[1].length;ni++){
-      var vn=adj[1][ni][0], wn=adj[1][ni][1];
-      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=1; }
+    for(var ni=0;ni<adj[2].length;ni++){
+      var vn=adj[2][ni][0], wn=adj[2][ni][1];
+      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=2; }
     }
     var mst2=mstEdges.slice();
 
     stepDefs.push({
-      label:'STEP 3 — Add B (key=2, edge A-B)',
-      text:'Extract B (key=2). Add edge A-B(2) to MST. New cut: B-C(1) beats A-C(3) → key[C]=1. B-D(4) sets key[D]=4.',
+      label:'STEP 3 — Add C (key=5, edge A-C)',
+      text:'Extract C (key=5). Add A-C(5) to MST. C-B(3)<key[B]=10 → key[B]=3. C-E(2) → key[E]=2. C-D(9) → key[D]=9.',
       mstNodes:2, mstW:snMstW, mstEdges:1,
       mstList:snapMstList(mst2), keyList:snapKeyList(key,inMST),
       draw:(function(mst2snap,keysnap,inMsnap){return function(){
         for(var i=0;i<NODES.length;i++) setNode(i,inMsnap[i]?'mst':keysnap[i]<INF2?'cut':'def');
         for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
         for(var i=0;i<mst2snap.length;i++) setEdge(mst2snap[i][0],mst2snap[i][1],'mst');
-        if(!inMsnap[2]) setEdge(1,2,'cut');
-        if(!inMsnap[3]) setEdge(1,3,'cut');
+        if(!inMsnap[1]) setEdge(1,2,'cut');
+        if(!inMsnap[4]) setEdge(2,4,'cut');
+        if(!inMsnap[3]) setEdge(2,3,'cut');
         for(var i=0;i<NODES.length;i++) keyLabels[i].textContent=inMsnap[i]?'✓':fmtKey(keysnap[i]);
       };})(mst2,key.slice(),inMST.slice())
     });
 
-    // Extract C(1) — min cut edge
-    inMST[2]=true; mstEdges.push([parent[2],2,key[2]]); mstW+=key[2];
+    // Extract E(2) — min cut edge
+    inMST[4]=true; mstEdges.push([parent[4],4,key[4]]); mstW+=key[4];
     var snMstW2=mstW;
-    for(var ni=0;ni<adj[2].length;ni++){
-      var vn=adj[2][ni][0], wn=adj[2][ni][1];
-      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=2; }
+    for(var ni=0;ni<adj[4].length;ni++){
+      var vn=adj[4][ni][0], wn=adj[4][ni][1];
+      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=4; }
     }
     var mst3=mstEdges.slice();
 
     stepDefs.push({
-      label:'STEP 4 — Add C (key=1, edge B-C)',
-      text:'Extract C (key=1, via B). Add B-C(1). New cut: C-D(3) < key[D]=4 → update key[D]=3. C-E(5) new → key[E]=5.',
+      label:'STEP 4 — Add E (key=2, edge C-E)',
+      text:'Extract E (key=2, via C). Add C-E(2). E-D(6) < key[D]=9 → key[D]=6, parent[D]=E. Minimum cut now B(3).',
       mstNodes:3, mstW:snMstW2, mstEdges:2,
       mstList:snapMstList(mst3), keyList:snapKeyList(key,inMST),
       draw:(function(mst3snap,keysnap,inMsnap){return function(){
         for(var i=0;i<NODES.length;i++) setNode(i,inMsnap[i]?'mst':keysnap[i]<INF2?'cut':'def');
         for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
         for(var i=0;i<mst3snap.length;i++) setEdge(mst3snap[i][0],mst3snap[i][1],'mst');
-        if(!inMsnap[3]) setEdge(2,3,'cut');
-        if(!inMsnap[4]) setEdge(2,4,'cut');
+        if(!inMsnap[1]) setEdge(1,2,'cut');
+        if(!inMsnap[3]) setEdge(3,4,'cut');
         for(var i=0;i<NODES.length;i++) keyLabels[i].textContent=inMsnap[i]?'✓':fmtKey(keysnap[i]);
       };})(mst3,key.slice(),inMST.slice())
     });
 
-    // Extract D(3) — min cut edge
-    inMST[3]=true; mstEdges.push([parent[3],3,key[3]]); mstW+=key[3];
+    // Extract B(3) — min cut edge
+    inMST[1]=true; mstEdges.push([parent[1],1,key[1]]); mstW+=key[1];
     var snMstW3=mstW;
-    for(var ni=0;ni<adj[3].length;ni++){
-      var vn=adj[3][ni][0], wn=adj[3][ni][1];
-      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=3; }
+    for(var ni=0;ni<adj[1].length;ni++){
+      var vn=adj[1][ni][0], wn=adj[1][ni][1];
+      if(!inMST[vn] && wn<key[vn]){ key[vn]=wn; parent[vn]=1; }
     }
     var mst4=mstEdges.slice();
 
     stepDefs.push({
-      label:'STEP 5 — Add D (key=3, edge C-D)',
-      text:'Extract D (key=3, via C). Add C-D(3). Check D-E(1): 1 < key[E]=5 → update key[E]=1, parent[E]=D. Minimum cut now D-E(1).',
+      label:'STEP 5 — Add B (key=3, edge C-B)',
+      text:'Extract B (key=3, via C). Add C-B(3). B-D(1) < key[D]=6 → key[D]=1, parent[D]=B. Minimum cut now D(1).',
       mstNodes:4, mstW:snMstW3, mstEdges:3,
       mstList:snapMstList(mst4), keyList:snapKeyList(key,inMST),
       draw:(function(mst4snap,keysnap,inMsnap){return function(){
         for(var i=0;i<NODES.length;i++) setNode(i,inMsnap[i]?'mst':keysnap[i]<INF2?'cut':'def');
         for(var i=0;i<EDGES.length;i++) setEdge(EDGES[i][0],EDGES[i][1],'def');
         for(var i=0;i<mst4snap.length;i++) setEdge(mst4snap[i][0],mst4snap[i][1],'mst');
-        if(!inMsnap[4]) setEdge(3,4,'cut');
+        if(!inMsnap[3]) setEdge(1,3,'cut');
         for(var i=0;i<NODES.length;i++) keyLabels[i].textContent=inMsnap[i]?'✓':fmtKey(keysnap[i]);
       };})(mst4,key.slice(),inMST.slice())
     });
 
-    // Extract E(1) — last node
-    inMST[4]=true; mstEdges.push([parent[4],4,key[4]]); mstW+=key[4];
+    // Extract D(1) — last node
+    inMST[3]=true; mstEdges.push([parent[3],3,key[3]]); mstW+=key[3];
     var snMstWFinal=mstW;
     var mstFinal=mstEdges.slice();
 
     stepDefs.push({
-      label:'STEP 6 — Add E (key=1, edge D-E). MST complete!',
-      text:'Extract E (key=1, via D). Add D-E(1). All nodes in MST. MST edges: A-B(2), B-C(1), C-D(3), D-E(1). Total weight = 7.',
+      label:'STEP 6 — Add D (key=1, edge B-D). MST complete!',
+      text:'Extract D (key=1, via B). Add B-D(1). All nodes in MST. Edges: A-C(5), C-E(2), C-B(3), B-D(1). Total weight = 11.',
       mstNodes:5, mstW:snMstWFinal, mstEdges:4,
       mstList:snapMstList(mstFinal), keyList:snapKeyList(key,inMST),
       draw:(function(mstFsnap,keysnap,inMsnap){return function(){
@@ -1532,12 +1524,12 @@ return T</pre>
     {id:3,label:'D',x:420,y:100},
     {id:4,label:'E',x:440,y:220}
   ];
-  // Sorted edges by weight
+  // Sorted edges by weight: B-D(1),C-E(2),B-C(3),A-C(5),D-E(6),C-D(9),A-B(10)
   var SORTED_EDGES=[
-    [1,2,1],[3,4,1],[0,1,2],[2,3,3],[0,2,3],[1,3,4],[2,4,5]
+    [1,3,1],[2,4,2],[1,2,3],[0,2,5],[3,4,6],[2,3,9],[0,1,10]
   ];
-  // All edges for display
-  var ALL_EDGES=[[0,1,2],[0,2,3],[1,2,1],[1,3,4],[2,3,3],[2,4,5],[3,4,1]];
+  // All edges for display: A-B(10),A-C(5),B-C(3),B-D(1),C-D(9),C-E(2),D-E(6)
+  var ALL_EDGES=[[0,1,10],[0,2,5],[1,2,3],[1,3,1],[2,3,9],[2,4,2],[3,4,6]];
 
   var COMP_COLORS=['#58a6ff','#f0883e','#bc8cff','#3fb950','#f85149'];
 
@@ -1652,7 +1644,7 @@ return T</pre>
 
     stepDefs.push({
       label:'STEP 1 — Init: sort edges, each node its own component',
-      text:'Edges sorted by weight: B-C(1), D-E(1), A-B(2), C-D(3), A-C(3), B-D(4), C-E(5). Each node starts as its own component.',
+      text:'Edges sorted by weight: B-D(1), C-E(2), B-C(3), A-C(5), D-E(6), C-D(9), A-B(10). Each node starts as its own component.',
       mstEdges:0, mstW:0, rejected:0,
       draw:function(){ buildSVG(); applyNodeColors(p); },
       ufHTML:renderUF(p),
@@ -2227,7 +2219,7 @@ function UNION(u, v):
 
 <script>
 (function(){
-  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
   var C=50.3;
   function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
   function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}

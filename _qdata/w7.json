@@ -1,0 +1,112 @@
+[
+  {
+    "id": "w7-p1",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "1",
+    "exam_section": 1,
+    "is_key": false,
+    "topics": ["Bellman-Ford", "Shortest Paths", "Negative Cycles"],
+    "question_html": "<p>Consider the following algorithm for single-source shortest paths on a graph with negative weights:</p><ul><li>Find the minimum weight edge in the graph, say it has weight \\(w\\)</li><li>Subtract \\(w\\) from the weight of every edge in the graph. The graph now has no negative weights</li><li>Run Dijkstra's algorithm on the modified graph</li><li>Add \\(w\\) back to the weight of the edges and compute the lengths of the resulting shortest paths</li></ul><p>Prove by giving a counterexample that this algorithm is incorrect.</p>",
+    "solution_html": "<p>The problem with this algorithm is that it changes the length of paths with more edges by a larger amount than it changes the lengths of paths with fewer edges, since it adds a constant amount to every edge weight. A good graph to break this would therefore be one where a shortest path has more edges than an alternative.</p><p>Consider the following graph with vertices \\(s, a, b, d\\):</p><ul><li>Edge \\(s \\to b\\) with weight \\(-4\\)</li><li>Edge \\(s \\to a\\) with weight \\(-5\\)</li><li>Edge \\(a \\to d\\) with weight \\(-3\\)</li><li>Edge \\(d \\to b\\) with weight \\(-4\\)</li></ul><p>The shortest path from \\(s\\) to \\(b\\) is \\(s \\to a \\to d \\to b\\) with length \\(-12\\). If we subtract \\(-5\\) (the minimum edge weight) from every edge weight, the modified graph has weights \\(1, 0, 2, 1\\) respectively, and the shortest path becomes \\(s \\to b\\) with modified length \\(1\\), giving a reconstructed length of \\(1 + (-5) = -4\\), not \\(-12\\). So we get the wrong answer.</p>"
+  },
+  {
+    "id": "w7-p2",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "2",
+    "exam_section": 1,
+    "is_key": false,
+    "topics": ["Bellman-Ford", "Negative Cycles", "Single Source Shortest Path"],
+    "question_html": "<p>Describe an algorithm that given a directed connected graph \\(G = (V, E)\\) determines whether or not \\(G\\) contains a negative cycle. Your algorithm should run in \\(O(|V| \\cdot |E|)\\) time.</p>",
+    "solution_html": "<p>Remember that the Bellman-Ford algorithm can detect whether there is a negative cycle that is reachable from the source vertex. The obvious tempting solution is to just run Bellman-Ford from every possible source vertex and see whether a negative cycle is detected. This would be very slow though, taking \\(O(|V|^2 \\cdot |E|)\\) time.</p><p>Instead, we would rather run just one Bellman-Ford, but how can we be sure that we can definitely reach the negative cycle if one exists? The easiest way to ensure this is to simply add a new vertex to the graph, and add an edge from that vertex to every other vertex in the graph. Running Bellman-Ford on this vertex will then definitely visit every vertex, and hence will definitely detect a negative cycle if one is present. Since we only need to run Bellman-Ford once, this algorithm takes \\(O(|V| \\cdot |E|)\\) time.</p><p>Note that if the original graph \\(G = (V, E)\\) was not connected, then we could still use the same strategy, but the running time would be \\(O(|V| \\cdot |E| + |V|^2)\\) to account for cases such as a graph with \\(|V|\\) isolated nodes (i.e., \\(|E| = 0\\)). Note also that \\(O(|V| \\cdot |E| + |V|^2)\\) simplifies to \\(O(|V| \\cdot |E|)\\) for connected graphs.</p>"
+  },
+  {
+    "id": "w7-p3",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "3",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Bellman-Ford", "Negative Cycles", "Graph DP"],
+    "question_html": "<p>Given a connected graph \\(G = (V, E)\\) that contains a negative weight cycle, give an algorithm to determine the vertices of one such cycle. Your algorithm should run in \\(O(|V| \\cdot |E|)\\) time.</p>",
+    "solution_html": "<p>Recall from Problem 2 that we can use Bellman-Ford to detect the presence of a negative cycle by adding a new source vertex that connects to all others. Remember that when Bellman-Ford terminates, the predecessors will all form a shortest path tree, except for the vertices reachable from a negative cycle.</p><p>Arbitrarily select a vertex which had its distance updated during the \\(|V|\\)-th iteration. This vertex may not necessarily be <strong>in</strong> a negative cycle, as it could be on a path that simply travels through one and then leaves it. In order to get to the negative cycle that caused this, we should travel backwards along the predecessors until we see a repeated node \\(u\\). The negative cycle consists of \\(u\\) together with all nodes that appeared between the first and second occurrences of \\(u\\).</p><p>Note that not all updated vertices are necessarily part of a negative cycle, and not all vertices that are part of the negative cycle necessarily have their distances updated in the \\(|V|\\)-th iteration.</p><p>For the backtracking process we can keep a \"visited\" array to detect what is the first vertex to be visited twice. If we do not want to use extra auxiliary space, we can instead initially travel backwards \\(|V| - 1\\) vertices to guarantee that one gets to some vertex \\(u\\) in a negative cycle, and from there travel the negative cycle once until getting back to \\(u\\).</p>"
+  },
+  {
+    "id": "w7-p4",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "4",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Floyd-Warshall", "All Pairs Shortest Path", "Dynamic Programming"],
+    "question_html": "<p>Improve the Floyd-Warshall algorithm so that you can also reconstruct the shortest paths in addition to the distances. Your improvement should not worsen the time complexity of Floyd-Warshall, and you should be able to reconstruct a path of length \\(\\ell\\) in \\(O(\\ell)\\) time.</p>",
+    "solution_html": "<p>There are many approaches to make this work.</p><p><strong>Solution 1: Track the intermediate vertex</strong></p><p>One way to keep track of the path information is to record, for each pair of vertices \\(u, v\\), which intermediate vertex was optimal for going between them. This can be tracked during the algorithm as follows:</p><pre class=\"code-block\">function FLOYD_WARSHALL(G = (V, E))\n  Set dist[1..n][1..n] = ∞\n  Set dist[v][v] = 0 for all vertices v\n  Set dist[u][v] = w(u,v) for all edges e = (u,v) in E\n  Set mid[1..n][1..n] = null           // mid[u][v] = optimal intermediate vertex\n  for each vertex k = 1 to n do\n    for each vertex u = 1 to n do\n      for each vertex v = 1 to n do\n        if dist[u][k] + dist[k][v] &lt; dist[u][v] then\n          dist[u][v] = dist[u][k] + dist[k][v]\n          mid[u][v] = k\n  return dist[1..n][1..n], mid[1..n][1..n]</pre><p>For each pair of nodes \\(u\\) and \\(v\\) that have a finite distance, to reconstruct the path we do a divide-and-conquer style path reconstruction:</p><pre class=\"code-block\">function GET_PATH(u, v)\n  if mid[u][v] = null then\n    return [u, v]\n  else\n    left = GET_PATH(u, mid[u][v])\n    right = GET_PATH(mid[u][v], v)\n    return left.pop_back() + right     // Remove the duplicate from the middle</pre><p>Note that this is only efficient if the concatenation is \\(O(1)\\), which means that <code>left</code> and <code>right</code> would need to be implemented as linked lists.</p><p><strong>Solution 2: Track the successor</strong></p><p>To avoid having to use linked lists, we could take a different approach. We remember, for each pair \\(u, v\\), the first vertex on a shortest path from \\(u\\) to \\(v\\) (i.e. the successor of \\(u\\) on the shortest path to \\(v\\)). If we update the pair \\(u, v\\) and decide that vertex \\(k\\) is the new best intermediate vertex, then the first vertex on a shortest path from \\(u\\) to \\(v\\) is just the first vertex on a shortest path from \\(u\\) to \\(k\\).</p><pre class=\"code-block\">function FLOYD_WARSHALL(G = (V, E))\n  Set dist[1..n][1..n] = ∞\n  Set dist[v][v] = 0 for all vertices v\n  Set dist[u][v] = w(u,v) for all edges e = (u,v) in E\n  Set succ[1..n][1..n] = null          // succ[u][v] = successor of u on shortest path to v\n  Set succ[u][v] = v for all edges e = (u,v) in E\n  for each vertex k = 1 to n do\n    for each vertex u = 1 to n do\n      for each vertex v = 1 to n do\n        if dist[u][k] + dist[k][v] &lt; dist[u][v] then\n          dist[u][v] = dist[u][k] + dist[k][v]\n          succ[u][v] = succ[u][k]\n  return dist[1..n][1..n], succ[1..n][1..n]</pre><p>Reconstructing the paths is now easier as we do not need any fancy recursion or linked lists, since we only need to append one vertex at a time:</p><pre class=\"code-block\">function GET_PATH(u, v)\n  Set path = [u]\n  while u ≠ v do\n    u = succ[u][v]\n    path.append(u)\n  </pre><p>In both cases, we add only a constant amount of overhead to the algorithm so we do not worsen the complexity. We can also reconstruct paths of length \\(\\ell\\) in \\(O(\\ell)\\) time in both cases.</p>"
+  },
+  {
+    "id": "w7-p5",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "5",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Floyd-Warshall", "Negative Cycles", "All Pairs Shortest Path", "Dynamic Programming"],
+    "question_html": "<p>Add a post-processing step to Floyd-Warshall that sets \\(\\text{dist}[u][v] = -\\infty\\) if there is an arbitrarily short path between vertex \\(u\\) and vertex \\(v\\), i.e. if \\(u\\) can travel to \\(v\\) via a negative weight cycle. Your post processing should run in \\(O(|V|^3)\\) time or better, i.e. it should not worsen the complexity of the overall algorithm.</p>",
+    "solution_html": "<p>Recall that the Floyd-Warshall algorithm can detect the presence of negative cycles by looking at the distances of vertices to themselves. If a vertex can reach itself with a negative distance, then it must be contained in a negative cycle. We can therefore post-process the graph by checking each intermediate vertex \\(k\\) that is part of a negative cycle, and then setting the lengths of all paths \\(u \\leadsto v\\) such that \\(u\\) can reach \\(k\\) and \\(k\\) can reach \\(v\\) to \\(-\\infty\\). This process takes \\(O(|V|^3)\\).</p><pre class=\"code-block\">function FLOYD_WARSHALL_POSTPROCESS(G = (V, E), dist[1..n])\n  for each vertex k = 1 to n do\n    if dist[k][k] &lt; 0 then\n      for each vertex u = 1 to n do\n        for each vertex v = 1 to n do\n          if dist[u][k] + dist[k][v] &lt; ∞ then\n            dist[u][v] = -∞</pre>"
+  },
+  {
+    "id": "w7-p6",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "6",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Floyd-Warshall", "Negative Cycles", "All Pairs Shortest Path", "Shortest Paths"],
+    "question_html": "<p>Arbitrage is the process of exploiting conversion rates between commodities to make a profit, and it may occur over many steps. For example, one could purchase US dollars, convert it into British pounds, and then back into Australian dollars. If the prices were right, this could result in a profit. Given a list of \\(n\\) currencies and the best available conversion rate between some pairs of currencies (i.e., how much of the first currency you need to spend to get 1 unit of the second currency), devise an algorithm that determines whether arbitrage is possible, i.e. whether or not you could make a profit. Your algorithm should run in \\(O(n^3)\\) where \\(n\\) is the number of currencies.</p>",
+    "solution_html": "<p>Let's imagine this as a shortest path problem. We wish to begin at one currency and walk through a path containing some other currencies before arriving back at our initial currency with a net profit. Making a profit means that the net conversion rate between a currency and itself should be less than 1. Note that if we convert between currencies whose exchange rates are \\(r_1, r_2, \\ldots, r_k\\), then the final conversion rate is \\(r_1 \\times r_2 \\times \\ldots \\times r_k\\). One way to model this problem is to create a graph on \\(n\\) vertices where each vertex represents a currency. We add a directed edge between a pair of vertices with the exchange rate as the weight. We could then modify the Floyd-Warshall algorithm to compute the product of the weights rather than the sum, and it would then find for us the best conversion rate between any pair of currencies. Arbitrage is possible if a currency can be converted into itself at a rate of less than 1, i.e. if we find an entry on the diagonal of the distance matrix that is less than 1.</p><p>An alternate solution that does not require us to modify Floyd-Warshall is to create the same graph but use the logarithms of the exchange rates as the edge weights. We can then run the ordinary Floyd-Warshall algorithm. This works because \\(\\log(r_1) + \\log(r_2) = \\log(r_1 \\times r_2)\\). Since \\(\\log(r) &lt; 0\\) if and only if \\(r &lt; 1\\), we know that arbitrage is possible if and only if the graph contained a negative cycle, i.e. if a vertex has a negative distance to itself.</p>"
+  },
+  {
+    "id": "w7-p7",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "7",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Bellman-Ford", "Shortest Paths", "Single Source Shortest Path", "All Pairs Shortest Path", "Dynamic Programming"],
+    "question_html": "<p>In this problem, we will derive Johnson's algorithm, a fast algorithm for the all-pairs shortest path problem on sparse graphs \\(G = (V, E)\\) with negative weights assuming that the graph has no negative cycles. The key ingredient of the algorithm is based on the idea of <em>potentials</em>.</p><p>(a) Let \\(d[v] : v \\in V\\) be the distances to each vertex \\(v \\in V\\) from an arbitrary source vertex. Prove that for each edge \\((u, v) \\in E\\):</p>\\[d[u] - d[v] + w(u, v) \\geq 0.\\]<p>We define the quantity \\(p[u] = d[u]\\) as the <em>potential</em> of the vertex \\(u\\).</p><p>(b) Give a simple algorithm to compute a set of valid potentials. Potentials should not be infinity for any vertex.</p><p>Suppose now that we modify the weight of every edge \\((u, v)\\) in the graph to</p>\\[w'(u, v) = p[u] - p[v] + w(u, v).\\]<p>(c) Prove that a shortest path in the modified graph was also a shortest path in the original, unmodified graph.</p><p>(d) Deduce that we can solve the all-pairs shortest path problem on sparse graphs with negative weights in \\(O(|V|^2 \\cdot \\log|V|)\\) time.</p>",
+    "solution_html": "<p><strong>(a)</strong> This is a direct result of the triangle inequality. The triangle inequality states that</p>\\[d[u] + w(u, v) \\geq d[v],\\]<p>which must be true since if this quantity were less than \\(d[v]\\), then the path \\(s \\leadsto u \\to v\\) would be shorter than the shortest path to \\(v\\), a contradiction. Subtracting \\(d[v]\\) from both sides of the triangle inequality yields the desired result.</p><p><strong>(b)</strong> A solution that almost works is to pick an arbitrary source vertex and run Bellman-Ford to compute the shortest distances. This will fail though if the source we pick cannot reach every vertex since then some of the distances will be infinity. To correct this, we instead add a new vertex to the graph and connect it to every vertex with an edge weight of zero. We then run Bellman-Ford from this new vertex. By design, it is connected to every other vertex so none of the distances will be infinity. The resulting distances can be used as potentials.</p><p><strong>(c)</strong> Consider a path in the modified graph \\(v_1 \\to v_2 \\to \\ldots \\to v_k\\). Its total length will be</p>\\[p[v_1] - p[v_2] + w(v_1, v_2) + p[v_2] - p[v_3] + w(v_2, v_3) + \\ldots + p[v_{k-1}] - p[v_k] + w(v_{k-1}, v_k).\\]<p>Observe that except for the first and last, the potentials all cancel since they appear as a positive term and then as a negative term immediately after. This leaves us with</p>\\[p[v_1] + w(v_1, v_2) + w(v_2, v_3) + \\ldots + w(v_{k-1}, v_k) - p[v_k].\\]<p>The only potentials left are of the first and last vertex — they do not depend on the path taken at all. The remaining terms simply constitute the path length of \\(v_1 \\to v_2 \\to \\ldots \\to v_k\\) in the original, unmodified graph. Hence any shortest path in the modified graph is also a shortest path in the unmodified graph.</p><p><strong>(d)</strong> With all of these ingredients, we can derive <em>Johnson's algorithm</em>. First, we run Bellman-Ford from a new source vertex that connects to every other vertex in order to obtain a set of valid potentials. We then create the new graph by modifying the edge weights as above. Now since all of the edge weights are nonnegative by (a), we can use Dijkstra's algorithm to compute shortest paths from every possible source vertex. Finally we can recover the true shortest paths by subtracting away the potentials that we added. In sparse graphs one invocation of Bellman-Ford costs \\(O(|V|^2)\\) and \\(|V|\\) Dijkstra's costs \\(O(|V|^2 \\cdot \\log|V|)\\), and hence the total cost is \\(O(|V|^2 \\cdot \\log|V|)\\).</p>"
+  },
+  {
+    "id": "w7-p8",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "8",
+    "exam_section": 3,
+    "is_key": false,
+    "topics": ["Bellman-Ford", "Shortest Paths", "Single Source Shortest Path"],
+    "question_html": "<p>Implement Bellman-Ford and test your code's correctness by solving the following problem on UVA Online Judge: <a href=\"https://uva.onlinejudge.org/index.php?option=onlinejudge&amp;page=show_problem&amp;problem=499\">https://uva.onlinejudge.org/index.php?option=onlinejudge&amp;page=show_problem&amp;problem=499</a>.</p>",
+    "solution_html": "<p>Solutions are not provided for Python implementation questions. Implement Bellman-Ford and submit to UVA Online Judge problem 499 to verify correctness.</p>"
+  },
+  {
+    "id": "w7-p9a",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "9a",
+    "exam_section": 1,
+    "is_key": false,
+    "topics": ["DAG Shortest Path", "Dynamic Programming", "Graph DP"],
+    "question_html": "<p>Devise an algorithm for counting the number of paths between two given vertices \\(s\\) and \\(t\\) in a directed acyclic graph \\(G = (V, E)\\) which runs in \\(O(|V| + |E|)\\). Don't worry about the magnitude of the answer (i.e. assume that all arithmetic operations take constant time, despite the fact that the answer might be exponential in the input size.)</p><p>Define the subproblems and recurrence relation for your dynamic programming solution.</p>",
+    "solution_html": "<p>We will approach this using a dynamic programming algorithm. Suppose we are at some vertex \\(u\\). Then the number of different ways in which we could get to \\(t\\) involves trying all of our different edges \\((u, v)\\) and then counting the number of resulting paths from all of the \\(v\\). So let us define the following subproblems:</p>\\[\\text{DP}[u] = \\{\\text{The number of paths from } u \\text{ to } t\\}.\\]<p>The recurrence is then given by</p>\\[\\text{DP}[u] = \\begin{cases} 1 & \\text{if } u = t, \\\\ \\displaystyle\\sum_{v \\in \\text{adj}[u]} \\text{DP}[v] & \\text{otherwise.} \\end{cases}\\]<p>The answer is the value of \\(\\text{DP}[s]\\). The subproblems are dependent in a reverse topological order, since in order to compute \\(\\text{DP}[u]\\) we must know the value of all of \\(u\\)'s descendants.</p>"
+  },
+  {
+    "id": "w7-p9b",
+    "week": 7,
+    "week_title": "DP Graph Algorithms",
+    "problem_num": "9b",
+    "exam_section": 3,
+    "is_key": false,
+    "topics": ["DAG Shortest Path", "Dynamic Programming", "Graph DP"],
+    "question_html": "<p>Devise an algorithm for counting the number of paths between two given vertices \\(s\\) and \\(t\\) in a directed acyclic graph \\(G = (V, E)\\) which runs in \\(O(|V| + |E|)\\). Don't worry about the magnitude of the answer (i.e. assume that all arithmetic operations take constant time, despite the fact that the answer might be exponential in the input size.)</p><p>Implement your algorithm in pseudocode, clearly showing how topological order is used and how the DP table is filled.</p>",
+    "solution_html": "<p>The pseudocode for the algorithm is as follows:</p><pre class=\"code-block\">function COUNT_PATHS(G = (V, E), s, t)\n  Set count[1..n] = 0\n  count[t] = 1\n  Set order = reverse(topological_sort(G))\n  for each vertex u in order do\n    for each edge (u, v) adjacent to u do\n      count[u] = count[u] + count[v]\n  return count[s]</pre><p>The vertices are processed in reverse topological order, which ensures that by the time we process vertex \\(u\\), all of \\(u\\)'s successors have already been processed. Since topological sort runs in \\(O(|V| + |E|)\\) and the main loop processes each edge once, the overall time complexity is \\(O(|V| + |E|)\\).</p>"
+  }
+]

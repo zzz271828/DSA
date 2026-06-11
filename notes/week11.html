@@ -166,6 +166,7 @@
 
   <div class="nav-section">Reference</div>
   <ul>
+    <li><a href="questions.html">&#x1F4DA; Questions Bank</a></li>
     <li><a href="algorithms.html">All Algorithms Table</a></li>
     <li><a href="index.html">↑ Course Home</a></li>
   </ul>
@@ -351,19 +352,17 @@
       <div class="callout-title">Example Instance</div>
       <p><strong>Vertices and demands:</strong></p>
       <ul>
-        <li><code>d<sub>x</sub> = -4</code> &rarr; x must supply 4 units net</li>
-        <li><code>d<sub>y</sub> = -3</code> &rarr; y must supply 3 units net</li>
+        <li><code>d<sub>x</sub> = -3</code> &rarr; x must supply 3 units net</li>
+        <li><code>d<sub>y</sub> = -2</code> &rarr; y must supply 2 units net</li>
         <li><code>d<sub>v</sub> = 2</code> &rarr; v must absorb 2 units net</li>
         <li><code>d<sub>z</sub> = 0</code> &rarr; z is balanced</li>
-        <li><code>d<sub>w</sub> = 5</code> &rarr; w must absorb 5 units net</li>
+        <li><code>d<sub>w</sub> = 3</code> &rarr; w must absorb 3 units net</li>
       </ul>
-      <p><strong>Check:</strong> <code>-4 + (-3) + 2 + 0 + 5 = 0</code>. Necessary condition satisfied.</p>
-      <p><strong>Edge capacities:</strong> x&rarr;y: 3, x&rarr;v: 3, y&rarr;v: 2, y&rarr;z: 2, z&rarr;w: 3, v&rarr;w: 2.</p>
-      <p><strong>A feasible solution:</strong> f(x&rarr;y) = 2, f(x&rarr;v) = 2, f(y&rarr;v) = 2, f(y&rarr;z) = 2 (wait: d<sub>y</sub> needs net outflow 3, so outflow - inflow = 3; check: out = 2+2=4, in = f(x&rarr;y)=2, net out = 2. Hmm let's just quote the solution from the notes), f(z&rarr;w) = 3, f(v&rarr;w) = 2.</p>
+      <p><strong>Check:</strong> <code>-3 + (-2) + 2 + 0 + 3 = 0</code>. Necessary condition satisfied.</p>
+      <p><strong>Edge capacities:</strong> x&rarr;y: 3, x&rarr;v: 3, y&rarr;v: 2, y&rarr;z: 2, z&rarr;w: 2, v&rarr;w: 2.</p>
       <p>
-        From the course notes (Figure 9.13), one valid assignment is:
-        <code>f(x&rarr;y) = 2/3, f(x&rarr;v) = 2/3, f(y&rarr;v) = 2/2, f(y&rarr;z) = 2/2, f(z&rarr;w) = 3/3</code>,
-        where <code>flow/capacity</code> notation is used.
+        A feasible circulation (verified): <code>f(x&rarr;y)=1/3, f(x&rarr;v)=2/3, f(y&rarr;v)=1/2, f(y&rarr;z)=2/2, f(z&rarr;w)=2/2, f(v&rarr;w)=1/2</code>.
+        Demand check: x out=3 ✓, y out−in=2 ✓, v in−out=2 ✓, z in=out=2 ✓, w in=3 ✓.
       </p>
     </div>
   </section>
@@ -505,14 +504,23 @@
   <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:space-between;">
     <span style="font-family:'JetBrains Mono','Fira Code',monospace;font-size:0.65em;letter-spacing:0.2em;text-transform:uppercase;color:#3fb950;">Interactive Visualization</span>
     <span style="font-size:0.82em;font-weight:700;color:#c9d1d9;">Algorithm 61 — Circulation with Demands</span>
-    <span style="font-family:monospace;font-size:0.72em;color:#8b949e;">7 steps</span>
+    <span style="font-family:monospace;font-size:0.72em;color:#8b949e;">8 steps</span>
   </div>
   <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:340px;">
     <!-- LEFT: SVG canvas -->
     <div style="background:#0d1117;border-right:1px solid #30363d;position:relative;">
-      <svg id="vz61-svg" viewBox="0 0 580 320" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+      <!--
+        Layout (viewBox 600x360):
+          x  (supply 4)  : top-left       cx=110, cy=90
+          y  (supply 3)  : mid-left        cx=110, cy=200
+          v  (demand 2)  : mid-right       cx=380, cy=145
+          z  (balanced)  : mid-right lower cx=380, cy=255
+          w  (demand 5)  : bottom-right    cx=490, cy=310  — but we use cx=490,cy=305 to keep in frame
+        Edges: x→y, x→v, y→v, y→z, z→w, v→w
+        Superedges: s*→x(cap4), s*→y(cap3), v→t*(cap2), w→t*(cap5)
+      -->
+      <svg id="vz61-svg" viewBox="0 0 600 370" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
         <defs>
-          <!-- arrowhead markers -->
           <marker id="vz61-arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
             <path d="M0,0 L0,6 L8,3 z" fill="#8b949e"/>
           </marker>
@@ -527,76 +535,83 @@
           </marker>
         </defs>
 
-        <!-- ── Original edges (always present, colour/label changes per step) ── -->
-        <!-- S→A  top-left to top-right -->
-        <line id="vz61-e-SA"  x1="172" y1="96"  x2="358" y2="96"  stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
-        <!-- S→B  top-left to bottom-left -->
-        <line id="vz61-e-SB"  x1="150" y1="122" x2="150" y2="208" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
-        <!-- A→T  top-right to bottom-right -->
-        <line id="vz61-e-AT"  x1="400" y1="122" x2="400" y2="208" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
-        <!-- B→T  bottom-left to bottom-right -->
-        <line id="vz61-e-BT"  x1="172" y1="234" x2="358" y2="234" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
-        <!-- T→S  bottom-right back to top-left (curved arc below) -->
-        <path id="vz61-e-TS"  d="M 380,252 Q 275,310 168,252" fill="none" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- ── Original edges ── -->
+        <!-- x→y  top-left to mid-left -->
+        <line id="vz61-e-xy"  x1="110" y1="112" x2="110" y2="178" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- x→v  top-left to mid-right -->
+        <line id="vz61-e-xv"  x1="132" y1="82"  x2="358" y2="138" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- y→v  mid-left to mid-right (upward) -->
+        <line id="vz61-e-yv"  x1="132" y1="193" x2="358" y2="153" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- y→z  mid-left to lower-right -->
+        <line id="vz61-e-yz"  x1="132" y1="208" x2="358" y2="252" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- z→w  lower-right to bottom-right -->
+        <line id="vz61-e-zw"  x1="400" y1="268" x2="468" y2="298" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
+        <!-- v→w  mid-right to bottom-right -->
+        <line id="vz61-e-vw"  x1="400" y1="158" x2="468" y2="292" stroke="#8b949e" stroke-width="1.8" marker-end="url(#vz61-arr)"/>
 
-        <!-- ── S' → S  (dashed blue, hidden until step 4) ── -->
-        <line id="vz61-e-SpS" x1="58" y1="96" x2="125" y2="96" stroke="#58a6ff" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-blue)" opacity="0"/>
-        <!-- ── A → T'  (dashed green, hidden until step 4) ── -->
-        <line id="vz61-e-ATp" x1="422" y1="96" x2="506" y2="165" stroke="#3fb950" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-green)" opacity="0"/>
-        <!-- ── B → T'  (dashed green, hidden until step 4) ── -->
-        <line id="vz61-e-BTp" x1="172" y1="242" x2="506" y2="185" stroke="#3fb950" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-green)" opacity="0"/>
+        <!-- ── Supergraph edges (hidden until step 3) ── -->
+        <!-- s*→x  (blue dashed) -->
+        <line id="vz61-e-Spx" x1="36" y1="90" x2="86" y2="90" stroke="#58a6ff" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-blue)" opacity="0"/>
+        <!-- s*→y  (blue dashed) -->
+        <line id="vz61-e-Spy" x1="38" y1="105" x2="86" y2="196" stroke="#58a6ff" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-blue)" opacity="0"/>
+        <!-- v→t*  (green dashed) -->
+        <line id="vz61-e-vTp" x1="402" y1="138" x2="550" y2="116" stroke="#3fb950" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-green)" opacity="0"/>
+        <!-- w→t*  (green dashed) -->
+        <line id="vz61-e-wTp" x1="494" y1="302" x2="552" y2="134" stroke="#3fb950" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#vz61-arr-green)" opacity="0"/>
 
-        <!-- ── Edge labels ── -->
-        <text id="vz61-lbl-SA" x="265" y="88"  fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[1,4]</text>
-        <text id="vz61-lbl-SB" x="136" y="170" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[0,3]</text>
-        <text id="vz61-lbl-AT" x="414" y="170" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[2,5]</text>
-        <text id="vz61-lbl-BT" x="265" y="226" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[1,4]</text>
-        <text id="vz61-lbl-TS" x="275" y="304" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">[3,7]</text>
-        <!-- demand-edge labels -->
-        <text id="vz61-lbl-SpS" x="90"  y="88"  fill="#58a6ff" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=2</text>
-        <text id="vz61-lbl-ATp" x="474" y="124" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=1</text>
-        <text id="vz61-lbl-BTp" x="368" y="198" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=1</text>
+        <!-- ── Edge labels (original edges) ── -->
+        <text id="vz61-lbl-xy" x="92"  y="152" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">cap=3</text>
+        <text id="vz61-lbl-xv" x="248" y="97"  fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">cap=3</text>
+        <text id="vz61-lbl-yv" x="245" y="163" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">cap=2</text>
+        <text id="vz61-lbl-yz" x="248" y="244" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">cap=2</text>
+        <text id="vz61-lbl-zw" x="448" y="276" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">cap=2</text>
+        <text id="vz61-lbl-vw" x="453" y="225" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">cap=2</text>
+        <!-- superedge labels -->
+        <text id="vz61-lbl-Spx" x="60"  y="82"  fill="#58a6ff" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=3</text>
+        <text id="vz61-lbl-Spy" x="44"  y="155" fill="#58a6ff" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=2</text>
+        <text id="vz61-lbl-vTp" x="492" y="110" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=2</text>
+        <text id="vz61-lbl-wTp" x="544" y="222" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">cap=3</text>
 
         <!-- ── Nodes ── -->
-        <!-- S  top-left -->
-        <circle id="vz61-n-S"  cx="150" cy="96"  r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
-        <text x="150" y="96" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">S</text>
-        <!-- A  top-right -->
-        <circle id="vz61-n-A"  cx="400" cy="96"  r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
-        <text x="400" y="96" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
-        <!-- B  bottom-left -->
-        <circle id="vz61-n-B"  cx="150" cy="234" r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
-        <text x="150" y="234" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
-        <!-- T  bottom-right -->
-        <circle id="vz61-n-T"  cx="400" cy="234" r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
-        <text x="400" y="234" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">T</text>
-        <!-- S' super-source  far left (hidden until step 4) -->
-        <circle id="vz61-n-Sp" cx="36"  cy="96"  r="22" fill="#1f6feb22" stroke="#58a6ff" stroke-width="2" opacity="0"/>
-        <text id="vz61-t-Sp" x="36" y="96" fill="#58a6ff" font-size="11" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central" opacity="0">S'</text>
-        <!-- T' super-sink  far right (hidden until step 4) -->
-        <circle id="vz61-n-Tp" cx="528" cy="176" r="22" fill="#3fb95022" stroke="#3fb950" stroke-width="2" opacity="0"/>
-        <text id="vz61-t-Tp" x="528" y="176" fill="#3fb950" font-size="11" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central" opacity="0">T'</text>
+        <!-- x  top-left, supply 4 -->
+        <circle id="vz61-n-x"  cx="110" cy="90"  r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="110" y="90"  fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">x</text>
+        <!-- y  mid-left, supply 3 -->
+        <circle id="vz61-n-y"  cx="110" cy="200" r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="110" y="200" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">y</text>
+        <!-- v  mid-right, demand 2 -->
+        <circle id="vz61-n-v"  cx="380" cy="145" r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="380" y="145" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">v</text>
+        <!-- z  lower-right, balanced -->
+        <circle id="vz61-n-z"  cx="380" cy="258" r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="380" y="258" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">z</text>
+        <!-- w  bottom-right, demand 5 -->
+        <circle id="vz61-n-w"  cx="490" cy="310" r="22" fill="#21262d" stroke="#8b949e" stroke-width="2"/>
+        <text x="490" y="310" fill="#c9d1d9" font-size="13" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">w</text>
+        <!-- s* super-source  far left (hidden until step 3) -->
+        <circle id="vz61-n-Sp" cx="36"  cy="95"  r="22" fill="#1f6feb22" stroke="#58a6ff" stroke-width="2" opacity="0"/>
+        <text id="vz61-t-Sp" x="36" y="95" fill="#58a6ff" font-size="10" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central" opacity="0">s*</text>
+        <!-- t* super-sink  far right (hidden until step 3) -->
+        <circle id="vz61-n-Tp" cx="572" cy="122" r="22" fill="#3fb95022" stroke="#3fb950" stroke-width="2" opacity="0"/>
+        <text id="vz61-t-Tp" x="572" y="122" fill="#3fb950" font-size="10" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central" opacity="0">t*</text>
 
-        <!-- ── Excess-supply/demand annotations ── -->
-        <text id="vz61-ex-S" x="150" y="63"  fill="#f0883e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">+2 supply</text>
-        <text id="vz61-ex-A" x="400" y="63"  fill="#f85149" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">−1 demand</text>
-        <text id="vz61-ex-B" x="150" y="265" fill="#f85149" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">−1 demand</text>
-        <text id="vz61-ex-T" x="400" y="265" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0 balanced</text>
+        <!-- ── Demand annotations (shown in step 1) ── -->
+        <text id="vz61-ex-x" x="110" y="58"  fill="#f0883e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">dx=−3 (supply 3)</text>
+        <text id="vz61-ex-y" x="110" y="232" fill="#f0883e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">dy=−2 (supply 2)</text>
+        <text id="vz61-ex-v" x="380" y="113" fill="#f85149" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">dv=+2 (demand 2)</text>
+        <text id="vz61-ex-z" x="380" y="290" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">dz=0 (balanced)</text>
+        <text id="vz61-ex-w" x="490" y="342" fill="#f85149" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">dw=+3 (demand 3)</text>
 
-        <!-- ── Flow-path highlight (step 5 augmenting paths) ── -->
-        <!-- path1: S'→S→A→T'  — reuse e-SpS and e-SA and e-ATp -->
-        <!-- path2: S'→S→B→T'  — reuse e-SpS and e-SB and e-BTp -->
-        <!-- We'll animate by changing stroke of those elements; no extra elements needed -->
-
-        <!-- ── Step 6 final-flow labels (hidden until step 6) ── -->
-        <text id="vz61-fl-SA" x="265" y="88"  fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">2/4</text>
-        <text id="vz61-fl-SB" x="136" y="170" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">1/3</text>
-        <text id="vz61-fl-AT" x="414" y="170" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">3/5</text>
-        <text id="vz61-fl-BT" x="265" y="226" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">2/4</text>
-        <text id="vz61-fl-TS" x="275" y="304" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">3/7</text>
+        <!-- ── Final-flow labels (shown in step 7) ── -->
+        <text id="vz61-fl-xy" x="92"  y="152" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">1/3</text>
+        <text id="vz61-fl-xv" x="248" y="97"  fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">2/3</text>
+        <text id="vz61-fl-yv" x="245" y="163" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">1/2</text>
+        <text id="vz61-fl-yz" x="248" y="244" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">2/2</text>
+        <text id="vz61-fl-zw" x="448" y="276" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">2/2</text>
+        <text id="vz61-fl-vw" x="453" y="225" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle" opacity="0">1/2</text>
 
         <!-- ── Step title in SVG ── -->
-        <text id="vz61-svg-title" x="290" y="18" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" letter-spacing="1">STEP 1 / 7</text>
+        <text id="vz61-svg-title" x="300" y="20" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" letter-spacing="1">STEP 1 / 8</text>
       </svg>
     </div>
 
@@ -604,7 +619,7 @@
     <div style="display:flex;flex-direction:column;padding:16px 18px;gap:10px;background:#161b22;">
       <div>
         <p id="vz61-step-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:0.22em;text-transform:uppercase;color:#f0883e;margin:0 0 5px;min-height:14px;">Original Network</p>
-        <p id="vz61-narration" style="font-size:0.86em;line-height:1.5;margin:0;color:#c9d1d9;min-height:72px;">Circulation with demands. Each edge has a minimum demand (lower bound) and a maximum capacity. We need flow ≥ lower bound on every edge, with flow conservation at all nodes.</p>
+        <p id="vz61-narration" style="font-size:0.86em;line-height:1.5;margin:0;color:#c9d1d9;min-height:72px;">Circulation with demands. We have 5 nodes x,y,v,z,w with demand values. Negative demand means supply; positive means demand. We need to find a feasible flow satisfying all demands.</p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
         <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
@@ -612,7 +627,7 @@
           <span id="vz61-chip-demands" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
         </div>
         <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">S'→ flow</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">s*→ flow</span>
           <span id="vz61-chip-flow" style="font-size:1.3em;font-weight:700;line-height:1;color:#c9d1d9;">—</span>
         </div>
         <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
@@ -624,7 +639,7 @@
         <button id="vz61-prev" onclick="vz61step(-1)" style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#c9d1d9;padding:7px 13px;border-radius:7px;transition:background .1s,border-color .1s;" disabled>&#9664; Prev</button>
         <button id="vz61-next" onclick="vz61step(1)"  style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #58a6ff;background:#1f6feb22;color:#58a6ff;padding:7px 13px;border-radius:7px;transition:background .1s,border-color .1s;">Next &#9654;</button>
         <button onclick="vz61reset()"                  style="font-family:'JetBrains Mono',monospace;font-size:.77em;font-weight:700;cursor:pointer;border:1px solid #30363d;background:#21262d;color:#8b949e;padding:7px 13px;border-radius:7px;transition:background .1s,border-color .1s;">&#8634; Reset</button>
-        <span id="vz61-counter" style="font-family:'JetBrains Mono',monospace;font-size:.7em;color:#8b949e;margin-left:auto;align-self:center;">1 / 7</span>
+        <span id="vz61-counter" style="font-family:'JetBrains Mono',monospace;font-size:.7em;color:#8b949e;margin-left:auto;align-self:center;">1 / 8</span>
       </div>
     </div>
   </div>
@@ -635,81 +650,103 @@
 'use strict';
 
 /* ── step definitions ─────────────────────────────────────────── */
+/*
+  Example §9.4.1 / §9.4.2 (self-consistent):
+    Vertices: x, y, v, z, w
+    Demands:  dx=-3 (supply 3), dy=-2 (supply 2), dv=+2, dz=0, dw=+3
+    Edges (cap): x→y(3), x→v(3), y→v(2), y→z(2), z→w(2), v→w(2)
+    Supergraph: s*→x(3), s*→y(2), v→t*(2), w→t*(3), D=5
+    Feasible: x→y=1, x→v=2, y→v=1, y→z=2, z→w=2, v→w=1
+*/
+var ORIG_EDGES = ['xy','xv','yv','yz','zw','vw'];
+var SUPER_EDGES = ['Spx','Spy','vTp','wTp'];
+
 var VZ61_STEPS=[
   /* 0 — Original network */
   {
     label:'Original Network',
-    narr:'Circulation with demands. Each edge has a lower bound and a capacity written as [lb,cap]. We need flow ≥ lower bound on every edge, with flow conservation at all nodes. This is a <em>feasibility</em> problem — does a valid assignment exist?',
+    narr:'Circulation with demands (§9.4.2 example). Five nodes x,y,v,z,w with capacities on edges. Demands: d<sub>x</sub>=−3 (supply 3), d<sub>y</sub>=−2 (supply 2), d<sub>v</sub>=+2 (demand 2), d<sub>z</sub>=0 (balanced), d<sub>w</sub>=+3 (demand 3). Sum = 0 — necessary condition satisfied.',
     demands:'—', flow:'—', valid:'?',
-    edgeColors:{SA:'grey',SB:'grey',AT:'grey',BT:'grey',TS:'grey'},
-    edgeLabels:{SA:'[1,4]',SB:'[0,3]',AT:'[2,5]',BT:'[1,4]',TS:'[3,7]'},
-    showSp:false, showTp:false, showDemandEdges:false,
+    edgeColors:{xy:'grey',xv:'grey',yv:'grey',yz:'grey',zw:'grey',vw:'grey'},
+    edgeLabels:{xy:'cap=3',xv:'cap=3',yv:'cap=2',yz:'cap=2',zw:'cap=2',vw:'cap=2'},
+    showSp:false, showTp:false, showSuperEdges:false,
     showExcess:false, showFinalFlow:false,
     hlEdges:[]
   },
-  /* 1 — Compute excess supply/demand */
+  /* 1 — Show demand values */
   {
-    label:'Step 1 — Compute Excess',
-    narr:'For each node, compute: excess = Σ(incoming lower bounds) − Σ(outgoing lower bounds). S: 3−1=+2 (supply). A: 1−2=−1 (demand). B: 0−1=−1 (demand). T: (2+1)−3=0 (balanced).',
-    demands:'—', flow:'—', valid:'?',
-    edgeColors:{SA:'grey',SB:'grey',AT:'grey',BT:'grey',TS:'grey'},
-    edgeLabels:{SA:'[1,4]',SB:'[0,3]',AT:'[2,5]',BT:'[1,4]',TS:'[3,7]'},
-    showSp:false, showTp:false, showDemandEdges:false,
+    label:'Step 1 — Node Demands',
+    narr:'Each node has a demand d<sub>u</sub>. Negative = supply (produces flow), positive = demand (consumes flow). x: −3 (supply 3, orange). y: −2 (supply 2, orange). v: +2 (demand 2, red). z: 0 (balanced). w: +3 (demand 3, red). Check: −3−2+2+0+3 = 0 ✓.',
+    demands:'sum=0 ✓', flow:'—', valid:'?',
+    edgeColors:{xy:'grey',xv:'grey',yv:'grey',yz:'grey',zw:'grey',vw:'grey'},
+    edgeLabels:{xy:'cap=3',xv:'cap=3',yv:'cap=2',yz:'cap=2',zw:'cap=2',vw:'cap=2'},
+    showSp:false, showTp:false, showSuperEdges:false,
     showExcess:true, showFinalFlow:false,
     hlEdges:[]
   },
-  /* 2 — Transform edges (adjusted capacities) */
+  /* 2 — Add s* and t* */
   {
-    label:'Step 2 — Adjusted Capacities',
-    narr:'New capacity = original capacity − lower bound. S→A: 4−1=3. A→T: 5−2=3. T→S: 7−3=4. S→B: 3−0=3. B→T: 4−1=3. These represent available bandwidth above the mandatory minimum.',
-    demands:'—', flow:'—', valid:'?',
-    edgeColors:{SA:'orange',SB:'orange',AT:'orange',BT:'orange',TS:'orange'},
-    edgeLabels:{SA:'cap=3',SB:'cap=3',AT:'cap=3',BT:'cap=3',TS:'cap=4'},
-    showSp:false, showTp:false, showDemandEdges:false,
-    showExcess:true, showFinalFlow:false,
-    hlEdges:[]
-  },
-  /* 3 — Add S' and T' */
-  {
-    label:'Step 3 — Add S\' and T\'',
-    narr:'Add super-source S\' (blue) → nodes with positive excess supply. Add super-sink T\' (green) ← nodes with positive excess demand. S\'→S: cap=2.  A→T\': cap=1.  B→T\': cap=1.  D = total demand = 2.',
-    demands:'D=2', flow:'—', valid:'?',
-    edgeColors:{SA:'orange',SB:'orange',AT:'orange',BT:'orange',TS:'orange'},
-    edgeLabels:{SA:'cap=3',SB:'cap=3',AT:'cap=3',BT:'cap=3',TS:'cap=4'},
-    showSp:true, showTp:true, showDemandEdges:true,
+    label:'Step 2 — Build Supergraph G\'',
+    narr:'Supply nodes (d&lt;0) get an edge <strong>s*→u</strong> with cap=|d|. Demand nodes (d&gt;0) get an edge <strong>u→t*</strong> with cap=d. Added: s*→x (cap=3), s*→y (cap=2), v→t* (cap=2), w→t* (cap=3). Total demand D = 3+2 = 5.',
+    demands:'D=5', flow:'—', valid:'?',
+    edgeColors:{xy:'grey',xv:'grey',yv:'grey',yz:'grey',zw:'grey',vw:'grey'},
+    edgeLabels:{xy:'cap=3',xv:'cap=3',yv:'cap=2',yz:'cap=2',zw:'cap=2',vw:'cap=2'},
+    showSp:true, showTp:true, showSuperEdges:true,
     showExcess:false, showFinalFlow:false,
     hlEdges:[]
   },
-  /* 4 — Max-flow path 1 */
+  /* 3 — Augment path 1: s*→x→v→t* */
   {
-    label:'Step 4 — Augment Path 1',
-    narr:'Run Ford-Fulkerson on the transformed network. Path 1: S\'→S→A→T\' — bottleneck = min(2,3,1) = 1. Send 1 unit along this path.',
-    demands:'D=2', flow:'1/2', valid:'?',
-    edgeColors:{SA:'orange',SB:'orange',AT:'orange',BT:'orange',TS:'orange'},
-    edgeLabels:{SA:'cap=3',SB:'cap=3',AT:'cap=3',BT:'cap=3',TS:'cap=4'},
-    showSp:true, showTp:true, showDemandEdges:true,
+    label:'Step 3 — Augment Path 1',
+    narr:'Run Ford-Fulkerson on G\'. Path 1: <strong>s*→x→v→t*</strong>. Bottleneck = min(3,3,2) = 2. Send 2 units. x residual: 3−2=1. v→t* saturated (2/2). Total flow from s* = 2.',
+    demands:'D=5', flow:'2/5', valid:'?',
+    edgeColors:{xy:'grey',xv:'grey',yv:'grey',yz:'grey',zw:'grey',vw:'grey'},
+    edgeLabels:{xy:'cap=3',xv:'cap=3',yv:'cap=2',yz:'cap=2',zw:'cap=2',vw:'cap=2'},
+    showSp:true, showTp:true, showSuperEdges:true,
     showExcess:false, showFinalFlow:false,
-    hlEdges:['SpS','SA','ATp']
+    hlEdges:['Spx','xv','vTp']
   },
-  /* 5 — Max-flow path 2 */
+  /* 4 — Augment path 2: s*→x→y→z→w→t* */
   {
-    label:'Step 5 — Augment Path 2',
-    narr:'Path 2: S\'→S→B→T\' — bottleneck = min(1,3,1) = 1. Send 1 unit. Total flow from S\' = 2 = D. All demand edges saturated — a valid circulation exists!',
-    demands:'D=2', flow:'2/2', valid:'YES',
-    edgeColors:{SA:'orange',SB:'orange',AT:'orange',BT:'orange',TS:'orange'},
-    edgeLabels:{SA:'cap=3',SB:'cap=3',AT:'cap=3',BT:'cap=3',TS:'cap=4'},
-    showSp:true, showTp:true, showDemandEdges:true,
+    label:'Step 4 — Augment Path 2',
+    narr:'Path 2: <strong>s*→x→y→z→w→t*</strong>. Bottleneck = min(1,3,2,2,3) = 1. Send 1 unit. s*→x saturated (3/3). y→z residual: 2−1=1. Total flow = 2+1 = 3.',
+    demands:'D=5', flow:'3/5', valid:'?',
+    edgeColors:{xy:'grey',xv:'grey',yv:'grey',yz:'grey',zw:'grey',vw:'grey'},
+    edgeLabels:{xy:'cap=3',xv:'cap=3',yv:'cap=2',yz:'cap=2',zw:'cap=2',vw:'cap=2'},
+    showSp:true, showTp:true, showSuperEdges:true,
     showExcess:false, showFinalFlow:false,
-    hlEdges:['SpS','SB','BTp']
+    hlEdges:['Spx','xy','yz','zw','wTp']
   },
-  /* 6 — Reconstruct circulation */
+  /* 5 — Augment path 3: s*→y→v(back)→w→t*  or s*→y→z→w→t* */
   {
-    label:'Step 6 — Final Circulation',
-    narr:'Add back lower bounds. Final circulation: S→A: 1+1=2. A→T: 1+2=3. T→S: 0+3=3. S→B: 1+0=1. B→T: 1+1=2. Every node has equal in-flow and out-flow. All bounds satisfied. ✓',
-    demands:'all ✓', flow:'2/2', valid:'YES',
-    edgeColors:{SA:'green',SB:'green',AT:'green',BT:'green',TS:'green'},
-    edgeLabels:{SA:'2/4',SB:'1/3',AT:'3/5',BT:'2/4',TS:'3/7'},
-    showSp:false, showTp:false, showDemandEdges:false,
+    label:'Step 5 — Augment Path 3',
+    narr:'Path 3: <strong>s*→y→z→w→t*</strong>. Bottleneck = min(2,2,1,2) = 1. Send 1 unit. y→z residual: 0 (saturated). w→t* residual: 2−1=1. Total flow = 3+1 = 4.',
+    demands:'D=5', flow:'4/5', valid:'?',
+    edgeColors:{xy:'grey',xv:'grey',yv:'grey',yz:'grey',zw:'grey',vw:'grey'},
+    edgeLabels:{xy:'cap=3',xv:'cap=3',yv:'cap=2',yz:'cap=2',zw:'cap=2',vw:'cap=2'},
+    showSp:true, showTp:true, showSuperEdges:true,
+    showExcess:false, showFinalFlow:false,
+    hlEdges:['Spy','yz','zw','wTp']
+  },
+  /* 6 — Augment path 4: s*→y→v→w→t* */
+  {
+    label:'Step 6 — Augment Path 4',
+    narr:'Path 4: <strong>s*→y→v→w→t*</strong>. Bottleneck = min(1,2,2,1) = 1. Send 1 unit. s*→y saturated (2/2). y→v residual: 2−1=1. Total flow = 4+1 = 5 = D. <strong>All s* and t* edges saturated — feasible!</strong>',
+    demands:'D=5', flow:'5/5', valid:'YES',
+    edgeColors:{xy:'grey',xv:'grey',yv:'grey',yz:'grey',zw:'grey',vw:'grey'},
+    edgeLabels:{xy:'cap=3',xv:'cap=3',yv:'cap=2',yz:'cap=2',zw:'cap=2',vw:'cap=2'},
+    showSp:true, showTp:true, showSuperEdges:true,
+    showExcess:false, showFinalFlow:false,
+    hlEdges:['Spy','yv','vw','wTp']
+  },
+  /* 7 — Reconstruct circulation */
+  {
+    label:'Step 7 — Final Circulation',
+    narr:'Remove s* and t*. The flows on original edges form the valid circulation: x→y=<b>1/3</b>, x→v=<b>2/3</b>, y→v=<b>1/2</b>, y→z=<b>2/2</b>, z→w=<b>2/2</b>, v→w=<b>1/2</b>. Verify: x out=3 ✓, y surplus=2 ✓, v demand=2 ✓, z balanced ✓, w demand=3 ✓. All demands satisfied.',
+    demands:'all ✓', flow:'5/5', valid:'YES',
+    edgeColors:{xy:'green',xv:'green',yv:'green',yz:'green',zw:'green',vw:'green'},
+    edgeLabels:{xy:'cap=3',xv:'cap=3',yv:'cap=2',yz:'cap=2',zw:'cap=2',vw:'cap=2'},
+    showSp:false, showTp:false, showSuperEdges:false,
     showExcess:false, showFinalFlow:true,
     hlEdges:[]
   }
@@ -730,9 +767,9 @@ function setStroke(id, color){
   if(!e) return;
   var hex = color==='grey'?'#8b949e':color==='orange'?'#f0883e':color==='green'?'#3fb950':'#8b949e';
   e.setAttribute('stroke', hex);
-  /* update marker */
   var mk = color==='green'?'url(#vz61-arr-green)':color==='orange'?'url(#vz61-arr-orange)':'url(#vz61-arr)';
-  if(e.getAttribute('marker-end') !== null && !e.id.startsWith('vz61-e-Sp') && !e.id.startsWith('vz61-e-ATp') && !e.id.startsWith('vz61-e-BTp')){
+  var isSuper = (e.id==='vz61-e-Spx'||e.id==='vz61-e-Spy'||e.id==='vz61-e-vTp'||e.id==='vz61-e-wTp');
+  if(e.getAttribute('marker-end') !== null && !isSuper){
     e.setAttribute('marker-end', mk);
   }
 }
@@ -752,15 +789,15 @@ function setLabelColor(id, color){
 function highlightEdge(id, on){
   var e = el('vz61-e-'+id);
   if(!e) return;
+  var isSuper = (id==='Spx'||id==='Spy'||id==='vTp'||id==='wTp');
   if(on){
     e.setAttribute('stroke-width', '3');
-    var curr = e.getAttribute('stroke');
-    if(curr !== '#58a6ff' && curr !== '#3fb950'){
+    if(!isSuper){
       e.setAttribute('stroke', '#f0883e');
       if(e.getAttribute('marker-end') !== null) e.setAttribute('marker-end','url(#vz61-arr-orange)');
     }
   } else {
-    e.setAttribute('stroke-width', e.id.startsWith('vz61-e-Sp')||e.id.startsWith('vz61-e-ATp')||e.id.startsWith('vz61-e-BTp') ? '1.8' : '1.8');
+    e.setAttribute('stroke-width','1.8');
   }
 }
 
@@ -768,28 +805,25 @@ function highlightEdge(id, on){
 function render(){
   var s = VZ61_STEPS[cur];
 
-  /* SVG step title */
   setLabelText('vz61-svg-title', 'STEP '+(cur+1)+' / '+VZ61_STEPS.length);
 
-  /* narration */
   el('vz61-step-label').textContent = s.label;
   el('vz61-narration').innerHTML = s.narr;
 
-  /* chips */
   var chipD = el('vz61-chip-demands');
   chipD.textContent = s.demands;
-  chipD.style.color = (s.demands==='all ✓') ? '#3fb950' : '#c9d1d9';
+  chipD.style.color = (s.demands==='all ✓'||s.demands==='sum=0 ✓') ? '#3fb950' : '#c9d1d9';
 
   var chipF = el('vz61-chip-flow');
   chipF.textContent = s.flow;
-  chipF.style.color = (s.flow==='2/2') ? '#3fb950' : '#c9d1d9';
+  chipF.style.color = (s.flow==='5/5') ? '#3fb950' : '#c9d1d9';
 
   var chipV = el('vz61-chip-valid');
   chipV.textContent = s.valid;
   chipV.style.color = s.valid==='YES' ? '#3fb950' : s.valid==='?' ? '#8b949e' : '#f85149';
 
-  /* edge colours & labels for main edges */
-  ['SA','SB','AT','BT','TS'].forEach(function(k){
+  /* original edge colours & labels */
+  ORIG_EDGES.forEach(function(k){
     var ec = s.edgeColors[k] || 'grey';
     var lbl = s.edgeLabels[k] || '';
     setStroke('vz61-e-'+k, ec);
@@ -805,40 +839,32 @@ function render(){
   setOpacity('vz61-n-Tp', tpOp);
   setOpacity('vz61-t-Tp', tpOp);
 
-  /* demand edges */
-  var deOp = s.showDemandEdges ? '1' : '0';
-  setOpacity('vz61-e-SpS', deOp);
-  setOpacity('vz61-e-ATp', deOp);
-  setOpacity('vz61-e-BTp', deOp);
-  setOpacity('vz61-lbl-SpS', deOp);
-  setOpacity('vz61-lbl-ATp', deOp);
-  setOpacity('vz61-lbl-BTp', deOp);
+  /* super edges */
+  var seOp = s.showSuperEdges ? '1' : '0';
+  SUPER_EDGES.forEach(function(k){
+    setOpacity('vz61-e-'+k, seOp);
+    setOpacity('vz61-lbl-'+k, seOp);
+  });
 
-  /* excess annotations */
+  /* demand/excess annotations */
   var exOp = s.showExcess ? '1' : '0';
-  ['S','A','B','T'].forEach(function(n){ setOpacity('vz61-ex-'+n, exOp); });
+  ['x','y','v','z','w'].forEach(function(n){ setOpacity('vz61-ex-'+n, exOp); });
 
-  /* final flow labels (step 6) */
+  /* final flow labels */
   var ffOp = s.showFinalFlow ? '1' : '0';
-  ['SA','SB','AT','BT','TS'].forEach(function(k){
+  ORIG_EDGES.forEach(function(k){
     setOpacity('vz61-fl-'+k, ffOp);
-    /* hide the regular label when showing final flow */
-    setOpacity('vz61-lbl-'+k, s.showFinalFlow ? '0' : '1');
+    setOpacity('vz61-lbl-'+k, s.showFinalFlow ? '0' : (s.showSuperEdges||!s.showFinalFlow) ? '1' : '1');
   });
 
-  /* edge highlights (augmenting paths) */
-  ['SA','SB','AT','BT','TS','SpS','ATp','BTp'].forEach(function(k){
-    highlightEdge(k, false);
-  });
-  /* reset stroke-widths first */
-  ['SA','SB','AT','BT','TS'].forEach(function(k){
+  /* edge highlights */
+  ORIG_EDGES.concat(SUPER_EDGES).forEach(function(k){ highlightEdge(k, false); });
+  ORIG_EDGES.forEach(function(k){
     var e = el('vz61-e-'+k);
     if(e) e.setAttribute('stroke-width','1.8');
   });
-  /* apply highlights */
   s.hlEdges.forEach(function(k){ highlightEdge(k, true); });
 
-  /* buttons */
   el('vz61-prev').disabled = (cur === 0);
   el('vz61-next').disabled = (cur === VZ61_STEPS.length - 1);
   el('vz61-counter').textContent = (cur+1)+' / '+VZ61_STEPS.length;
@@ -1901,7 +1927,7 @@ render();
 </main>
 <script>
 (function(){
-  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
   var C=50.3;
   function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
   function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}

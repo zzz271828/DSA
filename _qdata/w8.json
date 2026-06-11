@@ -1,0 +1,112 @@
+[
+  {
+    "id": "w8-p1",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "1",
+    "exam_section": 1,
+    "is_key": false,
+    "topics": ["Suffix Trees", "String Algorithms"],
+    "question_html": "<p>Describe an algorithm that given a sequence of strings over a constant-size alphabet, counts how many different ones there are (i.e. how many there are ignoring duplicates). Your algorithm should run in \\(O(T)\\) time where \\(T\\) is the total length of all of the strings.</p>",
+    "solution_html": "<p>Initialise <code>count = 0</code>. Append <code>\"$\"</code> to each string. Insert each string into a trie. After all strings have been inserted, traverse the tree and count the number of <code>\"$\"</code> nodes. If two strings are the same, they will terminate in the same node, so the number of <code>\"$\"</code>s is the number of distinct strings. It will take \\(O(T)\\) to build the trie, and \\(O(T)\\) to traverse the trie, so the whole algorithm runs in \\(O(T)\\).</p>"
+  },
+  {
+    "id": "w8-p3",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "3",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Suffix Trees", "String Algorithms"],
+    "question_html": "<p>Describe an algorithm that given a string \\(S\\) of length \\(n\\), counts the number of distinct substrings of \\(S\\) in \\(O(n)\\) time. You can assume that you can build suffix trees in \\(O(n)\\) time.</p>",
+    "solution_html": "<p>First consider how to solve this with a suffix trie, and then convert the solution to work in a suffix tree. A substring of \\(S\\) is a prefix of a suffix of \\(S\\). This means that each substring of \\(S\\) can be found by following some path from the root of a suffix trie of \\(S\\) to some node. If two substrings of \\(S\\) are the same, they will end at the same node. So to count distinct substrings, we can just count the nodes of the suffix trie (excluding \\(\\$\\) nodes), which takes \\(O(n^2)\\) time.</p><p>Now we want to use a suffix tree instead. If we think about converting a trie to a tree, each node in the tree is made from one or more nodes in the trie, and the number of characters stored at each node in the tree is exactly the number of nodes which were compressed to create that tree node. So to do the equivalent of counting nodes in the trie, we need to count total characters in the tree. We can do this with a single traversal taking \\(O(n)\\) time, because a suffix tree has \\(O(n)\\) nodes, and at each node, we look up the indices of its parent edge label to determine its length, so counting the characters in a node takes \\(O(1)\\).</p>"
+  },
+  {
+    "id": "w8-p4",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "4",
+    "exam_section": 1,
+    "is_key": false,
+    "topics": ["Suffix Trees", "String Algorithms"],
+    "question_html": "<p>Earlier, we learned about the longest common <strong>subsequence</strong> problem. Now we consider a similar, related problem, the <em>longest common substring</em> problem. Given two strings \\(s_1\\) and \\(s_2\\), your goal is to find a string that is a substring of both \\(s_1\\) and \\(s_2\\) and is as long as possible. Describe how a suffix tree can be used to solve this problem. Your algorithm should run in \\(O(n + m)\\) time, where \\(n, m\\) are the lengths of \\(s_1, s_2\\) respectively. You may assume that you can construct a suffix tree in linear time.</p><p><strong>Hint:</strong> It is often easier to think about how to solve problems in a trie context, and then convert your solution to work in a tree.</p>",
+    "solution_html": "<p>Finding the longest common substring of \\(s_1\\) and \\(s_2\\) is very similar to finding the longest repeated substring of \\(s_1 s_2\\), which we know can be found by creating a suffix tree and then finding the deepest node with more than one child. The issue with naively applying this to \\(s_1 s_2\\) is that, in the concatenated string, the longest repeated substring might lie totally in \\(s_1\\) (or \\(s_2\\)), or partially in \\(s_1\\) and partially in \\(s_2\\). We can solve the second problem easily by adding a separator character (which is not present in either string) in our concatenation, so that we have \\(s_1 \\# s_2 \\$\\).</p><p>An important observation about the placement of <code>#</code> and <code>$</code> in the tree is that no internal node can contain either of them. That is, all instances of these terminator characters must appear in leaves. All internal nodes in a tree have at least two children, i.e. they correspond to repeating substrings, so we know that <code>#</code> cannot be in any internal node, as it does not repeat.</p><p>Bearing this observation in mind, we need to address the problem of ensuring that one of our repetitions is in \\(s_1\\), and the other is in \\(s_2\\). Consider an internal node of the tree. If it has a leaf descendant node with a <code>#</code>, then it must appear in \\(s_1\\). If it has a leaf descendant without a <code>#</code>, then it must appear in \\(s_2\\). So we need to find the deepest such node.</p><p>We traverse the tree, and at each node we store two flags, one for being a substring of \\(s_1\\) and the other for being a substring of \\(s_2\\). If a node is a substring of \\(s_1\\), all its ancestors are substrings of \\(s_1\\), and similarly for \\(s_2\\). Once we have finished we return the depth of the node with the longest substring that was a substring of both \\(s_1\\) and \\(s_2\\), i.e. had both flags set.</p><p>It is worth having a think about how to set the flags for every node in the tree in linear time, and also how to check whether a leaf node contains a <code>#</code> in constant time.</p>"
+  },
+  {
+    "id": "w8-p5",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "5",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Suffix Trees", "String Algorithms"],
+    "question_html": "<p>Given a trie and a query string, we want to find the lexicographically greatest string in the trie which is lexicographically less than or equal to the query string.</p><p>Your data structure should perform these queries in \\(O(n + m)\\) time, where \\(m\\) is the length of the query string, and \\(n\\) is the length of the answer string (the predecessor). Note that this is an output-sensitive time complexity. It is possible that some queries have no string which satisfies the criterion above (if it is less than all of the strings in the trie), in which case you should return <strong>null</strong>.</p><p>Example: Suppose the trie contains <code>aaa</code>, <code>aba</code>, <code>baa</code>. If the query is <code>ba</code>, the result is <code>aba</code>. If the query is <code>baa</code>, the result is <code>baa</code>.</p>",
+    "solution_html": "<p>Assume that the contents of our trie are terminated with a character \\(\\$ \\notin \\Sigma\\). We traverse the query string, keeping track of the deepest node with a child lexicographically less than the child we are about to move to (initially <strong>null</strong>). This node is the longest prefix that the query string shares with the answer. We either end up failing at some point (the current node has no child with the character we want), or we reach the end of the query string. If we reach the end of the query string (including the <code>$</code>) we return the query. Otherwise we look at the node we were keeping track of, and if it is <strong>null</strong>, we return <strong>null</strong> since the word must have no predecessor, as none of its prefixes could be extended with a lexicographically lesser character. If such a node does exist, go back to that node, go along the edge with the greatest character such that it is lexicographically less than the character we followed in our initial traversal. Then follow the lexicographically greatest path from that node to a leaf. The string corresponding to that path is the solution. This takes \\(O(m)\\) to traverse the query and \\(O(n)\\) to traverse the answer string.</p><pre class=\"code-block\">function PREDECESSOR(S[1..n])\n    node = root\n    ancestor = null          // Lowest ancestor with an extension lexicographically less than S\n    ancestor_child = null\n    answer = \"\"\n    for each character c in S[1..n] do\n        if node has an edge with label &lt; c then\n            ancestor = node\n            ancestor_child = the greatest child of ancestor lexicographically less than c\n        if node has an edge for character c then node = node.get_child(c)\n        else break\n        if c = $ then return answer     // S is in the trie\n        else answer += c\n    if ancestor = null then return null // Nothing is lexicographically less than S\n    while node != ancestor do\n        node = node.parent\n        answer.pop_back()               // Remove last character from answer\n    answer += ancestor_child.character\n    node = ancestor_child\n    while node is not a leaf do\n        c = lexicographically greatest edge of node\n        answer += c\n        node = node.get_child(c)\n    return answer.pop_back()            // Remove the $ from the answer string</pre>"
+  },
+  {
+    "id": "w8-p6",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "6",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Suffix Trees", "Pattern Matching", "String Algorithms"],
+    "question_html": "<p>Given a string \\(S\\) and a string \\(T\\), we wish to form \\(T\\) by concatenating substrings of \\(S\\). Describe an algorithm for determining the fewest concatenations of substrings of \\(S\\) to form \\(T\\). Using the same substring multiple times counts as multiple concatenations. For example, given the strings \\(S =\\) <code>ABCCBA</code> and \\(T =\\) <code>CBAABCA</code>, it takes at least three substrings, e.g. <code>CBA</code> + <code>ABC</code> + <code>A</code>. Your algorithm should run in \\(O(n + m)\\) time, where \\(n\\) and \\(m\\) are the lengths of \\(S\\) and \\(T\\). You can assume that you have an algorithm to construct suffix tree in linear time.</p>",
+    "solution_html": "<p>We first make the observation that we can be greedy. If we are up to a certain point \\(T[j...]\\), then it is optimal to take the longest possible substring from \\(S\\) that matches \\(T[j..k]\\) for the largest possible \\(k\\). First build a suffix tree from \\(S\\), taking \\(O(n)\\) time, then search for the string \\(T\\) in the tree. This search is going to find the longest substring of \\(S\\) which corresponds to the start of \\(T\\). Once we reach a point where the search stops, this means that the current substring cannot be extended, so we go back to the root and search again from the next character of \\(T\\). We repeat this process until we reach the last character in \\(T\\).</p>"
+  },
+  {
+    "id": "w8-p7c",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "7c",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Suffix Trees", "String Algorithms"],
+    "question_html": "<p>You are given a sequence of \\(n\\) strings \\(s_1, s_2, ..., s_n\\) each of which has an associated weight \\(w_1, w_2, ..., w_n\\). You wish to find the \"most powerful prefix\" of these words. The most powerful prefix is a prefix that maximises the following function</p>\\[\\text{score}(p) = \\sum_{\\substack{s_i \\text{ such that } p \\\\ \\text{is a prefix of } s_i}} w_i \\times |p|,\\]<p>where \\(|p|\\) denotes the length of the prefix \\(p\\). Describe an algorithm that solves this problem in \\(O(T)\\) time, where \\(T\\) is the total length of the strings \\(s_1, ..., s_n\\). Assume that we have three strings <code>baby</code>, <code>bank</code>, <code>bit</code> with weights 10, 20 and 40, respectively. The score of prefix <code>ba</code> is \\(2 \\times 10 + 2 \\times 20 = 60\\), the score of prefix <code>b</code> is \\(1 \\times 10 + 1 \\times 20 + 1 \\times 40 = 70\\) and the score of prefix <code>bit</code> is \\(3 \\times 40 = 120\\).</p>",
+    "solution_html": "<p>For each prefix, we need to keep track of its score. We modify our prefix trie to store a score at each node, and each time we insert a word, we update the score by adding to it the weight of the current word multiplied by the length of the prefix represented by this node.</p><p>Once all insertions are complete, we traverse the tree to find the node with the maximum score. The prefix corresponding to this node is the answer.</p>"
+  },
+  {
+    "id": "w8-p9",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "9",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Suffix Trees", "String Algorithms"],
+    "question_html": "<p>Describe an algorithm for finding a shortest string that is not a substring of a given string \\(S\\) over some fixed alphabet. For example, over the alphabet \\(\\{A, B\\}\\) the shortest string that is not a substring of <code>AAABABBBA</code> is <code>BAA</code> of length three. Your algorithm should run in \\(O(n)\\) time, where \\(n\\) is the length of \\(S\\).</p>",
+    "solution_html": "<p>If we traverse the suffix tree, the shallowest node we find that does not have every character in the alphabet as a child will give us the shortest missing substring. This is because, if a node has every alphabet character as a child, then we can extend the substring at that node to every possible substring with 1 more character. If one or more alphabet characters are missing, we cannot do this, and so we have found a missing substring. The missing substring is given by the string at that node + the missing alphabet character. Note that the number of nodes in the suffix tree is \\(O(n)\\). So, the worst-case cost is \\(O(n)\\).</p>"
+  },
+  {
+    "id": "w8-p10",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "10",
+    "exam_section": 3,
+    "is_key": false,
+    "topics": ["String Algorithms"],
+    "question_html": "<p>Prefix tries also have applications in processing integers. We can store integers in their binary representation in a prefix trie over the alphabet \\(\\{0, 1\\}\\). Use this idea to solve the following problem. We are given a list of \\(w\\)-bit integers \\(a_1, a_2, ..., a_n\\). We want to answer queries of the form \"given a \\(w\\)-bit integer \\(x\\), select one of the integers \\(a_i\\) to maximise \\(x \\oplus a_i\\)\", where \\(\\oplus\\) denotes the XOR operation. Your queries should run in \\(O(w)\\) time.</p>",
+    "solution_html": "<p>To maximise a binary number, we want to set 1 bits in the highest slots possible. This means we should select the \\(a_i\\) which has the opposite bit to \\(x\\) in the highest possible positions as we read from left to right.</p><p>If we have a prefix trie containing \\(a_1, a_2, ..., a_n\\), using \\(x\\) we can traverse the trie as follows. Each time we come to a node, see if the node has a child which is NOT(\\(x[i]\\)) (i.e. 0 if \\(x[i] = 1\\), or 1 if \\(x[i] = 0\\)). If so, choose that child. If not, the node has only one child, so go to that node. One way to view this is like the ordinary trie traversal but opposite. We always chose to go to a child with a <strong>different</strong> label than the current character, instead of the one with the same character if possible.</p><p>When we reach a leaf, the choice of \\(a_i\\) which maximises \\(a_i \\oplus x\\) is that leaf. Since we traversed a single path from root to leaf, our query has taken \\(O(w)\\) time.</p>"
+  },
+  {
+    "id": "w8-p11b",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "11b",
+    "exam_section": 1,
+    "is_key": true,
+    "topics": ["String Algorithms"],
+    "question_html": "<p><strong>(Advanced)</strong> Given a list of \\(w\\)-bit integers \\(a_1, a_2, ..., a_n\\), find the maximum possible cumulative XOR of a subarray \\(a_i, ..., a_j\\), i.e. maximise</p>\\[a_i \\oplus a_{i+1} \\oplus ... \\oplus a_{j-1} \\oplus a_j,\\]<p>where \\(\\oplus\\) denotes the XOR operation. Your algorithm should run in \\(O(nw)\\) time. <strong>Hint:</strong> Use the fact that \\(x \\oplus x = 0\\), and the ideas from Problem 10.</p>",
+    "solution_html": "<p>First, some properties of XOR. It is associative, meaning that \\(((a \\oplus b) \\oplus c) = (a \\oplus (b \\oplus c))\\), and, as given in the question, \\(x \\oplus x = 0\\). This means that if we have a list of numbers all being XOR'd together, and some of these numbers are identical, we can reorder the list using associativity until the pairs of identical numbers are next to each other, and then cancel them using the second property.</p><p>Define a function</p>\\[F(L, R) = a_L \\oplus a_{L+1} \\oplus ... \\oplus a_R\\]<p>The problem we are trying to solve is now to find an \\(L\\) and \\(R\\) which maximise \\(F\\), where \\(1 \\leq L \\leq R \\leq n\\). Note that because of the facts above, we have</p>\\[F(L, R) = F(1, L-1) \\oplus F(1, R)\\]<p>So if we had all the values \\(F(1,1), F(1,2), ..., F(1, j-1)\\) in a trie, we could compute the maximum value for \\(F(i, j)\\), \\(i \\leq j\\) in \\(O(w)\\) with a query to the trie described in Problem 10. Then we simply iterate over \\(1 \\leq i \\leq n\\), keeping track of the maximum, which takes \\(O(nw)\\).</p><pre class=\"code-block\">function MAX_SUBARRAY_XOR(A[1..n])\n    prefix_xor = 0\n    trie = Trie()                        // The trie from Problem 10\n    maximum_xor = 0\n    for i=1 to n do\n        prefix_xor = prefix_xor XOR A[i] // Extend the current prefix\n        maximum_xor = max(maximum_xor, trie.query(prefix_xor))\n        trie.insert(prefix_xor)\n    return maximum_xor</pre>"
+  },
+  {
+    "id": "w8-p11c",
+    "week": 8,
+    "week_title": "String Data Structures",
+    "problem_num": "11c",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["String Algorithms"],
+    "question_html": "<p><strong>(Advanced)</strong> In a previous applied class, we wrote a dynamic programming solution to the following problem. Given a target string \\(S\\) of length \\(n\\) and a list \\(L\\) of \\(m\\) strings of length at most \\(n\\), find the minimum number of strings from \\(L\\) to concatenate to form \\(S\\). A word from \\(L\\) may be used multiple times. We devised an \\(O(n^2 m)\\) algorithm for this problem. Describe how you can use a prefix trie to speed up this solution to \\(O(n^2 + nm)\\) time.</p>",
+    "solution_html": "<p>In the previous applied class, we wrote the following dynamic programming solution:</p><p>\\(\\text{DP}[i] = \\{\\text{The minimum number of words needed to form the suffix } S[i..n]\\}\\), for \\(0 \\leq i \\leq n\\)</p>\\[\\text{DP}[i] = \\begin{cases} 0 & \\text{if } i = n \\\\ \\infty & \\text{if no word } w \\in L \\text{ is a prefix of } S[i..n] \\\\ 1 + \\min_{\\substack{w \\in L \\\\ w \\text{ prefix of } S[i..n]}} \\text{DP}[i + |w|] & \\text{otherwise.} \\end{cases}\\]<p>Note that we check over all strings \\(w \\in L\\) that are prefixes of \\(S[i..n]\\). We have a very good data structure for handling this sort of thing, a prefix trie! So, instead of simply looping over all of the words in \\(L\\) and checking whether they are prefixes, we will first insert all of the contents of \\(L\\) into a trie, terminated by \\(\\$ \\notin \\Sigma\\). Since there are \\(m\\) strings of length at most \\(n\\) this takes \\(O(nm)\\) time. Now to solve the subproblem DP[i], we simply search the trie for \\(S[i..n]\\), and at each character, we check whether the current prefix \\(p\\) is in \\(L\\) (by seeing whether it has a \\(\\$\\) child), and if so, we consider the subproblem DP[i+|p|]. This means that solving each subproblem takes just \\(O(n)\\) time, and since there are \\(n\\) subproblems, this yields a total time of \\(O(n^2 + nm)\\).</p>"
+  }
+]

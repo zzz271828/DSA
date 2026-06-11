@@ -1,0 +1,35 @@
+[
+  {
+    "id": "w10-p2",
+    "week": 10,
+    "week_title": "Network Flow",
+    "problem_num": "2",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Network Flow", "Max-Flow", "Flow Networks"],
+    "question_html": "<p>Consider a variant of the maximum flow problem in which we allow for multiple source vertices and multiple sink vertices. We retain all of the capacity and flow conservation constraints of the original maximum flow problem. As in the original problem, all of the sources and sinks are excluded from the flow conservation constraint. Describe a simple method for solving this problem.</p>",
+    "solution_html": "<p>We create a new graph by adding a <strong>super-source</strong> vertex and a <strong>super-sink</strong> vertex.</p><ul><li>The super source is connected to each source by an edge with capacity equal to the total capacities of all the outgoing edges from that source.</li><li>Similarly, each sink is connected by an edge to the super sink, and the capacity of that edge is equal to the total capacities of all incoming edges to that sink.</li></ul><p>We then solve the flow problem on this new graph as normal.</p>"
+  },
+  {
+    "id": "w10-p3",
+    "week": 10,
+    "week_title": "Network Flow",
+    "problem_num": "3",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Network Flow", "Max-Flow", "Bipartite Matching", "Ford-Fulkerson", "Flow Networks"],
+    "question_html": "<p>Given a list of \\(n\\) integers \\(r_1, r_2, \\ldots, r_n\\) and \\(m\\) integers \\(c_1, c_2, \\ldots, c_m\\), we wish to determine whether there exists an \\(n \\times m\\) matrix \\(X\\) consisting of zeros and ones whose row sums are \\(r_1, r_2, \\ldots, r_n\\) respectively and whose column sums are \\(c_1, c_2, \\ldots, c_m\\) respectively. It is assumed that the sum of the \\(r\\)'s is equal to the sum of the \\(c\\)'s (otherwise it is trivially impossible to satisfy the constraints). Describe an algorithm for solving this problem by using a flow network.</p>",
+    "solution_html": "<p>Construct a flow network as follows:</p><ul><li>Create two sets of vertices, \\(A\\) and \\(B\\). Each vertex in \\(A\\) (\\(a_1, a_2, \\ldots, a_n\\)) corresponds to one of the \\(n\\) rows, and each vertex in \\(B\\) (\\(b_1, b_2, \\ldots, b_m\\)) corresponds to one of the \\(m\\) columns.</li><li>Add a source and a sink. For \\(1 \\leq i \\leq n\\), add an edge from the source to \\(a_i\\) with capacity \\(r_i\\).</li><li>For each \\(1 \\leq j \\leq m\\), add an edge from vertex \\(b_j\\) to the sink with capacity \\(c_j\\).</li><li>Add edges \\(e_{i,j}\\) between every pair of vertices \\((a_i, b_j)\\) with capacity 1.</li></ul><p>Determine the maximum flow in this network using the Ford-Fulkerson method.</p><ul><li>If all outgoing edges of the source are saturated, then we can construct such a matrix, and moreover, the elements \\(X_{i,j}\\) of the matrix are equal to the flows along \\(e_{i,j}\\).</li><li>If any outgoing edge from the source is not saturated, such a matrix does not exist.</li></ul><p><strong>Why it works:</strong> A row has \\(r_i\\) ones if and only if the vertex \\(a_i\\) has a total outflow of \\(r_i\\). Each edge out of \\(a_i\\) has capacity 1, so this is only possible if the flow from the source to \\(a_i\\) is exactly \\(r_i\\), requiring all source edges to be saturated.</p>"
+  },
+  {
+    "id": "w10-p7",
+    "week": 10,
+    "week_title": "Network Flow",
+    "problem_num": "7",
+    "exam_section": 2,
+    "is_key": false,
+    "topics": ["Network Flow", "Bipartite Matching", "Ford-Fulkerson", "Flow Networks", "Max-Flow"],
+    "question_html": "<p>You are a radio station host and are in charge of scheduling the songs for today's program. Every song can be classified as being from a particular era, and a particular genre. Your boss has given you a strict set of requirements that the songs must conform to. No song can be played more than once during the program.</p><p>Among the songs chosen, for each of the \\(n\\) eras \\(1 \\leq i \\leq n\\), you must play exactly \\(e_i\\) songs of that era, and for each of the \\(m\\) genres \\(1 \\leq j \\leq m\\), you must play exactly \\(g_j\\) songs from that genre. Of course, \\(\\sum_i e_i = \\sum_j g_j\\).</p><p>Devise an algorithm that given a list of all of the songs you could choose from, their era and their genre, determines a subset of them that satisfies the requirements, or determines that it is not possible.</p>",
+    "solution_html": "<p>Model this as a flow network using a bipartite graph:</p><ul><li>Create vertices \\(a_1, \\ldots, a_n\\) corresponding to eras, and vertices \\(b_1, \\ldots, b_m\\) corresponding to genres.</li><li>For each combination of era \\(i\\) and genre \\(j\\), add an edge from \\(a_i\\) to \\(b_j\\) with a capacity equal to the number of distinct songs that belong to that combination of era and genre.</li><li>Add a source with outgoing edges to each era vertex \\(a_i\\) with capacity \\(e_i\\) (where \\(1 \\leq i \\leq n\\)).</li><li>Add a sink vertex, with an edge from each genre vertex \\(b_j\\) to the sink with capacity \\(g_j\\) (where \\(1 \\leq j \\leq m\\)).</li></ul><p>Run the Ford-Fulkerson method on this graph.</p><ul><li>If a maximum flow has value \\(\\sum_i e_i = \\sum_j g_j\\), then it is possible to play songs in the required combination.</li><li>Otherwise it is not possible.</li></ul><p>The flow along the edges from \\(a_i\\) to \\(b_j\\) will tell you how many songs from a particular combination of era and genre should be played (which you can then easily select without repetition by looking at your input list).</p>"
+  }
+]

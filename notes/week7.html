@@ -162,6 +162,7 @@ li { margin-bottom: 7px; }
 
   <div class="nav-section">Reference</div>
   <ul>
+    <li><a href="questions.html">&#x1F4DA; Questions Bank</a></li>
     <li><a href="algorithms.html">All Algorithms Table</a></li>
     <li><a href="index.html">↑ Course Home</a></li>
   </ul>
@@ -277,41 +278,56 @@ li { margin-bottom: 7px; }
           <marker id="vz54-arr-b" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#58a6ff"/></marker>
           <marker id="vz54-arr-g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/></marker>
         </defs>
-        <!-- Edges: S(80,140) A(220,60) B(220,220) C(380,140) -->
-        <!-- S→A -->
-        <line id="vz54-e0" x1="100" y1="128" x2="202" y2="72" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
-        <text x="143" y="90" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">6</text>
-        <!-- S→B -->
-        <line id="vz54-e1" x1="100" y1="153" x2="202" y2="210" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
-        <text x="143" y="196" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">7</text>
-        <!-- A→C -->
-        <line id="vz54-e2" x1="242" y1="70" x2="358" y2="130" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
-        <text x="308" y="91" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">5</text>
-        <!-- B→A -->
-        <line id="vz54-e3" x1="220" y1="198" x2="220" y2="82" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
-        <text x="235" y="144" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">-2</text>
-        <!-- B→C -->
-        <line id="vz54-e4" x1="242" y1="212" x2="358" y2="152" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
-        <text x="308" y="195" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">-4</text>
+        <!-- Nodes: s(60,140) a(210,55) b(210,230) c(375,140) d(460,55) -->
+        <!-- s→a(6) -->
+        <line id="vz54-e0" x1="79" y1="129" x2="192" y2="66" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="128" y="90" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">6</text>
+        <!-- s→b(7) -->
+        <line id="vz54-e1" x1="79" y1="151" x2="192" y2="219" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="128" y="196" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">7</text>
+        <!-- a→b(8) -->
+        <line id="vz54-e2" x1="210" y1="77" x2="210" y2="208" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="225" y="145" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">8</text>
+        <!-- a→c(-2) offset above line -->
+        <line id="vz54-e3" x1="231" y1="62" x2="356" y2="131" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="291" y="82" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">-2</text>
+        <!-- a→d(-3) -->
+        <line id="vz54-e4" x1="232" y1="55" x2="438" y2="55" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="335" y="46" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">-3</text>
+        <!-- b→c(-1) -->
+        <line id="vz54-e5" x1="229" y1="219" x2="357" y2="151" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="300" y="198" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">-1</text>
+        <!-- b→d(9) -->
+        <line id="vz54-e6" x1="228" y1="217" x2="442" y2="68" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="350" y="162" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">9</text>
+        <!-- c→a(-4) offset below line -->
+        <line id="vz54-e7" x1="354" y1="150" x2="229" y2="66" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="294" y="120" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">-4</text>
+        <!-- d→c(7) -->
+        <line id="vz54-e8" x1="441" y1="71" x2="393" y2="122" stroke="#30363d" stroke-width="2" marker-end="url(#vz54-arr)"/>
+        <text x="423" y="88" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">7</text>
         <!-- Nodes -->
-        <circle id="vz54-n0" cx="80" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="80" y="140" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">S</text>
-        <text id="vz54-d0" x="80" y="172" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">0</text>
-        <circle id="vz54-n1" cx="220" cy="60" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="220" y="60" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
-        <text id="vz54-d1" x="220" y="92" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
-        <circle id="vz54-n2" cx="220" cy="220" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="220" y="220" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
-        <text id="vz54-d2" x="220" y="252" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
-        <circle id="vz54-n3" cx="380" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="380" y="140" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">C</text>
-        <text id="vz54-d3" x="380" y="172" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
+        <circle id="vz54-n0" cx="60" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="60" y="140" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">s</text>
+        <text id="vz54-d0" x="60" y="172" fill="#3fb950" font-size="11" font-family="monospace" text-anchor="middle">0</text>
+        <circle id="vz54-n1" cx="210" cy="55" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="210" y="55" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">a</text>
+        <text id="vz54-d1" x="210" y="87" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
+        <circle id="vz54-n2" cx="210" cy="230" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="210" y="230" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">b</text>
+        <text id="vz54-d2" x="210" y="262" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
+        <circle id="vz54-n3" cx="375" cy="140" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="375" y="140" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">c</text>
+        <text id="vz54-d3" x="375" y="172" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
+        <circle id="vz54-n4" cx="460" cy="55" r="22" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="460" y="55" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">d</text>
+        <text id="vz54-d4" x="460" y="87" fill="#8b949e" font-size="11" font-family="monospace" text-anchor="middle">&#x221e;</text>
       </svg>
     </div>
     <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
       <div>
         <div style="font-family:monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz54-lbl">Ready</div>
-        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:52px;" id="vz54-txt">Press <b>Step</b> to begin. Graph: S&#x2192;A(6), S&#x2192;B(7), A&#x2192;C(5), B&#x2192;A(-2), B&#x2192;C(-4). Source = S.</div>
+        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:52px;" id="vz54-txt">Press <b>Step</b> to begin. Graph: s&#x2192;a(6), s&#x2192;b(7), a&#x2192;b(8), a&#x2192;c(-2), a&#x2192;d(-3), b&#x2192;c(-1), b&#x2192;d(9), c&#x2192;a(-4), d&#x2192;c(7). Source = s.</div>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:64px;">
@@ -328,10 +344,11 @@ li { margin-bottom: 7px; }
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-family:monospace;font-size:.8em;">
-        <div style="color:#8b949e;">dist[S]</div><div id="vz54-tv0" style="color:#3fb950;">0</div>
-        <div style="color:#8b949e;">dist[A]</div><div id="vz54-tv1" style="color:#c9d1d9;">&#x221e;</div>
-        <div style="color:#8b949e;">dist[B]</div><div id="vz54-tv2" style="color:#c9d1d9;">&#x221e;</div>
-        <div style="color:#8b949e;">dist[C]</div><div id="vz54-tv3" style="color:#c9d1d9;">&#x221e;</div>
+        <div style="color:#8b949e;">dist[s]</div><div id="vz54-tv0" style="color:#3fb950;">0</div>
+        <div style="color:#8b949e;">dist[a]</div><div id="vz54-tv1" style="color:#c9d1d9;">&#x221e;</div>
+        <div style="color:#8b949e;">dist[b]</div><div id="vz54-tv2" style="color:#c9d1d9;">&#x221e;</div>
+        <div style="color:#8b949e;">dist[c]</div><div id="vz54-tv3" style="color:#c9d1d9;">&#x221e;</div>
+        <div style="color:#8b949e;">dist[d]</div><div id="vz54-tv4" style="color:#c9d1d9;">&#x221e;</div>
       </div>
     </div>
   </div>
@@ -344,11 +361,17 @@ li { margin-bottom: 7px; }
 (function(){
   'use strict';
   var INF = Infinity;
-  // nodes: 0=S,1=A,2=B,3=C
-  // edges: [from,to,weight,svgIdx]
-  var EDGES54 = [[0,1,6,0],[0,2,7,1],[1,3,5,2],[2,1,-2,3],[2,3,-4,4]];
-  var LABELS54 = ['S','A','B','C'];
-  var dist54 = [0,INF,INF,INF];
+  // nodes: 0=s, 1=a, 2=b, 3=c, 4=d
+  // edges: [from, to, weight, svgIdx]
+  // order: s→a, s→b, a→b, a→c, a→d, b→c, b→d, c→a, d→c
+  var EDGES54 = [
+    [0,1,6,0],[0,2,7,1],[1,2,8,2],[1,3,-2,3],[1,4,-3,4],
+    [2,3,-1,5],[2,4,9,6],[3,1,-4,7],[4,3,7,8]
+  ];
+  var LABELS54 = ['s','a','b','c','d'];
+  var N54 = 5;
+  var ROUNDS54 = 4; // |V|-1
+  var dist54 = [0,INF,INF,INF,INF];
   var round54 = 0, eIdx54 = 0, tried54 = 0, imp54 = 0, done54 = false;
 
   function fmt54(d){ return d===INF?'∞':String(d); }
@@ -367,27 +390,27 @@ li { margin-bottom: 7px; }
     e.setAttribute('stroke',m[0]);e.setAttribute('stroke-width',m[1]);e.setAttribute('marker-end','url(#'+m[2]+')');
   }
   function updateDisplay54(){
-    for(var i=0;i<4;i++){
+    for(var i=0;i<N54;i++){
       var tv=document.getElementById('vz54-tv'+i);
       if(tv)tv.textContent=fmt54(dist54[i]);
     }
     document.getElementById('vz54-s-tried').textContent=tried54;
     document.getElementById('vz54-s-imp').textContent=imp54;
-    document.getElementById('vz54-s-round').textContent=round54<=0?'—':(round54+' / 3');
+    document.getElementById('vz54-s-round').textContent=round54<=0?'—':(round54+' / '+ROUNDS54);
   }
   function reset54Visual(){
-    for(var i=0;i<5;i++)setE54(i,'default');
+    for(var i=0;i<EDGES54.length;i++)setE54(i,'default');
     setN54(0,'src');
-    for(var i=1;i<4;i++)setN54(i,'default');
+    for(var i=1;i<N54;i++)setN54(i,'default');
   }
 
   window.vz54reset=function(){
-    dist54=[0,INF,INF,INF];round54=0;eIdx54=0;tried54=0;imp54=0;done54=false;
+    dist54=[0,INF,INF,INF,INF];round54=0;eIdx54=0;tried54=0;imp54=0;done54=false;
     reset54Visual();updateDisplay54();
     document.getElementById('vz54-lbl').textContent='Ready';
-    document.getElementById('vz54-txt').innerHTML='Press <b>Step</b> to begin. Graph: S&#x2192;A(6), S&#x2192;B(7), A&#x2192;C(5), B&#x2192;A(-2), B&#x2192;C(-4). Source = S.';
+    document.getElementById('vz54-txt').innerHTML='Press <b>Step</b> to begin. Graph: s&#x2192;a(6), s&#x2192;b(7), a&#x2192;b(8), a&#x2192;c(-2), a&#x2192;d(-3), b&#x2192;c(-1), b&#x2192;d(9), c&#x2192;a(-4), d&#x2192;c(7). Source = s.';
     document.getElementById('vz54-btn-step').disabled=false;
-    for(var i=0;i<4;i++){var tv=document.getElementById('vz54-tv'+i);if(tv){tv.textContent=fmt54(dist54[i]);tv.style.color=i===0?'#3fb950':'#c9d1d9';}}
+    for(var i=0;i<N54;i++){var tv=document.getElementById('vz54-tv'+i);if(tv){tv.textContent=fmt54(dist54[i]);tv.style.color=i===0?'#3fb950':'#c9d1d9';}}
     var d0=document.getElementById('vz54-d0');if(d0){d0.textContent='0';d0.setAttribute('fill','#3fb950');}
   };
 
@@ -396,16 +419,16 @@ li { margin-bottom: 7px; }
     // Start first round
     if(round54===0){
       round54=1;eIdx54=0;
-      document.getElementById('vz54-lbl').textContent='Round 1 of 3';
+      document.getElementById('vz54-lbl').textContent='Round 1 of '+ROUNDS54;
       document.getElementById('vz54-txt').textContent='Trying to relax all edges. Each attempt: if dist[u]+w < dist[v], update dist[v].';
-      document.getElementById('vz54-s-round').textContent='1 / 3';
+      document.getElementById('vz54-s-round').textContent='1 / '+ROUNDS54;
       return;
     }
-    if(round54<=3){
+    if(round54<=ROUNDS54){
       if(eIdx54<EDGES54.length){
         // clear prev
-        for(var i=0;i<5;i++)setE54(i,'default');
-        for(var i=1;i<4;i++)setN54(i,'default');
+        for(var i=0;i<EDGES54.length;i++)setE54(i,'default');
+        for(var i=1;i<N54;i++)setN54(i,'default');
         var edge=EDGES54[eIdx54];
         var u=edge[0],v=edge[1],w=edge[2],ei=edge[3];
         tried54++;
@@ -430,20 +453,20 @@ li { margin-bottom: 7px; }
       }
       if(eIdx54>=EDGES54.length){
         var prevRound=round54;eIdx54=0;round54++;
-        if(round54<=3){
-          for(var i=0;i<5;i++)setE54(i,'default');
-          for(var i=1;i<4;i++)setN54(i,'default');
-          document.getElementById('vz54-s-round').textContent=round54+' / 3';
+        if(round54<=ROUNDS54){
+          for(var i=0;i<EDGES54.length;i++)setE54(i,'default');
+          for(var i=1;i<N54;i++)setN54(i,'default');
+          document.getElementById('vz54-s-round').textContent=round54+' / '+ROUNDS54;
           document.getElementById('vz54-lbl').textContent='Round '+prevRound+' complete';
           document.getElementById('vz54-txt').textContent='Starting round '+round54+'. Trying all edges again — further improvements possible.';
         } else {
           // done
           done54=true;
-          for(var i=0;i<5;i++)setE54(i,'done');
-          for(var i=0;i<4;i++)setN54(i,'done');
-          for(var i=0;i<4;i++){var tv=document.getElementById('vz54-tv'+i);if(tv){tv.textContent=fmt54(dist54[i]);tv.style.color='#3fb950';}}
-          document.getElementById('vz54-lbl').textContent='Complete — Round '+prevRound+' done';
-          document.getElementById('vz54-txt').innerHTML='All 3 rounds done. Final: S=0, A=5, B=7, C=3. Shortest S→A is S→B→A (7−2=5), not direct (6). <b style="color:#3fb950">No negative cycle detected.</b>';
+          for(var i=0;i<EDGES54.length;i++)setE54(i,'done');
+          for(var i=0;i<N54;i++)setN54(i,'done');
+          for(var i=0;i<N54;i++){var tv=document.getElementById('vz54-tv'+i);if(tv){tv.textContent=fmt54(dist54[i]);tv.style.color='#3fb950';}}
+          document.getElementById('vz54-lbl').textContent='Complete — '+ROUNDS54+' rounds done';
+          document.getElementById('vz54-txt').innerHTML='All '+ROUNDS54+' rounds done. Final: s=0, a=2, b=7, c=4, d=1. <b style="color:#3fb950">No negative cycle detected.</b>';
           document.getElementById('vz54-btn-step').disabled=true;
         }
       }
@@ -712,12 +735,12 @@ li { margin-bottom: 7px; }
     <div style="border-right:1px solid #30363d;padding:16px 18px;overflow-x:auto;">
       <div style="font-family:monospace;font-size:.6em;letter-spacing:.14em;text-transform:uppercase;color:#8b949e;margin-bottom:8px;">Distance Matrix</div>
       <table id="vz55-mat" style="border-collapse:collapse;font-family:monospace;font-size:.82em;width:100%;"></table>
-      <div style="margin-top:12px;font-size:.75em;color:#8b949e;">Edges: 0&#x2192;1(3), 0&#x2192;3(7), 1&#x2192;0(8), 1&#x2192;2(2), 2&#x2192;0(5), 2&#x2192;3(1), 3&#x2192;0(2)</div>
+      <div style="margin-top:12px;font-size:.75em;color:#8b949e;">Vertices 1–4. Edges: 1&#x2192;2(4), 1&#x2192;3(-2), 2&#x2192;4(-1), 3&#x2192;2(3), 4&#x2192;3(2)</div>
     </div>
     <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
       <div>
         <div style="font-family:monospace;font-size:.6em;letter-spacing:.18em;text-transform:uppercase;color:#f0883e;margin-bottom:4px;" id="vz55-lbl">Ready</div>
-        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;" id="vz55-txt">Press <b>Step</b>. For each intermediate k=0..3, try all pairs (i,j): update dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).</div>
+        <div style="font-size:.86em;line-height:1.5;color:#c9d1d9;min-height:60px;" id="vz55-txt">Press <b>Step</b>. For each intermediate k=1..4, try all pairs (i,j): update dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).</div>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <div style="background:#161b22;border:1px solid #30363d;border-radius:7px;padding:6px 10px;min-width:56px;">
@@ -745,12 +768,12 @@ li { margin-bottom: 7px; }
   'use strict';
   var N55=4;
   var INF55=1e9;
-  // Edges: 0→1(3), 0→3(7), 1→0(8), 1→2(2), 2→0(5), 2→3(1), 3→0(2)
+  // Vertices 1-4 (0-indexed as 0-3). Edges: 1→2(4), 1→3(-2), 2→4(-1), 3→2(3), 4→3(2)
   var INIT55=[
-    [0,3,INF55,7],
-    [8,0,2,INF55],
-    [5,INF55,0,1],
-    [2,INF55,INF55,0]
+    [0,4,-2,INF55],
+    [INF55,0,INF55,-1],
+    [INF55,3,0,INF55],
+    [INF55,INF55,2,0]
   ];
   var dist55,k55,i55,j55,updK55,totUpd55,done55,phase55;
   // phase55: 'init'=show initial matrix, then steps per (k,i,j)
@@ -762,10 +785,10 @@ li { margin-bottom: 7px; }
   function renderMat55(activeK,activeI,activeJ,flashI,flashJ){
     var t=document.getElementById('vz55-mat');if(!t)return;
     var h='<thead><tr><th style="padding:5px 8px;background:#161b22;border:1px solid #30363d;color:#8b949e;font-size:.7em;text-align:center;"></th>';
-    for(var c=0;c<N55;c++)h+='<th style="padding:5px 8px;background:'+(c===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(c===activeK?'#f0883e':'#30363d')+';color:'+(c===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;text-align:center;">'+c+'</th>';
+    for(var c=0;c<N55;c++)h+='<th style="padding:5px 8px;background:'+(c===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(c===activeK?'#f0883e':'#30363d')+';color:'+(c===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;text-align:center;">'+(c+1)+'</th>';
     h+='</tr></thead><tbody>';
     for(var r=0;r<N55;r++){
-      h+='<tr><td style="padding:5px 8px;background:'+(r===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(r===activeK?'#f0883e':'#30363d')+';color:'+(r===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;font-weight:700;text-align:center;">'+r+'</td>';
+      h+='<tr><td style="padding:5px 8px;background:'+(r===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(r===activeK?'#f0883e':'#30363d')+';color:'+(r===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;font-weight:700;text-align:center;">'+(r+1)+'</td>';
       for(var cc=0;cc<N55;cc++){
         var isActive=(r===activeI&&cc===activeJ);
         var isFlash=(r===flashI&&cc===flashJ);
@@ -810,9 +833,9 @@ li { margin-bottom: 7px; }
     } else if(s.type==='newk'){
       k55=s.k;updK55=0;i55=null;j55=null;
       renderMat55(k55,-1,-1,-1,-1);
-      document.getElementById('vz55-lbl').textContent='k = '+k55+' (via vertex '+k55+')';
-      document.getElementById('vz55-txt').textContent='Now trying all (i,j) pairs: can routing through vertex '+k55+' shorten any path?';
-      document.getElementById('vz55-s-k').textContent=String(k55);
+      document.getElementById('vz55-lbl').textContent='k = '+(k55+1)+' (via vertex '+(k55+1)+')';
+      document.getElementById('vz55-txt').textContent='Now trying all (i,j) pairs: can routing through vertex '+(k55+1)+' shorten any path?';
+      document.getElementById('vz55-s-k').textContent=String(k55+1);
     } else if(s.type==='cell'){
       var k=s.k,i=s.i,j=s.j;
       var via=dist55[i][k]===INF55||dist55[k][j]===INF55?INF55:dist55[i][k]+dist55[k][j];
@@ -822,14 +845,14 @@ li { margin-bottom: 7px; }
         dist55[i][j]=via;updK55++;totUpd55++;
         flashI=i;flashJ=j;
         renderMat55(k,i,j,flashI,flashJ);
-        document.getElementById('vz55-lbl').textContent='Updated ('+i+','+j+') via k='+k;
-        document.getElementById('vz55-txt').innerHTML='dist['+i+']['+j+'] = min('+fmt55(old55)+', dist['+i+']['+k+']+dist['+k+']['+j+']) = min('+fmt55(old55)+', '+fmt55(dist55[i][k])+'+'+fmt55(dist55[k][j])+') = <b style="color:#3fb950">'+fmt55(dist55[i][j])+'</b>';
+        document.getElementById('vz55-lbl').textContent='Updated ('+(i+1)+','+(j+1)+') via k='+(k+1);
+        document.getElementById('vz55-txt').innerHTML='dist['+(i+1)+']['+(j+1)+'] = min('+fmt55(old55)+', dist['+(i+1)+']['+(k+1)+']+dist['+(k+1)+']['+(j+1)+']) = min('+fmt55(old55)+', '+fmt55(dist55[i][k])+'+'+fmt55(dist55[k][j])+') = <b style="color:#3fb950">'+fmt55(dist55[i][j])+'</b>';
         document.getElementById('vz55-s-upd').textContent=String(updK55);
         document.getElementById('vz55-s-tot').textContent=String(totUpd55);
       } else {
         renderMat55(k,i,j,-1,-1);
-        document.getElementById('vz55-lbl').textContent='No update ('+i+','+j+') via k='+k;
-        document.getElementById('vz55-txt').textContent='dist['+i+']['+j+']: min('+fmt55(dist55[i][j])+', '+fmt55(dist55[i][k])+'+'+fmt55(dist55[k][j])+') = '+fmt55(dist55[i][j])+' — no improvement.';
+        document.getElementById('vz55-lbl').textContent='No update ('+(i+1)+','+(j+1)+') via k='+(k+1);
+        document.getElementById('vz55-txt').textContent='dist['+(i+1)+']['+(j+1)+']: min('+fmt55(dist55[i][j])+', '+fmt55(dist55[i][k])+'+'+fmt55(dist55[k][j])+') = '+fmt55(dist55[i][j])+' — no improvement.';
       }
     } else if(s.type==='done'){
       done55=true;
@@ -845,7 +868,7 @@ li { margin-bottom: 7px; }
     buildSteps55();stepIdx55=0;
     renderMat55(-1,-1,-1,-1,-1);
     document.getElementById('vz55-lbl').textContent='Ready';
-    document.getElementById('vz55-txt').innerHTML='Press <b>Step</b>. For each intermediate k=0..3, try all pairs (i,j): update dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).';
+    document.getElementById('vz55-txt').innerHTML='Press <b>Step</b>. For each intermediate k=1..4, try all pairs (i,j): update dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).';
     document.getElementById('vz55-s-k').textContent='—';
     document.getElementById('vz55-s-upd').textContent='0';
     document.getElementById('vz55-s-tot').textContent='0';
@@ -1025,7 +1048,7 @@ function GET_PATH(u, v):
     <div style="border-right:1px solid #30363d;padding:16px 18px;overflow-x:auto;">
       <div style="font-family:monospace;font-size:.6em;letter-spacing:.14em;text-transform:uppercase;color:#8b949e;margin-bottom:8px;">Reach Matrix (0=false, 1=true)</div>
       <table id="vz56-mat" style="border-collapse:collapse;font-family:monospace;font-size:.82em;width:100%;"></table>
-      <div style="margin-top:12px;font-size:.75em;color:#8b949e;">Graph: 0&#x2192;1, 1&#x2192;2, 2&#x2192;3 (chain)</div>
+      <div style="margin-top:12px;font-size:.75em;color:#8b949e;">Graph: a&#x2192;b, b&#x2192;c, c&#x2192;d, d&#x2192;b, e&#x2192;a (nodes 0=a,1=b,2=c,3=d,4=e)</div>
     </div>
     <div style="display:flex;flex-direction:column;padding:16px 18px;background:#21262d;gap:10px;">
       <div>
@@ -1052,27 +1075,30 @@ function GET_PATH(u, v):
 <script>
 (function(){
   'use strict';
-  var N56=4;
-  // Edges: 0→1, 1→2, 2→3
+  var N56=5;
+  // Nodes: 0=a, 1=b, 2=c, 3=d, 4=e
+  // Edges: a→b(0→1), b→c(1→2), c→d(2→3), d→b(3→1), e→a(4→0)
   var reach56;
   var k56,newPairs56,done56;
   var steps56,stepIdx56;
+  var LABELS56=['a','b','c','d','e'];
 
   function copyBool(m){return m.map(function(r){return r.slice();});}
   var INIT56=[
-    [true,true,false,false],
-    [false,true,true,false],
-    [false,false,true,true],
-    [false,false,false,true]
+    [true,true,false,false,false],
+    [false,true,true,false,false],
+    [false,false,true,true,false],
+    [false,true,false,true,false],
+    [true,false,false,false,true]
   ];
 
   function renderMat56(activeK,flashI,flashJ){
     var t=document.getElementById('vz56-mat');if(!t)return;
     var h='<thead><tr><th style="padding:5px 8px;background:#161b22;border:1px solid #30363d;color:#8b949e;font-size:.7em;text-align:center;"></th>';
-    for(var c=0;c<N56;c++)h+='<th style="padding:5px 8px;background:'+(c===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(c===activeK?'#f0883e':'#30363d')+';color:'+(c===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;text-align:center;">'+c+'</th>';
+    for(var c=0;c<N56;c++)h+='<th style="padding:5px 8px;background:'+(c===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(c===activeK?'#f0883e':'#30363d')+';color:'+(c===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;text-align:center;">'+LABELS56[c]+'</th>';
     h+='</tr></thead><tbody>';
     for(var r=0;r<N56;r++){
-      h+='<tr><td style="padding:5px 8px;background:'+(r===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(r===activeK?'#f0883e':'#30363d')+';color:'+(r===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;font-weight:700;text-align:center;">'+r+'</td>';
+      h+='<tr><td style="padding:5px 8px;background:'+(r===activeK?'#f0883e1a':'#161b22')+';border:1px solid '+(r===activeK?'#f0883e':'#30363d')+';color:'+(r===activeK?'#f0883e':'#58a6ff')+';font-size:.7em;font-weight:700;text-align:center;">'+LABELS56[r]+'</td>';
       for(var cc=0;cc<N56;cc++){
         var isFlash=(r===flashI&&cc===flashJ);
         var val=reach56[r][cc];
@@ -1113,32 +1139,32 @@ function GET_PATH(u, v):
     } else if(s.type==='newk'){
       k56=s.k;newPairs56=0;
       renderMat56(k56,-1,-1);
-      document.getElementById('vz56-lbl').textContent='k = '+k56;
-      document.getElementById('vz56-txt').textContent='Via vertex '+k56+': reach[i][j] |= reach[i]['+k56+'] && reach['+k56+'][j].';
-      document.getElementById('vz56-s-k').textContent=String(k56);
+      document.getElementById('vz56-lbl').textContent='k = '+LABELS56[k56];
+      document.getElementById('vz56-txt').textContent='Via vertex '+LABELS56[k56]+': reach[i][j] |= reach[i]['+LABELS56[k56]+'] && reach['+LABELS56[k56]+'][j].';
+      document.getElementById('vz56-s-k').textContent=LABELS56[k56];
       document.getElementById('vz56-s-new').textContent='0';
     } else if(s.type==='cell'){
       var k=s.k,i=s.i,j=s.j;
       if(!reach56[i][j]&&reach56[i][k]&&reach56[k][j]){
         reach56[i][j]=true;newPairs56++;
         renderMat56(k,i,j);
-        document.getElementById('vz56-lbl').textContent='New: reach['+i+']['+j+']=1 via k='+k;
-        document.getElementById('vz56-txt').textContent='reach['+i+']['+k+']=1 AND reach['+k+']['+j+']=1 → reach['+i+']['+j+'] set to 1! Vertex '+i+' can now reach '+j+' via '+k+'.';
+        document.getElementById('vz56-lbl').textContent='New: reach['+LABELS56[i]+']['+LABELS56[j]+']=1 via k='+LABELS56[k];
+        document.getElementById('vz56-txt').textContent='reach['+LABELS56[i]+']['+LABELS56[k]+']=1 AND reach['+LABELS56[k]+']['+LABELS56[j]+']=1 → reach['+LABELS56[i]+']['+LABELS56[j]+'] set to 1! Vertex '+LABELS56[i]+' can now reach '+LABELS56[j]+' via '+LABELS56[k]+'.';
         document.getElementById('vz56-s-new').textContent=String(newPairs56);
       } else {
         renderMat56(k,-1,-1);
-        document.getElementById('vz56-lbl').textContent='reach['+i+']['+j+'] via k='+k+' — no change';
+        document.getElementById('vz56-lbl').textContent='reach['+LABELS56[i]+']['+LABELS56[j]+'] via k='+LABELS56[k]+' — no change';
         if(reach56[i][j]){
-          document.getElementById('vz56-txt').textContent='reach['+i+']['+j+'] already 1. No update needed.';
+          document.getElementById('vz56-txt').textContent='reach['+LABELS56[i]+']['+LABELS56[j]+'] already 1. No update needed.';
         } else {
-          document.getElementById('vz56-txt').textContent='reach['+i+']['+k+']='+reach56[i][k]+' or reach['+k+']['+j+']='+reach56[k][j]+' is false → cannot extend through k='+k+'.';
+          document.getElementById('vz56-txt').textContent='reach['+LABELS56[i]+']['+LABELS56[k]+']='+reach56[i][k]+' or reach['+LABELS56[k]+']['+LABELS56[j]+']='+reach56[k][j]+' is false → cannot extend through k='+LABELS56[k]+'.';
         }
       }
     } else if(s.type==='done'){
       done56=true;
       renderMat56(-1,-1,-1);
       document.getElementById('vz56-lbl').textContent='Complete';
-      document.getElementById('vz56-txt').innerHTML='Transitive closure done. 0 can reach 1,2,3; 1 can reach 2,3; 2 can reach 3; 3 only reaches itself.';
+      document.getElementById('vz56-txt').innerHTML='Transitive closure done. e,a can reach b,c,d (b-c-d cycle reachable from a,e); b,c,d reach each other via cycle; no vertex reaches e or (back to) a from b,c,d.';
       document.getElementById('vz56-btn-step').disabled=true;
     }
   }
@@ -1791,7 +1817,7 @@ function CRITICAL_PATH(u):
 </main>
 <script>
 (function(){
-  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
   var C=50.3;
   function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
   function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}

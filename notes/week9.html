@@ -164,6 +164,7 @@ li { margin-bottom: 7px; }
 
   <div class="nav-section">Reference</div>
   <ul>
+    <li><a href="questions.html">&#x1F4DA; Questions Bank</a></li>
     <li><a href="algorithms.html">All Algorithms Table</a></li>
     <li><a href="index.html">↑ Course Home</a></li>
   </ul>
@@ -639,7 +640,7 @@ ST1 ST2
   <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
     <span style="font-family:monospace;font-size:0.65em;letter-spacing:0.2em;text-transform:uppercase;color:#bc8cff;">Interactive</span>
     <span style="font-size:0.95em;font-weight:600;color:#c9d1d9;flex:1;">AVL Rotations — Imbalance Detection &amp; Fix</span>
-    <span style="font-family:monospace;font-size:0.75em;color:#8b949e;">Insert [10,20,30,25] — RR then RL cases</span>
+    <span style="font-family:monospace;font-size:0.75em;color:#8b949e;">Insert [10,20,30,40,35] — RR then RL cases</span>
   </div>
   <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
     <div style="background:#0d1117;position:relative;">
@@ -1683,12 +1684,14 @@ var avl_steps=[
    action:function(){avl_hiNodes=[10];avl_hiType='imbalance';avl_root={key:10,l:null,r:{key:20,l:null,r:{key:30,l:null,r:null,h:0,bf:0},h:1,bf:-1},h:2,bf:-2};}},
   {lbl:'Step 4 — Left Rotation at 10',narr:'Left rotation at node 10. 20 rises to become root. All balanced!',
    action:function(){avl_rots++;avl_root=avl_ins({key:10,l:null,r:null,h:0,bf:0},20);avl_root=avl_ins(avl_root,30);avl_hiNodes=[20];avl_hiType='rotated';}},
-  {lbl:'Step 5 — Insert 25 — IMBALANCE',narr:'25 → right of 20, left of 30. BF(20) = <b style="color:#f85149">−2</b>! Right-left imbalance. Need double rotation.',
-   action:function(){var tmp={key:20,l:{key:10,l:null,r:null,h:0,bf:0},r:{key:30,l:{key:25,l:null,r:null,h:0,bf:0},r:null,h:1,bf:1},h:3,bf:-2};avl_upd(tmp.r.l);avl_upd(tmp.r);avl_upd(tmp.l);avl_upd(tmp);avl_root=tmp;avl_hiNodes=[20,30];avl_hiType='imbalance';}},
-  {lbl:'Step 6 — Right Rotation at 30',narr:'Step 1 of double rotation: right rotation at 30. 25 becomes parent of 30.',
-   action:function(){avl_rots++;var tmp={key:20,l:{key:10,l:null,r:null,h:0,bf:0},r:{key:25,l:null,r:{key:30,l:null,r:null,h:0,bf:0},h:1,bf:-1},h:2,bf:-1};avl_upd(tmp.r.r);avl_upd(tmp.r);avl_upd(tmp.l);avl_upd(tmp);avl_root=tmp;avl_hiNodes=[25,30];avl_hiType='rotated';}},
-  {lbl:'Step 7 — Left Rotation at 20',narr:'Step 2: left rotation at 20. 25 becomes new root. <b style="color:#3fb950">Balanced!</b>',
-   action:function(){avl_rots++;avl_root=null;avl_root=avl_ins(avl_root,25);avl_root=avl_ins(avl_root,20);avl_root=avl_ins(avl_root,30);avl_root=avl_ins(avl_root,10);avl_hiNodes=[25];avl_hiType='rotated';}},
+  {lbl:'Step 5 — Insert 40 (balanced)',narr:'40 &gt; 20 → right, 40 &gt; 30 → right child of 30. BF(30) = −1, BF(20) = <b style="color:#58a6ff">−1</b>. Still balanced.',
+   action:function(){avl_root=avl_ins(avl_root,40);avl_hiNodes=[40];avl_hiType='new';}},
+  {lbl:'Step 6 — Insert 35 — IMBALANCE',narr:'35 → right of 30, left of 40 (35 &lt; 40). BF(40) = <b style="color:#58a6ff">+1</b>, BF(30) = <b style="color:#f85149">−2</b>! Right-Left imbalance at node 30. Need double rotation.',
+   action:function(){var n35={key:35,l:null,r:null,h:0,bf:0};var n40={key:40,l:n35,r:null};avl_upd(n40);var n10={key:10,l:null,r:null,h:0,bf:0};var n30={key:30,l:null,r:n40};avl_upd(n30);avl_root={key:20,l:n10,r:n30};avl_upd(avl_root);avl_hiNodes=[30,40];avl_hiType='imbalance';}},
+  {lbl:'Step 7 — Right Rotation at 40',narr:'Step 1 of RL double rotation: right rotation at 40. Node 35 rises; 40 becomes its right child. Node 30 is still imbalanced — left rotation next.',
+   action:function(){avl_rots++;var n40={key:40,l:null,r:null,h:0,bf:0};var n35={key:35,l:null,r:n40};avl_upd(n35);var n10={key:10,l:null,r:null,h:0,bf:0};var n30={key:30,l:null,r:n35};avl_upd(n30);avl_root={key:20,l:n10,r:n30};avl_upd(avl_root);avl_hiNodes=[35,40];avl_hiType='rotated';}},
+  {lbl:'Step 8 — Left Rotation at 30',narr:'Step 2 of RL: left rotation at 30. Node 35 becomes the subtree root, 30 goes left, 40 goes right. <b style="color:#3fb950">Balanced!</b>',
+   action:function(){avl_rots++;avl_root=null;[20,10,35,30,40].forEach(function(k){avl_root=avl_ins(avl_root,k);});avl_hiNodes=[35];avl_hiType='rotated';}},
 ];
 
 function avl_layout(node,depth,counter){
@@ -2266,7 +2269,7 @@ window.vz_rbtreset=vz_rbtreset;
 
 <script>
 (function(){
-  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
 ['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
   var C=50.3;
   function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}

@@ -167,6 +167,7 @@
 
   <div class="nav-section">Reference</div>
   <ul>
+    <li><a href="questions.html">&#x1F4DA; Questions Bank</a></li>
     <li><a href="algorithms.html">All Algorithms Table</a></li>
     <li><a href="index.html">↑ Course Home</a></li>
   </ul>
@@ -324,8 +325,9 @@
 
 <!-- ═══════════════════════════════════════════════════════════════════
      VZ59 — Ford-Fulkerson Method: Interactive Flow Network Widget
-     Network: S,A,B,T  Edges: S→A:3, S→B:3, A→T:3, B→T:3, A→B:2
-     3 augmenting path iterations  Max flow = 4
+     Network: s,a,b,c,d,t  (6-node prose example)
+     Edges: s→a(3), s→b(5), a→c(3), c→b(3), c→t(3), b→d(5), d→t(5)
+     3 augmenting paths  Max flow = 8
      ═══════════════════════════════════════════════════════════════════ -->
 <div id="vz59-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
   <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
@@ -336,7 +338,24 @@
   <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:340px;">
     <!-- LEFT: SVG canvas -->
     <div style="background:#0d1117;border-right:1px solid #30363d;position:relative;padding:8px 0;">
-      <svg id="vz59-svg" viewBox="0 0 540 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+      <!--
+        Node layout (viewBox 580 320):
+          s  = (60, 160)
+          a  = (200, 60)
+          b  = (200, 260)
+          c  = (350, 60)
+          d  = (350, 260)
+          t  = (510, 160)
+        Edges (index):
+          0 = s→a  cap 3
+          1 = s→b  cap 5
+          2 = a→c  cap 3
+          3 = c→b  cap 3   (cross edge, top→bottom)
+          4 = c→t  cap 3
+          5 = b→d  cap 5
+          6 = d→t  cap 5
+      -->
+      <svg id="vz59-svg" viewBox="0 0 580 320" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
         <defs>
           <marker id="vz59-arr" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
             <path d="M0,0 L0,6 L9,3 z" fill="#30363d"/>
@@ -351,53 +370,69 @@
             <path d="M0,0 L0,6 L8,3 z" fill="#8b949e"/>
           </marker>
         </defs>
-        <!-- S→A  (S=80,150 → A=270,70) -->
-        <line id="vz59-e0" x1="106" y1="140" x2="246" y2="82" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
-        <text id="vz59-el0" x="170" y="101" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
-        <!-- S→B  (S=80,150 → B=270,230) -->
-        <line id="vz59-e1" x1="106" y1="160" x2="246" y2="218" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
-        <text id="vz59-el1" x="170" y="200" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
-        <!-- A→T  (A=270,70 → T=460,150) -->
-        <line id="vz59-e2" x1="296" y1="80" x2="436" y2="140" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
-        <text id="vz59-el2" x="374" y="97" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
-        <!-- B→T  (B=270,230 → T=460,150) -->
-        <line id="vz59-e3" x1="296" y1="220" x2="436" y2="160" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
-        <text id="vz59-el3" x="374" y="203" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
-        <!-- A→B  (A=270,70 → B=270,230) offset left -->
-        <line id="vz59-e4" x1="258" y1="96" x2="258" y2="204" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
-        <text id="vz59-el4" x="237" y="155" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/2</text>
+        <!-- e0: s→a (60,160 → 200,60) -->
+        <line id="vz59-e0" x1="84" y1="151" x2="178" y2="71" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el0" x="124" y="99" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <!-- e1: s→b (60,160 → 200,260) -->
+        <line id="vz59-e1" x1="84" y1="169" x2="178" y2="249" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el1" x="124" y="221" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/5</text>
+        <!-- e2: a→c (200,60 → 350,60) -->
+        <line id="vz59-e2" x1="226" y1="60" x2="324" y2="60" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el2" x="276" y="50" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <!-- e3: c→b (350,60 → 200,260) diagonal cross -->
+        <line id="vz59-e3" x1="336" y1="82" x2="214" y2="240" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el3" x="282" y="175" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <!-- e4: c→t (350,60 → 510,160) -->
+        <line id="vz59-e4" x1="374" y1="70" x2="487" y2="148" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el4" x="435" y="97" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <!-- e5: b→d (200,260 → 350,260) -->
+        <line id="vz59-e5" x1="226" y1="260" x2="324" y2="260" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el5" x="276" y="278" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/5</text>
+        <!-- e6: d→t (350,260 → 510,160) -->
+        <line id="vz59-e6" x1="374" y1="250" x2="487" y2="172" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz59-arr)"/>
+        <text id="vz59-el6" x="435" y="222" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/5</text>
         <!-- Residual back-edges (dashed, initially hidden) -->
-        <!-- back A→S -->
-        <line id="vz59-r0" x1="246" y1="76" x2="108" y2="136" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
-        <text id="vz59-rl0" x="170" y="92" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
-        <!-- back B→S -->
-        <line id="vz59-r1" x1="246" y1="224" x2="108" y2="164" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
-        <text id="vz59-rl1" x="170" y="210" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
-        <!-- back T→A -->
-        <line id="vz59-r2" x1="436" y1="136" x2="298" y2="76" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
-        <text id="vz59-rl2" x="372" y="89" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
-        <!-- back T→B -->
-        <line id="vz59-r3" x1="436" y1="164" x2="298" y2="224" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
-        <text id="vz59-rl3" x="372" y="213" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
-        <!-- back B→A (offset right) -->
-        <line id="vz59-r4" x1="282" y1="204" x2="282" y2="96" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
-        <text id="vz59-rl4" x="303" y="155" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
-        <!-- Nodes -->
-        <circle id="vz59-n0" cx="80" cy="150" r="26" fill="#1f6feb1a" stroke="#58a6ff" stroke-width="2"/>
-        <text x="80" y="150" fill="#58a6ff" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">S</text>
-        <circle id="vz59-n1" cx="270" cy="70" r="26" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="270" y="70" fill="#c9d1d9" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
-        <circle id="vz59-n2" cx="270" cy="230" r="26" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="270" y="230" fill="#c9d1d9" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
-        <circle id="vz59-n3" cx="460" cy="150" r="26" fill="#3fb9500d" stroke="#3fb950" stroke-width="2"/>
-        <text x="460" y="150" fill="#3fb950" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">T</text>
+        <!-- r0: a→s back -->
+        <line id="vz59-r0" x1="176" y1="67" x2="86" y2="147" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl0" x="124" y="92" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- r1: b→s back -->
+        <line id="vz59-r1" x1="176" y1="253" x2="86" y2="173" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl1" x="124" y="228" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- r2: c→a back -->
+        <line id="vz59-r2" x1="322" y1="54" x2="228" y2="54" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl2" x="276" y="46" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- r3: b→c back (reverse of c→b) -->
+        <line id="vz59-r3" x1="212" y1="242" x2="334" y2="84" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl3" x="266" y="182" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- r4: t→c back -->
+        <line id="vz59-r4" x1="485" y1="144" x2="376" y2="66" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl4" x="435" y="90" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- r5: d→b back -->
+        <line id="vz59-r5" x1="322" y1="266" x2="228" y2="266" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl5" x="276" y="282" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- r6: t→d back -->
+        <line id="vz59-r6" x1="485" y1="176" x2="376" y2="254" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3" opacity="0" marker-end="url(#vz59-arr-res)"/>
+        <text id="vz59-rl6" x="435" y="228" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- Nodes: 0=s,1=a,2=b,3=c,4=d,5=t -->
+        <circle id="vz59-n0" cx="60" cy="160" r="24" fill="#1f6feb1a" stroke="#58a6ff" stroke-width="2"/>
+        <text x="60" y="160" fill="#58a6ff" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">s</text>
+        <circle id="vz59-n1" cx="200" cy="60" r="24" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="200" y="60" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">a</text>
+        <circle id="vz59-n2" cx="200" cy="260" r="24" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="200" y="260" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">b</text>
+        <circle id="vz59-n3" cx="350" cy="60" r="24" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="350" y="60" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">c</text>
+        <circle id="vz59-n4" cx="350" cy="260" r="24" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="350" y="260" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">d</text>
+        <circle id="vz59-n5" cx="510" cy="160" r="24" fill="#3fb9500d" stroke="#3fb950" stroke-width="2"/>
+        <text x="510" y="160" fill="#3fb950" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">t</text>
         <!-- Legend -->
-        <line x1="20" y1="274" x2="48" y2="274" stroke="#f0883e" stroke-width="3"/>
-        <text x="52" y="278" fill="#8b949e" font-size="10" font-family="monospace">aug. path</text>
-        <line x1="148" y1="274" x2="176" y2="274" stroke="#f85149" stroke-width="2.5"/>
-        <text x="180" y="278" fill="#8b949e" font-size="10" font-family="monospace">saturated</text>
-        <line x1="278" y1="274" x2="306" y2="274" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3"/>
-        <text x="310" y="278" fill="#8b949e" font-size="10" font-family="monospace">residual back</text>
+        <line x1="20" y1="302" x2="48" y2="302" stroke="#f0883e" stroke-width="3"/>
+        <text x="52" y="306" fill="#8b949e" font-size="10" font-family="monospace">aug. path</text>
+        <line x1="148" y1="302" x2="176" y2="302" stroke="#f85149" stroke-width="2.5"/>
+        <text x="180" y="306" fill="#8b949e" font-size="10" font-family="monospace">saturated</text>
+        <line x1="278" y1="302" x2="306" y2="302" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="310" y="306" fill="#8b949e" font-size="10" font-family="monospace">residual back</text>
       </svg>
     </div>
     <!-- RIGHT: Step info panel -->
@@ -426,11 +461,13 @@
             <th style="padding:3px 7px;border:1px solid #30363d;background:#21262d;color:#58a6ff;font-size:.65em;text-transform:uppercase;">f/cap</th>
           </tr></thead>
           <tbody>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">S→A</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft0">0/3</td></tr>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">S→B</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft1">0/3</td></tr>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">A→T</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft2">0/3</td></tr>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">B→T</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft3">0/3</td></tr>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">A→B</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft4">0/2</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">s→a</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft0">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">s→b</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft1">0/5</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">a→c</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft2">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">c→b</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft3">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">c→t</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft4">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">b→d</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft5">0/5</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">d→t</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="vz59-ft6">0/5</td></tr>
           </tbody>
         </table>
       </div>
@@ -446,53 +483,56 @@
 (function(){
 'use strict';
 // VZ59 — Ford-Fulkerson Method interactive widget
-// Network: S(0),A(1),B(2),T(3)
-// Edges 0=S→A(3), 1=S→B(3), 2=A→T(3), 3=B→T(3), 4=A→B(2)
-// Iterations: Iter1: S→A→B→T bn=2, Iter2: S→A→T bn=1, Iter3: S→B→T bn=1  → max flow=4
+// Network: s(0),a(1),b(2),c(3),d(4),t(5)
+// Edges: 0=s→a(3), 1=s→b(5), 2=a→c(3), 3=c→b(3), 4=c→t(3), 5=b→d(5), 6=d→t(5)
+// Path 1: s→a→c→b→d→t  bn=3  flow=3
+// Path 2: s→b→[back b→c]→c→t  (uses backward edge on c→b)  bn=3  flow=6
+//   In residual after path1: c→b is saturated (3/3), so backward edge b→c has cap 3.
+//   Path uses edges: 1(s→b fwd), r3(b→c back = undo c→b), 4(c→t fwd)
+// Path 3: s→b→d→t  bn=2  flow=8
+// Each step: { label, html, pathEdges[], pathNodes[], augEdges[], augDelta, revEdges[], resEdges[], final }
+// revEdges = edges whose flow DECREASES (backward augmentation)
 
-var vz59_cap  = [3,3,3,3,2];
-var vz59_flow = [0,0,0,0,0];
-var vz59_si   = 0;  // step index
+var vz59_cap  = [3,5,3,3,3,5,5];
+var vz59_flow = [0,0,0,0,0,0,0];
+var vz59_si   = 0;
 var vz59_done = false;
+var NRES = 7; // number of residual back-edge elements
 
-// Each step: { label, html, pathEdges[], pathNodes[], augEdges[], augDelta, resEdges[], final }
 var vz59_steps = [
-  // Iter 1 find
+  // ── Iteration 1 ──
   { label:'Iteration 1 — Find Path',
-    html:'Initial state: all flows 0. DFS from S explores S→A→B→T. Bottleneck = min(3,2,3) = <b style="color:#f0883e">2</b>.',
-    pathEdges:[0,4,3], pathNodes:[1,2], augEdges:[], augDelta:0, resEdges:[] },
-  // Iter 1 augment
-  { label:'Iteration 1 — Augment 2 units',
-    html:'Send <b style="color:#f0883e">2 units</b> along S→A→B→T. A→B becomes <b style="color:#f85149">saturated</b> (2/2). Residual back-edges appear.',
-    pathEdges:[], pathNodes:[], augEdges:[0,4,3], augDelta:2, resEdges:[0,4,3],
-    statFlow:2, statPaths:1, statBn:'2' },
-  // Iter 2 find
+    html:'All flows 0. DFS finds s→a→c→b→d→t. Bottleneck = min(3,3,3,5,5) = <b style="color:#f0883e">3</b>.',
+    pathEdges:[0,2,3,5,6], pathNodes:[1,3,2,4], augEdges:[], revEdges:[], augDelta:0, resEdges:[] },
+  { label:'Iteration 1 — Augment 3 units',
+    html:'Send <b style="color:#f0883e">3 units</b> along s→a→c→b→d→t. Edges s→a, a→c, c→b now <b style="color:#f85149">saturated</b>. Residual back-edges appear.',
+    pathEdges:[], pathNodes:[], augEdges:[0,2,3,5,6], revEdges:[], augDelta:3, resEdges:[0,2,3,5,6],
+    statFlow:3, statPaths:1, statBn:'3' },
+  // ── Iteration 2 ──
   { label:'Iteration 2 — Find Path',
-    html:'A→B saturated (residual=0). DFS finds S→A→T. Residual: S→A=1, A→T=3. Bottleneck = min(1,3) = <b style="color:#f0883e">1</b>.',
-    pathEdges:[0,2], pathNodes:[1], augEdges:[], augDelta:0, resEdges:[] },
-  // Iter 2 augment
-  { label:'Iteration 2 — Augment 1 unit',
-    html:'Send <b style="color:#f0883e">1 unit</b> along S→A→T. S→A now <b style="color:#f85149">saturated</b> (3/3). Residual back-edge S←A updated.',
-    pathEdges:[], pathNodes:[], augEdges:[0,2], augDelta:1, resEdges:[0,2],
-    statFlow:3, statPaths:2, statBn:'1' },
-  // Iter 3 find
+    html:'s→a saturated. DFS explores s→b. c→b saturated (3/3) but <b>backward edge b→c</b> has residual 3. Path: s→b→(back b→c)→c→t. Bottleneck = min(5,3,3) = <b style="color:#f0883e">3</b>.',
+    pathEdges:[1,5], pathNodes:[2], augEdges:[], revEdges:[], augDelta:0, resEdges:[] },
+  { label:'Iteration 2 — Augment 3 units (uses backward edge)',
+    html:'Send <b style="color:#f0883e">3 units</b> along s→b→(back b→c)→c→t. Flow on c→b reduced by 3 (now 0/3). c→t now <b style="color:#f85149">saturated</b>. Total flow = <b style="color:#3fb950">6</b>.',
+    pathEdges:[], pathNodes:[], augEdges:[1,4], revEdges:[3], augDelta:3, resEdges:[1,3,4],
+    statFlow:6, statPaths:2, statBn:'3' },
+  // ── Iteration 3 ──
   { label:'Iteration 3 — Find Path',
-    html:'S→A saturated. DFS finds S→B→T. Residual: S→B=3, B→T=2 (used 1 in iter1). Bottleneck = min(3,2) = <b style="color:#f0883e">2</b>.',
-    pathEdges:[1,3], pathNodes:[2], augEdges:[], augDelta:0, resEdges:[] },
-  // Iter 3 augment
+    html:'Residual: s→b has 2 remaining (5−3=2), b→d=5, d→t=5. DFS finds s→b→d→t. Bottleneck = min(2,5,5) = <b style="color:#f0883e">2</b>.',
+    pathEdges:[1,5,6], pathNodes:[2,4], augEdges:[], revEdges:[], augDelta:0, resEdges:[] },
   { label:'Iteration 3 — Augment 2 units',
-    html:'Send <b style="color:#f0883e">2 units</b> along S→B→T. B→T now <b style="color:#f85149">saturated</b> (3/3). Total flow = <b style="color:#3fb950">4</b>.',
-    pathEdges:[], pathNodes:[], augEdges:[1,3], augDelta:2, resEdges:[1,3],
-    statFlow:4, statPaths:3, statBn:'2' },
-  // Done
+    html:'Send <b style="color:#f0883e">2 units</b> along s→b→d→t. s→b now <b style="color:#f85149">saturated</b> (5/5). Total flow = <b style="color:#3fb950">8</b>.',
+    pathEdges:[], pathNodes:[], augEdges:[1,5,6], revEdges:[], augDelta:2, resEdges:[1,5,6],
+    statFlow:8, statPaths:3, statBn:'2' },
+  // ── Done ──
   { label:'Maximum Flow Reached',
-    html:'<b style="color:#3fb950">No augmenting path exists. Max flow = 4.</b> S→A and B→T are saturated — every S→T path is blocked. Min-cut = {S,B} | {A,T}: capacity = S→A(3) + B→T(3) ... wait, the saturating cut here has S→A(3, sat) and B→T(3, sat) as forward edges; total capacity = 3+3=6? No. The cut {S} | {A,B,T}: outgoing = S→A(3)+S→B(3)=6. Hmm. In fact max flow=4 because A→B only cap 2. Min-cut = {S,A} | {B,T}: A→T(3)+A→B(2) — nope. After all augmentations this is the correct maximum.',
-    pathEdges:[], pathNodes:[], augEdges:[], augDelta:0, resEdges:[], final:true,
-    statFlow:4, statPaths:3, statBn:'—' }
+    html:'<b style="color:#3fb950">No augmenting path exists. Max flow = 8.</b> Min-cut: {s,b} | {a,c,d,t} — the saturated edges s→a(3) and s→b(5) crossing the cut give capacity 3+5=8. ✓',
+    pathEdges:[], pathNodes:[], augEdges:[], revEdges:[], augDelta:0, resEdges:[], final:true,
+    statFlow:8, statPaths:3, statBn:'—' }
 ];
 
 function vz59_redrawEdges(){
-  for(var i=0;i<5;i++){
+  for(var i=0;i<7;i++){
     var f=vz59_flow[i], c=vz59_cap[i], sat=f>=c;
     var e=document.getElementById('vz59-e'+i);
     var el=document.getElementById('vz59-el'+i);
@@ -526,7 +566,7 @@ function vz59_showRes(edges){
 }
 
 function vz59_resetNodes(){
-  [1,2].forEach(function(n){
+  [1,2,3,4].forEach(function(n){
     var nd=document.getElementById('vz59-n'+n);
     if(nd){ nd.setAttribute('fill','#21262d'); nd.setAttribute('stroke','#30363d'); }
   });
@@ -535,13 +575,16 @@ function vz59_resetNodes(){
 window.vz59step = function(){
   if(vz59_done) return;
   var s=vz59_steps[vz59_si];
-  // Apply augmentation
-  if(s.augDelta>0){ s.augEdges.forEach(function(i){ vz59_flow[i]+=s.augDelta; }); }
+  // Apply forward augmentation
+  if(s.augDelta>0){
+    s.augEdges.forEach(function(i){ vz59_flow[i]+=s.augDelta; });
+    // Apply backward augmentation (reduces flow on reverse edges)
+    s.revEdges.forEach(function(i){ vz59_flow[i]-=s.augDelta; });
+  }
   vz59_resetNodes();
   vz59_redrawEdges();
   if(s.pathEdges.length) vz59_hlPath(s.pathEdges, s.pathNodes);
   vz59_showRes(s.resEdges);
-  // Update stats
   if(s.statFlow!==undefined) document.getElementById('vz59-stat-flow').textContent=String(s.statFlow);
   if(s.statPaths!==undefined) document.getElementById('vz59-stat-paths').textContent=String(s.statPaths);
   if(s.statBn!==undefined) document.getElementById('vz59-stat-bn').textContent=s.statBn;
@@ -552,8 +595,8 @@ window.vz59step = function(){
 };
 
 window.vz59reset = function(){
-  vz59_flow=[0,0,0,0,0]; vz59_si=0; vz59_done=false;
-  for(var i=0;i<5;i++){
+  vz59_flow=[0,0,0,0,0,0,0]; vz59_si=0; vz59_done=false;
+  for(var i=0;i<NRES;i++){
     var r=document.getElementById('vz59-r'+i), rl=document.getElementById('vz59-rl'+i);
     if(r) r.setAttribute('opacity','0');
     if(rl){ rl.setAttribute('opacity','0'); rl.textContent='0'; }
@@ -769,7 +812,7 @@ function MAX_FLOW(G = (V, E), s, t):
 
 <!-- ═══════════════════════════════════════════════════════════════════
      VZ60 — Ford-Fulkerson DFS: Companion Widget showing DFS path-find
-     Same network. Shows DFS stack at each step of Iteration 1.
+     Same 6-node network. Traces DFS finding path 1: s→a→c→b→d→t
      ═══════════════════════════════════════════════════════════════════ -->
 <div id="vz60-widget" style="background:#161b22;border:1px solid #30363d;border-radius:10px;margin:24px 0;overflow:hidden;">
   <div style="background:#21262d;padding:10px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px;">
@@ -780,7 +823,12 @@ function MAX_FLOW(G = (V, E), s, t):
   <div style="display:grid;grid-template-columns:1.5fr 1fr;min-height:320px;">
     <!-- LEFT: SVG canvas -->
     <div style="background:#0d1117;border-right:1px solid #30363d;">
-      <svg id="vz60-svg" viewBox="0 0 540 280" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
+      <!--
+        Same node layout as vz59:
+          s(0)=60,160  a(1)=200,60  b(2)=200,260  c(3)=350,60  d(4)=350,260  t(5)=510,160
+        Edges: 0=s→a, 1=s→b, 2=a→c, 3=c→b, 4=c→t, 5=b→d, 6=d→t
+      -->
+      <svg id="vz60-svg" viewBox="0 0 580 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;">
         <defs>
           <marker id="vz60-arr" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
             <path d="M0,0 L0,6 L9,3 z" fill="#30363d"/>
@@ -792,40 +840,54 @@ function MAX_FLOW(G = (V, E), s, t):
             <path d="M0,0 L0,6 L9,3 z" fill="#58a6ff"/>
           </marker>
         </defs>
-        <!-- Edges: 0=S→A, 1=S→B, 2=A→T, 3=B→T, 4=A→B -->
-        <line id="vz60-e0" x1="106" y1="128" x2="246" y2="70" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
-        <text id="vz60-el0" x="170" y="88" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
-        <line id="vz60-e1" x1="106" y1="148" x2="246" y2="206" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
-        <text id="vz60-el1" x="170" y="188" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
-        <line id="vz60-e2" x1="296" y1="68" x2="436" y2="128" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
-        <text id="vz60-el2" x="374" y="86" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
-        <line id="vz60-e3" x1="296" y1="208" x2="436" y2="148" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
-        <text id="vz60-el3" x="374" y="191" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
-        <line id="vz60-e4" x1="258" y1="84" x2="258" y2="192" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
-        <text id="vz60-el4" x="237" y="143" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=2</text>
-        <!-- Nodes -->
-        <circle id="vz60-n0" cx="80" cy="138" r="26" fill="#1f6feb1a" stroke="#58a6ff" stroke-width="2"/>
-        <text x="80" y="138" fill="#58a6ff" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">S</text>
-        <circle id="vz60-n1" cx="270" cy="58" r="26" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="270" y="58" fill="#c9d1d9" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
-        <circle id="vz60-n2" cx="270" cy="218" r="26" fill="#21262d" stroke="#30363d" stroke-width="2"/>
-        <text x="270" y="218" fill="#c9d1d9" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
-        <circle id="vz60-n3" cx="460" cy="138" r="26" fill="#3fb9500d" stroke="#3fb950" stroke-width="2"/>
-        <text x="460" y="138" fill="#3fb950" font-size="15" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">T</text>
+        <!-- e0: s→a -->
+        <line id="vz60-e0" x1="84" y1="151" x2="178" y2="71" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el0" x="124" y="99" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
+        <!-- e1: s→b -->
+        <line id="vz60-e1" x1="84" y1="169" x2="178" y2="249" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el1" x="124" y="221" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=5</text>
+        <!-- e2: a→c -->
+        <line id="vz60-e2" x1="226" y1="60" x2="324" y2="60" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el2" x="276" y="50" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
+        <!-- e3: c→b (diagonal cross) -->
+        <line id="vz60-e3" x1="336" y1="82" x2="214" y2="240" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el3" x="282" y="175" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
+        <!-- e4: c→t -->
+        <line id="vz60-e4" x1="374" y1="70" x2="487" y2="148" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el4" x="435" y="97" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=3</text>
+        <!-- e5: b→d -->
+        <line id="vz60-e5" x1="226" y1="260" x2="324" y2="260" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el5" x="276" y="278" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=5</text>
+        <!-- e6: d→t -->
+        <line id="vz60-e6" x1="374" y1="250" x2="487" y2="172" stroke="#30363d" stroke-width="2.5" marker-end="url(#vz60-arr)"/>
+        <text id="vz60-el6" x="435" y="222" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">res=5</text>
+        <!-- Nodes: 0=s,1=a,2=b,3=c,4=d,5=t -->
+        <circle id="vz60-n0" cx="60" cy="160" r="24" fill="#1f6feb1a" stroke="#58a6ff" stroke-width="2"/>
+        <text x="60" y="160" fill="#58a6ff" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">s</text>
+        <circle id="vz60-n1" cx="200" cy="60" r="24" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="200" y="60" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">a</text>
+        <circle id="vz60-n2" cx="200" cy="260" r="24" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="200" y="260" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">b</text>
+        <circle id="vz60-n3" cx="350" cy="60" r="24" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="350" y="60" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">c</text>
+        <circle id="vz60-n4" cx="350" cy="260" r="24" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+        <text x="350" y="260" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">d</text>
+        <circle id="vz60-n5" cx="510" cy="160" r="24" fill="#3fb9500d" stroke="#3fb950" stroke-width="2"/>
+        <text x="510" y="160" fill="#3fb950" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">t</text>
         <!-- DFS Stack display in SVG -->
-        <text x="20" y="258" fill="#8b949e" font-size="10" font-family="monospace">DFS stack:</text>
-        <text id="vz60-stack-svg" x="90" y="258" fill="#58a6ff" font-size="10" font-family="monospace" font-weight="700">[ ]</text>
+        <text x="20" y="292" fill="#8b949e" font-size="10" font-family="monospace">DFS stack:</text>
+        <text id="vz60-stack-svg" x="90" y="292" fill="#58a6ff" font-size="10" font-family="monospace" font-weight="700">[ ]</text>
         <!-- Legend -->
-        <line x1="280" y1="258" x2="300" y2="258" stroke="#f0883e" stroke-width="2.5"/>
-        <text x="304" y="262" fill="#8b949e" font-size="10" font-family="monospace">trying</text>
-        <line x1="358" y1="258" x2="378" y2="258" stroke="#58a6ff" stroke-width="2.5"/>
-        <text x="382" y="262" fill="#8b949e" font-size="10" font-family="monospace">accepted</text>
+        <line x1="310" y1="292" x2="330" y2="292" stroke="#f0883e" stroke-width="2.5"/>
+        <text x="334" y="296" fill="#8b949e" font-size="10" font-family="monospace">trying</text>
+        <line x1="390" y1="292" x2="410" y2="292" stroke="#58a6ff" stroke-width="2.5"/>
+        <text x="414" y="296" fill="#8b949e" font-size="10" font-family="monospace">accepted</text>
       </svg>
     </div>
     <!-- RIGHT: Step info -->
     <div style="display:flex;flex-direction:column;padding:16px 18px;background:#161b22;gap:10px;">
       <p id="vz60-label" style="font-family:'JetBrains Mono',monospace;font-size:0.63em;letter-spacing:.22em;text-transform:uppercase;color:#f0883e;margin:0;">Ready</p>
-      <p id="vz60-text" style="font-size:0.88em;line-height:1.5;margin:0;color:#c9d1d9;min-height:64px;">Press <b>Step</b> to trace how DFS finds an augmenting path in the residual graph.</p>
+      <p id="vz60-text" style="font-size:0.88em;line-height:1.5;margin:0;color:#c9d1d9;min-height:64px;">Press <b>Step</b> to trace how DFS finds the first augmenting path s→a→c→b→d→t.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:72px;">
           <span style="font-family:'JetBrains Mono',monospace;font-size:.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Stack Depth</span>
@@ -858,8 +920,9 @@ function MAX_FLOW(G = (V, E), s, t):
 (function(){
 'use strict';
 // VZ60 — DFS augmenting path finder companion widget
-// Same network: S(0),A(1),B(2),T(3), edges 0=S→A,1=S→B,2=A→T,3=B→T,4=A→B
-// Shows DFS iteration 1 step by step
+// Network: s(0),a(1),b(2),c(3),d(4),t(5)
+// Edges: 0=s→a(3), 1=s→b(5), 2=a→c(3), 3=c→b(3), 4=c→t(3), 5=b→d(5), 6=d→t(5)
+// Traces DFS finding Iteration 1 path: s→a→c→b→d→t (bottleneck=3)
 
 var vz60_si   = 0;
 var vz60_done = false;
@@ -867,38 +930,56 @@ var vz60_done = false;
 // Steps: {label, html, tryEdge(index|-1), accEdges[], visitNodes[], stack[], bn, depth, tried, pathFound}
 var vz60_steps = [
   { label:'MAX_FLOW — Start DFS',
-    html:'Reset visited[]. Call <code>DFS(S, T, &infin;)</code>. Push S onto call stack.',
-    tryEdge:-1, accEdges:[], visitNodes:[0], stack:['S'], bn:'∞', depth:1, tried:0, pathFound:'—' },
-  { label:'DFS(S) — Try S→A',
-    html:'At S. Not sink. visited[S]=true. Examine edge S→A: residual = 3−0 = <b>3 &gt; 0</b>, A not visited. <b style="color:#f0883e">Try this edge.</b>',
-    tryEdge:0, accEdges:[], visitNodes:[0], stack:['S'], bn:'∞', depth:1, tried:1, pathFound:'—' },
-  { label:'DFS(A) — Recurse into A',
-    html:'S→A accepted (residual=3). Recurse: <code>DFS(A, T, min(∞,3)=3)</code>. visited[A]=true. Push A onto call stack.',
-    tryEdge:-1, accEdges:[0], visitNodes:[0,1], stack:['S','A'], bn:'3', depth:2, tried:1, pathFound:'—' },
-  { label:'DFS(A) — Try A→T',
-    html:'At A. Not sink. Examine edge A→T: residual = 3−0 = <b>3 &gt; 0</b>, T not visited. <b style="color:#f0883e">Try this edge.</b>',
-    tryEdge:2, accEdges:[0], visitNodes:[0,1], stack:['S','A'], bn:'3', depth:2, tried:2, pathFound:'—' },
-  { label:'DFS(T) — Sink Reached!',
-    html:'T=T (sink). Base case: <code>return bottleneck = min(3,3) = <b style="color:#3fb950">3</b></code>. Path found! Unwind the call stack.',
-    tryEdge:-1, accEdges:[0,2], visitNodes:[0,1,3], stack:['S','A','T'], bn:'3', depth:3, tried:2, pathFound:'S→A→T' },
+    html:'Reset visited[]. Call <code>DFS(s, t, &infin;)</code>. Push s onto call stack.',
+    tryEdge:-1, accEdges:[], visitNodes:[0], stack:['s'], bn:'∞', depth:1, tried:0, pathFound:'—' },
+  { label:'DFS(s) — Try s→a',
+    html:'At s. visited[s]=true. Examine edge s→a: residual = 3−0 = <b>3 &gt; 0</b>, a not visited. <b style="color:#f0883e">Try this edge.</b>',
+    tryEdge:0, accEdges:[], visitNodes:[0], stack:['s'], bn:'∞', depth:1, tried:1, pathFound:'—' },
+  { label:'DFS(a) — Recurse into a',
+    html:'s→a accepted (res=3). <code>DFS(a, t, min(∞,3)=3)</code>. visited[a]=true.',
+    tryEdge:-1, accEdges:[0], visitNodes:[0,1], stack:['s','a'], bn:'3', depth:2, tried:1, pathFound:'—' },
+  { label:'DFS(a) — Try a→c',
+    html:'At a. Examine edge a→c: residual = 3−0 = <b>3 &gt; 0</b>, c not visited. <b style="color:#f0883e">Try this edge.</b>',
+    tryEdge:2, accEdges:[0], visitNodes:[0,1], stack:['s','a'], bn:'3', depth:2, tried:2, pathFound:'—' },
+  { label:'DFS(c) — Recurse into c',
+    html:'a→c accepted (res=3). <code>DFS(c, t, min(3,3)=3)</code>. visited[c]=true.',
+    tryEdge:-1, accEdges:[0,2], visitNodes:[0,1,3], stack:['s','a','c'], bn:'3', depth:3, tried:2, pathFound:'—' },
+  { label:'DFS(c) — Try c→b',
+    html:'At c. Examine edge c→b: residual = 3−0 = <b>3 &gt; 0</b>, b not visited. <b style="color:#f0883e">Try this edge.</b>',
+    tryEdge:3, accEdges:[0,2], visitNodes:[0,1,3], stack:['s','a','c'], bn:'3', depth:3, tried:3, pathFound:'—' },
+  { label:'DFS(b) — Recurse into b',
+    html:'c→b accepted (res=3). <code>DFS(b, t, min(3,3)=3)</code>. visited[b]=true.',
+    tryEdge:-1, accEdges:[0,2,3], visitNodes:[0,1,2,3], stack:['s','a','c','b'], bn:'3', depth:4, tried:3, pathFound:'—' },
+  { label:'DFS(b) — Try b→d',
+    html:'At b. Examine edge b→d: residual = 5−0 = <b>5 &gt; 0</b>, d not visited. <b style="color:#f0883e">Try this edge.</b>',
+    tryEdge:5, accEdges:[0,2,3], visitNodes:[0,1,2,3], stack:['s','a','c','b'], bn:'3', depth:4, tried:4, pathFound:'—' },
+  { label:'DFS(d) — Recurse into d',
+    html:'b→d accepted (res=5). <code>DFS(d, t, min(3,5)=3)</code>. visited[d]=true.',
+    tryEdge:-1, accEdges:[0,2,3,5], visitNodes:[0,1,2,3,4], stack:['s','a','c','b','d'], bn:'3', depth:5, tried:4, pathFound:'—' },
+  { label:'DFS(d) — Try d→t',
+    html:'At d. Examine edge d→t: residual = 5−0 = <b>5 &gt; 0</b>, t not visited. <b style="color:#f0883e">Try this edge.</b>',
+    tryEdge:6, accEdges:[0,2,3,5], visitNodes:[0,1,2,3,4], stack:['s','a','c','b','d'], bn:'3', depth:5, tried:5, pathFound:'—' },
+  { label:'DFS(t) — Sink Reached!',
+    html:'t = sink. Base case: <code>return bottleneck = <b style="color:#3fb950">3</b></code>. Path found! Unwind call stack.',
+    tryEdge:-1, accEdges:[0,2,3,5,6], visitNodes:[0,1,2,3,4,5], stack:['s','a','c','b','d','t'], bn:'3', depth:6, tried:5, pathFound:'s→a→c→b→d→t' },
   { label:'Unwind — Augment Along Path',
-    html:'DFS returns 3 to DFS(A): update A→T flow +=3, A→T.reverse.flow −=3. Return 3 to DFS(S): update S→A flow +=3, S→A.reverse.flow −=3. Return 3 to MAX_FLOW.',
-    tryEdge:-1, accEdges:[0,2], visitNodes:[0,1,3], stack:['S'], bn:'3', depth:1, tried:2, pathFound:'S→A→T (bn=3)' },
+    html:'Unwinding: update flows on d→t, b→d, c→b, a→c, s→a each +=3 (and their reverse edges −=3). Return 3 to MAX_FLOW.',
+    tryEdge:-1, accEdges:[0,2,3,5,6], visitNodes:[0,1,2,3,4,5], stack:['s'], bn:'3', depth:1, tried:5, pathFound:'s→a→c→b→d→t (bn=3)' },
   { label:'Path Found — Done',
-    html:'<b style="color:#3fb950">Augmenting path S→A→T found. Bottleneck = 3.</b> Flow increased by 3. MAX_FLOW loops again to find more paths.',
-    tryEdge:-1, accEdges:[0,2], visitNodes:[0,1,3], stack:[], bn:'3', depth:0, tried:2, pathFound:'S→A→T ✓', final:true }
+    html:'<b style="color:#3fb950">Augmenting path s→a→c→b→d→t found. Bottleneck = 3.</b> Total flow = 3. MAX_FLOW loops to find more paths.',
+    tryEdge:-1, accEdges:[0,2,3,5,6], visitNodes:[0,1,2,3,4,5], stack:[], bn:'3', depth:0, tried:5, pathFound:'s→a→c→b→d→t ✓', final:true }
 ];
 
 function vz60_clearHighlights(){
-  for(var i=0;i<5;i++){
+  for(var i=0;i<7;i++){
     var e=document.getElementById('vz60-e'+i);
     if(e){ e.setAttribute('stroke','#30363d'); e.setAttribute('stroke-width','2.5'); e.setAttribute('marker-end','url(#vz60-arr)'); }
   }
-  [0,1,2,3].forEach(function(n){
+  [0,1,2,3,4,5].forEach(function(n){
     var nd=document.getElementById('vz60-n'+n);
     if(!nd) return;
     if(n===0){ nd.setAttribute('fill','#1f6feb1a'); nd.setAttribute('stroke','#58a6ff'); }
-    else if(n===3){ nd.setAttribute('fill','#3fb9500d'); nd.setAttribute('stroke','#3fb950'); }
+    else if(n===5){ nd.setAttribute('fill','#3fb9500d'); nd.setAttribute('stroke','#3fb950'); }
     else{ nd.setAttribute('fill','#21262d'); nd.setAttribute('stroke','#30363d'); }
   });
 }
@@ -919,7 +1000,7 @@ function vz60_apply(s){
   s.visitNodes.forEach(function(n){
     var nd=document.getElementById('vz60-n'+n);
     if(!nd) return;
-    if(n===0||n===3) return; // keep source/sink colour
+    if(n===0||n===5) return; // keep source/sink colour
     nd.setAttribute('fill','#58a6ff22'); nd.setAttribute('stroke','#58a6ff');
   });
   // Stack
@@ -953,7 +1034,7 @@ window.vz60reset = function(){
   document.getElementById('vz60-stat-path').textContent='—';
   document.getElementById('vz60-bn-panel').textContent='∞';
   document.getElementById('vz60-label').textContent='Ready';
-  document.getElementById('vz60-text').innerHTML='Press <b>Step</b> to trace how DFS finds an augmenting path in the residual graph.';
+  document.getElementById('vz60-text').innerHTML='Press <b>Step</b> to trace how DFS finds the first augmenting path s→a→c→b→d→t.';
   var btn=document.getElementById('vz60-step-btn'); btn.disabled=false; btn.style.opacity='1';
 };
 })();
@@ -1517,8 +1598,8 @@ window.vz60reset = function(){
     <div class="demo-stage">
       <!--
         Nodes: s(80,170), A(280,80), B(280,260), t(500,170)
-        Edges: s→A(cap=4), s→B(cap=3), A→t(cap=3), B→t(cap=5), A→B(cap=2)
-        Max flow = 7
+        Edges: s→a(3), s→b(5), a→c(3), c→b(3), c→t(3), b→d(5), d→t(5)
+        Max flow = 8 (paths: s→a→c→b→d→t, s→b→[undo c→b]→c→t, s→b→d→t)
       -->
       <svg id="d10-svg" viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -1531,61 +1612,73 @@ window.vz60reset = function(){
           <marker id="d10-arr-sat" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
             <path d="M0,0 L0,6 L8,3 z" fill="#f85149"/>
           </marker>
+          <marker id="d10-arr-res" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#8b949e"/>
+          </marker>
         </defs>
 
-        <!-- Edges: s→A, s→B, A→t, B→t, A→B -->
-        <!-- s→A (s=80,170 → A=280,80) -->
-        <line id="d10-e0" x1="106" y1="157" x2="256" y2="93" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
-        <text id="d10-el0" x="170" y="112" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/4</text>
+        <!-- Forward edges: 0=s→a, 1=s→b, 2=a→c, 3=c→b, 4=c→t, 5=b→d, 6=d→t -->
+        <line id="d10-e0" x1="84" y1="151" x2="178" y2="71" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el0" x="124" y="99" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
 
-        <!-- s→B (s=80,170 → B=280,260) -->
-        <line id="d10-e1" x1="106" y1="183" x2="256" y2="247" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
-        <text id="d10-el1" x="170" y="228" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <line id="d10-e1" x1="84" y1="169" x2="178" y2="249" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el1" x="124" y="221" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/5</text>
 
-        <!-- A→t (A=280,80 → t=500,170) -->
-        <line id="d10-e2" x1="306" y1="90" x2="476" y2="158" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
-        <text id="d10-el2" x="400" y="110" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
+        <line id="d10-e2" x1="226" y1="60" x2="324" y2="60" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el2" x="276" y="50" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
 
-        <!-- B→t (B=280,260 → t=500,170) -->
-        <line id="d10-e3" x1="306" y1="250" x2="476" y2="182" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
-        <text id="d10-el3" x="400" y="230" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/5</text>
+        <line id="d10-e3" x1="336" y1="82" x2="214" y2="240" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el3" x="282" y="175" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
 
-        <!-- A→B (A=280,80 → B=280,260) -->
-        <line id="d10-e4" x1="268" y1="106" x2="268" y2="234" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
-        <text id="d10-el4" x="250" y="175" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/2</text>
+        <line id="d10-e4" x1="374" y1="70" x2="487" y2="148" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el4" x="435" y="97" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/3</text>
 
-        <!-- Residual back-edges (shown as dashed, initially hidden) -->
-        <line id="d10-r0" x1="256" y1="87" x2="106" y2="153" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
-        <text id="d10-rl0" x="175" y="105" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <line id="d10-e5" x1="226" y1="260" x2="324" y2="260" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el5" x="276" y="278" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/5</text>
 
-        <line id="d10-r1" x1="256" y1="253" x2="106" y2="187" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
-        <text id="d10-rl1" x="175" y="235" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <line id="d10-e6" x1="374" y1="250" x2="487" y2="172" stroke="#30363d" stroke-width="2" marker-end="url(#d10-arr)"/>
+        <text id="d10-el6" x="435" y="222" fill="#8b949e" font-size="12" font-family="monospace" text-anchor="middle">0/5</text>
 
-        <line id="d10-r2" x1="476" y1="152" x2="306" y2="84" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
-        <text id="d10-rl2" x="395" y="102" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <!-- Residual back-edges (dashed, initially hidden) -->
+        <line id="d10-r0" x1="176" y1="67" x2="86" y2="147" stroke="#8b949e" stroke-width="1.2" stroke-dasharray="4,3" opacity="0" marker-end="url(#d10-arr-res)"/>
+        <text id="d10-rl0" x="124" y="92" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
 
-        <line id="d10-r3" x1="476" y1="176" x2="306" y2="256" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
-        <text id="d10-rl3" x="395" y="238" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <line id="d10-r1" x1="176" y1="253" x2="86" y2="173" stroke="#8b949e" stroke-width="1.2" stroke-dasharray="4,3" opacity="0" marker-end="url(#d10-arr-res)"/>
+        <text id="d10-rl1" x="124" y="228" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
 
-        <line id="d10-r4" x1="292" y1="234" x2="292" y2="106" stroke="#30363d" stroke-width="1.2" stroke-dasharray="5,4" opacity="0" marker-end="url(#d10-arr)"/>
-        <text id="d10-rl4" x="308" y="170" fill="#30363d" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+        <line id="d10-r2" x1="322" y1="54" x2="228" y2="54" stroke="#8b949e" stroke-width="1.2" stroke-dasharray="4,3" opacity="0" marker-end="url(#d10-arr-res)"/>
+        <text id="d10-rl2" x="276" y="46" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
 
-        <!-- Nodes: s, A, B, t -->
-        <!-- s -->
-        <circle id="d10-nc0" cx="80" cy="170" r="28" fill="#3fb950" stroke="#3fb950" stroke-width="2"/>
-        <text x="80" y="170" fill="white" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">s</text>
+        <line id="d10-r3" x1="212" y1="242" x2="334" y2="84" stroke="#8b949e" stroke-width="1.2" stroke-dasharray="4,3" opacity="0" marker-end="url(#d10-arr-res)"/>
+        <text id="d10-rl3" x="266" y="182" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
 
-        <!-- A -->
-        <circle id="d10-nc1" cx="280" cy="80" r="28" fill="#21262d" stroke="#c9d1d9" stroke-width="2"/>
-        <text x="280" y="80" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">A</text>
+        <line id="d10-r4" x1="485" y1="144" x2="376" y2="66" stroke="#8b949e" stroke-width="1.2" stroke-dasharray="4,3" opacity="0" marker-end="url(#d10-arr-res)"/>
+        <text id="d10-rl4" x="435" y="90" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
 
-        <!-- B -->
-        <circle id="d10-nc2" cx="280" cy="260" r="28" fill="#21262d" stroke="#c9d1d9" stroke-width="2"/>
-        <text x="280" y="260" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">B</text>
+        <line id="d10-r5" x1="322" y1="266" x2="228" y2="266" stroke="#8b949e" stroke-width="1.2" stroke-dasharray="4,3" opacity="0" marker-end="url(#d10-arr-res)"/>
+        <text id="d10-rl5" x="276" y="282" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
 
-        <!-- t -->
-        <circle id="d10-nc3" cx="500" cy="170" r="28" fill="#3fb950" stroke="#3fb950" stroke-width="2"/>
-        <text x="500" y="170" fill="white" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">t</text>
+        <line id="d10-r6" x1="485" y1="176" x2="376" y2="254" stroke="#8b949e" stroke-width="1.2" stroke-dasharray="4,3" opacity="0" marker-end="url(#d10-arr-res)"/>
+        <text id="d10-rl6" x="435" y="228" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">0</text>
+
+        <!-- Nodes: 0=s, 1=a, 2=b, 3=c, 4=d, 5=t -->
+        <circle id="d10-nc0" cx="60" cy="160" r="24" fill="#1f6feb1a" stroke="#58a6ff" stroke-width="2"/>
+        <text x="60" y="160" fill="#58a6ff" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">s</text>
+
+        <circle id="d10-nc1" cx="200" cy="60" r="24" fill="#21262d" stroke="#c9d1d9" stroke-width="2"/>
+        <text x="200" y="60" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">a</text>
+
+        <circle id="d10-nc2" cx="200" cy="260" r="24" fill="#21262d" stroke="#c9d1d9" stroke-width="2"/>
+        <text x="200" y="260" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">b</text>
+
+        <circle id="d10-nc3" cx="350" cy="60" r="24" fill="#21262d" stroke="#c9d1d9" stroke-width="2"/>
+        <text x="350" y="60" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">c</text>
+
+        <circle id="d10-nc4" cx="350" cy="260" r="24" fill="#21262d" stroke="#c9d1d9" stroke-width="2"/>
+        <text x="350" y="260" fill="#c9d1d9" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">d</text>
+
+        <circle id="d10-nc5" cx="510" cy="160" r="24" fill="#3fb9500d" stroke="#3fb950" stroke-width="2"/>
+        <text x="510" y="160" fill="#3fb950" font-size="14" font-weight="700" font-family="monospace" text-anchor="middle" dominant-baseline="central">t</text>
       </svg>
     </div>
 
@@ -1607,11 +1700,13 @@ window.vz60reset = function(){
             <th style="padding:3px 7px;border:1px solid #30363d;background:#21262d;color:#58a6ff;font-size:0.65em;text-transform:uppercase;">Flow/Cap</th>
           </tr></thead>
           <tbody>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">s→A</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft0">0/4</td></tr>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">s→B</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft1">0/3</td></tr>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">A→t</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft2">0/3</td></tr>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">B→t</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft3">0/5</td></tr>
-            <tr><td style="padding:3px 7px;border:1px solid #30363d;">A→B</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft4">0/2</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">s→a</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft0">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">s→b</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft1">0/5</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">a→c</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft2">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">c→b</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft3">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">c→t</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft4">0/3</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">b→d</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft5">0/5</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #30363d;">d→t</td><td style="padding:3px 7px;border:1px solid #30363d;font-family:monospace;" id="d10-ft6">0/5</td></tr>
           </tbody>
         </table>
       </div>
@@ -1635,7 +1730,7 @@ window.vz60reset = function(){
 </main>
 <script>
 (function(){
-  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
   var C=50.3;
   function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
   function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
@@ -1672,12 +1767,11 @@ window.vz60reset = function(){
 (function(){
   'use strict';
   // ── Ford-Fulkerson demo ──────────────────────────────────────────────────
-  // Nodes: 0=s, 1=A, 2=B, 3=t
-  // Edges indexed 0..4: s→A(4), s→B(3), A→t(3), B→t(5), A→B(2)
-  // Edge pairs (for residual): edge i has reverse edge
+  // Nodes: 0=s, 1=a, 2=b, 3=c, 4=d, 5=t
+  // Edges indexed 0..6: s→a(3), s→b(5), a→c(3), c→b(3), c→t(3), b→d(5), d→t(5)
   // flow[i] = current flow on edge i
-  const CAP = [4, 3, 3, 5, 2];       // capacities
-  let flow = [0, 0, 0, 0, 0];         // current flows
+  const CAP = [3, 5, 3, 3, 3, 5, 5]; // capacities
+  let flow = [0, 0, 0, 0, 0, 0, 0];  // current flows
   let totalFlow = 0;
   let pathCount = 0;
   let busy = false;
@@ -1685,33 +1779,36 @@ window.vz60reset = function(){
   let spd = 1;
 
   // Pre-computed augmenting paths for this specific graph:
-  // Path 1: s→A→t, bottleneck = min(4-0, 3-0) = 3
-  // Path 2: s→B→t, bottleneck = min(3-0, 5-0) = 3
-  // Path 3: s→A→B→t, bottleneck = min(4-3=1, 2-0=2, 5-3=2) = 1
-  // Total = 7
+  // Path 1: s→a→c→b→d→t, bottleneck=3
+  // Path 2: s→b→(undo c→b)→c→t, bottleneck=3 (backward augmentation on e3)
+  // Path 3: s→b→d→t, bottleneck=2
+  // Total = 8
   const PATHS = [
     {
-      nodes: [0, 1, 3],         // s, A, t
-      edges: [0, 2],            // s→A, A→t
+      nodes: [0, 1, 3, 2, 4, 5],  // s, a, c, b, d, t
+      edges: [0, 2, 3, 5, 6],      // s→a, a→c, c→b, b→d, d→t
+      revEdges: [],
       bottleneck: 3,
-      desc: 's → A → t',
+      desc: 's → a → c → b → d → t',
     },
     {
-      nodes: [0, 2, 3],         // s, B, t
-      edges: [1, 3],            // s→B, B→t
+      nodes: [0, 2, 3, 5],         // s, b, c, t (via backward b→c edge)
+      edges: [1, 4],               // s→b (fwd), c→t (fwd)
+      revEdges: [3],               // undo c→b (backward augmentation)
       bottleneck: 3,
-      desc: 's → B → t',
+      desc: 's → b → (undo c→b) → c → t',
     },
     {
-      nodes: [0, 1, 2, 3],      // s, A, B, t
-      edges: [0, 4, 3],         // s→A, A→B, B→t
-      bottleneck: 1,
-      desc: 's → A → B → t',
+      nodes: [0, 2, 4, 5],         // s, b, d, t
+      edges: [1, 5, 6],            // s→b, b→d, d→t
+      revEdges: [],
+      bottleneck: 2,
+      desc: 's → b → d → t',
     },
   ];
 
-  const NODE_LABELS = ['s', 'A', 'B', 't'];
-  const EDGE_NAMES = ['s→A', 's→B', 'A→t', 'B→t', 'A→B'];
+  const NODE_LABELS = ['s', 'a', 'b', 'c', 'd', 't'];
+  const EDGE_NAMES = ['s→a', 's→b', 'a→c', 'c→b', 'c→t', 'b→d', 'd→t'];
   const sleep = ms => new Promise(r => setTimeout(r, ms / spd));
 
   function setStep(label, html) {
@@ -1754,7 +1851,7 @@ window.vz60reset = function(){
   function setNodePathStyle(ni, active) {
     const nc = document.getElementById('d10-nc' + ni);
     if (!nc) return;
-    if (active && ni !== 0 && ni !== 3) {
+    if (active && ni !== 0 && ni !== 5) {
       nc.setAttribute('fill', '#58a6ff22');
       nc.setAttribute('stroke', '#58a6ff');
       nc.setAttribute('stroke-width', '2.5');
@@ -1780,7 +1877,7 @@ window.vz60reset = function(){
 
   function restoreNode(ni) {
     const nc = document.getElementById('d10-nc' + ni);
-    if (!nc || ni === 0 || ni === 3) return;
+    if (!nc || ni === 0 || ni === 5) return;
     nc.setAttribute('fill', '#21262d');
     nc.setAttribute('stroke', '#c9d1d9');
     nc.setAttribute('stroke-width', '2');
@@ -1791,7 +1888,7 @@ window.vz60reset = function(){
     const rl = document.getElementById('d10-rl' + ei);
     if (r && val > 0) {
       r.setAttribute('opacity', '1');
-      r.setAttribute('stroke', '#30363d');
+      r.setAttribute('stroke', '#8b949e');
     }
     if (rl && val > 0) {
       rl.setAttribute('opacity', '1');
@@ -1800,9 +1897,12 @@ window.vz60reset = function(){
   }
 
   async function pushPath(pathIdx) {
-    const { nodes, edges, bottleneck, desc } = PATHS[pathIdx];
+    const { nodes, edges, revEdges, bottleneck, desc } = PATHS[pathIdx];
 
-    setStep('Augmenting path ' + (pathIdx + 1), `Found path: <b style="color:#58a6ff">${desc}</b>. Bottleneck = min(${edges.map(ei => (CAP[ei]-flow[ei])).join(', ')}) = <b style="color:#f0883e">${bottleneck}</b>`);
+    const fwdResiduals = edges.map(ei => CAP[ei] - flow[ei]);
+    const revResiduals = (revEdges || []).map(ei => flow[ei]);
+    const allResiduals = fwdResiduals.concat(revResiduals);
+    setStep('Augmenting path ' + (pathIdx + 1), `Found path: <b style="color:#58a6ff">${desc}</b>. Bottleneck = min(${allResiduals.join(', ')}) = <b style="color:#f0883e">${bottleneck}</b>`);
 
     // Highlight path
     nodes.forEach(ni => setNodePathStyle(ni, true));
@@ -1812,9 +1912,13 @@ window.vz60reset = function(){
     setStep('Pushing flow', `Sending <b style="color:#58a6ff">${bottleneck} unit${bottleneck > 1 ? 's' : ''}</b> along <b>${desc}</b>...`);
     await sleep(500);
 
-    // Apply flow
+    // Apply flow (forward edges increase, backward edges decrease)
     edges.forEach(ei => {
       flow[ei] += bottleneck;
+      updateEdgeLabel(ei, flow[ei], CAP[ei]);
+    });
+    (revEdges || []).forEach(ei => {
+      flow[ei] -= bottleneck;
       updateEdgeLabel(ei, flow[ei], CAP[ei]);
     });
     totalFlow += bottleneck;
@@ -1826,7 +1930,7 @@ window.vz60reset = function(){
 
     await sleep(400);
 
-    // Show residual back-edges
+    // Show residual back-edges for forward edges used
     edges.forEach(ei => showResidual(ei, flow[ei]));
 
     setStep('Flow updated', `Pushed ${bottleneck} unit(s) along <b>${desc}</b>. Residual back-edges updated. Total flow = <b style="color:#3fb950">${totalFlow}</b>.`);
@@ -1835,6 +1939,7 @@ window.vz60reset = function(){
     // Restore node colors
     nodes.forEach(ni => restoreNode(ni));
     edges.forEach(ei => restoreEdge(ei));
+    (revEdges || []).forEach(ei => restoreEdge(ei));
   }
 
   async function doStep() {
@@ -1871,13 +1976,13 @@ window.vz60reset = function(){
 
   function resetDemo() {
     if (busy) return;
-    flow = [0, 0, 0, 0, 0];
+    flow = [0, 0, 0, 0, 0, 0, 0];
     totalFlow = 0;
     pathCount = 0;
     finished = false;
 
     // Reset all edge visuals
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 7; i++) {
       const e = document.getElementById('d10-e' + i);
       if (e) { e.setAttribute('stroke', '#30363d'); e.setAttribute('stroke-width', '2'); e.setAttribute('marker-end', 'url(#d10-arr)'); }
       const el = document.getElementById('d10-el' + i);
@@ -1885,12 +1990,12 @@ window.vz60reset = function(){
       const ft = document.getElementById('d10-ft' + i);
       if (ft) ft.textContent = '0/' + CAP[i];
       const r = document.getElementById('d10-r' + i);
-      if (r) { r.setAttribute('opacity', '0'); r.setAttribute('stroke', '#30363d'); }
+      if (r) { r.setAttribute('opacity', '0'); r.setAttribute('stroke', '#8b949e'); }
       const rl = document.getElementById('d10-rl' + i);
       if (rl) { rl.setAttribute('opacity', '0'); rl.textContent = '0'; }
     }
     // Reset node styles
-    for (let i = 1; i <= 2; i++) restoreNode(i);
+    for (let i = 1; i <= 4; i++) restoreNode(i);
 
     document.getElementById('d10-s-paths').textContent = '0';
     document.getElementById('d10-s-flow').textContent = '0';

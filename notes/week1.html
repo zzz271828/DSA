@@ -167,6 +167,7 @@
 
   <div class="nav-section">Reference</div>
   <ul>
+    <li><a href="questions.html">&#x1F4DA; Questions Bank</a></li>
     <li><a href="algorithms.html">All Algorithms Table</a></li>
     <li><a href="index.html">↑ Course Home</a></li>
   </ul>
@@ -1394,7 +1395,7 @@ function SORT_AND_COUNT_INV(array[lo..hi]):
         </div>
         <div style="background:#21262d;border:1px solid #30363d;border-radius:7px;padding:6px 11px;min-width:90px;">
           <span style="font-family:'JetBrains Mono',monospace;font-size:0.58em;letter-spacing:.15em;text-transform:uppercase;color:#8b949e;display:block;margin-bottom:2px;">Step</span>
-          <span id="vz7-step" style="font-size:1.3em;font-weight:700;line-height:1;color:#58a6ff;">0/8</span>
+          <span id="vz7-step" style="font-size:1.3em;font-weight:700;line-height:1;color:#58a6ff;">0/9</span>
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
@@ -1414,22 +1415,22 @@ function SORT_AND_COUNT_INV(array[lo..hi]):
   var steps=[
     {
       label:'INPUT',
-      text:'Input array [5,4,1,3,2]. An inversion is a pair (i,j) where i<j but a[i]>a[j]. Total inversions = 8.',
+      text:'Input array [2,4,1,3,5]. An inversion is a pair (i,j) where i<j but a[i]>a[j]. Total inversions = 3.',
       inv:0,
       draw:function(){
         clear();
-        var arr=[5,4,1,3,2];
+        var arr=[2,4,1,3,5];
         var cols=['#58a6ff','#58a6ff','#58a6ff','#58a6ff','#58a6ff'];
         drawRow(arr,cols,80,50,'Input',true);
       }
     },
     {
       label:'SPLIT',
-      text:'Divide into two halves: left=[5,4,1] and right=[3,2]. Recursively count inversions in each half.',
+      text:'Divide into two halves: left=[2,4,1] and right=[3,5]. Recursively count inversions in each half.',
       inv:0,
       draw:function(){
         clear();
-        var left=[5,4,1],right=[3,2];
+        var left=[2,4,1],right=[3,5];
         drawRow(left,['#58a6ff','#58a6ff','#58a6ff'],60,50,'Left half',true);
         drawRow(right,['#bc8cff','#bc8cff'],310,50,'Right half',true);
         drawDivider(295,20,80);
@@ -1438,83 +1439,83 @@ function SORT_AND_COUNT_INV(array[lo..hi]):
     },
     {
       label:'LEFT SORTED',
-      text:'Left half [5,4,1] sorted to [1,4,5]. Inversions found in left: 3 (pairs: (5,4),(5,1),(4,1)).',
-      inv:3,
+      text:'Left half [2,4,1] sorted to [1,2,4]. Inversions found in left: 2 (pairs: (2,1),(4,1)).',
+      inv:2,
       draw:function(){
         clear();
-        var left=[1,4,5],right=[3,2];
+        var left=[1,2,4],right=[3,5];
         drawRow(left,['#3fb950','#3fb950','#3fb950'],60,50,'Left sorted',true);
         drawRow(right,['#bc8cff','#bc8cff'],310,50,'Right half',true);
         drawDivider(295,20,80);
-        drawLabel(90,165,'3 inversions found in left','#3fb950');
+        drawLabel(90,165,'2 inversions found in left','#3fb950');
       }
     },
     {
       label:'RIGHT SORTED',
-      text:'Right half [3,2] sorted to [2,3]. Inversions found in right: 1 (pair: (3,2)). Now count SPLIT inversions in the merge step.',
-      inv:4,
+      text:'Right half [3,5] is already sorted. Inversions found in right: 0. Now count SPLIT inversions in the merge step.',
+      inv:2,
       draw:function(){
         clear();
-        var left=[1,4,5],right=[2,3];
+        var left=[1,2,4],right=[3,5];
         drawRow(left,['#3fb950','#3fb950','#3fb950'],60,50,'Left sorted',true);
         drawRow(right,['#3fb950','#3fb950'],310,50,'Right sorted',true);
         drawDivider(295,20,80);
-        drawLabel(90,165,'Left:3 + Right:1 = 4 inversions so far','#f0883e');
+        drawLabel(90,165,'Left:2 + Right:0 = 2 inversions so far','#f0883e');
       }
     },
     {
       label:'MERGE  i=0, j=0',
-      text:'Merge: compare left[0]=1 vs right[0]=2. Left wins → take 1 to output. No split inversions added.',
-      inv:4,
+      text:'Merge: compare left[0]=1 vs right[0]=3. Left wins → take 1 to output. No split inversions added.',
+      inv:2,
       draw:function(){
         clear();
-        var left=[1,4,5],right=[2,3];
-        drawRow(left,['#58a6ff','#21262d','#21262d'],60,50,'Left [1,4,5]',true);
-        drawRow(right,['#58a6ff','#21262d'],310,50,'Right [2,3]',true);
+        var left=[1,2,4],right=[3,5];
+        drawRow(left,['#58a6ff','#21262d','#21262d'],60,50,'Left [1,2,4]',true);
+        drawRow(right,['#58a6ff','#21262d'],310,50,'Right [3,5]',true);
         drawPointer(87,92,'i=0','#58a6ff');
         drawPointer(337,92,'j=0','#58a6ff');
         drawRow([1],['#3fb950'],200,155,'Output',true);
-        drawLabel(130,225,'1 < 2: take left','#3fb950');
+        drawLabel(130,225,'1 < 3: take left','#3fb950');
       }
     },
     {
       label:'MERGE  i=1, j=0',
-      text:'Compare left[1]=4 vs right[0]=2. Right wins (2<4). All remaining left elements [4,5] are inversions with 2. Add 2 split inversions.',
-      inv:6,
+      text:'Compare left[1]=2 vs right[0]=3. Left wins (2<3) → take 2 to output. No split inversions added.',
+      inv:2,
       draw:function(){
         clear();
-        var left=[1,4,5],right=[2,3];
-        drawRow(left,['#3fb950','#f85149','#f85149'],60,50,'Left [1,4,5]',true);
-        drawRow(right,['#58a6ff','#21262d'],310,50,'Right [2,3]',true);
-        drawPointer(147,92,'i=1','#f85149');
+        var left=[1,2,4],right=[3,5];
+        drawRow(left,['#3fb950','#58a6ff','#21262d'],60,50,'Left [1,2,4]',true);
+        drawRow(right,['#58a6ff','#21262d'],310,50,'Right [3,5]',true);
+        drawPointer(147,92,'i=1','#58a6ff');
         drawPointer(337,92,'j=0','#58a6ff');
         drawRow([1,2],['#3fb950','#3fb950'],170,155,'Output',true);
-        drawLabel(100,225,'4 > 2: [4,5] each invert with 2  +2','#f85149');
+        drawLabel(130,225,'2 < 3: take left','#3fb950');
       }
     },
     {
-      label:'MERGE  i=1, j=1',
-      text:'Compare left[1]=4 vs right[1]=3. Right wins (3<4). Remaining left [4,5] → add 2 more split inversions.',
-      inv:8,
+      label:'MERGE  i=2, j=0',
+      text:'Compare left[2]=4 vs right[0]=3. Right wins (3<4). Remaining left [4] is > 3. Add 1 split inversion. Take 3 to output.',
+      inv:3,
       draw:function(){
         clear();
-        var left=[1,4,5],right=[2,3];
-        drawRow(left,['#3fb950','#f85149','#f85149'],60,50,'Left [1,4,5]',true);
-        drawRow(right,['#3fb950','#58a6ff'],310,50,'Right [2,3]',true);
-        drawPointer(147,92,'i=1','#f85149');
-        drawPointer(397,92,'j=1','#58a6ff');
+        var left=[1,2,4],right=[3,5];
+        drawRow(left,['#3fb950','#3fb950','#f85149'],60,50,'Left [1,2,4]',true);
+        drawRow(right,['#58a6ff','#21262d'],310,50,'Right [3,5]',true);
+        drawPointer(207,92,'i=2','#f85149');
+        drawPointer(337,92,'j=0','#58a6ff');
         drawRow([1,2,3],['#3fb950','#3fb950','#3fb950'],155,155,'Output',true);
-        drawLabel(100,225,'4 > 3: [4,5] each invert with 3  +2','#f85149');
+        drawLabel(130,225,'4 > 3: [4] inverts with 3  +1','#f85149');
       }
     },
     {
       label:'DONE',
-      text:'Merge complete. Total inversions = 3 (left) + 1 (right) + 4 (split) = 8. Array is now sorted.',
-      inv:8,
+      text:'Merge complete. Total inversions = 2 (left) + 0 (right) + 1 (split) = 3. Array is now sorted.',
+      inv:3,
       draw:function(){
         clear();
         drawRow([1,2,3,4,5],['#3fb950','#3fb950','#3fb950','#3fb950','#3fb950'],60,80,'Sorted output',true);
-        drawLabel(130,165,'Total: 3+1+4 = 8 inversions','#3fb950');
+        drawLabel(130,165,'Total: 2+0+1 = 3 inversions','#3fb950');
       }
     }
   ];
@@ -1654,12 +1655,12 @@ function MERGE_AND_COUNT_SPLIT_INV(A[i..n1], B[j..n2]):
   var steps=[
     {
       label:'SETUP',
-      text:'Merge-and-CountSplitInv: two sorted halves. Count pairs (l,r) where l comes from left, r from right, but l>r.',
+      text:'Merge-and-CountSplitInv: two sorted halves from A=[2,4,1,3,5]. Count pairs (l,r) where l comes from left, r from right, but l>r.',
       inv:0,
       draw:function(){
         clear();
-        drawRowLabeled([1,4,5],['#58a6ff','#58a6ff','#58a6ff'],60,50,'Left [1,4,5]');
-        drawRowLabeled([2,3],['#f0883e','#f0883e'],320,50,'Right [2,3]');
+        drawRowLabeled([1,2,4],['#58a6ff','#58a6ff','#58a6ff'],60,50,'Left [1,2,4]');
+        drawRowLabeled([3,5],['#f0883e','#f0883e'],320,50,'Right [3,5]');
         drawRowLabeled([],[''],180,170,'Output [ ]');
         drawPointerUp(87,50,'i=0','#58a6ff');
         drawPointerUp(347,50,'j=0','#f0883e');
@@ -1668,67 +1669,67 @@ function MERGE_AND_COUNT_SPLIT_INV(A[i..n1], B[j..n2]):
     },
     {
       label:'COMPARE i=0 j=0',
-      text:'1 < 2: left element wins. No inversions — all remaining right elements are ≥ 2 > 1. Take 1 to output.',
+      text:'1 < 3: left element wins. No inversions — 1 is less than all remaining right elements. Take 1 to output.',
       inv:0,
       draw:function(){
         clear();
-        drawRowLabeled([1,4,5],['#3fb950','#58a6ff','#58a6ff'],60,50,'Left [1,4,5]');
-        drawRowLabeled([2,3],['#f0883e','#f0883e'],320,50,'Right [2,3]');
+        drawRowLabeled([1,2,4],['#3fb950','#58a6ff','#58a6ff'],60,50,'Left [1,2,4]');
+        drawRowLabeled([3,5],['#f0883e','#f0883e'],320,50,'Right [3,5]');
         drawRowLabeled([1],['#3fb950'],235,170,'Output');
         drawPointerUp(87,50,'i=0','#3fb950');
         drawPointerUp(347,50,'j=0','#f0883e');
-        drawLabel(270,240,'1 ≤ 2: take left. splitInv=0','#3fb950');
+        drawLabel(270,240,'1 ≤ 3: take left. splitInv=0','#3fb950');
       }
     },
     {
       label:'COMPARE i=1 j=0',
-      text:'4 > 2: right element wins. Remaining left from i=1 onward: [4,5] — both > 2. Add 2 split inversions. Take 2 to output.',
-      inv:2,
+      text:'2 < 3: left element wins. No inversions — 2 is less than all remaining right elements. Take 2 to output.',
+      inv:0,
       draw:function(){
         clear();
-        drawRowLabeled([1,4,5],['#3fb950','#f85149','#f85149'],60,50,'Left [1,4,5]');
-        drawRowLabeled([2,3],['#3fb950','#f0883e'],320,50,'Right [2,3]');
+        drawRowLabeled([1,2,4],['#3fb950','#3fb950','#58a6ff'],60,50,'Left [1,2,4]');
+        drawRowLabeled([3,5],['#f0883e','#f0883e'],320,50,'Right [3,5]');
         drawRowLabeled([1,2],['#3fb950','#3fb950'],205,170,'Output');
-        drawPointerUp(147,50,'i=1','#f85149');
-        drawPointerUp(347,50,'j=0','#3fb950');
-        drawLabel(270,240,'4 > 2: [4,5] both invert with 2  ↑2','#f85149');
+        drawPointerUp(147,50,'i=1','#3fb950');
+        drawPointerUp(347,50,'j=0','#f0883e');
+        drawLabel(270,240,'2 ≤ 3: take left. splitInv=0','#3fb950');
       }
     },
     {
-      label:'COMPARE i=1 j=1',
-      text:'4 > 3: right element wins. Remaining left elements [4,5] are both > 3. Add 2 more split inversions. Take 3 to output.',
-      inv:4,
+      label:'COMPARE i=2 j=0',
+      text:'4 > 3: right element wins. Remaining left from i=2 onward: [4] — only 4 > 3. Add 1 split inversion. Take 3 to output.',
+      inv:1,
       draw:function(){
         clear();
-        drawRowLabeled([1,4,5],['#3fb950','#f85149','#f85149'],60,50,'Left [1,4,5]');
-        drawRowLabeled([2,3],['#3fb950','#3fb950'],320,50,'Right [2,3]');
+        drawRowLabeled([1,2,4],['#3fb950','#3fb950','#f85149'],60,50,'Left [1,2,4]');
+        drawRowLabeled([3,5],['#3fb950','#f0883e'],320,50,'Right [3,5]');
         drawRowLabeled([1,2,3],['#3fb950','#3fb950','#3fb950'],175,170,'Output');
-        drawPointerUp(147,50,'i=1','#f85149');
-        drawPointerUp(407,50,'j=1','#3fb950');
-        drawLabel(270,240,'4 > 3: [4,5] both invert with 3  ↑2 more','#f85149');
+        drawPointerUp(207,50,'i=2','#f85149');
+        drawPointerUp(347,50,'j=0','#3fb950');
+        drawLabel(270,240,'4 > 3: [4] inverts with 3  ↑1','#f85149');
       }
     },
     {
       label:'DRAIN LEFT',
-      text:'Right half exhausted. Remaining left [4,5] have no more right partners — take them to output.',
-      inv:4,
+      text:'Compare left[2]=4 vs right[1]=5. Left wins (4<5). Take 4, then drain remaining right [5]. No further split inversions.',
+      inv:1,
       draw:function(){
         clear();
-        drawRowLabeled([1,4,5],['#3fb950','#58a6ff','#58a6ff'],60,50,'Left [1,4,5]');
-        drawRowLabeled([2,3],['#3fb950','#3fb950'],320,50,'Right (done)');
+        drawRowLabeled([1,2,4],['#3fb950','#3fb950','#58a6ff'],60,50,'Left [1,2,4]');
+        drawRowLabeled([3,5],['#3fb950','#f0883e'],320,50,'Right [3,5]');
         drawRowLabeled([1,2,3,4,5],['#3fb950','#3fb950','#3fb950','#58a6ff','#58a6ff'],115,170,'Output');
-        drawLabel(270,240,'Right exhausted: drain left. splitInv=4','#58a6ff');
+        drawLabel(270,240,'4 ≤ 5: take left, then drain right. splitInv=1','#58a6ff');
       }
     },
     {
       label:'DONE',
-      text:'Merge-and-CountSplitInv found 4 split inversions. Combined: total = left(3) + right(1) + split(4) = 8 inversions.',
-      inv:4,
+      text:'Merge-and-CountSplitInv found 1 split inversion. Combined: total = left(2) + right(0) + split(1) = 3 inversions.',
+      inv:1,
       draw:function(){
         clear();
         drawRowLabeled([1,2,3,4,5],['#3fb950','#3fb950','#3fb950','#3fb950','#3fb950'],115,80,'Merged output [1,2,3,4,5]');
-        drawLabel(270,155,'Split inversions found = 4','#3fb950');
-        drawLabel(270,185,'Total = 3 (left) + 1 (right) + 4 (split) = 8','#f0883e');
+        drawLabel(270,155,'Split inversions found = 1','#3fb950');
+        drawLabel(270,185,'Total = 2 (left) + 0 (right) + 1 (split) = 3','#f0883e');
       }
     }
   ];
@@ -1996,7 +1997,7 @@ function MERGE_AND_COUNT_SPLIT_INV(A[i..n1], B[j..n2]):
             <div id="d1-side" style="font-family:'JetBrains Mono',monospace;font-size:0.78em;color:var(--text-muted);line-height:1.8">
               <div>Range: <span id="d1-range" style="color:var(--cyan)">—</span></div>
               <div>Subarray:</div>
-              <div id="d1-subarray" style="color:var(--text);margin-top:4px;word-break:break-all">[ 6, 3, 8, 1, 5, 7, 2, 4 ]</div>
+              <div id="d1-subarray" style="color:var(--text);margin-top:4px;word-break:break-all">[ 6, 5, 4, 3, 2, 1 ]</div>
             </div>
           </div>
         </div>
@@ -2019,7 +2020,7 @@ function MERGE_AND_COUNT_SPLIT_INV(A[i..n1], B[j..n2]):
   // ── Merge Sort Demo ──
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.getElementById('d1-svg');
-  const ORIG = [6,3,8,1,5,7,2,4];
+  const ORIG = [6,5,4,3,2,1];
   const N = ORIG.length;
   const BAR_W = 78, BAR_GAP = 8, BASE_Y = 260, BASE_X = 32;
   let arr, barEls, labelEls, stepIndex, comparisons, steps, busy, spd;
@@ -2115,7 +2116,7 @@ function MERGE_AND_COUNT_SPLIT_INV(A[i..n1], B[j..n2]):
 
     if(ev.type==='init'){
       setStep('INITIAL','Initial array — unsorted. Click Step to begin divide phase.');
-      document.getElementById('d1-range').textContent='[0..7]';
+      document.getElementById('d1-range').textContent='[0..5]';
       document.getElementById('d1-subarray').textContent='[ '+ORIG.join(', ')+' ]';
       for(let i=0;i<N;i++) setBarStyle(i,'default');
       setStats(0,0,0);
@@ -2154,8 +2155,8 @@ function MERGE_AND_COUNT_SPLIT_INV(A[i..n1], B[j..n2]):
       setStats(ev.comparisons||0,ev.depth,stepIndex);
     } else if(ev.type==='done'){
       for(let i=0;i<N;i++) setBarStyle(i,'green');
-      setStep('SORTED!',`Array fully sorted! O(n log n) — ~24 comparisons for n=8`);
-      document.getElementById('d1-range').textContent='[0..7]';
+      setStep('SORTED!',`Array fully sorted! O(n log n) — ~15 comparisons for n=6`);
+      document.getElementById('d1-range').textContent='[0..5]';
       document.getElementById('d1-subarray').textContent='[ '+ev.arr.join(', ')+' ]';
       document.getElementById('d1-chip-cmp').classList.add('good');
       setStats(document.getElementById('d1-cmp').textContent,0,stepIndex);
@@ -2214,7 +2215,7 @@ function MERGE_AND_COUNT_SPLIT_INV(A[i..n1], B[j..n2]):
 
 <script>
 (function(){
-  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table'],3:['quicksort', 'order-stats'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
+  var ALL={1:['complexity-analysis', 'asymptotic', 'measures', 'correctness', 'divide-conquer', 'karatsuba', 'mergesort', 'inversions', 'summary', 'w1-demo'],2:['program-verification', 'basic-sorting', 'heapsort', 'lower-bounds', 'integer-sorting', 'comparison-table', 'w2-demo'],3:['quicksort', 'order-stats', 'w3-demo'],4:['sec51', 'sec52', 'sec53', 'sec54', 'sec55', 'sec56', 'w4-demo'],5:['greedy-intro', 'dijkstra', 'mst', 'prims', 'kruskals', 'comparison', 'summary', 'w5-demo'],6:['s71', 's72', 's73', 's74', 's75', 's76', 's77', 's78', 'w6-demo'],7:['sec-8-1', 'sec-8-2', 'sec-8-3', 'sec-8-4', 'summary'],8:['motivation', 'trie-definition', 'trie-ops', 'trie-impl', 'compact-trie', 'trie-complexity', 'trie-comparison', 'suffix-tree-intro', 'suffix-tree-def', 'suffix-tree-build', 'suffix-tree-apps', 'takeaways'],9:['motivation', 'bst', 'avl', 'twothree', 'rbt', 'compare', 'quick-ref', 'walkthroughs'],10:['sec-intro', 'sec91', 'sec911', 'sec912', 'sec913', 'sec92', 'sec921', 'sec93', 'sec-summary'],11:['recap', 'circ-demands', 'reduction-maxflow', 'lower-bounds', 'applications', 'survey', 'airline', 'further', 'summary']};
   var C=50.3;
   function getP(){return JSON.parse(localStorage.getItem('fit2004_p')||'{}');}
   function setP(d){localStorage.setItem('fit2004_p',JSON.stringify(d));}
